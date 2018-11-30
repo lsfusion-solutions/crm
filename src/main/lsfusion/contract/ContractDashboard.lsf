@@ -1,0 +1,91 @@
+MODULE ContractDashboard;
+
+REQUIRE Payment, Dashboard;
+
+NAMESPACE Contract;
+
+close 'Закрыть' (Contract c) {
+    NEWSESSION {
+        dateClosing(c) <- currentDate();
+        APPLY;
+    }
+} TOOLBAR;
+
+filterContractType = DATA LOCAL ContractType();
+nameFilterContractType 'Тип договора' () = name(filterContractType());
+
+FORM contractDashboard 'Работа с договорами'
+    PROPERTIES nameFilterContractType()
+    OBJECTS o = Contract LAST 
+    PROPERTIES(o) READONLY id, nameCustomer, nameLegalEntity, nameCompany, number, date, sum, shortNameCurrency, sumCurrency, paid, nameType, nameSendingWay, 
+                           dateSigningCompany, dateSending, dateSigningCustomer, dateReceiving, dateTo, dateClosing, note, textString, text PANEL
+    PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
+    PROPERTIES(o) loadFile, openFile SHOWIF file(o), deleteFile SHOWIF file(o), close SHOWIF NOT dateClosing(o)
+    ORDER date(o)
+    FILTERS type(o) == filterContractType() OR NOT filterContractType()
+    
+    FILTERGROUP paid FILTER 'Не оплачен' paid(o) < sumCurrency(o)
+                     FILTER 'Оплачен' paid(o) >= sumCurrency(o)
+    
+    FILTERGROUP activeContract
+        FILTER 'Активные' NOT dateClosing(o) < currentDate() DEFAULT
+    
+    OBJECTS ag = Agreement LAST 
+    PROPERTIES (ag) READONLY id, numberContract, number, date, nameType, sum, dateClosing, dateSending, dateReceiving, note, textString
+    PROPERTIES (ag) openFile DRAW ag TOOLBAR 
+    ORDER date(ag)
+    FILTERS contract(ag) == o
+    
+    OBJECTS ac = Act LAST 
+    PROPERTIES (ac) READONLY id, numberContract, numberAgreement, number, date, nameType, sum, dateClosing, dateSending, dateReceiving, note, textString
+    PROPERTIES (ac) openFile DRAW ac TOOLBAR 
+    ORDER date(ac)
+    FILTERS contract(ac) == o
+    
+    OBJECTS p = Payment LAST 
+    PROPERTIES(p) READONLY id, nameLegalEntity, nameCustomer, numberContract, nameTypeContract, numberAct, number, date, 
+                           year, monthNumber, sum, shortNameCurrency, sumCurrency, note
+    ORDER date(p)
+    FILTERS contract(p) == o
+;
+
+DESIGN contractDashboard {
+    OBJECTS {
+        NEW filter FIRST {
+            caption = 'Фильтры';
+            MOVE PROPERTY (nameFilterContractType());
+        }
+        NEW contract AFTER filter {
+            MOVE BOX (o);
+            type = SPLITV;
+            fill = 1;
+            NEW tab AFTER BOX (o) {
+                type = TABBED;
+                fill = 1;
+                NEW text {
+                    caption = 'Текст';
+                    type = CONTAINERV;
+                    MOVE PROPERTY (text(o)) {
+                        fill = 1;
+                        caption = ''; 
+                    }
+                    NEW file {
+                        type = CONTAINERH;
+                        caption = 'Файл документа';
+                        MOVE PROPERTY (loadFile(o));
+                        MOVE PROPERTY (openFile(o));
+                        MOVE PROPERTY (deleteFile(o));
+                    }
+                }
+                MOVE BOX (ag);
+                MOVE BOX (ac);
+                MOVE BOX (p);
+            }
+        }
+    }
+}
+NAVIGATOR {
+    dashboard {
+        NEW contractDashboard;
+    }
+}

@@ -1,0 +1,133 @@
+MODULE IssueRedmine;
+
+REQUIRE Issue, MasterData, Utils, ProjectExternal;
+
+NAMESPACE Project;
+
+id 'ИД' = DATA INTEGER (External, IssueStatus);
+issueStatus (External e, INTEGER id) = GROUP AGGR IssueStatus s BY id(e, s);
+
+EXTEND FORM issueStatus
+    OBJECTS e = External
+    PROPERTIES(e) READONLY name
+    PROPERTIES(e, o) id
+;
+
+importIssue 'Импорт задач' (External e) {
+    NEWSESSION {
+        LOCAL id = INTEGER(INTEGER);
+        LOCAL subject = VARSTRING[500] (INTEGER);
+        LOCAL description = TEXT (INTEGER);
+        LOCAL due_date = DATE (INTEGER);
+        LOCAL created_on = DATETIME (INTEGER);
+        LOCAL updated_on = DATETIME (INTEGER);
+        LOCAL start_date = DATE (INTEGER);
+        LOCAL done_ratio = INTEGER (INTEGER);
+        LOCAL estimated_hours = NUMERIC[7,2] (INTEGER);
+        LOCAL project_id = INTEGER (INTEGER);
+        LOCAL author_login = VARSTRING[1000] (INTEGER);
+        LOCAL assigned_to_login = VARSTRING[1000] (INTEGER);
+        LOCAL tracker_name = VARSTRING[100] (INTEGER);
+        LOCAL status_id = INTEGER (INTEGER);
+            
+        LOCAL file = FILE ();
+        READ path(e) + '@SELECT issues.id, subject, description, due_date, issues.created_on, issues.updated_on, start_date, done_ratio, estimated_hours, project_id, authors.login AS author_login, assigned_to.login AS assigned_to_login, trackers.name AS tracker_name, issues.status_id AS status_id FROM issues LEFT JOIN users authors ON issues.author_id = authors.id LEFT JOIN users assigned_to ON issues.assigned_to_id = assigned_to.id LEFT JOIN trackers ON issues.tracker_id = trackers.id' TO file;
+
+        IMPORT TABLE FROM file() TO id, subject, description, due_date, created_on, updated_on, start_date, done_ratio, estimated_hours, 
+                                                      project_id, author_login, assigned_to_login, tracker_name, status_id;
+
+        FOR INTEGER ii = [GROUP MIN INTEGER i BY VARSTRING[15](id(i))](VARSTRING[15] id) AND id != '' AND NOT issue(id, e) DO NEW s = Issue {
+            id(s) <- id;
+            project(s) <- project(VARSTRING[15](project_id(ii)), e);
+        }
+        
+        FOR Issue s = issue(VARSTRING[15](id(INTEGER i)), e) AND id(i) DO {
+            
+            name(s) <- subject(i);
+            description(s) <- description(i);
+            dateTo(s) <- due_date(i);
+            dateTimeCreated(s) <- created_on(i);
+            dateTimeUpdated(s) <- updated_on(i);
+            dateFrom(s) <- start_date(i);
+            doneRatio(s) <- done_ratio(i);
+            estimatedHours(s) <- estimated_hours(i);
+            project(s) <- project(VARSTRING[15](project_id(i)), e);
+            author(s) <- GROUP MAX CustomUser p IF login(p) == author_login(i);
+            assignedTo(s) <- GROUP MAX Employee p IF login(p) == assigned_to_login(i);
+            tracker(s) <- tracker(tracker_name(i));
+            status(s) <- issueStatus(e, status_id(i));
+        }
+        
+        FOR external(project(Issue s)) == e AND NOT [GROUP SUM 1 IF imported(INTEGER i) BY VARSTRING[15](id(i))](id(s)) DO {
+            DELETE s;
+        }
+        APPLY;
+    }
+}
+
+importTracker 'Импорт трекеров' (External e) {
+    NEWSESSION {
+        LOCAL name = VARSTRING[100](INTEGER);
+            
+        LOCAL file = FILE ();
+        READ path(e) + '@SELECT name FROM trackers' TO file;
+        
+        IMPORT TABLE FROM file() TO name;
+        
+        FOR [GROUP MIN INTEGER i BY name(i)](VARSTRING[100] name) AND name != '' AND NOT tracker(name) DO NEW s = Tracker {
+            name(s) <- name;
+        }
+        APPLY;
+    }
+}
+
+importIssueStatus 'Импорт статусов задачи' (External e) {
+    NEWSESSION {
+        LOCAL id = INTEGER (INTEGER);
+        LOCAL name = VARSTRING[100](INTEGER);
+            
+        LOCAL file = FILE ();
+        READ path(e) + '@SELECT id, name FROM issue_statuses' TO file;
+        
+        IMPORT TABLE FROM file() TO id, name;
+
+        FOR [GROUP MIN INTEGER i BY name(i)](VARSTRING[100] name) AND name != '' AND NOT issueStatus(name) DO NEW s = IssueStatus {
+            name(s) <- name;
+        }
+
+        FOR name(IssueStatus s) = name(INTEGER i) DO {
+            id(e, IssueStatus se) <- NULL WHERE id(e, se) = id(i);
+            id(e, s) <- id(i);
+        }
+
+        APPLY;
+    }
+}
+
+open (Issue i) + {
+    IF i IS Issue THEN {
+        FOR External e = external(project(i)) AND url(e) DO {
+            open(LINK(url(e) + '/issues/' + id(i)));
+        }
+    } 
+}
+
+apiKey = DATA VARSTRING[50] (External, Employee);
+EXTEND FORM external
+    OBJECTS e = Employee
+    PROPERTIES(e) READONLY name, login
+    PROPERTIES(o, e) apiKey
+    
+    FILTERGROUP active
+        FILTER 'Активные' active(e) DEFAULT
+;
+
+changeStatus (Issue i, IssueStatus s) + {
+    FOR External e = external(project(i)) AND url(e) DO 
+        IF apiKey(e, currentUser()) THEN {
+            stringToFile('\{ "issue": \{ "status_id" : "' + id(e, s) + '" \} \}', 'UTF-8', 'json');
+            LOCAL result = FILE();
+            EXTERNAL HTTP url(e) + '/issues/' + id(i) + '.json?key' + apiKey(e, currentUser()) PARAMS resultFile() TO result; 
+        } ELSE
+            MESSAGE 'Для пользователя не задан api key. Статус в Redmine не будет изменен.';
+}

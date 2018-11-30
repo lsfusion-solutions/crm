@@ -1,0 +1,114 @@
+MODULE ContractWord;
+
+REQUIRE ContractDashboard, Word;
+
+NAMESPACE Contract;
+
+in 'Вкл.' = DATA BOOLEAN (ContractType, Template);
+
+FORM documentTemplates 'Шаблоны'
+    OBJECTS ct = ContractType
+    PROPERTIES READONLY name(ct)
+    
+    OBJECTS t = Template
+    PROPERTIES in(ct, t), name(t) READONLY, id(t) READONLY 
+    PROPERTIES (t) NEWSESSION NEW, EDIT, DELETE 
+    
+    FILTERGROUP in FILTER 'Отмеченные' in(ct, t) 
+;
+
+DESIGN documentTemplates {
+    OBJECTS {
+        NEW tab {
+            type = TABBED;
+            fill = 1;
+            NEW contract {
+                caption = 'Типы договора';
+                type = SPLITH;
+                MOVE BOX (ct) {
+                    fill = 1;
+                }
+                MOVE BOX (t) {
+                    fill = 4;
+                }
+            }
+        }
+    }  
+}
+
+NAVIGATOR {
+    contractFolder {
+        NEW documentTemplates;
+    }
+}
+
+FORM dialogContractTypeTemplates 'Шаблоны Word'
+    OBJECTS c = ContractType PANEL 
+    OBJECTS t = Template
+    PROPERTIES (t) READONLY name, id
+    FILTERS in(c, t)
+;
+
+FORM editTemplate 'Шаблон' 
+    OBJECTS t = Template PANEL 
+    PROPERTIES (t) READONLY name, id
+    
+    OBJECTS te = TemplateEntry
+    PROPERTIES (te) isTable, key, description, value, NEW, DELETE GRID
+    PROPERTIES (te) PANEL SHOWIF isTable(te) firstRow, columnSeparator, rowSeparator
+    
+    FILTERS template (te) == t
+    
+    EVENTS ON OK {
+        process(t);
+        open(resultTemplate());
+    }
+;
+DESIGN editTemplate {
+    BOX {
+        size = (1024, 768);
+        type = CONTAINERV;
+        MOVE BOX(t) {
+            type = CONTAINERH;
+            NEW row1 {
+                type = CONTAINERH;
+                MOVE PROPERTY(name(t));
+                MOVE PROPERTY(id(t));
+            };
+        }
+        MOVE BOX(te);
+    }
+    MOVE TOOLBARBOX;
+    PROPERTY (formOk()) { caption = 'Сформировать'; }
+}
+
+printContractWord 'Сформировать по шаблону' (Contract ct) {
+    NEWSESSION DIALOG dialogContractTypeTemplates OBJECTS c = type(ct), t INPUT DO {
+        value(TemplateEntry d) <- OVERRIDE number(ct), '' WHERE key(d) = 'NUMBER_CONTRACT' AND template (d) == t;
+        value(TemplateEntry d) <- TEXT (toDateDDMMYY(date(ct))) WHERE key(d) = 'DATE_CONTRACT' AND template (d) == t;
+        value(TemplateEntry d) <- OVERRIDE nameCustomer(ct), '' WHERE key(d) = 'NAME_CUSTOMER' AND template (d) == t;
+        value(TemplateEntry d) <- OVERRIDE nameLegalEntity(ct), '' WHERE key(d) = 'NAME_LEGAL_ENTITY' AND template (d) == t;
+        value(TemplateEntry d) <- OVERRIDE nameCompany(ct), '' WHERE key(d) = 'NAME_COMPANY' AND template (d) == t;
+        value(TemplateEntry d) <- TEXT (sum(ct)) WHERE key(d) = 'SUM_CONTRACT' AND template (d) == t;
+        value(TemplateEntry d) <- OVERRIDE nameType(ct), '' WHERE key(d) = 'TYPE_CONTRACT' AND template (d) == t;
+        value(TemplateEntry d) <- OVERRIDE nameSendingWay(ct), '' WHERE key(d) = 'SENDING_WAY' AND template (d) == t;
+        value(TemplateEntry d) <- TEXT (toDateDDMMYY(dateSending(ct))) WHERE key(d) = 'SENDING_DATE_CONTRACT' AND template (d) == t;
+        value(TemplateEntry d) <- TEXT (toDateDDMMYY(dateReceiving(ct))) WHERE key(d) = 'RECEIVING_DATE_CONTRACT' AND template (d) == t;
+        value(TemplateEntry d) <- TEXT (toDateDDMMYY(dateSigningCompany(ct))) WHERE key(d) = 'SIGNING_DATE_COMPANY' AND template (d) == t;
+        value(TemplateEntry d) <- TEXT (toDateDDMMYY(dateSigningCustomer(ct))) WHERE key(d) = 'SIGNING_DATE_CUSTOMER' AND template (d) == t;
+        value(TemplateEntry d) <- TEXT (toDateDDMMYY(dateTo(ct))) WHERE key(d) = 'TO_DATE_CONTRACT' AND template (d) == t;
+        value(TemplateEntry d) <- TEXT (toDateDDMMYY(dateClosing(ct))) WHERE key(d) = 'CLOSING_DATE_CONTRACT' AND template (d) == t;
+        value(TemplateEntry d) <- OVERRIDE note(ct), '' WHERE key(d) = 'NOTE_CONTRACT' AND template (d) == t;
+        value(TemplateEntry d) <- OVERRIDE text(ct), '' WHERE key(d) = 'TEXT_CONTRACT' AND template (d) == t;
+        
+        SHOW editTemplate OBJECTS t = t;
+    }
+}
+
+EXTEND FORM contract PROPERTIES printContractWord(o);
+
+DESIGN contract {
+    file {
+        MOVE PROPERTY (printContractWord(o));
+    }
+}

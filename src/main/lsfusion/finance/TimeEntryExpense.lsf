@@ -1,0 +1,24 @@
+MODULE TimeEntryExpense;
+
+REQUIRE EmployeeExpense, Currency, TimeEntry, WorkingHours;
+
+NAMESPACE Project;
+
+cost 'Расход за час' (Employee e, INTEGER y, Month m) = round2([GROUP SUM sum(Expense t) BY employee(t), year(t), month(t)](e, y, m)/monthHours(y, m));   
+cost 'Расход за час' (TimeEntry t) = cost(employee(t), year(t), month(t));
+
+costSum 'Расход' (TimeEntry t) = hours(t) * cost(t);
+
+EXTEND FORM timeEntries
+    PROPERTIES(o) READONLY costSum
+;
+
+hours 'Часов на задачу' (Employee e, INTEGER y, Month m, Issue i) = GROUP SUM hours(TimeEntry t) BY employee(t), extractYear(date(t)), extractMonth(date(t)), issue(t);
+hours 'Часов на проект' (Employee e, INTEGER y, Month m, Project p) = GROUP SUM hours(TimeEntry t) BY employee(t), extractYear(date(t)), extractMonth(date(t)), project(t);
+
+costSum 'Расход за месяц' (Employee e, INTEGER y, Month m) = GROUP SUM costSum(TimeEntry t) BY employee(t), year(t), month(t);
+costSum 'Расход по задаче' (Employee e, INTEGER y, Month m, Issue i) = GROUP SUM costSum(TimeEntry t) BY employee(t), year(t), month(t), issue(t);
+costSum 'Расход по проекту' (Employee e, INTEGER y, Month m, Project p) = GROUP SUM costSum(TimeEntry t) BY employee(t), year(t), month(t), project(t);
+costSum 'Расход по клиенту' (Employee e, INTEGER y, Month m, Customer c) = GROUP SUM costSum(e, y, m, Project p) BY customer(p);
+
+costSum 'Расход' (Customer c, DATE df, DATE dt) = GROUP SUM costSum(TimeEntry t) IF date(t) >= df AND date(t) <= dt BY customer(project(t));

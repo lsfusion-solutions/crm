@@ -1,0 +1,70 @@
+MODULE Customer;
+
+REQUIRE Utils, MasterData;
+
+NAMESPACE Customer;
+
+CLASS Customer 'Клиент';
+TABLE customer (Customer);
+
+id 'Код' = DATA VARSTRING[15] (Customer) INDEXED CHARWIDTH 5 IN id;
+customer (id) = GROUP AGGR Customer c BY id (c);
+
+inactive 'Неактивный' = DATA BOOLEAN (Customer);
+name 'Наименование' = DATA VARISTRING[250] (Customer) CHARWIDTH 20 IN id;
+email 'E-mail' = DATA VARISTRING[200] (Customer) CHARWIDTH 20;
+phone 'Тел. приёмной' = DATA VARISTRING[50] (Customer) CHARWIDTH 20;
+site 'Сайт' = DATA VARISTRING[100] (Customer) CHARWIDTH 20;
+note 'Примечание' = DATA VARISTRING[100] (Customer) CHARWIDTH 20;
+dateFrom 'Дата начала' = DATA DATE (Customer);
+
+FORM customer 'Клиент'
+    OBJECTS o = Customer PANEL
+    PROPERTIES(o) id, name, email, phone, site, note, dateFrom, inactive
+        
+    EDIT Customer OBJECT o
+;
+
+FORM customers 'Клиенты'
+    OBJECTS o = Customer
+    PROPERTIES(o) READONLYIF isReadonly() id, name, email, phone, site, note, dateFrom, inactive
+    PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
+    ORDER name(o)
+    
+    FILTERGROUP active FILTER 'Активные' NOT inactive(o) DEFAULT 
+;
+
+@extendFormEditable(customers);
+
+FORM dialogCustomers 'Клиенты'
+    OBJECTS o = Customer
+    PROPERTIES(o) READONLY id, name, email, phone, site, note, dateFrom, inactive
+    ORDER name(o)
+    
+    FILTERGROUP active FILTER 'Активные' NOT inactive(o) DEFAULT
+    
+    LIST Customer OBJECT o
+;
+
+merge ABSTRACT LIST (Customer, Customer);
+
+merge 'Объединить' (Customer c) {
+    DIALOG customers OBJECTS o INPUT DO
+        ASK 'Внимание!!! Отмена объединения будет невозможна ! Вы действительно хотите объединить клиента ' + name(c) + ' к клиенту ' + name(o) + '?' DO 
+            NEWSESSION {
+                merge(c, o);
+                DELETE c;
+                APPLY;
+            }
+} 
+
+EXTEND FORM customers
+    PROPERTIES(o) merge TOOLBAR;
+
+NAVIGATOR {
+    masterData {
+        NEW FOLDER customerFolder 'Клиенты' {
+            NEW customers;
+        }
+    }
+}

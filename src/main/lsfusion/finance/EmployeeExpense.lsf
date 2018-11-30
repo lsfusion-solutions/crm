@@ -1,0 +1,135 @@
+MODULE EmployeeExpense;
+
+REQUIRE Employee, System, Finance;
+
+NAMESPACE Employee;
+
+CLASS Expense 'Расход по сотруднику';
+TABLE expense (Expense);
+
+employee = DATA Employee(Expense) NONULL DELETE;
+nameEmployee 'Сотрудник' (Expense e) = name(employee(e));
+
+year 'Год' = DATA INTEGER (Expense);
+month = DATA Month(Expense);
+nameMonth 'Месяц' (Expense e) = staticCaption(month(e));
+numberMonth 'Номер месяца' (Expense e) = number(month(e));
+sum 'Сумма' = DATA NUMERIC[18,4](Expense);
+
+CLASS ExpenseType 'Тип расхода';
+TABLE expenseType (ExpenseType);
+
+name 'Наименование' = DATA VARISTRING[100] (ExpenseType) CHARWIDTH 15;
+
+FORM expenseType 'Тип расхода'
+    OBJECTS o = ExpenseType PANEL
+    PROPERTIES(o) name
+    
+    EDIT ExpenseType OBJECT o
+;
+
+FORM expenseTypes 'Типы расхода'
+    OBJECTS o = ExpenseType 
+    PROPERTIES(o) READONLY name
+    PROPERTIES (o) NEWSESSION NEW, EDIT, DELETE
+    
+    LIST ExpenseType OBJECT o
+;
+
+type = DATA ExpenseType(Expense);
+nameType 'Тип расхода' (Expense e) = name(type(e));
+
+FORM expense 'Расход по сотруднику'
+    OBJECTS o = Expense PANEL
+    PROPERTIES(o) nameEmployee, year, nameMonth, numberMonth, nameType, sum
+    
+    EDIT Expense OBJECT o
+;
+
+sum 'Расход' (Employee e, INTEGER y, Month m, ExpenseType t) = GROUP SUM sum(Expense x) BY employee(x), year(x), month(x), type(x);
+lastExpense = GROUP LAST Expense e ORDER e BY employee(e), year(e), month(e), type(e);
+
+changeSumExpense (Employee e, INTEGER y, Month m, ExpenseType t) {
+    INPUT s = INTEGER DO {
+        
+        IF lastExpense(e, y, m, t) THEN {
+            
+            IF s THEN {
+                sum(Expense x) <- s IF x == lastExpense(e, y, m, t) WHERE employee(x) == e AND year(x) == y AND month(x) == m AND type(x) = t;
+            }
+            ELSE DELETE Expense x WHERE employee(x) == e AND year(x) == y AND month(x) == m AND type(x) = t;
+        }
+        ELSE IF s THEN NEW x = Expense {
+            
+            employee(x) <- e;
+            year(x) <- y;
+            month(x) <- m;
+            type(x) <- t;
+            sum(x) <- s;
+        }
+    }
+}
+
+FORM expenses 'Расходы по сотруднику'
+    OBJECTS o = Expense LAST 
+    PROPERTIES(o) READONLY nameEmployee, year, nameMonth, numberMonth, nameType, sum
+    PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
+    ORDER year(o), numberMonth(o), nameEmployee(o), nameType(o), sum(o)
+    
+    OBJECTS t = ExpenseType PANEL
+    PROPERTIES name(t) SELECTOR
+    
+    OBJECTS y = INTEGER PANEL
+    PROPERTIES year 'Год' = VALUE (y)
+        
+    OBJECTS m = Month
+    OBJECTS e = Employee
+    PROPERTIES name(e) READONLY, sum(e, y, m, t) COLUMNS (m) HEADER (staticCaption(m)) ON CHANGE changeSumExpense(e, y, m, t)
+    PROPERTIES number(m) SHOWIF NULL 
+    ORDER name(e), number(m)
+    
+    FILTERGROUP active FILTER 'Активные' NOT inactive(e) DEFAULT
+    
+    EVENTS ON INIT {
+        SEEK expenses.y = extractYear(currentDate());
+    }
+;
+
+DESIGN expenses {
+    OBJECTS {
+        REMOVE BOX (m);
+        NEW tabPane {
+            type = TABBED;
+            fill = 1;
+            NEW expenses {
+                caption = 'Расходы';
+                MOVE BOX (o);
+            }
+            NEW sumBox {
+                caption = 'Подбор';
+                type = CONTAINERV;
+                NEW head {
+                    type = CONTAINERH;
+                    caption = 'Фильтры';
+                    MOVE PROPERTY (name(t)) { caption = 'Тип расхода'; }
+                    MOVE PROPERTY (year) { charWidth = 10; }
+                }
+                MOVE BOX (e);
+            }
+        }
+    }
+}
+
+FORM dialogExpenses 'Расходы по сотруднику'
+    OBJECTS o = Expense LAST 
+    PROPERTIES(o) READONLY nameEmployee, year, nameMonth, numberMonth, nameType, sum
+    ORDER year(o), numberMonth(o), nameEmployee(o), nameType(o), sum(o)
+    
+    LIST Expense OBJECT o
+;
+
+NAVIGATOR {
+     finance {
+        NEW expenses;
+    }
+}

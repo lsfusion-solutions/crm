@@ -1,0 +1,125 @@
+MODULE Event;
+
+REQUIRE Employee;
+
+NAMESPACE Event;
+
+CLASS Event 'Событие';
+TABLE event (Event);
+
+id 'Код' = DATA VARSTRING[15] (Event) INDEXED CHARWIDTH 5 IN id;
+event (id) = GROUP AGGR Event c BY id (c);
+
+name 'Наименование' = DATA VARISTRING[100] (Event) CHARWIDTH 15;
+date 'Дата ввода' = DATA DATE (Event);
+time 'Время ввода' = DATA TIME (Event);
+dateNext 'Дата следующего' = DATA DATE (Event);
+description 'Содержание' = DATA TEXT (Event);
+descriptionString 'Содержание' (Event e) = VARSTRING[1000](description(e)) CHARWIDTH 30;
+addition 'Дополнение' = DATA TEXT (Event);
+additionString 'Дополнение' (Event e) = VARSTRING[1000](addition(e)) CHARWIDTH 30;
+
+customer = DATA Customer(Event);
+idCustomer 'Код клиента' (Event e) = id(customer(e));
+nameCustomer 'Клиент' (Event e) = name(customer(e));
+
+merge (Customer from, Customer to) + { customer(Event e) <- to WHERE customer(e) = from; }
+
+legalEntity = DATA LegalEntity(Event);
+idLegalEntity 'Код организации' (Event e) = id(legalEntity(e));
+nameLegalEntity 'Организация' (Event e) = name(legalEntity(e));
+
+CONSTRAINT customer(Event e) != customer(legalEntity(e)) CHECKED BY legalEntity[Event], customer[Event] MESSAGE 'Клиент не совпадает с организацией';
+
+WHEN LOCAL SETCHANGED (customer(legalEntity(Event e))) DO {
+    customer(e) <- customer(legalEntity(e));
+}
+
+employee = DATA Employee(Event);
+idEmployee 'Код сотрудника' (Event e) = id(employee(e));
+nameEmployee 'Сотрудник' (Event e) = name(employee(e));
+
+contact = DATA Contact.Contact(Event);
+idContact 'Код контактного лица' (Event e) = id(contact(e));
+nameContact 'Контактное лицо' (Event e) = name(contact(e));
+
+FORM event 'Событие'
+    OBJECTS o = Event PANEL
+    PROPERTIES(o)  id, name, nameCustomer, nameLegalEntity, nameEmployee, nameContact, date, time, dateNext, description, addition
+    
+    EDIT Event OBJECT o
+;
+
+DESIGN event {
+    OBJECTS {
+        NEW data FIRST {
+            caption = 'Основные параметры';
+            type = CONTAINERH;
+            MOVE PROPERTY (id(o));
+            MOVE PROPERTY (date(o));
+            MOVE PROPERTY (time(o));
+            MOVE PROPERTY (dateNext(o));
+            MOVE PROPERTY (name(o)) { charWidth = 30; }
+        }
+        NEW contact {
+            caption = 'Контакты';
+            alignment = STRETCH;
+            MOVE PROPERTY (nameCustomer(o));
+            MOVE PROPERTY (nameLegalEntity(o));
+            MOVE PROPERTY (nameContact(o));
+        }
+        NEW employee {
+            caption = 'Сотрудник';
+            alignment = STRETCH;
+            MOVE PROPERTY (nameEmployee(o));
+        }
+        NEW bottom {
+            type = CONTAINERH;
+            fill = 1;
+            NEW description {
+                fill = 1;
+                caption = 'Содержание';
+                MOVE PROPERTY (description(o)) { caption = ''; fill = 1; }
+            }
+            NEW addition {
+                fill = 1;
+                caption = 'Дополнение';
+                MOVE PROPERTY (addition(o)) { caption = ''; fill = 1; }
+            }
+        }
+    }
+}
+
+DESIGN event {
+    GROUP (,o) {
+        type = CONTAINERV;
+        fill = 1;
+        PROPERTY (description(o)) { valueHeight = 100; }
+        PROPERTY (addition(o)) { valueHeight = 100; }
+    }
+}
+
+WHEN LOCAL SET (Event e IS Event) DO {
+    employee(e) <- currentUser();
+    date(e) <- currentDate();
+    time(e) <- currentTime();
+}
+
+FORM events 'События'
+    OBJECTS o = Event LAST 
+    PROPERTIES(o) READONLY id, name, nameCustomer, nameLegalEntity, nameEmployee, nameContact, date, time, dateNext, descriptionString, additionString
+    PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
+    ORDER date(o), time(o)
+;
+
+FORM dialogEvents 'События'
+    OBJECTS o = Event LAST 
+    PROPERTIES(o) READONLY id, name, nameCustomer, nameLegalEntity, nameEmployee, nameContact, date, time, dateNext, descriptionString, additionString
+    ORDER date(o), time(o)
+    
+    LIST Event OBJECT o
+;
+
+NAVIGATOR {
+    NEW events BEFORE masterData;
+}

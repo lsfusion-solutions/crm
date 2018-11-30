@@ -1,0 +1,34 @@
+MODULE Doc;
+
+REQUIRE Customer, LegalEntity;
+
+NAMESPACE Contract;
+
+CLASS ABSTRACT Document 'Документ';
+TABLE document(Document);
+
+id 'Код' = ABSTRACT VARSTRING[15] (Document) IN id CHARWIDTH 5;
+number 'Номер' = ABSTRACT VARSTRING[15](Document) IN id;
+date 'Дата' = ABSTRACT DATE (Document) IN id;
+nameType 'Тип' = ABSTRACT VARISTRING[100](Document) CHARWIDTH 15;
+dateSigningCompany 'Дата подписания компанией' = ABSTRACT DATE (Document);
+dateSending 'Дата отправки' = ABSTRACT DATE (Document);
+dateSigningCustomer 'Дата подписания клиентом' = ABSTRACT DATE (Document);
+dateReceiving 'Дата получения' = ABSTRACT DATE (Document);
+dateClosing 'Дата закрытия' = ABSTRACT DATE (Document);
+file 'Файл' = ABSTRACT FILE (Document);
+
+customer = ABSTRACT Customer (Document);
+nameCustomer 'Клиент' (Document d) = name(customer(d));
+
+legalEntity = ABSTRACT LegalEntity(Document);
+nameLegalEntityContract 'Организация' (Document d) = name(legalEntity(d)); 
+
+company = ABSTRACT LegalEntity(Document);
+nameCompanyContract 'Компания' (Document d) = name(company(d)); 
+
+CLASS DocType 'Вид договора';
+name 'Наименование' (DocType d) = staticCaption(d) IF d IS DocType;
+
+docType = ABSTRACT DocType(Document);
+nameDocType 'Вид договора' (Document d) = name(docType(d));

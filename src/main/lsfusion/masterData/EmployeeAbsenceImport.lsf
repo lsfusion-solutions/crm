@@ -1,0 +1,45 @@
+MODULE EmployeeAbsenceImport;
+
+REQUIRE EmployeeAbsence, EmployeeImport;
+
+importEmployeeAbsences 'Импорт отсутствия сотрудников' (FILE f) {
+    
+    LOCAL idEmployeeAbsence = VARSTRING[15](INTEGER);
+    LOCAL idEmployee = VARSTRING[15](INTEGER);
+    LOCAL reason = VARSTRING[100](INTEGER);
+    LOCAL df = DATE (INTEGER);
+    LOCAL dt = DATE (INTEGER);
+    LOCAL hours = NUMERIC[7,2](INTEGER);
+    LOCAL date = DATE (INTEGER);
+    LOCAL note = VARSTRING[100](INTEGER);
+    
+    IMPORT XLS NOHEADER FROM f TO idEmployeeAbsence, idEmployee, reason, df, dt, hours, date, note;
+    
+    FOR [GROUP SUM 1 IF INTEGER i > 0 BY idEmployeeAbsence(i)](VARSTRING[15] id) AND id != '' AND NOT absence(id) DO NEW a = Absence {
+        id(a) <- id;
+    }
+    
+    FOR [GROUP SUM 1 IF INTEGER i > 0 BY trim(reason(i))](VARSTRING[100] reason) AND reason != '' AND NOT [GROUP MAX AbsenceReason r BY name(r)](reason) DO NEW r = AbsenceReason {
+        name(r) <- reason;
+    }
+    
+    FOR Absence a = absence(idEmployeeAbsence(INTEGER i)) AND idEmployeeAbsence(i) DO {
+    
+        employee(a) <- employee(idEmployee(i));
+        reason(a) <- GROUP MAX AbsenceReason r IF name(r) == trim(reason(i));
+        dateFrom(a) <- df(i);
+        dateTo(a) <- dt(i);
+        hours(a) <- hours(i);
+        date(a) <- date(i);
+        note(a) <- note(i);
+    }
+}
+
+importEmployeeAbsences 'Импорт отсутствия сотрудников' () {
+    NEWSESSION INPUT f = FILE DO { 
+        importEmployeeAbsences(f);
+        APPLY;
+    }
+}
+
+EXTEND FORM migrationData PROPERTIES() importEmployeeAbsences;

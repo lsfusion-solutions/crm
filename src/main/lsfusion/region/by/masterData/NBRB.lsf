@@ -1,0 +1,99 @@
+MODULE NBRB;
+
+REQUIRE System,
+        Currency,
+        SchedulerDefaultData;
+
+
+//---------------------------------------------- Импорт курсов НБРБ -----------------------------------------------------//
+
+GROUP nbrb 'Курсы НБРБ' : public;
+
+importNBRBExchangeRateDateFrom 'Дата с' = DATA DATE () IN nbrb;
+importNBRBExchangeRateDateTo 'Дата по' = DATA DATE () IN nbrb;
+
+importNBRBExchangeRateDaysCount 'Кол-во дней' = DATA INTEGER() IN nbrb;
+
+importNBRBExchangeRateDateFromDateToAction 'Импортировать курсы НБРБ'  INTERNAL  'lsfusion.crm.region.by.masterdata.ImportNBRBExchangeRateDateFromDateToActionProperty' (Currency) IN nbrb;
+importNBRBExchangeRateLastDaysAction 'Импортировать последние курсы НБРБ'  INTERNAL  'lsfusion.crm.region.by.masterdata.ImportNBRBExchangeRateLastDaysActionProperty' (Currency) IN nbrb;
+
+importNBRBExchangeRateDateFromDateTo 'Импортировать курсы НБРБ'()  { 
+    FOR Currency c IS Currency DO {
+        importNBRBExchangeRateDateFromDateToAction(c);
+    }
+    EXEC apply();
+} IN nbrb;
+
+importNBRBExchangeRateLastDays 'Импортировать последние курсы НБРБ'()  { 
+    FOR Currency c IS Currency DO {
+        importNBRBExchangeRateLastDaysAction(c);
+    }
+    APPLY;
+} IN nbrb;
+
+EXTEND FORM typeExchangeCurrencyDate
+    PROPERTIES() importNBRBExchangeRateDateFrom, importNBRBExchangeRateDateTo, importNBRBExchangeRateDateFromDateTo
+    PROPERTIES() importNBRBExchangeRateDaysCount, importNBRBExchangeRateLastDays
+;
+
+DESIGN typeExchangeCurrencyDate {
+    importExchangeRates {
+        MOVE GROUP(nbrb) {type = CONTAINERH;}
+        NEW lastDaysContainer {
+            type = CONTAINERH;
+            MOVE PROPERTY(importNBRBExchangeRateDaysCount());
+            MOVE PROPERTY(importNBRBExchangeRateLastDays());
+        }
+        
+    }
+}
+
+loadDefaultScheduledTasks () + {  
+    loadDefaultScheduledTask ('Загрузка курсов НБРБ', 2014_07_01_15:00, 43200, SchedulerStartType.afterFinish);
+    loadDefaultScheduledTaskDetail ('Загрузка курсов НБРБ', 1, 'NBRB.importNBRBExchangeRateLastDays[]');
+}
+
+fillCrossFromTo 'Пересчитать обратный и кросс-курс за период'(DATE dateFrom, DATE dateTo)  { 
+    LOCAL dateCur = DATE();
+    
+    dateCur() <- dateFrom;
+    WHILE dateCur() <= dateTo DO { 
+        FOR parent(TypeExchange t) DO {
+            IF isRevers(t) THEN {    
+                rate(t, Currency c, DATE date) <- NUMERIC[15,8]( 1 / (rate(parent(t), currency(t), dateCur()) IF rate(parent(t), currency(t), dateCur())!=0)) 
+                    WHERE date == dateCur() AND c ==currency(parent(t));
+            } ELSE {
+                rate(t, Currency c, DATE date) <- NUMERIC[15,8](rateOn(parent(t), currency(t),dateCur())/(rateOn(parent(t), c, dateCur()) IF rateOn(parent(t), c, dateCur())!=0)) WHERE date == dateCur() AND c IS Currency;
+            
+            }        
+        }
+        dateCur() <- sum(dateCur(), 1);
+    }
+}
+
+fillCrossPeriod 'Пересчитать обратный и кросс-курс за период'()  { 
+    IF importNBRBExchangeRateDateFrom() AND importNBRBExchangeRateDateTo() THEN {
+        fillCrossFromTo(importNBRBExchangeRateDateFrom(), importNBRBExchangeRateDateTo());
+        apply();
+    } ELSE {
+        MESSAGE 'Не задан период';
+    }    
+} IN nbrb;
+
+fillCrossLastDays 'Пересчитать обратный и кросс-курс последние'()  {    
+    IF importNBRBExchangeRateDaysCount() THEN {        
+        fillCrossFromTo(subtract(currentDate(), importNBRBExchangeRateDaysCount()), currentDate());
+        apply();
+    } ELSE {
+        MESSAGE 'Не указано количество дней для пересчета';
+    }    
+}
+
+EXTEND FORM typeExchangeCurrencyDate
+    PROPERTIES() fillCrossPeriod, fillCrossLastDays
+;
+DESIGN typeExchangeCurrencyDate {
+    lastDaysContainer {
+        MOVE PROPERTY(fillCrossLastDays());
+    }
+}

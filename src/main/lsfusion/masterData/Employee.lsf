@@ -1,0 +1,62 @@
+MODULE Employee;
+
+REQUIRE Contact, Security;
+
+NAMESPACE Contact;
+
+CLASS Employee 'Сотрудник' : Contact, CustomUser;
+TABLE employee(Employee);
+
+number 'Номер' = DATA VARSTRING[15] (Employee);
+employeeNumber = GROUP MAX Employee e BY number(e);
+
+inactive 'Неактивный' = DATA BOOLEAN (Employee);
+active 'Активный' (Employee e) = NOT inactive(e);
+
+FORM employee 'Сотрудник'
+    OBJECTS o = Employee PANEL
+    PROPERTIES(o) id, number, login, sha256Password ON CHANGE changeSHA256Password(o), nameMainRole, firstName, lastName, position, nameLegalEntity, email, phone, addPhones, skype, note, inactive
+        
+    OBJECTS p = Phone
+    PROPERTIES (p) nameType, number, NEW, DELETE 
+    FILTERS contact(p) == o
+    
+    EDIT Employee OBJECT o
+;
+
+DESIGN employee {
+    GROUP (,o) {
+        type = CONTAINERV;
+    }
+}
+
+FORM employees 'Сотрудники'
+    OBJECTS o = Employee
+    PROPERTIES(o) READONLYIF isReadonly() id, number, login, nameMainRole, name, position, nameLegalEntity, email, phone, addPhones, skype, note, inactive
+    PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
+    ORDER name(o)
+    
+    FILTERGROUP active FILTER 'Активные' NOT inactive(o) DEFAULT 
+;
+
+@extendFormEditable(employees);
+
+FORM dialogEmployees 'Сотрудники'
+    OBJECTS o = Employee
+    PROPERTIES(o) READONLY id, number, login, name, position, nameLegalEntity, email, phone, addPhones, skype, note, inactive
+    ORDER name(o)
+    
+    FILTERGROUP active FILTER 'Активные' NOT inactive(o) DEFAULT
+    
+    LIST Employee OBJECT o
+;
+
+NAVIGATOR {
+    NEW FOLDER employeeFolder 'Персонал' BEFORE masterData WINDOW toolbar {
+        NEW employees;
+    }
+}
+
+skipCustomer(Employee e) += TRUE IF e IS Employee;
+
+CONSTRAINT legalEntity(Employee e) AND e IS Employee AND NOT isCompany(legalEntity(e)) CHECKED BY legalEntity[Employee] MESSAGE 'Организация сотрудника не является компанией';

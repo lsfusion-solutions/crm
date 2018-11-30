@@ -1,0 +1,50 @@
+MODULE EventImport;
+
+REQUIRE Event;
+
+importEvents 'Импорт событий' (FILE f) {
+
+    LOCAL idEvent = VARSTRING[15](INTEGER);
+    LOCAL idCustomer = VARSTRING[15](INTEGER);
+    LOCAL idLegalEntity = VARSTRING[15](INTEGER);
+    LOCAL idEmployee = VARSTRING[15](INTEGER);
+    LOCAL date = DATE (INTEGER);
+    LOCAL time = VARSTRING[5] (INTEGER);
+    LOCAL idContact = VARSTRING[15](INTEGER);
+    LOCAL name = VARSTRING[100](INTEGER);
+    LOCAL text = TEXT(INTEGER);
+    LOCAL dateNext = DATE (INTEGER);
+    LOCAL add = TEXT(INTEGER);
+    
+    
+    IMPORT XLS NOHEADER FROM f TO idEvent, idCustomer, idLegalEntity, idEmployee, date, time, idContact, name, text, dateNext, add;
+    
+    time(INTEGER i) <- NULL WHERE NOT substr(time(i), 3, 1) == ':';
+    
+    FOR [GROUP SUM 1 IF INTEGER i > 0 BY trim(idEvent(i))](VARSTRING[15] id) AND id != '' AND NOT event(id) DO NEW c = Event {
+        id(c) <- id;
+    }
+    
+    FOR Event c = event(trim(idEvent(INTEGER i))) AND trim(idEvent(i)) != '' AND i > 0 DO {
+        
+        customer(c) <- OVERRIDE customer(legalEntity(trim(idLegalEntity(i)))), customer(trim(idCustomer(i)));
+        legalEntity(c) <- legalEntity(trim(idLegalEntity(i)));
+        employee(c) <- GROUP MAX Employee e IF id(e) == idEmployee(i);
+        date(c) <- date(i);
+        time(c) <- TIME (time(i));
+        contact(c) <- Contact.contact(idContact(i));
+        name(c) <- trim(name(i));
+        dateNext(c) <- dateNext(i);
+        description(c) <- trim(text(i));
+        addition(c) <- add(i);
+    }
+}
+
+importEvents 'Импорт событий' () {
+    NEWSESSION INPUT f = FILE DO {
+        importEvents(f);
+        APPLY;
+    }
+}
+
+EXTEND FORM migrationData PROPERTIES importEvents();

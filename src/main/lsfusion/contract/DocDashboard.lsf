@@ -1,0 +1,81 @@
+MODULE DocDashboard;
+
+REQUIRE Doc, Time, Dashboard, Contract, Agreement, Act;
+
+NAMESPACE Contract;
+
+in 'Отм.' = DATA LOCAL BOOLEAN (Document);
+
+sign 'Подписать' (Document d) {
+    NEWSESSION {
+        dateSigningCompany(d) <- currentDate();
+        APPLY;
+    }
+} TOOLBAR CONFIRM;
+
+send 'Отправить' (Document d) {
+    NEWSESSION {
+        dateSending(d) <- currentDate();
+        APPLY;
+    }
+} TOOLBAR CONFIRM;
+
+receive 'Получить' (Document d) {
+    NEWSESSION {
+        dateReceiving(d) <- currentDate();
+        APPLY;
+    }
+} TOOLBAR CONFIRM;
+
+open 'Открыть' (Document d) {
+    open(file(d));
+} TOOLBAR;
+
+notSign (Document d) = NOT dateSigningCompany(d) AND NOT dateSending(d) AND NOT dateReceiving(d);
+notSend (Document d) = dateSigningCompany(d) AND NOT dateSending(d) AND NOT dateReceiving(d);
+notReceive (Document d) = dateSending(d) AND NOT dateReceiving(d);
+
+close 'Закрыть' (Document d) {
+    NEWSESSION {
+        dateClosing(d) <- currentDate();
+        APPLY;
+    }
+} TOOLBAR CONFIRM;
+
+edit 'Редактировать' (Document d) {
+    NEWSESSION SHOW EDIT Document = d DOCKED;
+} TOOLBAR IMAGE 'edit.png';
+
+filterDocType = DATA DocType();
+nameFilterDocClass 'Вид документа' () = name(filterDocType());
+
+FORM docDashboard 'Обработка документов'
+
+    PROPERTIES nameFilterDocClass()
+    OBJECTS d = Document
+    PROPERTIES (d) in, sign SHOWIF notSign(d), send SHOWIF notSend(d), receive SHOWIF notReceive(d), open SHOWIF file(d), edit, close SHOWIF NOT dateClosing(d)
+    PROPERTIES (d) READONLY nameDocType, id, number, date, nameCustomer, nameType, numberContract, nameLegalEntityContract, 
+                            nameCompanyContract, dateSigningCompany, dateSending, dateSigningCustomer, dateReceiving, dateClosing
+    ORDER date(d)
+    FILTERS docType(d) = filterDocType() OR NOT filterDocType()
+    FILTERGROUP open FILTER 'Открыт' NOT dateClosing(d) DEFAULT 
+    
+    FILTERGROUP d FILTER 'Требуется подписание' notSign(d)
+                  FILTER 'Требуется отправка' notSend(d)
+                  FILTER 'Ожидается получение' notReceive(d)
+;
+
+DESIGN docDashboard {
+    OBJECTS {
+        NEW filter FIRST {
+            caption = 'Фильтры';
+            MOVE PROPERTY (nameFilterDocClass());
+        }
+    }
+}
+
+NAVIGATOR {
+    dashboard {
+        NEW docDashboard;
+    }
+}

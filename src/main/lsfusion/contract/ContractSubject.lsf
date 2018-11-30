@@ -1,0 +1,190 @@
+MODULE ContractSubject;
+
+REQUIRE Contract, Agreement;
+
+NAMESPACE Contract;
+
+CLASS SubjectType 'Тип предмета';
+TABLE subjectType (SubjectType);
+
+id 'Код' = DATA VARSTRING[15] (SubjectType) CHARWIDTH 5 IN id;
+subjectType (id) = GROUP AGGR SubjectType c BY id (c);
+
+name 'Наименование' = DATA VARISTRING[100] (SubjectType) CHARWIDTH 15;
+
+FORM subjectType 'Тип предмета'
+    OBJECTS o = SubjectType PANEL
+    PROPERTIES(o) id, name
+    
+    EDIT SubjectType OBJECT o
+;
+
+FORM subjectTypes 'Типы предмета'
+    OBJECTS o = SubjectType
+    PROPERTIES(o) READONLY id, name
+    PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
+    
+    LIST SubjectType OBJECT o
+;
+
+CLASS Subject 'Предмет договора';
+TABLE subject (Subject);
+
+name 'Наименование' = DATA VARISTRING[100] (Subject) CHARWIDTH 15;
+
+type = DATA SubjectType(Subject);
+nameType 'Тип предмета договора' (Subject s) = name(type(s));
+quantity 'Кол-во' = DATA INTEGER (Subject);
+price 'Цена' = DATA NUMERIC[16,5](Subject);
+note 'Примечание' = DATA TEXT (Subject);
+
+sum 'Сумма' (Subject s) = DATA NUMERIC[16,5](Subject);
+
+WHEN LOCAL (CHANGED (price(Subject s)) OR CHANGED (quantity(s))) AND NOT CHANGED (sum(s)) DO {
+    sum(s) <- quantity(s) * price(s);
+}
+
+CLASS ContractSubject 'Предмет договора' : Subject;
+
+contract = DATA Contract(ContractSubject) NONULL DELETE;
+numberContract 'Номер договора' (ContractSubject s) = number(contract(s));
+nameCustomerContract 'Клиент договора' (ContractSubject s) = nameCustomer(contract(s));
+
+CLASS AgreementSubject 'Предмет договора' : Subject;
+
+agreement = DATA Agreement(AgreementSubject) NONULL DELETE;
+numberAgreement 'Номер соглашения' (AgreementSubject s) = number(agreement(s));
+nameTypeAgreement 'Тип соглашения' (AgreementSubject s) = nameType(agreement(s));
+nameCustomerAgreement 'Клиент договора соглашения' (AgreementSubject s) = nameCustomer(agreement(s));
+contractAgreement (AgreementSubject s) = contract(agreement(s));
+
+FORM subject 'Предмет договора'
+    OBJECTS o = Subject PANEL
+    PROPERTIES(o) name, nameType, numberContract, quantity, price, sum, note
+    
+    EDIT Subject OBJECT o
+;
+
+FORM subjects 'Предметы договора'
+    OBJECTS o = Subject
+    PROPERTIES(o) READONLY name, nameType, numberContract, nameCustomerContract, quantity, price, sum, note PANEL 
+    PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
+;
+
+DESIGN subjects {
+    OBJECTS {
+        type = CONTAINERV;
+        MOVE BOX (o) { fill = 4; }
+        NEW note {
+            fill = 1;
+            caption = 'Примечание';
+            MOVE  PROPERTY (note(o)) {
+                caption = '';
+                fill = 1;
+            }
+        }
+    }
+}
+
+FORM dialogSubjects 'Предметы договора'
+    OBJECTS o = Subject
+    PROPERTIES(o) READONLY name, nameType, numberContract, nameCustomerContract, quantity, price, sum, note 
+    
+    LIST Subject OBJECT o
+;
+
+NAVIGATOR {
+    contractFolder {
+        NEW subjects;
+    }
+}
+
+EXTEND FORM agreement 
+    OBJECTS s = AgreementSubject
+    PROPERTIES (s) name, nameType, quantity, price, sum, note PANEL, NEW, DELETE 
+    FILTERS agreement(s) == o
+;
+
+DESIGN agreement {
+    BOX (o) {
+        NEW details {
+            type = TABBED;
+            fill = 1;
+            MOVE PROPERTY (text(o));
+            NEW subjects {
+                caption = 'Предметы договора';
+                type = CONTAINERH;
+                MOVE BOX (s) { fill = 4; }
+                NEW note {
+                    fill = 1;
+                    caption = 'Примечание';
+                    MOVE  PROPERTY (note(s)) {
+                        caption = '';
+                        fill = 1;
+                    }
+                }
+            }
+        }
+    }
+}
+
+sum 'Сумма' (SubjectType t, Contract c) = GROUP SUM sum(Subject s) IF contract(s) == c OR contractAgreement(s) == c BY type(s);
+
+EXTEND FORM contract 
+    OBJECTS s = ContractSubject
+    PROPERTIES (s) name, nameType, quantity, price, sum, note PANEL, NEW, DELETE 
+    FILTERS contract(s) == o
+    
+    OBJECTS as = AgreementSubject
+    PROPERTIES (as) READONLY numberAgreement, nameTypeAgreement, name, nameType, quantity, price, sum, note PANEL
+    FILTERS contractAgreement(as) == o
+    
+    OBJECTS t = SubjectType
+    PROPERTIES READONLY name(t), sum(t, o)
+    FILTERS sum(t, o)
+;
+
+DESIGN contract {
+    details {
+        NEW subjects {
+            type = SPLITH;
+            fill = 1;
+            caption = 'Предметы договора';
+            NEW summary {
+                caption = 'Итого';
+                MOVE BOX (t);
+                fill = 1;
+            }
+            NEW tabSubjects {
+                type = TABBED;
+                fill = 4;
+                NEW contractSubjects {
+                    type = SPLITH;
+                    caption = 'По договору';
+                    MOVE BOX (s) { fill = 4; }
+                    NEW note {
+                        fill = 1;
+                        caption = 'Примечание';
+                        MOVE  PROPERTY (note(s)) {
+                            caption = '';
+                            fill = 1;
+                        }
+                    }
+                }
+                NEW agreementSubjects {
+                    type = SPLITH;
+                    caption = 'По соглашениям';
+                    MOVE BOX (as) { fill = 4; }
+                    NEW noteA {
+                        fill = 1;
+                        caption = 'Примечание';
+                        MOVE  PROPERTY (note(as)) {
+                            caption = '';
+                            fill = 1;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

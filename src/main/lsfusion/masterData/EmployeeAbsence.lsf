@@ -1,0 +1,132 @@
+MODULE EmployeeAbsence;
+
+REQUIRE Employee, WorkingHours;
+
+NAMESPACE Employee;
+
+CLASS Absence 'Отсутствие';
+TABLE absence (Absence);
+
+id 'Код' = DATA VARSTRING[15] (Absence) INDEXED CHARWIDTH 5 IN id;
+absence (id) = GROUP AGGR Absence c BY id (c);
+
+employee = DATA Employee (Absence);
+idEmployee 'Код сотрудника' (Absence a) = id(employee(a));
+nameEmployee 'Сотрудник' (Absence a) = name(employee(a));
+
+CLASS AbsenceReason 'Причина отсутствия';
+TABLE absenceReason (AbsenceReason);
+
+name 'Наименование' = DATA VARISTRING[100] (AbsenceReason) CHARWIDTH 15;
+
+FORM absenceReason 'Причина отсутствия'
+    OBJECTS o = AbsenceReason PANEL
+    PROPERTIES(o) name
+    
+    EDIT AbsenceReason OBJECT o
+;
+
+FORM absenceReasons 'Причины отсутствия'
+    OBJECTS o = AbsenceReason
+    PROPERTIES(o) READONLY name
+    PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
+    
+    LIST AbsenceReason OBJECT o
+;
+
+reason = DATA AbsenceReason(Absence) NONULL;
+nameReason 'Причина отсутствия' (Absence a) = name(reason(a));
+
+dateFrom 'Дата с' = DATA DATE (Absence);
+dateTo 'Дата по' = DATA DATE (Absence);
+hours 'Кол-во часов' = DATA NUMERIC[7,2](Absence);
+date 'Дата ввода' = DATA DATE (Absence);
+note 'Примечание' = DATA VARISTRING[100] (Absence) CHARWIDTH 30;
+
+workingHours 'Рабочих часов за интервал' (Absence a) = GROUP SUM workingHours(DATE d) IF iterate(d, dateFrom(a), dateTo(a));
+
+hours 'Часы' (Absence a, DATE d) = PARTITION UNGROUP hours
+                                                             LIMIT STRICT workingHours(d) IF d >= dateFrom(a) AND d <= dateTo(a)
+                                                             ORDER d
+                                                             BY a; 
+                                                      
+
+absenceHours 'Часы' (Employee e, DATE d) = GROUP SUM hours(Absence a, d) BY employee(a);
+
+WHEN LOCAL SET (Absence a IS Absence) DO {
+    employee(a) <- currentUser();
+    date(a) <- currentDate();
+    dateFrom(a) <- currentDate();
+    dateTo(a) <- currentDate();
+}
+
+FORM absence 'Отсутствие сотрудников'
+    OBJECTS o = Absence PANEL
+    PROPERTIES(o) id, nameEmployee, nameReason, dateFrom, dateTo, hours, date, note
+
+    EDIT Absence OBJECT o
+;
+
+DESIGN absence {
+    OBJECTS {
+        NEW data FIRST {
+            NEW firstData {
+                caption = 'Основные параметры';
+                type = CONTAINERH;
+                MOVE PROPERTY (id(o));
+                MOVE PROPERTY (date(o));
+            }
+            NEW secondData {
+                type = CONTAINERH;
+                caption = 'Время отсутствия';
+                MOVE PROPERTY (dateFrom(o));
+                MOVE PROPERTY (dateTo(o));
+                MOVE PROPERTY (hours(o));
+            }
+        }
+        NEW employee {
+            caption = 'Сотрудник';
+            alignment = STRETCH;
+            MOVE PROPERTY (nameEmployee(o));
+        }
+        NEW contact {
+            caption = 'Описание';
+            alignment = STRETCH;
+            MOVE PROPERTY (nameReason(o));
+            MOVE PROPERTY (note(o));
+        }
+    }
+}
+
+FORM absences 'Отсутствие сотрудников'
+    OBJECTS o = Absence LAST 
+    PROPERTIES(o) READONLY id, nameEmployee, nameReason, dateFrom, dateTo, hours, workingHours, date, note
+    PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
+    ORDER date(o)
+
+    OBJECTS d = DATE
+    PROPERTIES READONLY VALUE(d), extractDOWName(d), hours(o, d)
+    FILTERS hours(o, d)
+;
+
+DESIGN absences {
+    OBJECTS {
+        type = SPLITH;
+        BOX (o) { fill = 4; }
+        BOX (d) { fill = 1; }
+    }
+}
+
+FORM dialogAbsences 'Отсутствие сотрудников'
+    OBJECTS o = Absence LAST 
+    PROPERTIES(o) READONLY id, nameEmployee, nameReason, dateFrom, dateTo, hours, workingHours, date, note
+    ORDER date(o)
+    
+    LIST Absence OBJECT o
+;
+
+NAVIGATOR {
+    employeeFolder {
+        NEW absences;
+    }
+}

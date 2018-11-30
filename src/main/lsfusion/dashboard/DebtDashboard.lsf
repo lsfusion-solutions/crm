@@ -1,0 +1,97 @@
+MODULE DebtDashboard;
+
+REQUIRE Debt, Act, ActWord;
+
+NAMESPACE Contract;
+
+act = DATA Act (Debt);
+numberAct 'Номер акта' (Debt d) = number(act(d));
+dateAct 'Дата акта' (Debt d) = date(act(d));
+
+actTemplate = DATA Template (Contract);
+nameActTemplate 'Шаблон для акта' (Contract c) = name(actTemplate(c));
+
+FORM dialogActTemplates 'Шаблоны Word'
+    OBJECTS t = Template
+    PROPERTIES (t) READONLY name, id
+    FILTERS GROUP SUM 1 IF in(ActType c, t)
+;
+
+changeActTemplate (Contract c) {
+    DIALOG dialogActTemplates OBJECTS t INPUT DO {
+        actTemplate(c) <- t;
+    }
+}
+
+EXTEND FORM contract PROPERTIES nameActTemplate(o) ON CHANGE changeActTemplate(o);
+
+DESIGN contract {
+    add {
+        MOVE PROPERTY (nameActTemplate(o));
+    }
+}
+
+in 'Отм.' = DATA LOCAL BOOLEAN (Debt);
+
+createActs 'Создать акты' () {
+    NEWSESSION NESTED (in[Debt]) {
+        FOR in(Debt d) AND NOT act(d) DO NEW a = Act {
+            act(d) <- a;
+            contract(a) <- contract(d);
+            date(a) <- currentDate();
+            sum(a) <- sum(d);
+            FOR Template t = actTemplate(contract(d)) DO {
+                createActTemplate(a, t);
+                process(t);
+                file(a) <- FILE (resultTemplate());
+            }
+        }
+        in(Debt t) <- NULL;
+        APPLY;
+    }
+}
+
+editAct 'Редактировать акт' (Debt d) {
+    NEWSESSION SHOW act OBJECTS o = act(d) DOCKED;
+}
+
+deleteAct 'Удалить акт' (Debt d) {
+    NEWSESSION {
+        DELETE Act a WHERE a == act(d);
+        APPLY;
+    }
+} CONFIRM;
+
+filterDebtContractType = DATA LOCAL ContractType();
+nameDebtFilterContractType 'Тип договора' () = name(filterContractType());
+
+editContract 'Редактировать договор' (Debt d) {
+    NEWSESSION SHOW contract OBJECTS o = contract(d) DOCKED;
+}
+
+FORM debtDashboard 'Контроль задолженности'
+    PROPERTIES nameDebtFilterContractType()
+    OBJECTS d = Debt
+    PROPERTIES in(d), createActs() DRAW d TOOLBAR
+    PROPERTIES (d) TOOLBAR SHOWIF act(d) editAct, deleteAct 
+    PROPERTIES (d) READONLY date, numberContract, nameContractType, nameCustomer, nameLegalEntity, numberAct, dateAct, sum, paid
+    PROPERTIES (d) editContract
+    ORDER date(d)
+    FILTERS  contractType(d) == filterContractType() OR NOT filterContractType()
+    FILTERGROUP paid FILTER 'Не оплачено' NOT paid(d) >= sum(d) DEFAULT 
+;
+
+DESIGN debtDashboard {
+    OBJECTS {
+        NEW filter FIRST {
+            caption = 'Фильтры';
+            MOVE PROPERTY (nameDebtFilterContractType());
+        }
+    }
+}
+
+NAVIGATOR {
+    dashboard {
+        NEW debtDashboard;
+    }
+}

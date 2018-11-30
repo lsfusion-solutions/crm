@@ -1,0 +1,209 @@
+MODULE Act;
+
+REQUIRE Agreement, Doc;
+
+NAMESPACE Act;
+
+
+CLASS Act 'Акт выполненных работ' : Document;
+TABLE act (Act);
+
+id 'Код' = DATA VARSTRING[15] (Act) INDEXED CHARWIDTH 5;
+act (id) = GROUP AGGR Act c BY id (c);
+
+contract = DATA Contract(Act);
+idContract 'Код договора' (Act a) = id(contract(a));
+numberContract 'Номер договора' (Act a) = number(contract(a)) IN id;
+customer (Act a) = customer(contract(a));
+nameCustomer 'Клиент' (Act a) = nameCustomer(contract(a));
+nameLegalEntity 'Организация' (Act a) = nameLegalEntity(contract(a));
+
+CONSTRAINT Act a IS Act AND NOT contract(a) MESSAGE 'Для акта должен быть задан договор';
+
+agreement = DATA Agreement(Act);
+idAgreement 'Код соглашения' (Act a) = id(agreement(a));
+numberAgreement 'Номер соглашения' (Act a) = number(agreement(a)) IN id;
+
+CONSTRAINT contract(Act a) != contract(agreement(a)) CHECKED BY agreement[Act] MESSAGE 'Договор акта не соответствует договору';
+
+number 'Номер' = DATA VARSTRING[15](Act) IN id;
+date 'Дата' = DATA DATE (Act) IN id;
+
+CLASS ActType 'Тип акта выполненных работ';
+TABLE actType(ActType);
+
+name 'Наименование' = DATA VARISTRING[50](ActType) CHARWIDTH 15;
+
+FORM actType 'Тип акта'
+    OBJECTS o = ActType PANEL
+    PROPERTIES(o) name
+    
+    EDIT ActType OBJECT o
+;
+
+FORM actTypes 'Типы акта'
+    OBJECTS o = ActType
+    PROPERTIES(o) READONLY name
+    PROPERTIES (o) NEWSESSION NEW, EDIT, DELETE
+    
+    LIST ActType OBJECT o
+;
+
+type = DATA ActType(Act);
+nameType 'Тип акта' (Act c) = name(type(c)) CHARWIDTH 15;
+
+sum 'Сумма' = DATA NUMERIC[16,5](Act);
+dateClosing 'Дата закрытия' = DATA DATE (Act);
+dateSigningCompany 'Дата подписания компанией' = DATA DATE (Act);
+dateSending 'Дата отправки' = DATA DATE (Act);
+dateSigningCustomer 'Дата подписания клиентом' = DATA DATE (Act);
+dateReceiving 'Дата получения' = DATA DATE (Act);
+note 'Примечание' = DATA VARSTRING[100](Act) CHARWIDTH 20;
+text 'Текст' = DATA TEXT (Act);
+textString 'Текст' (Act c) = VARSTRING[500](text(c)) CHARWIDTH 20;
+file 'Файл' = DATA FILE (Act);
+
+id(Act c) += id(c);
+number(Act c) += number(c);
+date(Act c) += date(c);
+nameType(Act c) += nameType(c);
+dateSigningCompany(Act c) += dateSigningCompany(c);
+dateSending(Act c) += dateSending(c);
+dateSigningCustomer(Act c) += dateSigningCustomer(c);
+dateReceiving(Act c) += dateReceiving(c);
+dateClosing(Act c) += dateClosing(c);
+file(Act c) += file(c);
+customer(Act c) += customer(c);
+legalEntity(Act a) += legalEntity(contract(a));
+company(Act a) += company(contract(a));
+contract(Act a) += contract(a);
+
+EXTEND CLASS DocType {
+    act 'Акт выполненных работ'
+}
+docType(Act a) += DocType.act IF a IS Act;
+
+loadFile 'Загрузить' (Act c) { 
+    NEWSESSION INPUT f = FILE DO { 
+        file(c) <- f; 
+        APPLY;
+    } 
+}
+openFile 'Открыть' (Act c) { open(file(c)); }
+
+deleteFile 'Удалить' (Act c) { 
+    NEWSESSION { 
+        file(c) <- NULL; 
+        APPLY;
+    } 
+} CONFIRM;
+
+FORM act 'Акт выполненных работ'
+    OBJECTS o = Act PANEL
+    PROPERTIES(o) id, number, date, nameType, numberContract, numberAgreement, nameCustomer, nameLegalEntity, sum, dateSending, dateReceiving, dateClosing, note, text,
+                  loadFile, openFile SHOWIF file(o), deleteFile SHOWIF file(o)
+    
+    EDIT Act OBJECT o
+;
+
+DESIGN act {
+    BOX (o) {
+        fill = 1;
+        NEW row1 {
+            type = CONTAINERH;
+            alignment = STRETCH;
+            NEW main {
+                caption = 'Основные параметры';
+                MOVE PROPERTY(id(o));
+                MOVE PROPERTY(number(o));
+                MOVE PROPERTY(date(o));
+                MOVE PROPERTY(nameType(o));
+            }
+            NEW legalEntities {
+                caption = 'Контрагенты';
+                flex = 1;
+                MOVE PROPERTY(numberContract(o));
+                MOVE PROPERTY(numberAgreement(o));
+                MOVE PROPERTY(nameCustomer(o));
+                MOVE PROPERTY(nameLegalEntity(o));
+            }
+        }
+        NEW processing {
+            type = CONTAINERH;
+            caption = 'Обработка';
+            MOVE PROPERTY(dateSending(o));
+            MOVE PROPERTY(dateReceiving(o));
+            MOVE PROPERTY(dateClosing(o));
+        }
+        NEW row3 {
+            type = CONTAINERH;
+            NEW payment {
+                caption = 'Оплата';
+                type = CONTAINERH;
+                MOVE PROPERTY(sum(o));
+            }
+            NEW add {
+                type = CONTAINERH;
+                caption = 'Дополнительная информация';
+                MOVE PROPERTY(note(o));
+            }
+        }
+        NEW file {
+            caption = 'Файл документа';
+            type = CONTAINERH;
+            MOVE PROPERTY (loadFile(o));
+            MOVE PROPERTY (openFile(o));
+            MOVE PROPERTY (deleteFile(o));
+        }
+        MOVE PROPERTY(text(o)) {
+            panelCaptionAbove = TRUE;
+            flex = 1;
+        }
+    }
+}
+
+FORM acts 'Акты выполненных работ'
+    OBJECTS o = Act LAST 
+    PROPERTIES(o) READONLY id, numberContract, numberAgreement, number, date, nameType, sum, dateClosing, dateSending, dateReceiving, note, textString
+    PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
+    ORDER date(o)
+;
+
+FORM dialogActs 'Акты выполненных работ'
+    OBJECTS o = Act LAST 
+    PROPERTIES(o) READONLY id, numberContract, numberAgreement, number, date, nameType, sum, dateClosing, dateSending, dateReceiving, note, textString
+    ORDER date(o)
+    
+    LIST Act OBJECT o
+;
+
+NAVIGATOR {
+    contractFolder {
+        NEW acts;
+    }
+}
+
+addAct 'Добавить' (Contract c) {
+    NESTEDSESSION NEW a = Act {
+        contract(a) <- c;
+        date(a) <- currentDate();
+        SHOW act OBJECTS o = a DOCKED;
+    }
+} IMAGE 'add.png';
+
+EXTEND FORM contract 
+    OBJECTS ac = Act LAST 
+    PROPERTIES (ac) READONLY id, numberContract, numberAgreement, number, date, nameType, sum, dateClosing, dateSending, dateReceiving, note, textString
+    PROPERTIES DRAW ac TOOLBAR addAct(o), openFile(ac) 
+    PROPERTIES(ac) NESTEDSESSION EDIT, DELETE
+    ORDER date(ac)
+    FILTERS contract(ac) == o
+;
+
+DESIGN contract {
+    details {
+        MOVE BOX (ac) {
+            caption = 'Акты выполненных работ';
+        }
+    }
+}

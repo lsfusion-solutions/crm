@@ -1,0 +1,142 @@
+MODULE TimeEntry;
+
+REQUIRE Issue;
+
+NAMESPACE Project;
+
+CLASS Activity 'Деятельность';
+TABLE activity (Activity);
+
+name 'Наименование' = DATA VARISTRING[100] (Activity) CHARWIDTH 15 IN id;
+activity = GROUP AGGR Activity p BY name (p);
+
+FORM activity 'Деятельность'
+    OBJECTS o = Activity PANEL
+    PROPERTIES(o) name
+    
+    EDIT Activity OBJECT o
+;
+
+FORM activities 'Деятельности'
+    OBJECTS o = Activity
+    PROPERTIES(o) READONLY name
+    PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
+;
+
+FORM dialogActivities 'Деятельности'
+    OBJECTS o = Activity
+    PROPERTIES(o) READONLY name
+    
+    LIST Activity OBJECT o
+;
+
+CLASS TimeEntry 'Отметка времени';
+TABLE timeEntry (TimeEntry);
+
+id 'Код' = DATA VARSTRING[15] (TimeEntry) INDEXED CHARWIDTH 5 IN id;
+
+hours 'Часы' = DATA NUMERIC[7,2](TimeEntry);
+comments 'Комментарий' = DATA TEXT (TimeEntry);
+commentsString 'Комментарий' (TimeEntry t) = VARSTRING[1000](comments(t)) CHARWIDTH 50;
+date 'Дата' = DATA DATE (TimeEntry);
+month (TimeEntry t) = extractMonth(date(t));
+year 'Год' (TimeEntry t) = extractYear(date(t));
+
+activity = DATA Activity(TimeEntry);
+nameActivity 'Деятельность' (TimeEntry t) = name(activity(t));
+
+project = DATA Project(TimeEntry);
+nameProject 'Проект' (TimeEntry t) = name(project(t));
+
+customer = DATA Customer(TimeEntry);
+nameCustomer 'Клиент' (TimeEntry e) = name(customer(e));
+
+WHEN LOCAL SETCHANGED (project(TimeEntry t)) AND NOT CHANGED (customer(t)) DO {
+    customer(t) <- customer(project(t));
+}
+
+CONSTRAINT project(TimeEntry t) AND customer(t) AND NOT customer(project(t)) == customer(t) CHECKED BY customer[TimeEntry] MESSAGE 'Клиент отметки не является клиентом проекта';
+
+employee = DATA Employee(TimeEntry);
+nameEmployee 'Сотрудник' (TimeEntry t) = name(employee(t));
+
+issue = DATA Issue(TimeEntry);
+nameIssue 'Задача' (TimeEntry t) = name(issue(t));
+numberIssue 'Номер задачи' (TimeEntry t) = number(issue(t));
+
+hours 'Трудозатраты' (Employee e, DATE d) = GROUP SUM hours(TimeEntry t) BY employee(t), date(t) CHARWIDTH 2;
+hours 'Трудозатраты' (Employee e, INTEGER y, Month m) = GROUP SUM hours(TimeEntry t) BY employee(t), year(t), month(t);
+hours 'Трудозатраты' (Employee e, Customer c, DATE df, DATE dt) = GROUP SUM hours(TimeEntry t) IF date(t) >= df AND date(t) <= dt BY employee(t), customer(t);
+hours 'Трудозатраты' (Employee e, Project p, INTEGER y, Month m) = GROUP SUM hours(TimeEntry t) BY employee(t), project(t), year(t), month(t);
+
+
+WHEN LOCAL SET (TimeEntry e IS TimeEntry) DO {
+    employee(e) <- currentUser();
+    IF NOT date(e) THEN {
+        date(e) <- currentDate();
+    }
+}
+
+FORM timeEntry 'Отметка времени'
+    OBJECTS o = TimeEntry PANEL
+    PROPERTIES(o) id, hours, date, nameActivity, nameProject, nameCustomer, nameEmployee, numberIssue, comments
+    
+    EDIT TimeEntry OBJECT o
+;
+DESIGN timeEntry {
+    OBJECTS {
+        NEW data FIRST {
+            caption = 'Основные параметры';
+            type = CONTAINERH;
+            MOVE PROPERTY (id(o));
+            MOVE PROPERTY (date(o));
+            MOVE PROPERTY (hours(o));
+            MOVE PROPERTY (nameActivity(o));
+        }
+        NEW contact {
+            caption = 'Задача';
+            NEW issue {
+                type = CONTAINERH;
+                MOVE PROPERTY (numberIssue(o));
+                MOVE PROPERTY (nameProject(o));
+            }
+            MOVE PROPERTY (nameCustomer(o));
+        }
+        NEW employee {
+            caption = 'Сотрудник';
+            alignment = STRETCH;
+            MOVE PROPERTY (nameEmployee(o));
+        }
+        NEW bottom {
+            type = CONTAINERH;
+            fill = 1;
+            NEW description {
+                fill = 1;
+                caption = 'Комментарий';
+                MOVE PROPERTY (comments(o)) { caption = ''; fill = 1; }
+            }
+        }
+    }
+}
+
+FORM timeEntries 'Отметки времени'
+    OBJECTS o = TimeEntry LAST 
+    PROPERTIES(o) READONLY id, hours, commentsString, date, nameActivity, nameProject, nameCustomer, nameEmployee, numberIssue, nameIssue
+    PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
+    ORDER date(o), id(o)
+;
+
+FORM dialogTimeEntries 'Отметки времени'
+    OBJECTS o = TimeEntry LAST 
+    PROPERTIES(o) READONLY id, hours, commentsString, date, nameActivity, nameProject, nameCustomer, nameEmployee, numberIssue, nameIssue
+    ORDER date(o), id(o)
+    
+    LIST TimeEntry OBJECT o
+;
+
+NAVIGATOR {
+    project {
+        NEW activities;
+        NEW timeEntries;
+    }
+}

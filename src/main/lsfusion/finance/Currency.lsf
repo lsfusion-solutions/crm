@@ -1,0 +1,207 @@
+MODULE Currency;
+
+REQUIRE System, Time, MasterData, DefaultData, Finance;
+
+CLASS Currency 'Валюта';
+TABLE currency(Currency);
+
+name 'Наименование' = DATA VARISTRING[50](Currency) IN id;
+sid 'Код валюты' = DATA STRING[3] (Currency);
+
+symbol 'Символ' = DATA STRING[5] (Currency);
+shortName 'Наименование (сокр.)' = DATA STRING[3] (Currency);
+documentName 'Наименование (в документах)' = DATA STRING[10] (Currency);
+currencyShortName (string) = GROUP AGGR Currency currency WHERE currency IS Currency BY shortName(currency);
+
+onStarted() + { 
+    NEWSESSION {
+        setNoCancelInTransaction();
+        shortName(Currency c) <- 'BYN' WHERE shortName(c) == 'BLR';
+        APPLY;
+    }
+}
+
+defaultCurrency = DATA Currency (); 
+nameDefaultCurrency 'Валюта по умолчанию' = name(defaultCurrency()) CHARWIDTH 30;
+
+currency (sid) = GROUP AGGR (Currency currency) BY sid(currency);
+
+// Формы
+
+FORM currency 'Валюта'
+    OBJECTS c = Currency PANEL
+    PROPERTIES (c)  name, shortName, sid, symbol, documentName
+
+    EDIT Currency OBJECT c
+;
+
+FORM currencies 'Валюты'
+    OBJECTS c = Currency
+    PROPERTIES(c) READONLY name, shortName, sid, symbol, documentName
+
+    PROPERTIES(c) NEWSESSION NEW, EDIT, DELETE 
+
+    LIST Currency OBJECT c
+;
+
+EXTEND FORM options
+    PROPERTIES() nameDefaultCurrency
+;
+
+DESIGN options {
+    commons {
+        MOVE PROPERTY(nameDefaultCurrency());
+    }
+}
+
+// ---------------------------------- Типы обмена ---------------------------- //
+
+CLASS TypeExchange 'Тип обмена';
+TABLE typeExchange(TypeExchange);
+TABLE rateExchange (TypeExchange, Currency, DATE);
+
+name 'Наименование' = DATA VARISTRING[50](TypeExchange) IN id;
+
+currency 'Валюта типа обмена'= DATA Currency (TypeExchange);
+nameCurrency 'Валюта типа обмена' (TypeExchange typeExchange) = name(currency(typeExchange)) IN base;
+
+FORM typeExchange 'Тип обмена'
+    OBJECTS t = TypeExchange PANEL
+    PROPERTIES(t) name, nameCurrency
+    
+    EDIT TypeExchange OBJECT t
+;
+
+// Расчет курсов на дату
+
+rate 'Курс обмена' = DATA NUMERIC[20,13] (TypeExchange, Currency, DATE);
+typeExchange (name) = GROUP AGGR TypeExchange typeExchange WHERE typeExchange IS TypeExchange BY name(typeExchange);
+
+rateOn 'Курс обмена' (TypeExchange typeExchange, Currency currency, DATE date) =
+    GROUP
+          LAST rate(typeExchange, currency, DATE dateIn)
+          ORDER dateIn
+          WHERE rate(typeExchange, currency, dateIn) AND dateIn <= date COMPLEX;
+
+curRate 'Текущий курс обмена' (TypeExchange typeExchange, Currency currency) =
+    rateOn(typeExchange, currency, currentDate());
+
+defaultTypeExchange = DATA TypeExchange();
+nameDefaultTypeExchange 'Тип обмена по умолчанию' () = name(defaultTypeExchange());
+
+EXTEND FORM options PROPERTIES nameDefaultTypeExchange();
+
+DESIGN options {
+    pane {
+        commons {
+            MOVE PROPERTY (nameDefaultTypeExchange());
+        }
+    }
+}
+
+// -------------------------------------------- Курсы валют --------------------------------- //
+
+FORM dialogTypeExchangeCurrency 'Курс обмена на дату'
+    OBJECTS t=TypeExchange PANEL
+    OBJECTS c=Currency PANEL
+    OBJECTS d=DATE PANEL
+    PROPERTIES READONLY name(t),  nameCurrency(t), name(c)
+    PROPERTIES val=VALUE(d), rate(t,c,d)
+
+;
+DESIGN dialogTypeExchangeCurrency {
+    BOX {
+        type = CONTAINERV;
+        MOVE BOX(t) {
+            MOVE PROPERTY(name(t)) { focusable = FALSE; charWidth = 40;}
+        }
+        MOVE BOX(c){
+            type = CONTAINERV;
+            MOVE BOX(d) {
+                type = CONTAINERH;
+
+                MOVE PROPERTY(rate(t,c,d));
+            };
+            NEW row {
+                caption = 'Валюты обмена';
+                type = CONTAINERH;
+                MOVE PROPERTY(name(c)) { caption = 'Валюта (из)'; charWidth = 20;}
+                MOVE PROPERTY(nameCurrency(t)) { caption = 'Валюта (в)'; charWidth = 20;}
+            }
+        }
+    }
+    MOVE TOOLBARBOX;
+}
+
+dialog 'Добавить' (TypeExchange typeExchange, Currency currency)  { SHOW dialogTypeExchangeCurrency OBJECTS t = typeExchange, c = currency; }  TOOLBAR;
+delete 'Удалить' (TypeExchange typeExchange, Currency currency, DATE date)  { rate(typeExchange, currency, date) <- NULL; } IMAGE 'delete.png';
+
+
+parent = DATA TypeExchange (TypeExchange);
+nameParent 'Родительский '  = name(parent(TypeExchange t));
+
+isRevers 'Обратный' = DATA BOOLEAN (TypeExchange);
+
+EXTEND FORM typeExchange    
+    PROPERTIES(t) nameParent, isRevers
+;
+
+FORM typeExchangeCurrencyDate 'Курсы валют'
+
+    OBJECTS t = TypeExchange
+    PROPERTIES(t) READONLY name, nameCurrency, nameParent, isRevers
+    PROPERTIES(t) NEWSESSION NEW, EDIT, DELETE 
+
+    OBJECTS c = Currency
+    PROPERTIES(c) READONLY name
+    PROPERTIES(c) NEWSESSION NEW, EDIT, DELETE 
+    PROPERTIES(t, c) READONLY curRate
+
+    FILTERGROUP inactive FILTER 'Есть курс' curRate(t, c) 'F11' DEFAULT    
+
+    OBJECTS d = DATE
+    PROPERTIES(d) READONLY VALUE
+
+    PROPERTIES(t, c, d) rate
+    PROPERTIES(t, c) dialog DRAW d 
+    PROPERTIES(t, c, d) delete GRID
+
+    FILTERS rate(t, c, d)
+
+    LIST TypeExchange OBJECT t
+
+;
+
+DESIGN typeExchangeCurrencyDate {
+    BOX {
+        type = CONTAINERV;
+        NEW split {
+            fill = 1;
+            type = SPLITV;
+            MOVE BOX(t);
+            NEW topContainer {
+                fill = 2;
+                type = TABBED;
+                NEW currentExchangeRates {
+                    caption = 'Текущие курсы';
+                    type = SPLITH;
+                    MOVE BOX(c);
+                    MOVE BOX(d);
+                }
+                NEW importExchangeRates {
+                    caption = 'Импорт курсов';
+                }
+            }
+        }
+        MOVE TOOLBARBOX;
+    }
+}
+
+NAVIGATOR {
+    finance {
+        NEW FOLDER currencyNavigator 'Валюты и курсы' {
+            NEW currencies;
+            NEW typeExchangeCurrencyDate;
+        }
+    }
+}

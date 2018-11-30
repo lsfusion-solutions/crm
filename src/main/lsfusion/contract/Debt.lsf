@@ -1,0 +1,196 @@
+MODULE Debt;
+
+REQUIRE ContractDashboard, Dashboard;
+
+NAMESPACE Contract;
+
+CLASS Debt 'Задолженность';
+TABLE debt (Debt);
+
+date 'Дата' = DATA DATE(Debt);
+sum 'Сумма' = DATA NUMERIC[16,5](Debt);
+
+currency = DATA Currency(Debt);
+nameCurrency 'Валюта платежа' (Debt p) = name(currency(p));
+shortNameCurrency 'Валюта (сокр.)' (Debt p) = shortName(currency(p));
+
+sumCurrency 'Сумма в валюте' (Debt p) = round2(sum(p) * OVERRIDE rateOn(defaultTypeExchange(), currency(p), date(p)), 1);
+
+contract = DATA Contract(Debt) NONULL DELETE;
+numberContract 'Номер договора' (Debt d) = number(contract(d));
+contractType (Debt d) = type(contract(d));
+nameContractType 'Тип договора' (Debt d) = nameType(contract(d));
+nameCustomer 'Клиент' (Debt d) = nameCustomer(contract(d));
+nameLegalEntity 'Организация' (Debt d) = nameLegalEntity(contract(d));
+
+paid 'Оплачено' (Debt d) = PARTITION UNGROUP paid
+                                                      LIMIT sum(d)
+                                                      ORDER date(d),d 
+                                                      BY contract(d); 
+
+FORM debt 'Задолженность'
+    OBJECTS o = Debt PANEL
+    PROPERTIES(o) numberContract, date, sum, shortNameCurrency, sumCurrency, paid
+    
+    EDIT Debt OBJECT o
+;
+
+FORM debts 'Задолженность'
+    OBJECTS o = Debt
+    PROPERTIES(o) READONLY numberContract, date, sum, shortNameCurrency, sumCurrency, paid
+    PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
+;
+
+FORM dialogDebts 'Задолженность'
+    OBJECTS o = Debt
+    PROPERTIES(o) READONLY numberContract, date, sum, shortNameCurrency, sumCurrency, paid
+    
+    LIST Debt OBJECT o
+;
+
+
+sumMonth 'Сумма ежемесячного платежа' = DATA NUMERIC[16,5](Contract) CHARWIDTH 10;
+paymentDay 'День платежа' = DATA INTEGER (Contract) CHARWIDTH 2;
+
+countMonthsDebt 'Кол-во месяцев для формирования задолженности' = DATA INTEGER () CHARWIDTH 3;
+
+EXTEND FORM options PROPERTIES countMonthsDebt();
+
+DESIGN options {
+    pane {
+        NEW debt {
+            caption = 'Задолженность';
+            MOVE PROPERTY (countMonthsDebt());
+        }
+    }
+}
+
+text(INTEGER i) = lpad(TEXT (i), 2, '0');
+debt (DATE d, Contract c) = GROUP MAX Debt t BY date(t), contract(t);
+
+createDebts 'Сгенерировать задолженность' (Contract c) {
+    
+    IF NOT countMonthsDebt() THEN {
+        MESSAGE 'Не задано кол-во месяцев для формирования задолженности';
+    }
+    ELSE {
+        LOCAL month = INTEGER ();
+        LOCAL year = INTEGER ();
+        LOCAL date = DATE ();
+        
+        IF extractDay(currentDate()) > paymentDay(c) THEN {
+            month() <- extractMonthNumber(currentDate());
+        }
+        ELSE {
+            month() <- extractMonthNumber(currentDate()) - 1;
+        }
+        
+        year() <- extractYear(currentDate());
+        
+        FOR iterate(INTEGER i, 1, countMonthsDebt()) DO {
+        
+            month() <- month() (+) 1;
+            
+            IF month() > 12 THEN {
+                month() <- month() - 12;
+                year() <- year() + 1;
+            }
+            TRY {
+                date() <- toDateFormat(text(paymentDay(c)) + text(month()) + year(), 'DDMMYYYY');
+            }
+            CATCH {
+                date() <- lastDayOfMonth(toDateFormat('01' + text(month()) + year(), 'DDMMYYYY'));
+            }
+                
+            IF NOT debt(date(), c) THEN NEW d = Debt {
+                contract(d) <- c;
+                date(d) <- date();
+            }
+            
+            FOR Debt d = debt(date(), c) DO {
+                sum(d) <- sumMonth(c);
+            }
+        }
+    }
+}
+
+EXTEND FORM contract 
+    PROPERTIES (o) sumMonth, paymentDay, createDebts
+    OBJECTS d = Debt
+    PROPERTIES (d) date, sum, shortNameCurrency, sumCurrency, paid, NEW, DELETE
+    ORDER date(o)
+    FILTERS contract(d) == o
+;
+
+DESIGN contract {
+    details {
+        NEW debt {
+            caption = 'Оплата';
+            NEW sums {
+                type = CONTAINERH;
+                NEW firstRow {
+                    type = CONTAINERH;
+                    caption = 'Стоимость';
+                    MOVE PROPERTY (sum(o));
+                    MOVE PROPERTY (shortNameCurrency(o));
+                    MOVE PROPERTY (sumCurrency(o));
+                }
+                NEW secondRow {
+                    caption = 'Задолженность';
+                    type = CONTAINERH;
+                    MOVE PROPERTY (sumMonth(o));
+                    MOVE PROPERTY (paymentDay(o));
+                    MOVE PROPERTY (createDebts(o));
+                }
+            }
+            MOVE BOX (d);
+        }
+    }
+}
+
+
+EXTEND FORM contractDashboard
+    OBJECTS d = Debt
+    PROPERTIES (d) READONLY date, sum, shortNameCurrency, sumCurrency, paid
+    ORDER date(o)
+    FILTERS contract(d) == o
+;
+
+DESIGN contractDashboard {
+    tab {
+        NEW debt {
+            caption = 'Оплата';
+            MOVE BOX (d);
+        }
+    }
+}
+
+sumDebt 'Сумма задолженности' (Month m, INTEGER y, ContractType t) = GROUP SUM sum(Debt d) BY extractMonth(date(d)), extractYear(date(d)), type(contract(d));
+sumDebt 'Сумма задолженности' (Month m, INTEGER y) = GROUP SUM sum(Debt d) BY extractMonth(date(d)), extractYear(date(d));
+sumDebt 'Сумма задолженности' (INTEGER y, ContractType t) = GROUP SUM sum(Debt d) BY extractYear(date(d)), type(contract(d));
+
+FORM debtsPlan 'План платежей'
+    
+    OBJECTS y = INTEGER PANEL 
+    PROPERTIES 'Год' = VALUE (y)
+    
+    OBJECTS t = ContractType
+    OBJECTS m = Month
+    PROPERTIES READONLY number(m), 'Месяц' = staticCaption(m), sumDebt(m, y), sumDebt(m, y, t) COLUMNS (t) HEADER name(t)
+    ORDER number(m)
+    FILTERS sumDebt(y, t)
+    
+    OBJECTS d = Debt
+    PROPERTIES (d) READONLY date, numberContract, nameContractType, nameCustomer, nameLegalEntity, sum, shortNameCurrency, sumCurrency,  paid
+    FILTERS extractMonth(date(d)) == m, extractYear(date(d)) == y
+    
+    EVENTS ON INIT {
+        SEEK debtsPlan.y = extractYear(currentDate());
+    }
+;
+
+NAVIGATOR {
+    dashboard {
+        NEW debtsPlan;
+    }
+}

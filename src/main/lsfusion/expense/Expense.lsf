@@ -1,0 +1,78 @@
+MODULE Expense;
+
+REQUIRE LegalEntity, Currency;
+
+NAMESPACE Expense;
+
+CLASS Expense 'Расход';
+TABLE expense (Expense);
+
+company = DATA LegalEntity(Expense);
+idCompany 'Код компании' (Expense e) = id(company(e));
+nameCompany 'Компания' (Expense e) = name(company(e));
+
+legalEntity = DATA LegalEntity(Expense);
+idLegalEntity 'Код организации' (Expense e) = id(legalEntity(e));
+nameLegalEntity 'Организация' (Expense e) = name(legalEntity(e));
+customer (Expense e) = customer(legalEntity(e));
+nameCustomer 'Клиент' (Expense e) = name(customer(legalEntity(e)));
+
+CLASS ExpenseType 'Вид оплаты';
+TABLE expenseType (ExpenseType);
+
+name 'Наименование' = DATA VARISTRING[100] (ExpenseType) CHARWIDTH 15;
+
+FORM expenseType 'Вид оплаты'
+    OBJECTS o = ExpenseType PANEL
+    PROPERTIES(o) name
+    
+    EDIT ExpenseType OBJECT o
+;
+
+FORM expenseTypes 'Виды оплаты'
+    OBJECTS o = ExpenseType
+    PROPERTIES(o) READONLY name
+    PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
+    
+    LIST ExpenseType OBJECT o
+;
+
+type = DATA ExpenseType(Expense);
+nameType 'Вид оплаты' (Expense e) = name(type(e));
+
+date 'Дата расхода' = DATA DATE (Expense);
+datePayment 'Дата оплаты' = DATA DATE (Expense);
+sum 'Сумма' = DATA NUMERIC[16,5](Expense);
+
+currency = DATA Currency(Expense);
+shortNameCurrency 'Валюта' (Expense e) = shortName(currency(e));
+sumCurrency 'Сумма в валюте' (Expense e) = round2(sum(e) * OVERRIDE (rateOn(defaultTypeExchange(), currency(e), date(e))), 1);
+
+note 'Примечание' = DATA TEXT (Expense);
+noteString 'Примечание' (Expense e) = VARSTRING[1000](note(e)) CHARWIDTH 20;
+
+FORM expense 'Расход'
+    OBJECTS o = Expense PANEL
+    PROPERTIES(o) nameCompany, nameLegalEntity, nameCustomer, date, datePayment, nameType, sum, shortNameCurrency, sumCurrency, note
+    
+    EDIT Expense OBJECT o
+;
+
+FORM expenses 'Расходы'
+    OBJECTS o = Expense
+    PROPERTIES(o) READONLY nameCompany, nameLegalEntity, nameCustomer, date, datePayment, nameType, sum, shortNameCurrency, sumCurrency, noteString
+    PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
+;
+
+FORM dialogExpenses 'Расходы'
+    OBJECTS o = Expense
+    PROPERTIES(o) READONLY nameCompany, nameLegalEntity, nameCustomer, date, datePayment, nameType, sum, shortNameCurrency, sumCurrency, noteString
+    
+    LIST Expense OBJECT o
+;
+
+NAVIGATOR {
+    finance {
+        NEW expenses;
+    }
+}

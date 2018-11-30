@@ -1,0 +1,145 @@
+MODULE CustomerAttachment;
+
+REQUIRE CustomerDashboard;
+
+NAMESPACE Customer;
+
+CLASS Attachment 'Документ клиента';
+TABLE attachment (Attachment);
+
+id 'Код' = DATA VARSTRING[15] (Attachment) CHARWIDTH 5 IN id;
+attachment (id) = GROUP AGGR Attachment c BY id (c);
+
+number 'Номер' = DATA VARISTRING[100] (Attachment) CHARWIDTH 15;
+date 'Дата' = DATA DATE (Attachment);
+note 'Примечание' = DATA VARISTRING[250] (Attachment) CHARWIDTH 20;
+
+createdUser = DATA Employee(Attachment);
+nameCreatedUser 'Создан пользователем' (Attachment a) = name(createdUser(a));
+createdUser (Attachment o) <- currentUser() WHEN SET(o IS Attachment);
+
+createdDate 'Дата создания' = DATA DATE (Attachment);
+createdDate (Attachment o) <- currentDate() WHEN SET(o IS Attachment);
+
+customer = DATA Customer(Attachment) NONULL DELETE;
+nameCustomer 'Клиент' (Attachment a) = name(customer(a));
+
+CLASS AttachmentType 'Тип предложения';
+TABLE attachmentType (AttachmentType);
+
+name 'Наименование' = DATA VARISTRING[100] (AttachmentType) CHARWIDTH 20;
+
+FORM attachmentType 'Тип предложения'
+    OBJECTS o = AttachmentType PANEL
+    PROPERTIES(o) name
+    
+    EDIT AttachmentType OBJECT o
+;
+
+FORM attachmentTypes 'Тип предложения'
+    OBJECTS o = AttachmentType
+    PROPERTIES(o) READONLY name
+    PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
+    
+    LIST AttachmentType OBJECT o
+;
+
+type = DATA AttachmentType(Attachment);
+nameType 'Тип предложения' (Attachment a) = name(type(a));
+
+file = DATA FILE (Attachment);
+
+loadFile 'Загрузить' (Attachment c) { 
+    INPUT f = FILE DO { 
+        file(c) <- f; 
+    } 
+}
+openFile 'Открыть' (Attachment c) { open(file(c)); }
+
+deleteFile 'Удалить' (Attachment c) { 
+        file(c) <- NULL; 
+} CONFIRM;
+
+FORM attachment 'Документ'
+    OBJECTS o = Attachment PANEL
+    PROPERTIES(o) id, nameCustomer, number, date, nameType, note, nameCreatedUser, createdDate, loadFile, openFile SHOWIF file(o), deleteFile SHOWIF file(o)
+    
+    EDIT Attachment OBJECT o
+;
+
+DESIGN attachment {
+    BOX (o) {
+        NEW main {
+            caption = 'Основные параметры';
+            type = CONTAINERH;
+            MOVE PROPERTY(id(o));
+            MOVE PROPERTY(number(o));
+            MOVE PROPERTY(date(o));
+        }
+        NEW add {
+            type = CONTAINERH;
+            caption = 'Дополнительная информация';
+            MOVE PROPERTY(nameType(o));
+            MOVE PROPERTY(note(o)) { charWidth = 100; }
+        }
+        NEW legalEntities {
+            caption = 'Клиент';
+            alignment = STRETCH;
+            MOVE PROPERTY(nameCustomer(o));
+        }
+        NEW created {
+            type = CONTAINERH;
+            caption = 'Создан';
+            MOVE PROPERTY(nameCreatedUser(o));
+            MOVE PROPERTY(createdDate(o));
+        }
+        NEW file {
+            caption = 'Файл документа';
+            type = CONTAINERH;
+            MOVE PROPERTY (loadFile(o));
+            MOVE PROPERTY (openFile(o));
+            MOVE PROPERTY (deleteFile(o));
+        }
+    }
+}
+
+FORM attachments 'Документы клиента'
+    OBJECTS o = Attachment
+    PROPERTIES(o) READONLY id, nameCustomer, number, date, nameType, note, nameCreatedUser, createdDate
+    PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
+;
+
+FORM dialogAttachments 'Документы клиента'
+    OBJECTS o = Attachment
+    PROPERTIES(o) READONLY id, nameCustomer, number, date, nameType, note, nameCreatedUser, createdDate
+    
+    LIST Attachment OBJECT o
+;
+
+NAVIGATOR {
+    contractFolder {
+        NEW attachments;
+    }
+}
+
+addAttachment 'Добавить' (Customer c) {
+    NEWSESSION NEW a = Attachment {
+        customer(a) <- c;
+        date(a) <- currentDate();
+        SHOW attachment OBJECTS o = a DOCKED;
+    }
+} IMAGE 'add.png';
+
+EXTEND FORM dashboardCustomer
+    OBJECTS at = Attachment
+    PROPERTIES (at) READONLY id, nameCustomer, number, date, nameType, note, nameCreatedUser, createdDate
+    PROPERTIES DRAW at TOOLBAR openFile(at), addAttachment(c)
+    PROPERTIES(at) NEWSESSION EDIT, DELETE
+    FILTERS customer(at) == c 
+;
+
+DESIGN dashboardCustomer {
+    tabPane {
+        MOVE BOX (at) { caption = 'Документы'; }
+    }
+}

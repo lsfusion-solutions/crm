@@ -1,0 +1,238 @@
+MODULE Contract;
+
+REQUIRE LegalEntity, Doc, Currency;
+
+NAMESPACE Contract;
+
+CLASS Contract 'Договор' : Document;
+TABLE contract (Contract);
+
+id 'Код' = DATA VARSTRING[15] (Contract) CHARWIDTH 5 IN id;
+contract (id) = GROUP AGGR Contract c BY id (c);
+
+legalEntity = DATA LegalEntity(Contract);
+idLegalEntity 'Код организации' (Contract c) = id(legalEntity(c));
+nameLegalEntity 'Организация' (Contract c) = name(legalEntity(c)) IN id;
+customer (Contract c) = customer(legalEntity(c));
+nameCustomer 'Клиент' (Contract c) = name(customer(legalEntity(c)));
+
+company = DATA LegalEntity(Contract);
+idCompany 'Код компании' (Contract c) = id(company(c));
+nameCompany 'Компания' (Contract c) = name(company(c)) IN id;
+
+CONSTRAINT company(Contract c) AND NOT isCompany(company(c)) CHECKED BY company[Contract] MESSAGE 'Компания договора не является компанией';
+
+number 'Номер' = DATA VARSTRING[15](Contract) IN id;
+date 'Дата' = DATA DATE (Contract) IN id;
+sum 'Стоимость' = DATA NUMERIC[16,5](Contract) CHARWIDTH 10;
+
+currency = DATA Currency (Contract);
+nameCurrnecy 'Валюта' (Contract d) = name(currency(d));
+shortNameCurrency 'Валюта (сокр.)' (Contract p) = shortName(currency(p));
+sumCurrency 'Стоимость в валюте' (Contract p) = DATA NUMERIC[16,5](Contract);
+
+WHEN LOCAL (SETCHANGED (sumCurrency(Contract c)) OR CHANGED (currency(c))) AND NOT CHANGED (sum(c)) DO {
+    sum(c) <- round2(sumCurrency(c) / OVERRIDE (rateOn(defaultTypeExchange(), currency(c), date(c))), 1);
+}
+
+CLASS ContractType 'Тип договора';
+TABLE contractType(ContractType);
+
+name 'Наименование' = DATA VARISTRING[50](ContractType) CHARWIDTH 15;
+
+FORM contractType 'Тип договора'
+    OBJECTS o = ContractType PANEL
+    PROPERTIES(o) name
+    
+    EDIT ContractType OBJECT o
+;
+
+FORM contractTypes 'Типы договора'
+    OBJECTS o = ContractType
+    PROPERTIES(o) READONLY name
+    PROPERTIES (o) NEWSESSION NEW, EDIT, DELETE
+    
+    LIST ContractType OBJECT o
+;
+
+type = DATA ContractType(Contract);
+nameType 'Тип договора' (Contract c) = name(type(c)) CHARWIDTH 15;
+
+CLASS ContractSendingWay 'Способ отправки договора';
+TABLE contractSendingWay(ContractSendingWay);
+
+name 'Наименование' = DATA VARSTRING[50](ContractSendingWay) CHARWIDTH 15;
+
+FORM contractSendingWay 'Способ отправки договора'
+    OBJECTS o = ContractSendingWay PANEL
+    PROPERTIES(o) name
+    
+    EDIT ContractSendingWay OBJECT o
+;
+
+FORM contractSendingWays 'Способы отправки договора'
+    OBJECTS o = ContractSendingWay
+    PROPERTIES(o) READONLY name
+    PROPERTIES (o) NEWSESSION NEW, EDIT, DELETE
+    
+    LIST ContractSendingWay OBJECT o
+;
+sendingWay = DATA ContractSendingWay(Contract);
+nameSendingWay 'Способ отправки договора' (Contract c) = name(sendingWay(c));
+
+dateSigningCompany 'Дата подписания компанией' = DATA DATE (Contract);
+dateSending 'Дата отправки' = DATA DATE (Contract);
+dateSigningCustomer 'Дата подписания клиентом' = DATA DATE (Contract);
+dateReceiving 'Дата получения' = DATA DATE (Contract);
+dateTo 'Дата окончания' = DATA DATE (Contract);
+dateClosing 'Дата закрытия' = DATA DATE (Contract);
+note 'Примечание' = DATA VARSTRING[100](Contract) CHARWIDTH 20;
+text 'Текст' = DATA TEXT (Contract);
+textString 'Текст' (Contract c) = VARSTRING[500](text(c)) CHARWIDTH 20;
+file 'Файл' = DATA FILE (Contract);
+
+loadFile 'Загрузить' (Contract c) { 
+    NEWSESSION INPUT f = FILE DO { 
+        file(c) <- f; 
+        APPLY;
+    } 
+}
+openFile 'Открыть' (Contract c) { open(file(c)); }
+
+deleteFile 'Удалить' (Contract c) { 
+    NEWSESSION { 
+        file(c) <- NULL; 
+        APPLY;
+    } 
+} CONFIRM;
+
+contract = ABSTRACT Contract (Document);
+numberContract 'Номер договора' (Document d) = number(contract(d));
+dateContract 'Дата договора' (Document d) = date(contract(d));
+nameTypeContract 'Тип договора' (Document d) = nameType(contract(d));
+
+id(Contract c) += id(c);
+number(Contract c) += number(c);
+date(Contract c) += date(c);
+nameType(Contract c) += nameType(c);
+dateSigningCompany(Contract c) += dateSigningCompany(c);
+dateSending(Contract c) += dateSending(c);
+dateSigningCustomer(Contract c) += dateSigningCustomer(c);
+dateReceiving(Contract c) += dateReceiving(c);
+dateClosing(Contract c) += dateClosing(c);
+file(Contract c) += file(c);
+customer(Contract c) += customer(c);
+legalEntity(Contract c) += legalEntity(c);
+company(Contract c) += company(c);
+contract(Contract c) += c IF c IS Contract;
+EXTEND CLASS DocType {
+    contract 'Договор'
+}
+docType(Contract c) += DocType.contract IF c IS Contract;
+
+FORM contract 'Договор'
+    OBJECTS o = Contract PANEL
+    PROPERTIES(o) id, nameCustomer READONLY, nameLegalEntity, nameCompany, number, date, sum, nameType, nameSendingWay, 
+                  dateSigningCompany, dateSending, dateSigningCustomer, dateReceiving, dateTo, dateClosing, note, text,
+                  loadFile, openFile SHOWIF file(o), deleteFile SHOWIF file(o), shortNameCurrency, sumCurrency
+    
+    EDIT Contract OBJECT o
+;
+
+DESIGN contract {
+    OBJECTS {
+        BOX (o) {
+            NEW header FIRST {
+                fill = 1;
+                NEW top1 {
+                    type = CONTAINERH;
+                    alignment = STRETCH;
+                    NEW main {
+                        caption = 'Основные параметры';
+                        MOVE PROPERTY (id(o));
+                        MOVE PROPERTY (number(o));
+                        MOVE PROPERTY (date(o));
+                        MOVE PROPERTY (nameType(o));
+                    }
+                    NEW legalEntities {
+                        caption = 'Контрагенты';
+                        flex = 1;
+                        MOVE PROPERTY (nameCompany(o));
+                        MOVE PROPERTY (nameCustomer(o));
+                        MOVE PROPERTY (nameLegalEntity(o));
+                    }
+                }
+                NEW processing {
+                    caption = 'Обработка';
+                    type = COLUMNS;
+                    columns = 3;
+                    childrenAlignment = END;
+                    MOVE PROPERTY (nameSendingWay(o));
+                    MOVE PROPERTY (dateSigningCompany(o));
+                    MOVE PROPERTY (dateSending(o));
+                    MOVE PROPERTY (dateSigningCustomer(o));
+                    MOVE PROPERTY (dateReceiving(o));
+                    MOVE PROPERTY (dateTo(o));
+                    MOVE PROPERTY (dateClosing(o));
+                }
+                NEW top2 {
+                    type = CONTAINERH;
+                    alignment = STRETCH;
+                    NEW payment {
+                        caption = 'Оплата';
+                        type = CONTAINERH;
+                        MOVE PROPERTY (sum(o));
+                        MOVE PROPERTY (shortNameCurrency(o));
+                    }
+                    NEW add {
+                        caption = 'Дополнительно';
+                        fill = 1;
+                        alignment = STRETCH;
+                        MOVE PROPERTY (note(o));
+                    }
+                }
+            }
+        }
+        NEW details {
+            type = TABBED;
+            fill = 1;
+            NEW text {
+                caption = 'Текст';
+                MOVE PROPERTY (text(o)) { 
+                    caption = '';
+                    fill = 1;
+                }
+                NEW file {
+                    caption = 'Файл документа';
+                    type = CONTAINERH;
+                    MOVE PROPERTY (loadFile(o));
+                    MOVE PROPERTY (openFile(o));
+                    MOVE PROPERTY (deleteFile(o));
+                }
+            }
+        }
+    }
+}
+
+FORM contracts 'Договоры'
+    OBJECTS o = Contract LAST 
+    PROPERTIES(o) READONLY id, nameCustomer, nameLegalEntity, nameCompany, number, date, sum, shortNameCurrency, sumCurrency, nameType, nameSendingWay, 
+                           dateSending, dateReceiving, dateTo, dateClosing, note, textString
+    PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
+    ORDER date(o)
+;
+
+FORM dialogContracts 'Договоры'
+    OBJECTS o = Contract LAST 
+    PROPERTIES(o) READONLY id, nameCustomer, nameLegalEntity, nameCompany, number, date, sum, shortNameCurrency, sumCurrency, nameType, nameSendingWay, 
+                           dateSending, dateReceiving, dateTo, dateClosing, note, textString
+    ORDER date(o)
+    
+    LIST Contract OBJECT o
+;
+
+NAVIGATOR {
+    NEW FOLDER contractFolder 'Договора' BEFORE masterData WINDOW toolbar {
+       NEW contracts;   
+    }
+}

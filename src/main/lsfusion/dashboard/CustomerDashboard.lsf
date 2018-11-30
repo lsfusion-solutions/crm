@@ -1,0 +1,183 @@
+MODULE CustomerDashboard;
+
+REQUIRE Project, Payment, Event, Issue, TimeEntry, Dashboard;
+
+NAMESPACE Dashboard;
+
+addEvent 'Добавить' (Customer c) {
+    NEWSESSION NEW e = Event {
+        customer(e) <- c;
+        SHOW event OBJECTS o = e DOCKED;
+    }
+} IMAGE 'add.png';
+
+FORM dashboardCustomer 'Работа с клиентами'
+    
+    OBJECTS c = Customer PANEL 
+    PROPERTIES name(c) SELECTOR 
+    
+    OBJECTS le = LegalEntity
+    PROPERTIES (le) READONLY id, name, postcode, region, district, locality, street, houseNumber, officeNumber, UNP, OKPO, numberBank, nameBank, addressBank, mfoBank, isCompany
+    PROPERTIES (le) NEWSESSION NEW, EDIT, DELETE 
+    FILTERS customer(le) == c
+    ORDER name(le)
+    
+    OBJECTS ct = Contact.Contact
+    PROPERTIES (ct) READONLY id, name, nameLegalEntity, position, email, phone, addPhones, skype, note
+    PROPERTIES (ct) NEWSESSION NEW, EDIT, DELETE 
+    FILTERS customer(ct) == c
+    ORDER name(ct)
+    
+    OBJECTS cr = Contract
+    PROPERTIES (cr) READONLY id, nameLegalEntity, nameCompany, number, date, sum, paid, nameType, nameSendingWay, dateSigningCompany, dateSending, dateSigningCustomer, dateReceiving, dateTo, dateClosing, note, textString
+    PROPERTIES (cr) NEWSESSION EDIT 
+    FILTERS customer(legalEntity(cr)) == c OR customer(company(cr)) == c
+    ORDER date(cr) DESC
+    
+    FILTERGROUP activeContract
+        FILTER 'Активные' NOT dateClosing(cr) < currentDate() DEFAULT
+    
+    OBJECTS ag = Agreement
+    PROPERTIES (ag) READONLY id, number, date, nameType, sum, dateClosing, dateSending, dateReceiving, note, textString
+    PROPERTIES (ag) NEWSESSION EDIT 
+    FILTERS contract(ag) == cr
+    ORDER date(ag) DESC
+    
+    OBJECTS ac = Act
+    PROPERTIES (ac) READONLY id, numberAgreement, number, date, paid, nameType, sum, dateClosing, dateSending, dateReceiving, note, textString
+    PROPERTIES (ac) NEWSESSION EDIT 
+    FILTERS contract(ac) == cr
+    ORDER date(ac) DESC
+
+    OBJECTS ppm = Payment
+    PROPERTIES (ppm) READONLY id, numberAct, number, date, year, monthNumber, sum, nameCurrency, shortNameCurrency, sumCurrency, note 
+    FILTERS contract(ppm) == cr
+    ORDER date(ppm) DESC
+    
+    OBJECTS pm = Payment
+    PROPERTIES (pm) READONLY id, nameLegalEntity, numberContract, nameTypeContract, numberAct, number, date, year, monthNumber, sum, nameCurrency, shortNameCurrency, sumCurrency, note 
+    FILTERS customer(legalEntity(pm)) == c
+    ORDER date(pm) DESC
+    
+    OBJECTS ev = Event
+    PROPERTIES (ev) READONLY id, name, nameLegalEntity, nameEmployee, nameContact, date, time, dateNext, descriptionString
+    PROPERTIES addEvent(c) DRAW ev TOOLBAR 
+    PROPERTIES (ev) NEWSESSION EDIT, DELETE 
+    FILTERS customer(ev) == c
+    ORDER date(ev) DESC
+    
+    OBJECTS pr = Project
+    PROPERTIES (pr) READONLY id, name, identifier
+    FILTERS customer(pr) == c
+    ORDER name(pr) DESC
+    
+    OBJECTS st = IssueStatus
+    PROPERTIES (st) READONLY name
+    PROPERTIES READONLY count(c, st)
+    FILTERS count(c, st)
+    
+    OBJECTS is = Issue
+    PROPERTIES(is) in
+    PROPERTIES(is) READONLY number, name, descriptionString, dateTo, dateTimeCreated, dateTimeUpdated, dateFrom, doneRatio, estimatedHours, nameProject, nameAuthor, nameAssignedTo, nameTracker
+    PROPERTIES(is) changeStatus TOOLBAR, open TOOLBAR
+    FILTERS customer(project(is)) == c, status(is) == st
+    ORDER number(is) DESC
+    
+    OBJECTS te = TimeEntry
+    PROPERTIES (te) READONLY id, hours, commentsString, date, nameActivity, nameProject, nameEmployee, numberIssue, nameIssue
+    FILTERS customer(te) == c
+    ORDER date(te) DESC
+;
+
+DESIGN dashboardCustomer {
+    OBJECTS {
+        NEW tabPane AFTER BOX (c) {
+            type = TABBED;
+            fill = 1;
+            NEW contactTab {
+                caption = 'Контакты';
+                type = TABBED;
+                MOVE BOX (le) { caption = 'Организации'; }
+                MOVE BOX (ct) { caption = 'Контакты'; }
+            }
+            NEW contracts {
+                caption = 'Договоры';
+                type = SPLITV;
+                MOVE BOX (cr) { caption = 'Договоры'; }
+                NEW contractDetails {
+                    fill = 1;
+                    type = TABBED;
+                    NEW additionalContractDocuments {
+                        caption = 'Документы';
+                        type = SPLITH;
+                        MOVE BOX (ag) { caption = 'Соглашения'; }
+                        MOVE BOX (ac) { caption = 'Акты'; }
+                    }
+                    MOVE BOX(ppm) {
+                        caption = 'Платежи';
+                    }
+                }
+            }
+            MOVE BOX (pm) { caption = 'Платежи'; }
+            MOVE BOX (ev) { caption = 'События'; }
+            NEW projects {
+                caption = 'Проекты';
+                type = TABBED;
+                MOVE BOX (pr) { caption = 'Проекты'; }
+                NEW issues {
+                    caption = 'Задачи';
+                    type = SPLITH;
+                    MOVE BOX (st) {
+                        fill = 1;
+                    }  
+                    MOVE BOX (is) { 
+                        caption = 'Задачи'; 
+                        fill = 6;
+                    }
+                }
+                MOVE BOX (te) { caption = 'Отметки времени'; }
+            }
+        }
+    }
+}
+
+NAVIGATOR {
+    dashboard {
+        NEW dashboardCustomer;
+    }
+}
+
+EXTEND FORM customer
+    OBJECTS le = LegalEntity
+    PROPERTIES (le) id, extId, name, postcode, region, district, locality, street, houseNumber, officeNumber, 
+                                                         UNP, OKPO, numberBank, nameBank, addressBank, mfoBank, isCompany, NEW, DELETE 
+    FILTERS customer(le) = o
+    
+    OBJECTS c = Contact.Contact
+    PROPERTIES (c) id, firstName, lastName, nameLegalEntity, position, email, phone, addPhones, skype, note, NEW, EDIT, DELETE
+    FILTERS customer(c) = o
+;
+DESIGN customer {
+    OBJECTS {
+        NEW main FIRST {
+            type = CONTAINERH;
+            caption = 'Основные параметры';
+            MOVE PROPERTY (id(o));
+            MOVE PROPERTY (name(o));
+            MOVE PROPERTY (inactive(o));
+        }
+        NEW contacts AFTER main {
+            type = CONTAINERH;
+            caption = 'Контакты';
+            MOVE PROPERTY (phone(o));
+            MOVE PROPERTY (email(o));
+        }
+        NEW add AFTER contacts {
+            type = CONTAINERH;
+            caption = 'Дополнительные параметры';
+            MOVE PROPERTY (dateFrom(o));
+            MOVE PROPERTY (site(o));
+            MOVE PROPERTY (note(o));
+        }
+    }
+}

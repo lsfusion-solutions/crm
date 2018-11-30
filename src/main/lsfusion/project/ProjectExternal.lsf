@@ -1,0 +1,58 @@
+MODULE ProjectExternal;
+
+REQUIRE Project, Issue, TimeEntry;
+
+NAMESPACE Project;
+
+CLASS External 'Внешняя система';
+TABLE external (External);
+
+
+id 'Код' = DATA VARSTRING[15] (External) INDEXED CHARWIDTH 5 IN id;
+external (id) = GROUP AGGR External p BY id (p);
+
+name 'Наименование' = DATA VARISTRING[100] (External) CHARWIDTH 20;
+url 'Url' = DATA VARSTRING[100] (External) CHARWIDTH 30;
+path 'Строка подключения' = DATA VARISTRING[250] (External) CHARWIDTH 100;
+
+FORM external 'Внешняя система'
+    OBJECTS o = External PANEL
+    PROPERTIES(o) id, name, url, path
+    
+    EDIT External OBJECT o
+;
+
+FORM externals 'Внешние системы'
+    OBJECTS o = External
+    PROPERTIES(o) READONLY id, name, url, path
+    PROPERTIES (o) NEWSESSION NEW, EDIT, DELETE
+    
+    LIST External OBJECT o
+;
+
+external = DATA External(Project);
+idExternal 'Код внешней системы' (Project p) = id(external(p));
+nameExternal 'Внешняя система' (Project p) = name(external(p));
+
+project = GROUP AGGR Project p BY id (p), external(p);
+
+EXTEND FORM project PROPERTIES nameExternal(o);
+EXTEND FORM projects PROPERTIES nameExternal(o);
+EXTEND FORM dialogProjects PROPERTIES nameExternal(o);
+
+idExternal 'Код внешней системы' (Issue p) = id(external(project(p)));
+nameExternal 'Внешняя система' (Issue p) = name(external(project(p)));
+
+issue = GROUP AGGR Issue p BY id (p), external(project(p));
+
+EXTEND FORM issues PROPERTIES nameExternal(o);
+EXTEND FORM dialogIssues PROPERTIES nameExternal(o);
+
+external = DATA External(TimeEntry);
+idExternal 'Код внешней системы' (TimeEntry p) = id(external(p));
+nameExternal 'Внешняя система' (TimeEntry p) = name(external(p));
+
+timeEntry = GROUP AGGR TimeEntry p BY id (p), external(p);
+
+EXTEND FORM timeEntries PROPERTIES nameExternal(o);
+EXTEND FORM dialogTimeEntries PROPERTIES nameExternal(o);

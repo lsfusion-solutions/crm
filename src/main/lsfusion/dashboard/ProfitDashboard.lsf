@@ -1,0 +1,58 @@
+MODULE ProfitDashboard;
+
+REQUIRE Dashboard, Payment, TimeEntryExpense;
+
+NAMESPACE Dashboard;
+
+receipt 'Доход' (Customer c, DATE df, DATE dt) = GROUP SUM sum(Payment p) IF date(p) >= df AND date(p) <= dt BY customer(p);
+receiptCurrency 'Доход, USD' (Customer c, DATE df, DATE dt) = round2(receipt(c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
+shipmentCurrency 'Расход, USD' (Customer c, DATE df, DATE dt) = round2(costSum(c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
+diff 'Прибыль, USD' (Customer c, DATE df, DATE dt) = receiptCurrency(c, df, dt) (-) shipmentCurrency(c, df, dt);
+diffPercent 'Прибыль, %' (Customer c, DATE df, DATE dt) = round2(diff(c, df, dt) / receiptCurrency(c, df, dt) * 100);
+
+FORM profit 'Прибыль по клиентам'
+    OBJECTS period = (df = DATE, dt = DATE) PANEL
+    PROPERTIES 'Дата с' = VALUE (df), 'Дата по' = VALUE (dt)
+    
+    OBJECTS c = Customer
+    PROPERTIES READONLY name(c), receiptCurrency(c, df, dt), shipmentCurrency(c, df, dt), diff(c, df, dt), diffPercent(c, df, dt)
+    FILTERS costSum(c, df, dt) OR receipt(c, df, dt)
+    
+    OBJECTS p = Payment
+    PROPERTIES (p) READONLY id, nameLegalEntity, nameCustomer, numberContract, nameTypeContract, numberAct, number, date, 
+                                                       year, monthNumber, sum, nameCurrency, shortNameCurrency, sumCurrency, note
+    
+    FILTERS customer(p) == c, date(p) >= df AND date(p) <= dt
+    
+    OBJECTS e = Employee
+    PROPERTIES READONLY name(e), hours(e, c, df, dt)
+    FILTERS hours(e, c, df, dt)
+    
+    OBJECTS t = TimeEntry
+    PROPERTIES (t) READONLY id, hours, commentsString, date, nameActivity, nameProject, nameEmployee, numberIssue, nameIssue
+    FILTERS employee(t) == e, date(t) >= df AND date(t) <= dt, customer(t) == c
+    
+    FILTERGROUP active FILTER 'Активные' NOT inactive(c) DEFAULT 
+;
+
+DESIGN profit {
+    OBJECTS {
+        NEW tab AFTER BOX (c){
+            type = TABBED;
+            fill = 1;
+            MOVE BOX (p) { caption = 'Платежи'; }
+            NEW employee {
+                caption = 'Трудозатраты';
+                type = CONTAINERH;
+                MOVE BOX (e) { fill = 1; }
+                MOVE BOX (t) { fill = 5; }
+            }
+        }
+    }
+}
+
+NAVIGATOR {
+    dashboard {
+        NEW profit;
+    }
+}

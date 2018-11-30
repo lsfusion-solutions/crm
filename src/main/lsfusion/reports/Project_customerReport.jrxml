@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.6.0.final using JasperReports Library version 6.4.3  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Отчёт для клиента" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="30" bottomMargin="30" uuid="0d8cba38-882d-4d3f-8ba7-94c77ea5d0b3">
+	<style name="DefaultStyle" isDefault="true" vTextAlign="Middle" vImageAlign="Middle" fontName="lsf.TimesNewRoman" fontSize="10">
+		<box>
+			<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+		</box>
+		<paragraph leftIndent="2" rightIndent="2"/>
+	</style>
+	<style name="GroupCellStyle3" vTextAlign="Middle" vImageAlign="Middle" fontName="lsf.TimesNewRoman" fontSize="10">
+		<box>
+			<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+		</box>
+		<paragraph leftIndent="2" rightIndent="2"/>
+	</style>
+	<parameter name="cd_report" class="net.sf.jasperreports.engine.JasperReport"/>
+	<parameter name="cd_source" class="net.sf.jasperreports.engine.JRDataSource"/>
+	<parameter name="cd_params" class="java.util.Map"/>
+	<group name="designGroup">
+		<groupExpression><![CDATA[]]></groupExpression>
+	</group>
+	<detail>
+		<band>
+			<subreport>
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="0" height="0" uuid="def4d7fd-ea95-4cee-a9da-fc41d7b8ede0"/>
+				<parametersMapExpression><![CDATA[$P{cd_params}]]></parametersMapExpression>
+				<dataSourceExpression><![CDATA[$P{cd_source}]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{cd_report}]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+</jasperReport>

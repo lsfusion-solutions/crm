@@ -1,0 +1,10 @@
+MODULE Finance;
+
+REQUIRE MasterData;
+
+NAMESPACE Finance;
+
+NAVIGATOR {
+    NEW FOLDER finance 'Финансы' BEFORE masterData WINDOW toolbar IMAGE '/images/money.png' {
+    }
+}

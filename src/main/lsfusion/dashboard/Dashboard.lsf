@@ -1,0 +1,8 @@
+MODULE Dashboard;
+
+REQUIRE MasterData;
+
+NAVIGATOR {
+    NEW FOLDER dashboard 'Рабочий стол' FIRST WINDOW toolbar IMAGE '/images/dashboard.png' {
+    }
+}

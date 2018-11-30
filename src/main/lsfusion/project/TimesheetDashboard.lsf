@@ -1,0 +1,90 @@
+MODULE TimesheetDashboard;
+
+REQUIRE TimeEntryTotalDashboard;
+
+hours 'Часы' (Employee e, AbsenceReason r, INTEGER y) = GROUP SUM hours(Absence a) BY employee(a), reason(a), extractYear(date(a));
+
+addTimeEntry 'Добавить' (DATE d) {
+    NEWSESSION NEW t = TimeEntry {
+        date(t) <- d;
+        SHOW timeEntry OBJECTS o = t DOCKED;
+    }
+} IMAGE 'add.png';
+
+FORM timesheetDashboard 'Табель рабочего времени'
+    
+    OBJECTS m = Month PANEL, y = INTEGER PANEL, e = Employee PANEL
+    PROPERTIES month 'Месяц' = staticCaption(m) SELECTOR, year 'Год' = VALUE (y), name(e) SELECTOR
+    FILTERS e == currentUser()
+    
+    OBJECTS d = DATE 
+    PROPERTIES READONLY VALUE (d), extractDOWName(d), workingHours(d), totalHours(e, d)
+//    FILTERS workingHours(d) OR totalHours(e, d)
+    FILTERS iterate(d, toDateFormat('01' + lpad(TEXT (number(m)), 2, '0') + y, 'DDMMYYYY'),
+                       lastDayOfMonth(toDateFormat('01' + lpad(TEXT (number(m)), 2, '0') + y, 'DDMMYYYY')))
+                                    
+    
+    OBJECTS t = TimeEntry
+    PROPERTIES (t) READONLY id, hours, commentsString, date, nameActivity, nameProject, nameCustomer, numberIssue, nameIssue
+    PROPERTIES addTimeEntry(d) DRAW t TOOLBAR 
+    PROPERTIES (t) NEWSESSION EDIT, DELETE 
+    ORDER date(t)
+    FILTERS employee(t) == e, extractMonth(date(t)) == m, extractYear(date(t)) == y
+    FILTERGROUP tday FILTER 'За день' date(t) == d DEFAULT 
+    
+    OBJECTS a = Absence
+    PROPERTIES (a) READONLY id, nameEmployee, nameReason, dateFrom, dateTo, hours, workingHours, date, note
+    PROPERTIES (a) NEWSESSION NEW, EDIT, DELETE 
+    ORDER date(a)
+    FILTERS employee(a) == e, extractMonth(date(a)) == m, extractYear(date(a)) == y
+    FILTERGROUP aday FILTER 'За день' date(a) == d 
+    
+    OBJECTS r = AbsenceReason
+    PROPERTIES READONLY name(r), hours(e, r, y)
+    FILTERS hours(e, r, y)
+    
+    EVENTS ON INIT {
+        SEEK timesheetDashboard.m = extractMonth(currentDate());
+        SEEK timesheetDashboard.y = extractYear(currentDate());
+    }
+;
+
+DESIGN timesheetDashboard {
+    OBJECTS {
+        NEW header FIRST {
+            caption = 'Фильтры';
+            type = CONTAINERH;
+            MOVE PROPERTY (month) { charWidth = 15; }
+            MOVE PROPERTY (year) { charWidth = 5; }
+            MOVE PROPERTY (name(e)) { charWidth = 25; }
+        }
+        NEW bottom {
+            type = SPLITH;
+            fill = 1;
+            NEW left {
+                MOVE BOX (d) { 
+                    fill = 2;
+                    PROPERTY (workingHours(d)) { charWidth = 10; }
+                    PROPERTY (totalHours(e, d)) { charWidth = 10; }
+                }
+                MOVE BOX (r) { 
+                    caption = 'Отсутствие за год'; 
+                    fill = 1;
+                }
+                fill = 1;
+            }
+            NEW right {
+                type = CONTAINERV;
+                MOVE BOX (t) { fill = 2; }
+                MOVE BOX (a) { fill = 1; }
+                fill = 3;
+            }
+        }
+    }
+}
+
+NAVIGATOR {
+    dashboard {
+        NEW timesheetDashboard;
+    }
+}

@@ -1,0 +1,44 @@
+MODULE Project;
+
+REQUIRE Customer;
+
+NAMESPACE Project;
+
+CLASS Project 'Проект';
+TABLE project (Project);
+
+id 'Код' = DATA VARSTRING[15] (Project) INDEXED CHARWIDTH 5 IN id;
+
+name 'Наименование' = DATA VARISTRING[100] (Project) CHARWIDTH 15 IN id;
+identifier 'Идентификатор' = DATA VARISTRING[100] (Project) CHARWIDTH 15 IN id;
+
+customer = DATA Customer(Project);
+nameCustomer 'Клиент' (Project p) = name(customer(p));
+
+merge (Customer from, Customer to) + { customer(Project p) <- to WHERE customer(p) = from; }
+
+FORM project 'Проект'
+    OBJECTS o = Project PANEL
+    PROPERTIES(o) id, name, identifier, nameCustomer
+    
+    EDIT Project OBJECT o
+;
+
+FORM projects 'Проекты'
+    OBJECTS o = Project
+    PROPERTIES(o) READONLY id, name, identifier, nameCustomer
+    PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
+;
+
+FORM dialogProjects 'Проекты'
+    OBJECTS o = Project
+    PROPERTIES(o) READONLY id, name, identifier, nameCustomer
+    
+    LIST Project OBJECT o
+;
+
+NAVIGATOR {
+    NEW FOLDER project 'Проекты' BEFORE masterData WINDOW toolbar {
+        NEW projects;
+    }
+}

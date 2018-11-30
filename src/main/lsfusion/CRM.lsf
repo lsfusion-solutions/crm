@@ -1,0 +1,14 @@
+MODULE CRM;
+
+REQUIRE Scheduler, Service, SystemEvents, Backup, EvalScript, SQLUtils, ProcessUtils, Chat, NBRB,
+        LegalEntity, LegalEntityImport, Contact, ContactImport,
+        Employee, EmployeeImport, 
+        Contract, ContractImport, Agreement, AgreementImport, Act, ActImport, ContractSubject,
+        Project, ProjectRedmine, 
+        Payment, PaymentImport,
+        EmployeeExpenseImport, TimeEntryExpense,
+        EmployeeAbsence, EmployeeAbsenceImport, 
+        Event, EventImport, 
+        CustomerDashboard, ProfitDashboard, ContractDashboard, TimeEntryTotalDashboard, DocDashboard, EventDashboard,
+        ContractWord, AgreementWord, ActWord, WorkingHours, CustomerAttachment, TimeEntryImport, TimesheetDashboard, DebtDashboard, CustomerAttachmentImport,
+        Expense, ExpenseImport, ProfitMonthDashboard, PaymentProcessDashboard;

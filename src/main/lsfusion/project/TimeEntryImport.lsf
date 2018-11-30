@@ -1,0 +1,64 @@
+MODULE TimeEntryImport;
+
+REQUIRE TimeEntry, ProjectRedmine;
+
+importTimeEntryXls 'Импорт отметок времени' (External e) {
+    NEWSESSION {
+        LOCAL idTimeEntry = VARSTRING[15](INTEGER);
+        LOCAL idEmployee = VARSTRING[15](INTEGER);
+        LOCAL idCustomer = VARSTRING[15](INTEGER);
+        LOCAL idProject = VARSTRING[15](INTEGER);
+        LOCAL date = DATE (INTEGER);
+        LOCAL activity_name = VARSTRING[100] (INTEGER);
+        LOCAL hours = NUMERIC[5,2] (INTEGER);
+        LOCAL note = TEXT (INTEGER);
+        LOCAL message = VARSTRING[2000] ();
+        LOCAL count = INTEGER ();
+        
+        message() <- '';
+        count() <- 0;
+            
+        INPUT f = FILE DO {
+            IMPORT XLS NOHEADER FROM f TO idTimeEntry, idEmployee, idCustomer, idProject, date, activity_name, hours, note;
+            
+            FOR imported(INTEGER i) AND i > 0 AND trim(idCustomer(i)) != '' AND NOT customer(trim(idCustomer(i))) DO {
+            
+                message() <- CONCAT ' ', message() + '\r\nстрока:', (i + 1), 'id:', idEmployee(i), 'Код клиента:', idCustomer(i);
+                count() <- count() + 1;
+            }
+            
+            IF count() > 0 THEN {
+                MESSAGE CONCAT ' ', 'Неимпортированные отметки времени, у которых не найден клиент: ', count(), message();
+            }
+            
+            FOR INTEGER ii = [GROUP MIN INTEGER i IF customer(idCustomer(i)) AND i > 0 BY VARSTRING[15](idTimeEntry(i))](VARSTRING[15] id) AND id != '' AND NOT timeEntry(id, e) DO NEW s = TimeEntry {
+                id(s) <- id;
+                external(s) <- e;
+            }
+            
+            FOR TimeEntry s = timeEntry(VARSTRING[15](idTimeEntry(INTEGER i)), e) AND idTimeEntry(i) AND trim(idCustomer(i)) != '' AND customer(trim(idCustomer(i))) DO {
+                
+                employee(s) <- GROUP MAX Employee p IF id(p) == trim(idEmployee(i));
+                customer(s) <- customer(idCustomer(i));
+                project(s) <- project(idProject(i), e);
+                date(s) <- date(i);
+                activity(s) <- activity(activity_name(i));
+                hours(s) <- hours(i);
+                comments(s) <- note(i);
+            }
+        }
+        APPLY;
+    }
+}
+
+importTimeEntryXls 'Импорт отметок времени (xls)' () {
+    importTimeEntryXls(external());
+}
+
+EXTEND FORM migrationData PROPERTIES importTimeEntryXls();
+
+DESIGN migrationData {
+    importProjectExternal {
+        MOVE PROPERTY (importTimeEntryXls());
+    }
+}

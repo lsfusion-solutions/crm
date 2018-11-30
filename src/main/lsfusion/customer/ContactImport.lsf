@@ -1,0 +1,91 @@
+MODULE ContactImport;
+
+REQUIRE Contact, Employee;
+
+NAMESPACE Contact;
+
+importContacts (FILE f) {
+    
+    LOCAL idContact = VARSTRING[15](INTEGER);
+    LOCAL idCustomer = VARSTRING[15](INTEGER);
+    LOCAL idLegalEntity = VARSTRING[15](INTEGER);
+    LOCAL name = VARSTRING[100](INTEGER);
+    LOCAL position = VARSTRING[100](INTEGER);
+    LOCAL email = VARSTRING[100](INTEGER);
+    LOCAL phone1 = VARSTRING[100](INTEGER);
+    LOCAL phone2 = VARSTRING[30](INTEGER);
+    LOCAL phone3 = VARSTRING[30](INTEGER);
+    LOCAL phone4 = VARSTRING[30](INTEGER);
+    LOCAL phone5 = VARSTRING[30](INTEGER);
+    LOCAL phone6 = VARSTRING[30](INTEGER);
+    LOCAL skype = VARSTRING[50](INTEGER);
+    LOCAL note = VARSTRING[100](INTEGER);
+    
+    IMPORT XLS NOHEADER FROM f TO idContact, idCustomer, idLegalEntity, name, position, email, phone1, phone2, phone3, phone4, phone5, phone6, skype, note;
+
+    FOR INTEGER i = [GROUP MIN INTEGER ii IF ii > 0 BY trim(idContact(ii))](VARSTRING[15] id) AND id AND NOT contact(id) AND customer(trim(idCustomer(i))) DO NEW c = Contact {
+        id(c) <- id;
+    }
+    
+    IF trim(phone2(0)) != '' AND NOT [GROUP SUM 1 BY name(PhoneType t)](trim(phone2(0))) THEN NEW t = PhoneType {
+        name(t) <- trim(phone2(0));
+    }
+    IF trim(phone3(0)) != '' AND NOT [GROUP SUM 1 BY name(PhoneType t)](trim(phone3(0))) THEN NEW t = PhoneType {
+        name(t) <- trim(phone3(0));
+    }
+    IF trim(phone4(0)) != '' AND NOT [GROUP SUM 1 BY name(PhoneType t)](trim(phone4(0))) THEN NEW t = PhoneType {
+        name(t) <- trim(phone4(0));
+    }
+    IF trim(phone5(0)) != '' AND NOT [GROUP SUM 1 BY name(PhoneType t)](trim(phone5(0))) THEN NEW t = PhoneType {
+        name(t) <- trim(phone5(0));
+    }
+    IF trim(phone6(0)) != '' AND NOT [GROUP SUM 1 BY name(PhoneType t)](trim(phone6(0))) THEN NEW t = PhoneType {
+        name(t) <- trim(phone6(0));
+    }
+    
+    FOR Contact c = contact(idContact(INTEGER i)) AND idContact(i) DO {
+        legalEntity(c) <- legalEntity(trim(idLegalEntity(i)));
+        customer(c) <- OVERRIDE customer(legalEntity(trim(idLegalEntity(i)))), customer(trim(idCustomer(i)));
+        lastName(c) <- trim(name(i));
+        position(c) <- trim(position(i));
+        email(c) <- trim(email(i));
+        skype(c) <- trim(skype(i));
+        note(c) <- trim(note(i));
+        phone(c) <- trim(phone1(i));
+        
+        IF trim(phone2(i)) != '' AND NOT [GROUP SUM 1 BY contact(Phone p), number(p)](c, trim(phone2(i))) THEN NEW p = Phone {
+            number(p) <- trim(phone2(i));
+            type(p) <- GROUP MAX PhoneType t IF name(t) == trim(phone2(0));
+            contact(p) <- c;
+        }
+        IF trim(phone3(i)) != '' AND NOT [GROUP SUM 1 BY contact(Phone p), number(p)](c, trim(phone3(i))) THEN NEW p = Phone {
+            number(p) <- trim(phone3(i));
+            type(p) <- GROUP MAX PhoneType t IF name(t) == trim(phone3(0));
+            contact(p) <- c;
+        }
+        IF trim(phone4(i)) != '' AND NOT [GROUP SUM 1 BY contact(Phone p), number(p)](c, trim(phone4(i))) THEN NEW p = Phone {
+            number(p) <- trim(phone4(i));
+            type(p) <- GROUP MAX PhoneType t IF name(t) == trim(phone4(0));
+            contact(p) <- c;
+        }
+        IF trim(phone5(i)) != '' AND NOT [GROUP SUM 1 BY contact(Phone p), number(p)](c, trim(phone5(i))) THEN NEW p = Phone {
+            number(p) <- trim(phone5(i));
+            type(p) <- GROUP MAX PhoneType t IF name(t) == trim(phone5(0));
+            contact(p) <- c;
+        }
+        IF trim(phone6(i)) != '' AND NOT [GROUP SUM 1 BY contact(Phone p), number(p)](c, trim(phone6(i))) THEN NEW p = Phone {
+            number(p) <- trim(phone6(i));
+            type(p) <- GROUP MAX PhoneType t IF name(t) == trim(phone6(0));
+            contact(p) <- c;
+        }
+    }
+}
+
+importContacts 'Импорт контактов' () {
+    NEWSESSION INPUT f = FILE DO { 
+        importContacts(f);
+        APPLY;
+    }
+}
+
+EXTEND FORM migrationData PROPERTIES() importContacts;

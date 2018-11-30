@@ -1,0 +1,154 @@
+MODULE Issue;
+
+REQUIRE Project, Employee;
+
+NAMESPACE Project;
+
+CLASS Tracker 'Трекер';
+TABLE tracker (Tracker);
+
+name 'Наименование' = DATA VARISTRING[100] (Tracker) CHARWIDTH 15 IN id;
+tracker = GROUP AGGR Tracker p BY name (p);
+
+FORM tracker 'Трекер'
+    OBJECTS o = Tracker PANEL
+    PROPERTIES(o) name
+    
+    EDIT Tracker OBJECT o
+;
+
+FORM trackers 'Трекеры'
+    OBJECTS o = Tracker
+    PROPERTIES(o) READONLY name
+    PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
+;
+
+FORM dialogTrackers 'Трекеры'
+    OBJECTS o = Tracker
+    PROPERTIES(o) READONLY name
+    
+    LIST Tracker OBJECT o
+;
+
+CLASS IssueStatus 'Статус задачи';
+TABLE issueStatus (IssueStatus);
+
+name 'Наименование' = DATA VARISTRING[100] (IssueStatus) CHARWIDTH 15 IN id;
+issueStatus = GROUP AGGR IssueStatus p BY name (p);
+
+FORM issueStatus 'Статус задачи'
+    OBJECTS o = IssueStatus PANEL
+    PROPERTIES(o) name
+    
+    EDIT IssueStatus OBJECT o
+;
+
+FORM issueStatuses 'Статусы задачи'
+    OBJECTS o = IssueStatus
+    PROPERTIES(o) READONLY name
+    PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
+;
+
+FORM dialogIssueStatuses 'Статусы задачи'
+    OBJECTS o = IssueStatus
+    PROPERTIES(o) READONLY name
+    
+    LIST IssueStatus OBJECT o
+;
+
+CLASS Issue 'Задача';
+TABLE issue (Issue);
+
+id 'Код' = DATA VARSTRING[15] (Issue) INDEXED CHARWIDTH 5 IN id;
+number 'Номер' (Issue s) = INTEGER (id(s)) CHARWIDTH 5;
+
+name 'Тема' = DATA VARSTRING[500] (Issue) CHARWIDTH 50;
+description 'Описание' = DATA TEXT (Issue);
+descriptionString 'Описание' (Issue i) = VARSTRING[1000](description(i)) CHARWIDTH 30;
+dateTo 'Дата завершения' = DATA DATE (Issue);
+dateTimeCreated 'Дата/время создания' = DATA DATETIME (Issue);
+dateTimeUpdated 'Дата/время обновления' = DATA DATETIME (Issue);
+dateFrom 'Дата начала' = DATA DATE (Issue);
+doneRatio 'Готовность' = DATA INTEGER (Issue);
+estimatedHours 'Оценка трудозатрат' = DATA NUMERIC[7,2](Issue);
+
+project = DATA Project(Issue) NONULL DELETE;
+idProject 'Код проекта' (Issue i) = id(project(i));
+nameProject 'Проект' (Issue i) = name(project(i));
+
+author = DATA CustomUser(Issue);
+nameAuthor 'Автор' (Issue i) = name(author(i));
+loginAuthor 'Логин автора' (Issue i) = login(author(i));
+
+assignedTo = DATA Employee(Issue);
+nameAssignedTo 'Назначена' (Issue i) = name(assignedTo(i));
+loginAssignedTo'Логин, кому назначена' (Issue i) = login(assignedTo(i));
+
+tracker = DATA Tracker(Issue);
+nameTracker 'Трекер' (Issue i) = name(tracker(i));
+
+status = DATA IssueStatus(Issue);
+nameStatus 'Статус' (Issue i) = name(status(i));
+
+count 'Кол-во' (Project p, IssueStatus s) = GROUP SUM 1 BY project(Issue i), status(i);
+count 'Кол-во' (Customer c, IssueStatus s) = GROUP SUM count(Project p, s) BY customer(p);
+
+FORM issue 'Задача'
+    OBJECTS o = Issue PANEL
+    PROPERTIES(o) id, name, dateTo, dateTimeCreated, dateTimeUpdated, dateFrom, doneRatio, estimatedHours, nameProject, 
+                  nameAuthor, nameAssignedTo, nameTracker, nameStatus, description
+    
+    EDIT Issue OBJECT o
+;
+DESIGN issue {
+    GROUP (,o) {
+        type = CONTAINERV;
+        fill = 1;
+        PROPERTY (description(o)) { valueHeight = 500; }
+    }
+}
+FORM issues 'Задачи'
+    OBJECTS o = Issue LAST 
+    PROPERTIES(o) READONLY number, name, descriptionString, dateTo, dateTimeCreated, dateTimeUpdated, dateFrom, doneRatio, estimatedHours, nameProject, 
+                           nameAuthor, nameAssignedTo, nameTracker, nameStatus
+    ORDER number(o)
+    PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
+;
+
+FORM dialogIssues 'Задачи'
+    OBJECTS o = Issue LAST 
+    PROPERTIES(o) READONLY number, name, descriptionString, dateTo, dateTimeCreated, dateTimeUpdated, dateFrom, doneRatio, estimatedHours, nameProject, 
+                           nameAuthor, nameAssignedTo, nameTracker, nameStatus 
+    ORDER number(o)
+    LIST Issue OBJECT o
+;
+NAVIGATOR {
+    project {
+        NEW trackers;
+        NEW issueStatuses;
+        NEW issues;
+    }
+}
+
+open 'Показать' ABSTRACT (Issue);
+
+changeStatus ABSTRACT (Issue, IssueStatus);
+
+in 'Отм' = DATA LOCAL BOOLEAN (Issue); 
+
+changeStatus 'Изменить статус' (Issue i) {
+    IF NOT GROUP SUM 1 IF in(Issue ii) THEN in(i) <- TRUE; 
+    DIALOG dialogIssueStatuses OBJECTS o INPUT DO {
+        FOR in(Issue ii) DO {
+            NEWSESSION {
+                changeStatus(ii, o);
+                status(ii) <- o;
+                APPLY;
+            }
+        }
+    }
+}
+
+EXTEND FORM issues
+    PROPERTIES(o) in BEFORE number(o), changeStatus TOOLBAR, open TOOLBAR
+;

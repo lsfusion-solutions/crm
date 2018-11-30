@@ -1,0 +1,48 @@
+MODULE WorkingHours;
+
+REQUIRE Time, MasterData;
+
+workingHours 'Рабочих часов в день' = DATA NUMERIC[7,2](DATE) CHARWIDTH 2;
+monthHours 'Часов в месяц' (INTEGER y, Month m) = GROUP SUM workingHours(DATE d) BY extractYear(d), extractMonth(d) MATERIALIZED;
+
+maxCount = DATA INTEGER (DATE);
+
+FORM workingHours 'Рабочее время'
+    
+    OBJECTS dates = (df = DATE, dt = DATE) PANEL 
+    PROPERTIES VALUE (df), VALUE (dt)
+    
+    OBJECTS d = DATE 
+    PROPERTIES dd = VALUE(d) READONLY, workingHours(d)
+    PROPERTIES (d) READONLY extractDOWName, extractMonthName, 'Номер месяца' = extractMonthNumber
+    ORDER dd
+    FILTERS iterate(d, df, dt)
+    
+    OBJECTS mm = Month
+    OBJECTS yy = INTEGER 
+    PROPERTIES 'Год' = VALUE (yy), monthHours(yy, mm) COLUMNS (mm) HEADER staticCaption(mm)
+    PROPERTIES number(mm) SHOWIF NULL 
+    ORDER number(mm)   
+    FILTERS monthHours(yy, mm)
+;
+
+DESIGN workingHours {
+    OBJECTS {
+        NEW tab {
+            type = TABBED;
+            fill = 1;
+            NEW days {
+                caption = 'Дни';
+                MOVE BOX (dates);
+                MOVE BOX (d) { caption = 'Дни'; }
+            }
+            MOVE BOX (yy) { caption = 'Месяцы'; }
+        }
+    }
+}
+
+NAVIGATOR {
+    masterData {
+        NEW workingHours;
+    }
+}

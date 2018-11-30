@@ -1,0 +1,60 @@
+MODULE AgreementWord;
+
+REQUIRE ContractWord;
+
+in 'Вкл.' = DATA BOOLEAN (AgreementType, Template);
+
+EXTEND FORM documentTemplates
+    
+    OBJECTS ag = AgreementType
+    PROPERTIES READONLY name(ag)
+    
+    OBJECTS tg = Template
+    PROPERTIES in(ag, tg), name(tg) READONLY, id(tg) READONLY 
+    PROPERTIES (tg) NEWSESSION NEW, EDIT, DELETE 
+    
+    FILTERGROUP ing FILTER 'Отмеченные' in(ag, tg)
+;
+
+DESIGN documentTemplates {
+    tab {
+        NEW agreement {
+            caption = 'Типы соглашения';
+            type = SPLITH;
+            MOVE BOX (ag) {
+                fill = 1;
+            }
+            MOVE BOX (tg) {
+                fill = 4;
+            }
+        }
+    }
+}
+
+FORM dialogAgreementTypeTemplates 'Шаблоны Word'
+    OBJECTS c = AgreementType PANEL 
+    OBJECTS t = Template
+    PROPERTIES (t) READONLY name, id
+    FILTERS in(c, t)
+;
+
+printAgreementWord 'Сформировать по шаблону' (Agreement ag) {
+    NEWSESSION DIALOG dialogAgreementTypeTemplates OBJECTS c = type(ag), t INPUT DO {
+        value(TemplateEntry d) <- OVERRIDE number(ag), '' WHERE key(d) = 'NUMBER_AGREEMENT' AND template (d) == t;
+        value(TemplateEntry d) <- TEXT (toDateDDMMYY(date(ag))) WHERE key(d) = 'DATE_AGREEMENT' AND template (d) == t;
+        value(TemplateEntry d) <- OVERRIDE nameType(ag), '' WHERE key(d) = 'TYPE_AGREEMENT' AND template (d) == t;
+        value(TemplateEntry d) <- OVERRIDE numberContract(ag), '' WHERE key(d) = 'NUMBER_CONTRACT' AND template (d) == t;
+        value(TemplateEntry d) <- OVERRIDE nameCustomer(ag), '' WHERE key(d) = 'NAME_CUSTOMER' AND template (d) == t;
+        value(TemplateEntry d) <- OVERRIDE nameLegalEntity(ag), '' WHERE key(d) = 'NAME_LEGAL_ENTITY' AND template (d) == t;
+        value(TemplateEntry d) <- TEXT (sum(ag)) WHERE key(d) = 'SUM_AGREEMENT' AND template (d) == t;
+        value(TemplateEntry d) <- TEXT (toDateDDMMYY(dateSending(ag))) WHERE key(d) = 'SENDING_DATE_AGREEMENT' AND template (d) == t;
+        value(TemplateEntry d) <- TEXT (toDateDDMMYY(dateReceiving(ag))) WHERE key(d) = 'RECEIVING_DATE_AGREEMENT' AND template (d) == t;
+        value(TemplateEntry d) <- OVERRIDE note(ag), '' WHERE key(d) = 'NOTE_AGREEMENT' AND template (d) == t;
+        value(TemplateEntry d) <- OVERRIDE text(ag), '' WHERE key(d) = 'TEXT_AGREEMENT' AND template (d) == t;
+        
+        SHOW editTemplate OBJECTS t = t;
+    }
+}
+
+//EXTEND FORM contractDashboard PROPERTIES printAgreementWord(ag) DRAW ag TOOLBAR;
+EXTEND FORM contract PROPERTIES printAgreementWord(ag) DRAW ag TOOLBAR;

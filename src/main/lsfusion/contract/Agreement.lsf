@@ -1,0 +1,202 @@
+MODULE Agreement;
+
+REQUIRE Contract, Doc;
+
+NAMESPACE Agreement;
+
+CLASS Agreement 'Соглашение' : Document;
+TABLE agreement (Agreement);
+
+id 'Код' = DATA VARSTRING[15] (Agreement) INDEXED CHARWIDTH 5 IN id;
+agreement (id) = GROUP AGGR Agreement c BY id (c);
+
+contract = DATA Contract(Agreement);
+idContract 'Код договора' (Agreement a) = id(contract(a));
+numberContract 'Номер договора' (Agreement a) = number(contract(a)) IN id;
+customer (Agreement a) = customer(contract(a));
+nameCustomer 'Клиент' (Agreement a) = nameCustomer(contract(a));
+nameLegalEntity 'Организация' (Agreement a) = nameLegalEntity(contract(a));
+
+CONSTRAINT Agreement a IS Agreement AND NOT contract(a) MESSAGE 'Для соглашения должен быть задан договор';
+
+number 'Номер' = DATA VARSTRING[15](Agreement) IN id;
+date 'Дата' = DATA DATE (Agreement) IN id;
+
+CLASS AgreementType 'Тип соглашения';
+TABLE agreementType(AgreementType);
+
+name 'Наименование' = DATA VARISTRING[50](AgreementType) CHARWIDTH 15;
+
+FORM agreementType 'Тип соглашения'
+    OBJECTS o = AgreementType PANEL
+    PROPERTIES(o) name
+    
+    EDIT AgreementType OBJECT o
+;
+
+FORM agreementTypes 'Типы соглашения'
+    OBJECTS o = AgreementType
+    PROPERTIES(o) READONLY name
+    PROPERTIES (o) NEWSESSION NEW, EDIT, DELETE
+    
+    LIST AgreementType OBJECT o
+;
+
+type = DATA AgreementType(Agreement);
+nameType 'Тип соглашения' (Agreement c) = name(type(c)) CHARWIDTH 15;
+
+sum 'Стоимость' = DATA NUMERIC[16,5](Agreement);
+dateClosing 'Дата закрытия' = DATA DATE (Agreement);
+dateSigningCompany 'Дата подписания компанией' = DATA DATE (Agreement);
+dateSending 'Дата отправки' = DATA DATE (Agreement);
+dateSigningCustomer 'Дата подписания клиентом' = DATA DATE (Agreement);
+dateReceiving 'Дата получения' = DATA DATE (Agreement);
+note 'Примечание' = DATA VARSTRING[100](Agreement) CHARWIDTH 20;
+text 'Текст' = DATA TEXT (Agreement);
+textString 'Текст' (Agreement c) = VARSTRING[500](text(c)) CHARWIDTH 20;
+file 'Файл' = DATA FILE (Agreement);
+
+loadFile 'Загрузить' (Agreement c) { 
+    NEWSESSION INPUT f = FILE DO { 
+        file(c) <- f; 
+        APPLY;
+    } 
+}
+openFile 'Открыть' (Agreement c) { open(file(c)); }
+
+deleteFile 'Удалить' (Agreement c) { 
+    NEWSESSION { 
+        file(c) <- NULL; 
+        APPLY;
+    } 
+} CONFIRM;
+
+
+id(Agreement c) += id(c);
+number(Agreement c) += number(c);
+date(Agreement c) += date(c);
+nameType(Agreement c) += nameType(c);
+dateSigningCompany(Agreement c) += dateSigningCompany(c);
+dateSending(Agreement c) += dateSending(c);
+dateSigningCustomer(Agreement c) += dateSigningCustomer(c);
+dateReceiving(Agreement c) += dateReceiving(c);
+dateClosing(Agreement c) += dateClosing(c);
+file(Agreement c) += file(c);
+customer(Agreement c) += customer(c);
+legalEntity(Agreement a) += legalEntity(contract(a));
+company(Agreement a) += company(contract(a));
+contract(Agreement a) += contract(a);
+
+EXTEND CLASS DocType {
+    agreement 'Соглашение'
+}
+docType(Agreement a) += DocType.agreement IF a IS Agreement;
+
+FORM agreement 'Соглашение'
+    OBJECTS o = Agreement PANEL
+    PROPERTIES(o) id, number, date, nameType, numberContract, nameCustomer, nameLegalEntity, sum, dateSending, dateReceiving, dateClosing, note, text,
+                  loadFile, openFile SHOWIF file(o), deleteFile SHOWIF file(o)
+    
+    EDIT Agreement OBJECT o
+;
+
+DESIGN agreement {
+    BOX (o) {
+        fill = 1;
+        NEW row1 {
+            type = CONTAINERH;
+            alignment = STRETCH;
+            NEW main {
+                caption = 'Основные параметры';
+                MOVE PROPERTY(id(o));
+                MOVE PROPERTY(number(o));
+                MOVE PROPERTY(date(o));
+                MOVE PROPERTY(nameType(o));
+            }
+            NEW legalEntities {
+                caption = 'Контрагенты';
+                flex = 1;
+                MOVE PROPERTY(numberContract(o));
+                MOVE PROPERTY(nameCustomer(o));
+                MOVE PROPERTY(nameLegalEntity(o));
+            }
+        }
+        NEW processing {
+            type = CONTAINERH;
+            caption = 'Обработка';
+            MOVE PROPERTY(dateSending(o));
+            MOVE PROPERTY(dateReceiving(o));
+            MOVE PROPERTY(dateClosing(o));
+        }
+        NEW row3 {
+            type = CONTAINERH;
+            NEW payment {
+                caption = 'Оплата';
+                type = CONTAINERH;
+                MOVE PROPERTY(sum(o));
+            }
+            NEW add {
+                type = CONTAINERH;
+                caption = 'Дополнительная информация';
+                MOVE PROPERTY(note(o));
+            }
+        }
+        NEW file {
+            caption = 'Файл документа';
+            type = CONTAINERH;
+            MOVE PROPERTY (loadFile(o));
+            MOVE PROPERTY (openFile(o));
+            MOVE PROPERTY (deleteFile(o));
+        }
+        MOVE PROPERTY(text(o)) {
+            panelCaptionAbove = TRUE;
+            flex = 1;
+        }
+    }
+}
+
+FORM agreements 'Соглашения'
+    OBJECTS o = Agreement LAST 
+    PROPERTIES(o) READONLY id, numberContract, number, date, nameType, sum, dateClosing, dateSending, dateReceiving, note, textString
+    PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
+    ORDER date(o)
+;
+
+FORM dialogAgreements 'Соглашения'
+    OBJECTS o = Agreement LAST 
+    PROPERTIES(o) READONLY id, numberContract, number, date, nameType, sum, dateClosing, dateSending, dateReceiving, note, textString
+    ORDER date(o)
+    
+    LIST Agreement OBJECT o
+;
+
+NAVIGATOR {
+    contractFolder {
+        NEW agreements;
+    }
+}
+
+addAgreement 'Добавить' (Contract c) {
+    NESTEDSESSION NEW a = Agreement {
+        contract(a) <- c;
+        date(a) <- currentDate();
+        SHOW agreement OBJECTS o = a DOCKED;
+    }
+} IMAGE 'add.png';
+
+EXTEND FORM contract 
+    OBJECTS ag = Agreement LAST 
+    PROPERTIES (ag) READONLY id, numberContract, number, date, nameType, sum, dateClosing, dateSending, dateReceiving, note, textString
+    PROPERTIES DRAW ag TOOLBAR addAgreement(o), openFile(ag)
+    PROPERTIES(ag) NESTEDSESSION EDIT, DELETE
+    ORDER date(ag)
+    FILTERS contract(ag) == o
+;
+
+DESIGN contract {
+    details {
+        MOVE BOX (ag) {
+            caption = 'Соглашения';
+        }
+    }
+}

@@ -1,0 +1,56 @@
+MODULE ProjectRedmine;
+
+REQUIRE ProjectExternal, IssueRedmine, TimeEntryRedmine;
+
+NAMESPACE Project;
+
+importProject 'Импорт проектов' (External e) {
+    NEWSESSION {
+        LOCAL id = INTEGER (INTEGER);
+        LOCAL name = VARSTRING[100](INTEGER);
+        LOCAL identifier = VARSTRING[100](INTEGER);
+            
+        LOCAL file = FILE ();
+        READ path(e) + '@SELECT id, name, identifier FROM projects' TO file;
+        
+        IMPORT TABLE FROM file() TO id, name, identifier;
+        
+        FOR [GROUP MIN INTEGER i BY VARSTRING[15](id(i))](VARSTRING[15] id) AND id != '' AND NOT project(id, e) DO NEW p = Project {
+            id(p) <- id;
+            external(p) <- e;
+        }
+        
+        FOR Project p = project(VARSTRING[15](id(INTEGER i)), e) AND id(i) DO {
+            name(p) <- name(i);
+            identifier(p) <- identifier(i);
+        }
+        
+        FOR external(Project p) == e AND NOT [GROUP SUM 1 IF imported(INTEGER i) BY VARSTRING[15](id(i))](id(p)) DO {
+            DELETE p;
+        }
+        APPLY;
+    }
+}
+
+external = DATA LOCAL External();
+nameExternal 'Внешняя система' () = name(external());
+
+importExternal 'Импорт' () {
+    importProject(external());
+    importTracker(external());
+    importIssueStatus(external());
+    importActivity(external());
+    importIssue(external());
+    importTimeEntry(external());
+}
+
+EXTEND FORM migrationData PROPERTIES nameExternal(), importExternal();
+
+DESIGN migrationData {
+    NEW importProjectExternal FIRST {
+        caption = 'Импорт проектов';
+        type = CONTAINERH;
+        MOVE PROPERTY (nameExternal());
+        MOVE PROPERTY (importExternal());
+    }
+}
