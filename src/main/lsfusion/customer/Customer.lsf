@@ -18,16 +18,39 @@ site 'Сайт' = DATA VARISTRING[100] (Customer) CHARWIDTH 20;
 note 'Примечание' = DATA VARISTRING[100] (Customer) CHARWIDTH 20;
 dateFrom 'Дата начала' = DATA DATE (Customer);
 
+CLASS StatusCustomer 'Статус клиента';
+TABLE StatusCustomer (StatusCustomer);
+
+name 'Наименование' = DATA VARISTRING[100] (StatusCustomer) CHARWIDTH 15;
+
+FORM StatusCustomer 'Статус клиента'
+    OBJECTS o = StatusCustomer PANEL
+    PROPERTIES(o) name
+    
+    EDIT StatusCustomer OBJECT o
+;
+
+FORM StatusCustomers 'Статус клиента'
+    OBJECTS o = StatusCustomer
+    PROPERTIES(o) READONLY name
+    PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
+    
+    LIST StatusCustomer OBJECT o
+;
+
+status = DATA StatusCustomer(Customer);
+nameStatus 'Статус' (Customer c) = name(status(c));
+
 FORM customer 'Клиент'
     OBJECTS o = Customer PANEL
-    PROPERTIES(o) id, name, email, phone, site, note, dateFrom, inactive
+    PROPERTIES(o) id, name, nameStatus, email, phone, site, note, dateFrom, inactive
         
     EDIT Customer OBJECT o
 ;
 
 FORM customers 'Клиенты'
     OBJECTS o = Customer
-    PROPERTIES(o) READONLYIF isReadonly() id, name, email, phone, site, note, dateFrom, inactive
+    PROPERTIES(o) READONLYIF isReadonly() id, name, nameStatus, email, phone, site, note, dateFrom, inactive
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
     ORDER name(o)
     
@@ -38,7 +61,7 @@ FORM customers 'Клиенты'
 
 FORM dialogCustomers 'Клиенты'
     OBJECTS o = Customer
-    PROPERTIES(o) READONLY id, name, email, phone, site, note, dateFrom, inactive
+    PROPERTIES(o) READONLY id, name, nameStatus, email, phone, site, note, dateFrom, inactive
     ORDER name(o)
     
     FILTERGROUP active FILTER 'Активные' NOT inactive(o) DEFAULT

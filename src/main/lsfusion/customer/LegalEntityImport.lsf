@@ -7,6 +7,7 @@ NAMESPACE LegalEntity;
 importLegalEntities 'Импорт организаций' (FILE f) {
     LOCAL idCustomer = VARSTRING[15](INTEGER);
     LOCAL nameCustomer = VARSTRING[250](INTEGER);
+    LOCAL status = VARSTRING[100](INTEGER);
     LOCAL emailCustomer = VARSTRING[200](INTEGER);
     LOCAL phoneCustomer = VARSTRING[50](INTEGER);
     LOCAL siteCustomer = VARSTRING[100](INTEGER);
@@ -30,7 +31,7 @@ importLegalEntities 'Импорт организаций' (FILE f) {
     LOCAL addressBank = VARSTRING[250](INTEGER);
     LOCAL mfoBank = VARSTRING[11](INTEGER);
     
-    IMPORT XLS NOHEADER FROM f TO idCustomer, nameCustomer, emailCustomer, phoneCustomer, siteCustomer, noteCustomer, dateCustomer, 
+    IMPORT XLS NOHEADER FROM f TO idCustomer, nameCustomer, status, emailCustomer, phoneCustomer, siteCustomer, noteCustomer, dateCustomer, 
                          idLegalEntity, extIdLegalEntity, nameLegalEntity, postcode, region, district, locality, street, house, office, unp, okpo, 
                          idBank, numberBank, nameBank, addressBank, mfoBank;
                          
@@ -44,9 +45,13 @@ importLegalEntities 'Импорт организаций' (FILE f) {
     FOR [GROUP SUM 1 IF INTEGER i > 0 BY trim(idBank(i))](VARSTRING[15] id) AND id AND NOT bank(id) DO NEW b = Bank {
         id(b) <- id;
     }
+    FOR INTEGER i = [GROUP MIN INTEGER ii IF ii > 0 BY trim(status(ii))](VARSTRING[15] name) AND name AND NOT [GROUP SUM 1 BY name(StatusCustomer c)](name) DO NEW s = StatusCustomer {
+        name(s) <- name;
+    }
     
     FOR Customer c = customer(idCustomer(INTEGER i)) AND trim(idCustomer(i)) != '' DO {
         name(c) <- trim(nameCustomer(i));
+        status(c) <- GROUP MAX StatusCustomer s IF name(s) == trim(status(i));
         email(c) <- trim(emailCustomer(i));
         phone(c) <- trim(phoneCustomer(i));
         site(c) <- trim(siteCustomer(i));
