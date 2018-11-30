@@ -1,6 +1,6 @@
 MODULE ContractDashboard;
 
-REQUIRE Payment, Dashboard;
+REQUIRE Payment, Dashboard, DocFile;
 
 NAMESPACE Contract;
 
@@ -20,7 +20,7 @@ FORM contractDashboard 'Работа с договорами'
     PROPERTIES(o) READONLY id, nameCustomer, nameLegalEntity, nameCompany, number, date, sum, shortNameCurrency, sumCurrency, paid, nameType, nameSendingWay, 
                            dateSigningCompany, dateSending, dateSigningCustomer, dateReceiving, dateTo, dateClosing, note, textString, text PANEL
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
-    PROPERTIES(o) loadFile, openFile SHOWIF file(o), deleteFile SHOWIF file(o), close SHOWIF NOT dateClosing(o)
+    PROPERTIES(o) loadFile, openFile SHOWIF file(o), close SHOWIF NOT dateClosing(o)
     ORDER date(o)
     FILTERS type(o) == filterContractType() OR NOT filterContractType()
     
@@ -74,7 +74,6 @@ DESIGN contractDashboard {
                         caption = 'Файл документа';
                         MOVE PROPERTY (loadFile(o));
                         MOVE PROPERTY (openFile(o));
-                        MOVE PROPERTY (deleteFile(o));
                     }
                 }
                 MOVE BOX (ag);

@@ -1,6 +1,6 @@
 MODULE ContractSubject;
 
-REQUIRE Contract, Agreement;
+REQUIRE Contract, Agreement, DocFile;
 
 NAMESPACE Contract;
 
@@ -107,10 +107,7 @@ EXTEND FORM agreement
 
 DESIGN agreement {
     BOX (o) {
-        NEW details {
-            type = TABBED;
-            fill = 1;
-            MOVE PROPERTY (text(o));
+        details {
             NEW subjects {
                 caption = 'Предметы договора';
                 type = CONTAINERH;

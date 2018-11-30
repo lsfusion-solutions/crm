@@ -89,22 +89,6 @@ dateClosing 'Дата закрытия' = DATA DATE (Contract);
 note 'Примечание' = DATA VARSTRING[100](Contract) CHARWIDTH 20;
 text 'Текст' = DATA TEXT (Contract);
 textString 'Текст' (Contract c) = VARSTRING[500](text(c)) CHARWIDTH 20;
-file 'Файл' = DATA FILE (Contract);
-
-loadFile 'Загрузить' (Contract c) { 
-    NEWSESSION INPUT f = FILE DO { 
-        file(c) <- f; 
-        APPLY;
-    } 
-}
-openFile 'Открыть' (Contract c) { open(file(c)); }
-
-deleteFile 'Удалить' (Contract c) { 
-    NEWSESSION { 
-        file(c) <- NULL; 
-        APPLY;
-    } 
-} CONFIRM;
 
 contract = ABSTRACT Contract (Document);
 numberContract 'Номер договора' (Document d) = number(contract(d));
@@ -120,7 +104,6 @@ dateSending(Contract c) += dateSending(c);
 dateSigningCustomer(Contract c) += dateSigningCustomer(c);
 dateReceiving(Contract c) += dateReceiving(c);
 dateClosing(Contract c) += dateClosing(c);
-file(Contract c) += file(c);
 customer(Contract c) += customer(c);
 legalEntity(Contract c) += legalEntity(c);
 company(Contract c) += company(c);
@@ -134,7 +117,7 @@ FORM contract 'Договор'
     OBJECTS o = Contract PANEL
     PROPERTIES(o) id, nameCustomer READONLY, nameLegalEntity, nameCompany, number, date, sum, nameType, nameSendingWay, 
                   dateSigningCompany, dateSending, dateSigningCustomer, dateReceiving, dateTo, dateClosing, note, text,
-                  loadFile, openFile SHOWIF file(o), deleteFile SHOWIF file(o), shortNameCurrency, sumCurrency
+                  shortNameCurrency, sumCurrency
     
     EDIT Contract OBJECT o
 ;
@@ -201,13 +184,6 @@ DESIGN contract {
                 MOVE PROPERTY (text(o)) { 
                     caption = '';
                     fill = 1;
-                }
-                NEW file {
-                    caption = 'Файл документа';
-                    type = CONTAINERH;
-                    MOVE PROPERTY (loadFile(o));
-                    MOVE PROPERTY (openFile(o));
-                    MOVE PROPERTY (deleteFile(o));
                 }
             }
         }

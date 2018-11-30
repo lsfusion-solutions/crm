@@ -46,7 +46,7 @@ edit 'Редактировать' (Document d) {
     NEWSESSION SHOW EDIT Document = d DOCKED;
 } TOOLBAR IMAGE 'edit.png';
 
-filterDocType = DATA DocType();
+filterDocType = DATA LOCAL DocType();
 nameFilterDocClass 'Вид документа' () = name(filterDocType());
 
 FORM docDashboard 'Обработка документов'
