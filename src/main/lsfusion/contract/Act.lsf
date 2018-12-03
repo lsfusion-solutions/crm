@@ -11,6 +11,11 @@ TABLE act (Act);
 id 'Код' = DATA VARSTRING[15] (Act) INDEXED CHARWIDTH 5;
 act (id) = GROUP AGGR Act c BY id (c);
 
+series 'Серия' = DATA VARSTRING[15](Act) IN id;
+number 'Номер' = DATA VARSTRING[15](Act) IN id;
+
+@defineNumeratedDefault(Act, 'Акты', 'АК');
+
 contract = DATA Contract(Act);
 idContract 'Код договора' (Act a) = id(contract(a));
 numberContract 'Номер договора' (Act a) = number(contract(a)) IN id;
@@ -26,7 +31,6 @@ numberAgreement 'Номер соглашения' (Act a) = number(agreement(a))
 
 CONSTRAINT contract(Act a) != contract(agreement(a)) CHECKED BY agreement[Act] MESSAGE 'Договор акта не соответствует договору';
 
-number 'Номер' = DATA VARSTRING[15](Act) IN id;
 date 'Дата' = DATA DATE (Act) IN id;
 
 CLASS ActType 'Тип акта выполненных работ';
@@ -101,7 +105,7 @@ deleteFile 'Удалить' (Act c) {
 FORM act 'Акт выполненных работ'
     OBJECTS o = Act PANEL
     PROPERTIES(o) id, number, date, nameType, numberContract, numberAgreement, nameCustomer, nameLegalEntity, sum, dateSending, dateReceiving, dateClosing, note, text,
-                  loadFile, openFile SHOWIF file(o), deleteFile SHOWIF file(o)
+                  loadFile, openFile SHOWIF file(o), deleteFile SHOWIF file(o), nameNumerator, series
     
     EDIT Act OBJECT o
 ;
@@ -115,7 +119,12 @@ DESIGN act {
             NEW main {
                 caption = 'Основные параметры';
                 MOVE PROPERTY(id(o));
-                MOVE PROPERTY(number(o));
+                MOVE PROPERTY (nameNumerator(o));
+                NEW number {
+                    type = CONTAINERH;
+                    MOVE PROPERTY (series(o));
+                    MOVE PROPERTY (number(o));
+                }
                 MOVE PROPERTY(date(o));
                 MOVE PROPERTY(nameType(o));
             }

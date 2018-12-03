@@ -1,6 +1,6 @@
 MODULE Contract;
 
-REQUIRE LegalEntity, Doc, Currency;
+REQUIRE LegalEntity, Doc, Currency, Numerator;
 
 NAMESPACE Contract;
 
@@ -9,6 +9,11 @@ TABLE contract (Contract);
 
 id 'Код' = DATA VARSTRING[15] (Contract) CHARWIDTH 5 IN id;
 contract (id) = GROUP AGGR Contract c BY id (c);
+
+series 'Серия' = DATA STRING[2](Contract);
+number 'Номер' = DATA VARSTRING[15](Contract) IN id;
+
+@defineNumeratedDefault(Contract, 'Договоры', 'ДГ');
 
 legalEntity = DATA LegalEntity(Contract);
 idLegalEntity 'Код организации' (Contract c) = id(legalEntity(c));
@@ -22,7 +27,6 @@ nameCompany 'Компания' (Contract c) = name(company(c)) IN id;
 
 CONSTRAINT company(Contract c) AND NOT isCompany(company(c)) CHECKED BY company[Contract] MESSAGE 'Компания договора не является компанией';
 
-number 'Номер' = DATA VARSTRING[15](Contract) IN id;
 date 'Дата' = DATA DATE (Contract) IN id;
 sum 'Стоимость' = DATA NUMERIC[16,5](Contract) CHARWIDTH 10;
 
@@ -117,7 +121,7 @@ FORM contract 'Договор'
     OBJECTS o = Contract PANEL
     PROPERTIES(o) id, nameCustomer READONLY, nameLegalEntity, nameCompany, number, date, sum, nameType, nameSendingWay, 
                   dateSigningCompany, dateSending, dateSigningCustomer, dateReceiving, dateTo, dateClosing, note, text,
-                  shortNameCurrency, sumCurrency
+                  shortNameCurrency, sumCurrency, nameNumerator, series
     
     EDIT Contract OBJECT o
 ;
@@ -133,7 +137,12 @@ DESIGN contract {
                     NEW main {
                         caption = 'Основные параметры';
                         MOVE PROPERTY (id(o));
-                        MOVE PROPERTY (number(o));
+                        MOVE PROPERTY (nameNumerator(o));
+                        NEW number {
+                            type = CONTAINERH;
+                            MOVE PROPERTY (series(o));
+                            MOVE PROPERTY (number(o));
+                        }
                         MOVE PROPERTY (date(o));
                         MOVE PROPERTY (nameType(o));
                     }

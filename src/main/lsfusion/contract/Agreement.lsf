@@ -10,6 +10,11 @@ TABLE agreement (Agreement);
 id 'Код' = DATA VARSTRING[15] (Agreement) INDEXED CHARWIDTH 5 IN id;
 agreement (id) = GROUP AGGR Agreement c BY id (c);
 
+series 'Серия' = DATA VARSTRING[15](Agreement) IN id;
+number 'Номер' = DATA VARSTRING[15](Agreement) IN id;
+
+@defineNumeratedDefault(Agreement, 'Соглашения', 'СГ');
+
 contract = DATA Contract(Agreement);
 idContract 'Код договора' (Agreement a) = id(contract(a));
 numberContract 'Номер договора' (Agreement a) = number(contract(a)) IN id;
@@ -19,7 +24,6 @@ nameLegalEntity 'Организация' (Agreement a) = nameLegalEntity(contrac
 
 CONSTRAINT Agreement a IS Agreement AND NOT contract(a) MESSAGE 'Для соглашения должен быть задан договор';
 
-number 'Номер' = DATA VARSTRING[15](Agreement) IN id;
 date 'Дата' = DATA DATE (Agreement) IN id;
 
 CLASS AgreementType 'Тип соглашения';
@@ -76,7 +80,7 @@ docType(Agreement a) += DocType.agreement IF a IS Agreement;
 
 FORM agreement 'Соглашение'
     OBJECTS o = Agreement PANEL
-    PROPERTIES(o) id, number, date, nameType, numberContract, nameCustomer, nameLegalEntity, sum, dateSending, dateReceiving, dateClosing, note, text
+    PROPERTIES(o) id, nameNumerator, series, number, date, nameType, numberContract, nameCustomer, nameLegalEntity, sum, dateSending, dateReceiving, dateClosing, note, text
     
     EDIT Agreement OBJECT o
 ;
@@ -90,7 +94,12 @@ DESIGN agreement {
             NEW main {
                 caption = 'Основные параметры';
                 MOVE PROPERTY(id(o));
-                MOVE PROPERTY(number(o));
+                MOVE PROPERTY (nameNumerator(o));
+                NEW number {
+                    type = CONTAINERH;
+                    MOVE PROPERTY (series(o));
+                    MOVE PROPERTY (number(o));
+                }
                 MOVE PROPERTY(date(o));
                 MOVE PROPERTY(nameType(o));
             }
