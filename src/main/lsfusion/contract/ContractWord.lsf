@@ -66,7 +66,7 @@ FORM editTemplate 'Шаблон'
 ;
 DESIGN editTemplate {
     BOX {
-        size = (1024, 768);
+        size = (1200, 768);
         type = CONTAINERV;
         MOVE BOX(t) {
             type = CONTAINERH;
@@ -112,3 +112,22 @@ DESIGN contract {
         MOVE PROPERTY (printContractWord(o));
     }
 }
+
+overCopy ABSTRACT LIST (TemplateEntry, TemplateEntry);
+
+copy 'Копировать' (Template t) {
+    NEW n = Template {
+        name(n) <- name(t);
+        file(n) <- file(t);
+        FOR template(TemplateEntry e) == t DO NEW ne = TemplateEntry {
+            template(ne) <- n;
+            isTable(ne) <- isTable(e);
+            key(ne) <- key(e);
+            description(ne) <- description(e);
+            value(ne) <- value(e);
+            overCopy(ne, e);
+        }
+        SEEK documentTemplates.t = n;
+    }
+}
+EXTEND FORM documentTemplates PROPERTIES copy(t) DRAW t TOOLBAR;
