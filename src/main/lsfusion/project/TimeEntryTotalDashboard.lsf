@@ -34,16 +34,16 @@ FORM timeEntryDashboard 'Контроль отмеченного времени'
     FILTERS iterate(d, toDateFormat('01' + lpad(TEXT (number(m)), 2, '0') + y, 'DDMMYYYY'),
                                     lastDayOfMonth(toDateFormat('01' + lpad(TEXT (number(m)), 2, '0') + y, 'DDMMYYYY')))
     
-    OBJECTS t = TimeEntry
-    PROPERTIES (t) READONLY id, hours, commentsString, date, nameActivity, nameProject, nameCustomer, numberIssue, nameIssue
-    ORDER date(t)
-    
-    FILTERS employee(t) == e, month(t) == m, year(t) == y
-    
     OBJECTS p = Project
     PROPERTIES READONLY name(p), hours(e, p, y, m)
     ORDER hours(e, p, y, m)
     FILTERS hours(e, p, y, m)
+    
+    OBJECTS t = TimeEntry
+    PROPERTIES (t) READONLY id, hours, commentsString, date, nameActivity, nameProject, nameCustomer, numberIssue, nameIssue
+    ORDER date(t)
+    FILTERS employee(t) == e, month(t) == m, year(t) == y
+    FILTERGROUP project FILTER 'По проекту' project(t) == p DEFAULT 
     
     OBJECTS a = Absence
     PROPERTIES (a) READONLY id, nameEmployee, nameReason, dateFrom, dateTo, hours, workingHours, date, note
@@ -102,8 +102,8 @@ DESIGN timeEntryDashboard {
                         caption = 'Отметки времени';
                         type = CONTAINERH;
                         fill = 1;
-                        MOVE BOX (t) { fill = 5; }
                         MOVE BOX (p) { fill = 1; }
+                        MOVE BOX (t) { fill = 5; }
                     }
                     NEW absence {
                         caption = 'Отсутствие';
