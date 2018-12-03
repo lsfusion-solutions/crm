@@ -1,0 +1,79 @@
+MODULE WordPattern;
+
+REQUIRE ContractWord, Pattern;
+
+NAMESPACE Pattern;
+
+in 'Вкл.' = DATA BOOLEAN (TemplateEntry, Pattern);
+
+EXTEND FORM template 
+    OBJECTS p = Pattern
+    PROPERTIES in(te, p), text(p) READONLY, note(p) READONLY 
+;
+
+DESIGN template {
+    OBJECTS {
+        MOVE BOX (t);
+        NEW patterns AFTER BOX (t) {
+            type = SPLITH;
+            fill = 1;
+            MOVE BOX (te) {
+                PROPERTY (value(te)) { valueWidth = 50; }
+            }
+            MOVE BOX (p);
+        }
+    }
+}
+
+in(Template t, Pattern p) = GROUP SUM 1 IF in(TemplateEntry te, p) BY template(te);
+
+EXTEND FORM patterns
+    OBJECTS t = Template
+    PROPERTIES (t) READONLY name, id
+    FILTERS in(t, p)
+       
+    OBJECTS te = TemplateEntry
+    PROPERTIES (te) READONLY isTable, key, description, value
+    FILTERS template(te) == t, in(te, p)
+;
+
+DESIGN patterns {
+    OBJECTS {
+        NEW templates {
+            type = SPLITH;
+            fill = 1;
+            MOVE BOX (t) { fill = 1; }
+            MOVE BOX (te) { fill = 4; }
+        }
+    }
+}
+
+select 'Отм.' = DATA LOCAL BOOLEAN (TemplateEntry, Pattern);
+
+text (TemplateEntry te) =  GROUP CONCAT (CONCAT '', text(Pattern pt), note(pt)) IF select(te, pt), '\r\n';
+
+FORM editTemplatePattern 'Заготовки'
+    OBJECTS te = TemplateEntry PANEL 
+    OBJECTS p = Pattern
+    PROPERTIES select(te, p)
+    PROPERTIES (p) READONLY text, note
+    FILTERS in(te, p)
+    
+    EVENTS ON OK {
+        value(te) <- text(te);
+    }
+;
+setText 'Использовать заготовки' (TemplateEntry te) {
+    SHOW editTemplatePattern OBJECTS te = te;
+}
+
+countPattern 'Есть заготовки' (TemplateEntry te) = GROUP SUM 1 IF in(te, Pattern p);
+
+EXTEND FORM editTemplate 
+    PROPERTIES p 'Есть заготовки' = BOOLEAN (countPattern(te)) AFTER value(te)
+    PROPERTIES setText(te) GRID READONLYIF NOT countPattern(te) BEFORE p
+;
+
+overCopy(TemplateEntry n, TemplateEntry t) + {
+    in(n, Pattern p) <- in(t, p);
+}

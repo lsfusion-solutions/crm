@@ -1,0 +1,37 @@
+MODULE Pattern;
+
+REQUIRE Contract;
+
+NAMESPACE Pattern;
+
+CLASS Pattern 'Заготовка';
+TABLE pattern (Pattern);
+
+text 'Текст' = DATA TEXT (Pattern) CHARWIDTH 50;
+note 'Примечание' = DATA TEXT (Pattern) CHARWIDTH 20;
+
+FORM pattern 'Заготовка'
+    OBJECTS o = Pattern PANEL
+    PROPERTIES(o) text, note
+    
+    EDIT Pattern OBJECT o
+;
+
+FORM patterns 'Заготовки'
+    OBJECTS p = Pattern
+    PROPERTIES(p) READONLY text, note
+    PROPERTIES(p) NEWSESSION NEW, EDIT, DELETE
+;
+
+FORM dialogPatterns 'Заготовки'
+    OBJECTS p = Pattern
+    PROPERTIES(p) READONLY text, note
+    
+    LIST Pattern OBJECT p
+;
+
+NAVIGATOR {
+    contractFolder {
+        NEW patterns;
+    }
+}

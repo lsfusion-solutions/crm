@@ -11,4 +11,5 @@ REQUIRE Scheduler, Service, SystemEvents, Backup, EvalScript, SQLUtils, ProcessU
         Event, EventImport, 
         CustomerDashboard, ProfitDashboard, ContractDashboard, TimeEntryTotalDashboard, DocDashboard, DocFile, EventDashboard,
         ContractWord, AgreementWord, ActWord, WorkingHours, CustomerAttachment, TimeEntryImport, TimesheetDashboard, DebtDashboard, CustomerAttachmentImport,
-        Expense, ExpenseImport, ProfitMonthDashboard, PaymentProcessDashboard;
+        Expense, ExpenseImport, ProfitMonthDashboard, PaymentProcessDashboard, 
+        Pattern, WordPattern;
