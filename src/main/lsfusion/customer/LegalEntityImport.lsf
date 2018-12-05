@@ -30,10 +30,11 @@ importLegalEntities 'Импорт организаций' (FILE f) {
     LOCAL nameBank = VARSTRING[100](INTEGER);
     LOCAL addressBank = VARSTRING[250](INTEGER);
     LOCAL mfoBank = VARSTRING[11](INTEGER);
+    LOCAL account = VARSTRING[50](INTEGER);
     
     IMPORT XLS NOHEADER FROM f TO idCustomer, nameCustomer, status, emailCustomer, phoneCustomer, siteCustomer, noteCustomer, dateCustomer, 
                          idLegalEntity, extIdLegalEntity, nameLegalEntity, postcode, region, district, locality, street, house, office, unp, okpo, 
-                         idBank, numberBank, nameBank, addressBank, mfoBank;
+                         account, idBank, numberBank, nameBank, addressBank, mfoBank;
                          
     FOR [GROUP SUM 1 IF INTEGER i > 0 BY trim(idCustomer(i))](VARSTRING[15] id) AND id AND NOT customer(id) DO NEW c = Customer {
         id(c) <- id;
@@ -60,7 +61,7 @@ importLegalEntities 'Импорт организаций' (FILE f) {
     }
     
     FOR LegalEntity l = legalEntity(idLegalEntity(INTEGER i)) AND trim(idLegalEntity(i)) != '' DO {
-        extId(l) <- trim(extIdLegalEntity(i)) IF trim(extIdLegalEntity(i)) != '';
+        extId(l) <- trim(extIdLegalEntity(i)) IF (trim(extIdLegalEntity(i)) != '' AND NOT legalEntityEx(trim(extIdLegalEntity(i))));
         name(l) <- trim(nameLegalEntity(i));
         postcode(l) <- trim(postcode(i));
         region(l) <- trim(region(i));
@@ -71,7 +72,15 @@ importLegalEntities 'Импорт организаций' (FILE f) {
         officeNumber(l) <- trim(office(i));
         UNP(l) <- trim(unp(i));
         OKPO(l) <- trim(okpo(i));
-        bank(l) <- bank(trim(idBank(i)));
+        
+        IF NOT account(account(i), l) THEN NEW a = Account {
+            number(a) <- account(i);
+            legalEntity(a) <- l;
+            bank(a) <- bank(trim(idBank(i)));
+        }
+        FOR Account a == account(account(i), l) DO {
+            userAccount(l) <- a;
+        }
     }
     
     FOR Bank b = bank(idBank(INTEGER i)) AND trim(idBank(i)) != '' DO {

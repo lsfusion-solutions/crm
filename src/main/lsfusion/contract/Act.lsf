@@ -25,24 +25,28 @@ nameLegalEntity 'Организация' (Act a) = nameLegalEntity(contract(a));
 company (Act a) = company(contract(a));
 nameCompany 'Компания' (Act a) = name(company(a));
 
-
 authorisedPersonLegalEntity = DATA Contact.Contact(Act);
 nameAuthorisedPersonLegalEntity 'Уп. лицо организации' (Act c) = name(authorisedPersonLegalEntity(c));
-
-WHEN LOCAL CHANGED (legalEntity(Act c)) DO {
-    authorisedPersonLegalEntity (c) <- authorisedPerson(legalEntity(c));
-}
+authorisedDocumentLegalEntity 'На основании' = DATA VARSTRING[1000](Act) CHARWIDTH 20;
 
 authorisedPersonCompany  (Act c) = DATA Contact.Contact(Act);
 nameAuthorisedPersonCompany 'Уп. лицо компании' (Act c) = name(authorisedPersonCompany(c));
+authorisedDocumentCompany 'На основании' = DATA VARSTRING[1000](Act) CHARWIDTH 20;
+
+WHEN LOCAL CHANGED (legalEntity(Act c)) DO {
+    authorisedPersonLegalEntity (c) <- authorisedPerson(legalEntity(c));
+    authorisedDocumentLegalEntity (c) <- authorisedDocument(legalEntity(c));
+}
 
 WHEN LOCAL CHANGED (company(Act c)) DO {
     authorisedPersonCompany (c) <- authorisedPerson(company(c));
+    authorisedDocumentCompany (c) <- authorisedDocument(company(c));
 }
 
-authorisedDocumentLegalEntity 'На основании' = DATA VARSTRING[1000](Act) CHARWIDTH 20;
-authorisedDocumentCompany 'На основании' = DATA VARSTRING[1000](Act) CHARWIDTH 20;
-
+CONSTRAINT authorisedPersonLegalEntity(Act c) AND NOT legalEntity(authorisedPersonLegalEntity(c)) == legalEntity(c) 
+    CHECKED BY authorisedPersonLegalEntity[Act] MESSAGE 'Организация уполномоченного лица не совпадает с организацией договора';
+CONSTRAINT authorisedPersonCompany(Act c) AND NOT legalEntity(authorisedPersonCompany(c)) == company(c) 
+    CHECKED BY authorisedPersonCompany[Act] MESSAGE 'Организация уполномоченного лица не совпадает с компанией договора';
 CONSTRAINT Act a IS Act AND NOT contract(a) MESSAGE 'Для акта должен быть задан договор';
 
 agreement = DATA Agreement(Act);

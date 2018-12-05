@@ -1,6 +1,6 @@
 MODULE LegalEntity;
 
-REQUIRE Customer;
+REQUIRE Customer, Currency;
 
 NAMESPACE LegalEntity;
 
@@ -25,6 +25,8 @@ officeNumber 'Офис' = DATA VARISTRING[20] (LegalEntity) CHARWIDTH 6;
 UNP 'УНП' = DATA VARSTRING[9] (LegalEntity) CHARWIDTH 9 FIXED;
 OKPO 'ОКПО' = DATA VARSTRING[20] (LegalEntity) CHARWIDTH 15;
 
+address 'Адрес' (LegalEntity l) = CONCAT ', ', locality(l), street(l), houseNumber(l), officeNumber(l);
+
 customer = DATA Customer(LegalEntity);
 idCustomer 'Код клиента' (LegalEntity l) = id(customer(l));
 nameCustomer 'Клиент' (LegalEntity l) = name(customer(l)) IN id;
@@ -39,6 +41,7 @@ bank (id) = GROUP AGGR Bank b BY id (b);
 
 number 'Код банка' = DATA VARSTRING[10](Bank) CHARWIDTH 5 IN id;
 name 'Наименование' = DATA VARISTRING[100] (Bank) CHARWIDTH 15 IN id;
+postcode 'Почтовый индекс' = DATA VARSTRING[50](Bank) CHARWIDTH 6;
 address 'Адрес' = DATA VARSTRING[250](Bank) CHARWIDTH 20;
 mfo 'МФО' = DATA VARSTRING[11] (Bank);
 
@@ -72,16 +75,60 @@ NAVIGATOR {
     }
 }
 
-bank = DATA Bank(LegalEntity);
-numberBank 'Код банка' (LegalEntity l) = number(bank(l));
-nameBank 'Банк' (LegalEntity l) = name(bank(l));
-addressBank 'Адрес банка' (LegalEntity l) = address(bank(l));
-mfoBank 'МФО банка' (LegalEntity l) = mfo(bank(l));
+CLASS Account 'Расчетный счет';
+TABLE account (Account);
+
+inactive 'Неактивная' = DATA BOOLEAN (Account);
+active 'Активная' (Account a) = a IS Account AND NOT inactive(a);
+
+number 'Номер расчетного счета'  = DATA VARSTRING[50] (Account) IN id CHARWIDTH 28 FIXED;
+numberNew 'Номер расчетного счета IBAN'  = DATA VARSTRING[50] (Account) IN id CHARWIDTH 28 FIXED;
+
+account (number) = GROUP MAX Account account BY number(account);
+
+bank = DATA Bank (Account);
+nameBank 'Наименование банка' (Account account) = name(bank(account)) IN id;
+addressBank 'Адрес банка' (Account account) = address(bank(account));
+MFOBank 'Код BIC банка' (Account account) = mfo(bank(account));
+
+legalEntity = DATA LegalEntity (Account) NONULL DELETE AUTOSET;
+nameLegalEntity 'Организация' (Account account) = name(legalEntity(account));
+
+account (number, legalEntity) = GROUP MAX Account account BY number(account), legalEntity(account);
+
+defaultAccount(legalEntity) = GROUP MAX Account account IF active(account) BY legalEntity(account);
+
+userAccount = DATA Account (LegalEntity);
+CONSTRAINT legalEntity(userAccount(LegalEntity legalEntity)) != legalEntity CHECKED MESSAGE 'ошибка: Р/сч. по умолчанию должен соответствовать р/сч. Ю.Л.';
+
+account (LegalEntity legalEntity) =  OVERRIDE userAccount(legalEntity), defaultAccount(legalEntity) MATERIALIZED INDEXED;
+numberAccount 'Основной р/сч.' (LegalEntity legalEntity) = number(account(legalEntity));
+nameBank 'Банк' (LegalEntity legalEntity) = nameBank(account(legalEntity));
+addressBank 'Адрес банка' (LegalEntity legalEntity) = addressBank(account(legalEntity));
+mfoBank 'Код BIC банка' (LegalEntity legalEntity) = MFOBank(account(legalEntity));
+numberBank 'Код банка' (LegalEntity l) = number(bank(account(l)));
+postcodeBank 'Почтовый индекс банка' (LegalEntity l) = postcode(bank(account(l)));
+
+equals 'Основной' (LegalEntity legalEntity, Account account) = userAccount(legalEntity) == account;
+
+accountID 'Расчетный счет по номеру' (number, legalEntityId) = GROUP AGGR Account account WHERE account IS Account BY number(account), id(legalEntity(account));
+legalEntityAccount (VARSTRING[20] number) = legalEntity(account(number)); 
+
+currency = DATA Currency (Account);
+nameCurrency 'Валюта счета' = name(currency(Account account));
+
+note 'Примечание'  = DATA VARSTRING[50] (Account);
 
 FORM legalEntity 'Организация'
     OBJECTS o = LegalEntity PANEL
-    PROPERTIES(o) id, extId, name, nameCustomer, postcode, region, district, locality, street, houseNumber, officeNumber, UNP, OKPO, nameBank, isCompany
+    PROPERTIES(o) id, extId, name, nameCustomer, postcode, region, district, locality, street, houseNumber, officeNumber, UNP, OKPO, nameBank, numberAccount, isCompany
     ORDER name(o)
+    
+    OBJECTS a=Account
+    PROPERTIES(a)  inactive, number, numberNew, nameCurrency, nameBank, addressBank, MFOBank, note, NEW, DELETE GRID
+    FILTERS legalEntity(a) == o
+    PROPERTIES equals(o, a)
+    FILTERGROUP inactive FILTER 'Активный' active(a) 'ctrl F10' DEFAULT 
     
     EDIT LegalEntity OBJECT o
 ;
@@ -105,6 +152,7 @@ DESIGN legalEntity {
             NEW bank {
                 caption = 'Реквизиты';
                 type = CONTAINERH;
+                MOVE PROPERTY (numberAccount(o));
                 MOVE PROPERTY (nameBank(o)) { charWidth = 30; }
                 MOVE PROPERTY (UNP(o));
                 MOVE PROPERTY (OKPO(o));
@@ -128,7 +176,7 @@ DESIGN legalEntity {
 FORM legalEntities 'Организации'
     OBJECTS o = LegalEntity
     PROPERTIES(o) READONLYIF isReadonly() id, extId, name, nameCustomer, postcode, region, district, locality, street, houseNumber, officeNumber, 
-                                          UNP, OKPO, numberBank, nameBank, addressBank, mfoBank, isCompany
+                                          UNP, OKPO, numberBank, nameBank, addressBank, mfoBank, numberAccount, isCompany
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
     ORDER name(o)
 ;
@@ -138,7 +186,7 @@ FORM legalEntities 'Организации'
 FORM dialogLegalEntities 'Организации'
     OBJECTS o = LegalEntity
     PROPERTIES(o) READONLY id, extId, name, nameCustomer, postcode, region, district, locality, street, houseNumber, officeNumber, 
-                           UNP, OKPO, numberBank, nameBank, addressBank, mfoBank, isCompany
+                           UNP, OKPO, numberBank, nameBank, addressBank, mfoBank, numberAccount, isCompany
     ORDER name(o)
     
     LIST LegalEntity OBJECT o

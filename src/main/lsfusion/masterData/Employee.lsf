@@ -15,8 +15,8 @@ active 'Активный' (Employee e) = NOT inactive(e);
 
 FORM employee 'Сотрудник'
     OBJECTS o = Employee PANEL
-    PROPERTIES(o) id, number, login, sha256Password ON CHANGE changeSHA256Password(o), nameMainRole, firstName, lastName, 
-                  shortNameRp, fullNameRp, namePosition, nameLegalEntity, email, phone, addPhones, skype, note, inactive
+    PROPERTIES(o) id, number, login, sha256Password ON CHANGE changeSHA256Password(o), nameMainRole, firstName, lastName, middleName,
+                  shortName, fullName, fullNameRp, namePosition, nameLegalEntity, nameCustomer, email, phone, skype, note, inactive
         
     OBJECTS p = Phone
     PROPERTIES (p) nameType, number, NEW, DELETE 
@@ -26,11 +26,63 @@ FORM employee 'Сотрудник'
 ;
 
 DESIGN employee {
-    GROUP (,o) {
-        type = CONTAINERV;
+    OBJECTS {
+        NEW main {
+            type = CONTAINERH;
+            alignment = STRETCH;
+            NEW position {
+                caption = 'Основные параметры';
+                MOVE PROPERTY (id(o));
+                MOVE PROPERTY (number(o));
+                MOVE PROPERTY (namePosition(o));
+            }
+            NEW login {
+                caption = 'Системные параметры';
+                MOVE PROPERTY (login(o));
+                MOVE PROPERTY (sha256Password(o));
+                MOVE PROPERTY (nameMainRole(o));
+            }
+            NEW client {
+                flex = 1;
+                caption = 'Клиент';
+                MOVE PROPERTY (nameCustomer(o));
+                MOVE PROPERTY (nameLegalEntity(o));
+            }
+        }
+        NEW names {
+            type = CONTAINERH;
+            caption = 'Имя';
+            alignment = STRETCH;
+            NEW name {
+                width = 300;
+                MOVE PROPERTY (lastName(o));
+                MOVE PROPERTY (firstName(o));
+                MOVE PROPERTY (middleName(o));
+            }
+            NEW fio {
+                flex = 1;
+                MOVE PROPERTY (shortName(o));
+                MOVE PROPERTY (fullName(o));
+                MOVE PROPERTY (fullNameRp(o));
+            }
+        }
+        NEW add {
+            caption = 'Контакты';
+            alignment = STRETCH;
+            MOVE PROPERTY (email(o));
+            MOVE PROPERTY (phone(o)) { charWidth = 20;}
+            MOVE PROPERTY (skype(o));
+        }
+        NEW note {
+            caption = 'Дополнительные параметры';
+            alignment = STRETCH;
+            type = CONTAINERH;
+            MOVE PROPERTY (inactive(o));
+            MOVE PROPERTY (note(o));
+        }
+        MOVE BOX (p);
     }
 }
-
 FORM employees 'Сотрудники'
     OBJECTS o = Employee
     PROPERTIES(o) READONLYIF isReadonly() id, number, login, nameMainRole, name, namePosition, nameLegalEntity, email, phone, addPhones, skype, note, inactive

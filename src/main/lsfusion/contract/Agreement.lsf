@@ -24,24 +24,28 @@ nameLegalEntity 'Организация' (Agreement a) = nameLegalEntity(contrac
 company (Agreement a) = company(contract(a));
 nameCompany 'Компания' (Agreement a) = name(company(a));
 
-
 authorisedPersonLegalEntity = DATA Contact.Contact(Agreement);
 nameAuthorisedPersonLegalEntity 'Уп. лицо организации' (Agreement c) = name(authorisedPersonLegalEntity(c));
-
-WHEN LOCAL CHANGED (legalEntity(Agreement c)) DO {
-    authorisedPersonLegalEntity (c) <- authorisedPerson(legalEntity(c));
-}
+authorisedDocumentLegalEntity 'На основании' = DATA VARSTRING[1000](Agreement) CHARWIDTH 20;
 
 authorisedPersonCompany  (Agreement c) = DATA Contact.Contact(Agreement);
 nameAuthorisedPersonCompany 'Уп. лицо компании' (Agreement c) = name(authorisedPersonCompany(c));
+authorisedDocumentCompany 'На основании' = DATA VARSTRING[1000](Agreement) CHARWIDTH 20;
+
+WHEN LOCAL CHANGED (legalEntity(Agreement c)) DO {
+    authorisedPersonLegalEntity (c) <- authorisedPerson(legalEntity(c));
+    authorisedDocumentLegalEntity (c) <- authorisedDocument(legalEntity(c));
+}
 
 WHEN LOCAL CHANGED (company(Agreement c)) DO {
     authorisedPersonCompany (c) <- authorisedPerson(company(c));
+    authorisedDocumentCompany (c) <- authorisedDocument(company(c));
 }
 
-authorisedDocumentLegalEntity 'На основании' = DATA VARSTRING[1000](Agreement) CHARWIDTH 20;
-authorisedDocumentCompany 'На основании' = DATA VARSTRING[1000](Agreement) CHARWIDTH 20;
-
+CONSTRAINT authorisedPersonLegalEntity(Agreement c) AND NOT legalEntity(authorisedPersonLegalEntity(c)) == legalEntity(c) 
+    CHECKED BY authorisedPersonLegalEntity[Agreement] MESSAGE 'Организация уполномоченного лица не совпадает с организацией договора';
+CONSTRAINT authorisedPersonCompany(Agreement c) AND NOT legalEntity(authorisedPersonCompany(c)) == company(c) 
+    CHECKED BY authorisedPersonCompany[Agreement] MESSAGE 'Организация уполномоченного лица не совпадает с компанией договора';
 CONSTRAINT Agreement a IS Agreement AND NOT contract(a) MESSAGE 'Для соглашения должен быть задан договор';
 
 date 'Дата' = DATA DATE (Agreement) IN id;

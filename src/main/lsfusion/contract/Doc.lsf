@@ -28,7 +28,14 @@ company = ABSTRACT LegalEntity(Document);
 nameCompanyContract 'Компания' (Document d) = name(company(d)); 
 
 CLASS DocType 'Вид договора';
-name 'Наименование' (DocType d) = staticCaption(d) IF d IS DocType;
+name 'Наименование' (DocType d) = staticCaption(d) IF d IS DocType CHARWIDTH 20;
+
+FORM dialogDocTypes 'Типы документа'
+    OBJECTS d = DocType
+    PROPERTIES READONLY name(d)
+    
+    LIST DocType OBJECT d
+;
 
 docType = ABSTRACT DocType(Document);
 nameDocType 'Вид договора' (Document d) = name(docType(d));

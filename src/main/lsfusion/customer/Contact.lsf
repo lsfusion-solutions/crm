@@ -21,11 +21,17 @@ nameCustomer 'Клиент' (Contact c) = name(customer(c)) IN id;
 merge (Customer from, Customer to) + { customer(Contact c) <- to WHERE customer(c) = from; }
 
 middleName 'Отчество' = DATA VARSTRING[100](Contact) CHARWIDTH 15;
-initials 'Инициалы' (Contact c) = VARSTRING[5](CONCAT '', left(firstName(c), 1) + '. ', left(lastName(c), 1) + '.') CHARWIDTH 5;
-shortName 'ФИО (сокр.)' (Contact c) = CONCAT ' ', lastName(c), initials(c) CHARWIDTH 20;
-fullName 'ФИО (полное)' (Contact c) = CONCAT ' ', lastName(c), firstName(c), middleName(c) CHARWIDTH 30;
-shortNameRp 'ФИО (сокр.)(р.п.)' (Contact c) = DATA VARSTRING[100] (Contact) CHARWIDTH 20;
+initials 'Инициалы (И.О.)' (Contact c) = VARSTRING[5](CONCAT '', left(firstName(c), 1) + '.', left(middleName(c), 1) + '.') CHARWIDTH 5;
+
+shortName 'ФИО (сокр.)' = DATA VARSTRING[100](Contact) CHARWIDTH 20;
+fullName 'ФИО (полное)' = DATA VARSTRING[150](Contact) CHARWIDTH 30;
 fullNameRp 'ФИО (полное)(р.п.)' (Contact c) = DATA VARSTRING[100] (Contact) CHARWIDTH 30;
+
+WHEN LOCAL CHANGED (lastName(Contact c)) OR CHANGED (firstName(c)) OR CHANGED (middleName(c)) AND NOT CHANGED (fullName(c)) DO {
+    shortName (c) <- CONCAT ' ', lastName(c), initials(c);
+    fullName (c) <- CONCAT ' ', lastName(c), firstName(c), middleName(c);
+}
+
 
 CLASS Position 'Должность';
 TABLE position (Position);
@@ -109,7 +115,7 @@ WHEN LOCAL SETCHANGED (customer(legalEntity(Contact c))) DO {
 
 FORM contact 'Контакт'
     OBJECTS o = Contact PANEL
-    PROPERTIES(o) id, lastName, firstName, middleName, shortNameRp, fullNameRp, nameCustomer, nameLegalEntity, namePosition, email, phone, skype, note
+    PROPERTIES(o) id, lastName, firstName, middleName, shortName, fullName, fullNameRp, nameCustomer, nameLegalEntity, namePosition, email, phone, skype, note
     
     OBJECTS p = Phone
     PROPERTIES (p) nameType, number, NEW, DELETE 
@@ -119,8 +125,52 @@ FORM contact 'Контакт'
 ;
 
 DESIGN contact {
-    GROUP (,o) {
-        type = CONTAINERV;
+    OBJECTS {
+        NEW main {
+            type = CONTAINERH;
+            alignment = STRETCH;
+            NEW position {
+                caption = 'Основные параметры';
+                MOVE PROPERTY (id(o));
+                MOVE PROPERTY (namePosition(o));
+            }
+            NEW client {
+                flex = 1;
+                caption = 'Клиент';
+                MOVE PROPERTY (nameCustomer(o));
+                MOVE PROPERTY (nameLegalEntity(o));
+            }
+        }
+        NEW names {
+            type = CONTAINERH;
+            caption = 'Имя';
+            alignment = STRETCH;
+            NEW name {
+                width = 300;
+                MOVE PROPERTY (lastName(o));
+                MOVE PROPERTY (firstName(o));
+                MOVE PROPERTY (middleName(o));
+            }
+            NEW fio {
+                flex = 1;
+                MOVE PROPERTY (shortName(o));
+                MOVE PROPERTY (fullName(o));
+                MOVE PROPERTY (fullNameRp(o));
+            }
+        }
+        NEW add {
+            caption = 'Контакты';
+            alignment = STRETCH;
+            MOVE PROPERTY (email(o));
+            MOVE PROPERTY (phone(o)) { charWidth = 20;}
+            MOVE PROPERTY (skype(o));
+        }
+        NEW note {
+            caption = 'Дополнительные параметры';
+            alignment = STRETCH;
+            MOVE PROPERTY (note(o));
+        }
+        MOVE BOX (p);
     }
 }
 
@@ -147,13 +197,14 @@ NAVIGATOR {
 
 authorisedPerson = DATA Contact(LegalEntity);
 nameAuthorisedPerson 'Уполномоченное лицо' (LegalEntity l) = name(authorisedPerson(l));
+authorisedDocument 'На основании' = DATA VARSTRING[1000](LegalEntity) CHARWIDTH 20;
 
 CONSTRAINT authorisedPerson(LegalEntity l) AND NOT legalEntity(authorisedPerson(l)) == l CHECKED BY authorisedPerson[LegalEntity] 
     MESSAGE 'Организация уполномоченного лица не соответствует организации';
 
-EXTEND FORM legalEntities PROPERTIES nameAuthorisedPerson(o);
-EXTEND FORM dialogLegalEntities PROPERTIES nameAuthorisedPerson(o);
-EXTEND FORM legalEntity PROPERTIES nameAuthorisedPerson(o);
+EXTEND FORM legalEntities PROPERTIES nameAuthorisedPerson(o), authorisedDocument(o);
+EXTEND FORM dialogLegalEntities PROPERTIES nameAuthorisedPerson(o), authorisedDocument(o);
+EXTEND FORM legalEntity PROPERTIES nameAuthorisedPerson(o), authorisedDocument(o);
 
 DESIGN legalEntity {
     row {
@@ -162,6 +213,7 @@ DESIGN legalEntity {
             type = CONTAINERH;
             caption = 'Контакты';
             MOVE PROPERTY (nameAuthorisedPerson(o)) { charWidth = 30; }
+            MOVE PROPERTY (authorisedDocument(o)) { charWidth = 30; }
         }
     }
 }
