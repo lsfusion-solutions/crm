@@ -100,6 +100,12 @@ printContractWord 'Сформировать по шаблону' (Contract ct) {
         value(TemplateEntry d) <- TEXT (toDateDDMMYY(dateClosing(ct))) WHERE key(d) = 'CLOSING_DATE_CONTRACT' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE note(ct), '' WHERE key(d) = 'NOTE_CONTRACT' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE text(ct), '' WHERE key(d) = 'TEXT_CONTRACT' AND template (d) == t;
+        value(TemplateEntry d) <- OVERRIDE authorisedDocumentLegalEntity(ct), '' WHERE key(d) = 'AUTHORISED_DOCUMENT_CUSTOMER' AND template (d) == t;
+        value(TemplateEntry d) <- OVERRIDE authorisedDocumentCompany(ct), '' WHERE key(d) = 'AUTHORISED_DOCUMENT_COMPANY' AND template (d) == t;
+        value(TemplateEntry d) <- OVERRIDE shortName(authorisedPersonLegalEntity(ct)), '' WHERE key(d) = 'SHORT_NAME_AUTHORISED_PERSON_CUSTOMER' AND template (d) == t;
+        value(TemplateEntry d) <- OVERRIDE fullName(authorisedPersonLegalEntity(ct)), '' WHERE key(d) = 'FULL_NAME_AUTHORISED_PERSON_CUSTOMER' AND template (d) == t;
+        value(TemplateEntry d) <- OVERRIDE shortName(authorisedPersonCompany(ct)), '' WHERE key(d) = 'SHORT_NAME_AUTHORISED_PERSON_COMPANY' AND template (d) == t;
+        value(TemplateEntry d) <- OVERRIDE shortName(authorisedPersonCompany(ct)), '' WHERE key(d) = 'FULL_NAME_AUTHORISED_PERSON_COMPANY' AND template (d) == t;
         
         SHOW editTemplate OBJECTS t = t;
     }

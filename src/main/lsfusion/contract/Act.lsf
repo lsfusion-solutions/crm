@@ -22,6 +22,26 @@ numberContract 'Номер договора' (Act a) = number(contract(a)) IN id
 customer (Act a) = customer(contract(a));
 nameCustomer 'Клиент' (Act a) = nameCustomer(contract(a));
 nameLegalEntity 'Организация' (Act a) = nameLegalEntity(contract(a));
+company (Act a) = company(contract(a));
+nameCompany 'Компания' (Act a) = name(company(a));
+
+
+authorisedPersonLegalEntity = DATA Contact.Contact(Act);
+nameAuthorisedPersonLegalEntity 'Уп. лицо организации' (Act c) = name(authorisedPersonLegalEntity(c));
+
+WHEN LOCAL CHANGED (legalEntity(Act c)) DO {
+    authorisedPersonLegalEntity (c) <- authorisedPerson(legalEntity(c));
+}
+
+authorisedPersonCompany  (Act c) = DATA Contact.Contact(Act);
+nameAuthorisedPersonCompany 'Уп. лицо компании' (Act c) = name(authorisedPersonCompany(c));
+
+WHEN LOCAL CHANGED (company(Act c)) DO {
+    authorisedPersonCompany (c) <- authorisedPerson(company(c));
+}
+
+authorisedDocumentLegalEntity 'На основании' = DATA VARSTRING[1000](Act) CHARWIDTH 20;
+authorisedDocumentCompany 'На основании' = DATA VARSTRING[1000](Act) CHARWIDTH 20;
 
 CONSTRAINT Act a IS Act AND NOT contract(a) MESSAGE 'Для акта должен быть задан договор';
 
@@ -105,7 +125,8 @@ deleteFile 'Удалить' (Act c) {
 FORM act 'Акт выполненных работ'
     OBJECTS o = Act PANEL
     PROPERTIES(o) id, number, date, nameType, numberContract, numberAgreement, nameCustomer, nameLegalEntity, sum, dateSending, dateReceiving, dateClosing, note, text,
-                  loadFile, openFile SHOWIF file(o), deleteFile SHOWIF file(o), nameNumerator, series
+                  loadFile, openFile SHOWIF file(o), deleteFile SHOWIF file(o), nameNumerator, series, 
+                  nameCompany, nameAuthorisedPersonLegalEntity, nameAuthorisedPersonCompany, authorisedDocumentLegalEntity, authorisedDocumentCompany
     
     EDIT Act OBJECT o
 ;
@@ -133,8 +154,21 @@ DESIGN act {
                 flex = 1;
                 MOVE PROPERTY(numberContract(o));
                 MOVE PROPERTY(numberAgreement(o));
+                MOVE PROPERTY(nameCompany(o));
+                NEW autC {
+                    type = CONTAINERH;
+                    fill = 1;
+                    MOVE PROPERTY (nameAuthorisedPersonCompany(o));
+                    MOVE PROPERTY (authorisedDocumentCompany(o));
+                }
                 MOVE PROPERTY(nameCustomer(o));
                 MOVE PROPERTY(nameLegalEntity(o));
+                NEW autL {
+                    type = CONTAINERH;
+                    fill = 1;
+                    MOVE PROPERTY (nameAuthorisedPersonLegalEntity(o));
+                    MOVE PROPERTY (authorisedDocumentLegalEntity(o));
+                }
             }
         }
         NEW processing {

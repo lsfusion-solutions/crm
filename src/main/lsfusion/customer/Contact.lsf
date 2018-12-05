@@ -20,7 +20,11 @@ nameCustomer 'Клиент' (Contact c) = name(customer(c)) IN id;
 
 merge (Customer from, Customer to) + { customer(Contact c) <- to WHERE customer(c) = from; }
 
-fullName 'ФИО' = DATA VARISTRING[100](Contact) CHARWIDTH 30;
+middleName 'Отчество' = DATA VARSTRING[100](Contact) CHARWIDTH 15;
+initials 'Инициалы' (Contact c) = VARSTRING[5](CONCAT '', left(firstName(c), 1) + '. ', left(lastName(c), 1) + '.') CHARWIDTH 5;
+shortName 'ФИО (сокр.)' (Contact c) = CONCAT ' ', lastName(c), initials(c) CHARWIDTH 20;
+fullName 'ФИО (полное)' (Contact c) = CONCAT ' ', lastName(c), firstName(c), middleName(c) CHARWIDTH 30;
+
 position 'Должность' = DATA VARSTRING[100](Contact) CHARWIDTH 30;
 skype 'Skype' = DATA VARSTRING[50](Contact) CHARWIDTH 15;
 note 'Примечание' = DATA VARSTRING[100](Contact) CHARWIDTH 20;
@@ -68,7 +72,7 @@ WHEN LOCAL SETCHANGED (customer(legalEntity(Contact c))) DO {
 
 FORM contact 'Контакт'
     OBJECTS o = Contact PANEL
-    PROPERTIES(o) id, firstName, lastName, nameCustomer, nameLegalEntity, position, email, phone, skype, note
+    PROPERTIES(o) id, lastName, firstName, middleName, nameCustomer, nameLegalEntity, position, email, phone, skype, note
     
     OBJECTS p = Phone
     PROPERTIES (p) nameType, number, NEW, DELETE 
@@ -85,15 +89,15 @@ DESIGN contact {
 
 FORM contacts 'Контакты'
     OBJECTS o = Contact
-    PROPERTIES(o) READONLY id, name, nameCustomer, nameLegalEntity, position, email, phone, addPhones, skype, note
+    PROPERTIES(o) READONLY id, lastName, firstName, middleName, nameCustomer, nameLegalEntity, position, email, phone, addPhones, skype, note
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
-    ORDER name(o)
+    ORDER lastName(o)
 ;
 
 FORM dialogContacts 'Контакты'
     OBJECTS o = Contact
-    PROPERTIES(o) READONLY id, name, nameCustomer, nameLegalEntity, position, email, phone, addPhones, skype, note
-    ORDER name(o)
+    PROPERTIES(o) READONLY id, lastName, firstName, middleName, nameCustomer, nameLegalEntity, position, email, phone, addPhones, skype, note
+    ORDER lastName(o)
     
     LIST Contact OBJECT o
 ;
@@ -101,5 +105,26 @@ FORM dialogContacts 'Контакты'
 NAVIGATOR {
     customerFolder {
         NEW contacts;
+    }
+}
+
+authorisedPerson = DATA Contact(LegalEntity);
+nameAuthorisedPerson 'Уполномоченное лицо' (LegalEntity l) = name(authorisedPerson(l));
+
+CONSTRAINT authorisedPerson(LegalEntity l) AND NOT legalEntity(authorisedPerson(l)) == l CHECKED BY authorisedPerson[LegalEntity] 
+    MESSAGE 'Организация уполномоченного лица не соответствует организации';
+
+EXTEND FORM legalEntities PROPERTIES nameAuthorisedPerson(o);
+EXTEND FORM dialogLegalEntities PROPERTIES nameAuthorisedPerson(o);
+EXTEND FORM legalEntity PROPERTIES nameAuthorisedPerson(o);
+
+DESIGN legalEntity {
+    row {
+        type = CONTAINERV;
+        client {
+            type = CONTAINERH;
+            caption = 'Контакты';
+            MOVE PROPERTY (nameAuthorisedPerson(o)) { charWidth = 30; }
+        }
     }
 }

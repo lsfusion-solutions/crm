@@ -1,6 +1,6 @@
 MODULE Contract;
 
-REQUIRE LegalEntity, Doc, Currency, Numerator;
+REQUIRE LegalEntity, Doc, Currency, Numerator, Contact;
 
 NAMESPACE Contract;
 
@@ -24,6 +24,23 @@ nameCustomer 'Клиент' (Contract c) = name(customer(legalEntity(c)));
 company = DATA LegalEntity(Contract);
 idCompany 'Код компании' (Contract c) = id(company(c));
 nameCompany 'Компания' (Contract c) = name(company(c)) IN id;
+
+authorisedPersonLegalEntity = DATA Contact.Contact(Contract);
+nameAuthorisedPersonLegalEntity 'Уп. лицо организации' (Contract c) = name(authorisedPersonLegalEntity(c));
+
+WHEN LOCAL CHANGED (legalEntity(Contract c)) DO {
+    authorisedPersonLegalEntity (c) <- authorisedPerson(legalEntity(c));
+}
+
+authorisedPersonCompany  (Contract c) = DATA Contact.Contact(Contract);
+nameAuthorisedPersonCompany 'Уп. лицо компании' (Contract c) = name(authorisedPersonCompany(c));
+
+WHEN LOCAL CHANGED (company(Contract c)) DO {
+    authorisedPersonCompany (c) <- authorisedPerson(company(c));
+}
+
+authorisedDocumentLegalEntity 'На основании' = DATA VARSTRING[1000](Contract) CHARWIDTH 20;
+authorisedDocumentCompany 'На основании' = DATA VARSTRING[1000](Contract) CHARWIDTH 20;
 
 CONSTRAINT company(Contract c) AND NOT isCompany(company(c)) CHECKED BY company[Contract] MESSAGE 'Компания договора не является компанией';
 
@@ -121,7 +138,8 @@ FORM contract 'Договор'
     OBJECTS o = Contract PANEL
     PROPERTIES(o) id, nameCustomer READONLY, nameLegalEntity, nameCompany, number, date, sum, nameType, nameSendingWay, 
                   dateSigningCompany, dateSending, dateSigningCustomer, dateReceiving, dateTo, dateClosing, note, text,
-                  shortNameCurrency, sumCurrency, nameNumerator, series
+                  shortNameCurrency, sumCurrency, nameNumerator, series, nameAuthorisedPersonLegalEntity, nameAuthorisedPersonCompany,
+                  authorisedDocumentLegalEntity, authorisedDocumentCompany
     
     EDIT Contract OBJECT o
 ;
@@ -150,8 +168,20 @@ DESIGN contract {
                         caption = 'Контрагенты';
                         flex = 1;
                         MOVE PROPERTY (nameCompany(o));
+                        NEW autC {
+                            type = CONTAINERH;
+                            fill = 1;
+                            MOVE PROPERTY (nameAuthorisedPersonCompany(o));
+                            MOVE PROPERTY (authorisedDocumentCompany(o));
+                        }
                         MOVE PROPERTY (nameCustomer(o));
                         MOVE PROPERTY (nameLegalEntity(o));
+                        NEW autL {
+                            type = CONTAINERH;
+                            fill = 1;
+                            MOVE PROPERTY (nameAuthorisedPersonLegalEntity(o));
+                            MOVE PROPERTY (authorisedDocumentLegalEntity(o));
+                        }
                     }
                 }
                 NEW processing {
