@@ -109,7 +109,7 @@ WHEN LOCAL SETCHANGED (customer(legalEntity(Contact c))) DO {
 
 FORM contact 'Контакт'
     OBJECTS o = Contact PANEL
-    PROPERTIES(o) id, lastName, firstName, middleName, nameCustomer, nameLegalEntity, namePosition, email, phone, skype, note
+    PROPERTIES(o) id, lastName, firstName, middleName, shortNameRp, fullNameRp, nameCustomer, nameLegalEntity, namePosition, email, phone, skype, note
     
     OBJECTS p = Phone
     PROPERTIES (p) nameType, number, NEW, DELETE 

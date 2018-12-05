@@ -15,7 +15,8 @@ active 'Активный' (Employee e) = NOT inactive(e);
 
 FORM employee 'Сотрудник'
     OBJECTS o = Employee PANEL
-    PROPERTIES(o) id, number, login, sha256Password ON CHANGE changeSHA256Password(o), nameMainRole, firstName, lastName, namePosition, nameLegalEntity, email, phone, addPhones, skype, note, inactive
+    PROPERTIES(o) id, number, login, sha256Password ON CHANGE changeSHA256Password(o), nameMainRole, firstName, lastName, 
+                  shortNameRp, fullNameRp, namePosition, nameLegalEntity, email, phone, addPhones, skype, note, inactive
         
     OBJECTS p = Phone
     PROPERTIES (p) nameType, number, NEW, DELETE 
