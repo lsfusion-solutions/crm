@@ -75,7 +75,7 @@ FORM debtDashboard 'Контроль задолженности'
     PROPERTIES in(d), createActs() DRAW d TOOLBAR
     PROPERTIES (d) TOOLBAR SHOWIF act(d) editAct, deleteAct 
     PROPERTIES (d) READONLY date, numberContract, nameContractType, nameCustomer, nameLegalEntity, numberAct, dateAct, sum, paid
-    PROPERTIES (d) editContract
+    PROPERTIES (d) TOOLBAR editContract
     ORDER date(d)
     FILTERS  contractType(d) == filterContractType() OR NOT filterContractType()
     FILTERGROUP paid FILTER 'Не оплачено' NOT paid(d) >= sum(d) DEFAULT 
