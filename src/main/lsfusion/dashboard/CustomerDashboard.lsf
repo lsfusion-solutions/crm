@@ -23,7 +23,7 @@ FORM dashboardCustomer 'Работа с клиентами'
     ORDER name(le)
     
     OBJECTS ct = Contact.Contact
-    PROPERTIES (ct) READONLY id, name, nameLegalEntity, position, email, phone, addPhones, skype, note
+    PROPERTIES (ct) READONLY id, name, nameLegalEntity, namePosition, email, phone, addPhones, skype, note
     PROPERTIES (ct) NEWSESSION NEW, EDIT, DELETE 
     FILTERS customer(ct) == c
     ORDER name(ct)
@@ -154,7 +154,7 @@ EXTEND FORM customer
     FILTERS customer(le) = o
     
     OBJECTS c = Contact.Contact
-    PROPERTIES (c) id, firstName, lastName, nameLegalEntity, position, email, phone, addPhones, skype, note, NEW, EDIT, DELETE
+    PROPERTIES (c) id, firstName, lastName, nameLegalEntity, namePosition, email, phone, addPhones, skype, note, NEW, EDIT, DELETE
     FILTERS customer(c) = o
 ;
 DESIGN customer {

@@ -43,11 +43,15 @@ importContacts (FILE f) {
         name(t) <- trim(phone6(0));
     }
     
+    FOR [GROUP SUM 1 BY trim(position(INTEGER i))](VARSTRING[100] pos) AND pos != '' AND NOT (GROUP MAX Position p IF name(p) == pos) DO NEW p = Position {
+        name(p) <- pos;
+    }
+    
     FOR Contact c = contact(idContact(INTEGER i)) AND idContact(i) DO {
         legalEntity(c) <- legalEntity(trim(idLegalEntity(i)));
         customer(c) <- OVERRIDE customer(legalEntity(trim(idLegalEntity(i)))), customer(trim(idCustomer(i)));
         lastName(c) <- trim(name(i));
-        position(c) <- trim(position(i));
+        position(c) <- GROUP MAX Position p IF upper(name(p)) == upper(trim(position(i)));
         email(c) <- trim(email(i));
         skype(c) <- trim(skype(i));
         note(c) <- trim(note(i));

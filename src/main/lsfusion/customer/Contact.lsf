@@ -25,7 +25,42 @@ initials 'Инициалы' (Contact c) = VARSTRING[5](CONCAT '', left(firstName
 shortName 'ФИО (сокр.)' (Contact c) = CONCAT ' ', lastName(c), initials(c) CHARWIDTH 20;
 fullName 'ФИО (полное)' (Contact c) = CONCAT ' ', lastName(c), firstName(c), middleName(c) CHARWIDTH 30;
 
-position 'Должность' = DATA VARSTRING[100](Contact) CHARWIDTH 30;
+CLASS Position 'Должность';
+TABLE position (Position);
+
+name 'Наименование' = DATA VARISTRING[100] (Position) CHARWIDTH 15;
+nameRp 'Наименование (род.падеж)' = DATA VARISTRING[100] (Position) CHARWIDTH 15;
+
+FORM position 'Должность'
+    OBJECTS o = Position PANEL
+    PROPERTIES(o) name, nameRp
+    
+    EDIT Position OBJECT o
+;
+
+FORM positions 'Должность'
+    OBJECTS o = Position
+    PROPERTIES(o) READONLY name, nameRp
+    PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
+;
+
+FORM dialogPositions 'Должность'
+    OBJECTS o = Position
+    PROPERTIES(o) READONLY name
+    
+    LIST Position OBJECT o
+;
+
+NAVIGATOR {
+    masterData {
+        NEW positions;
+    }
+}
+
+position = DATA Position(Contact);
+namePosition 'Должность' (Contact c) = name(position(c)) CHARWIDTH 20; 
+nameRpPosition 'Должность (р.п.)' (Contact c) = nameRp(position(c));
+
 skype 'Skype' = DATA VARSTRING[50](Contact) CHARWIDTH 15;
 note 'Примечание' = DATA VARSTRING[100](Contact) CHARWIDTH 20;
 
@@ -72,7 +107,7 @@ WHEN LOCAL SETCHANGED (customer(legalEntity(Contact c))) DO {
 
 FORM contact 'Контакт'
     OBJECTS o = Contact PANEL
-    PROPERTIES(o) id, lastName, firstName, middleName, nameCustomer, nameLegalEntity, position, email, phone, skype, note
+    PROPERTIES(o) id, lastName, firstName, middleName, nameCustomer, nameLegalEntity, namePosition, email, phone, skype, note
     
     OBJECTS p = Phone
     PROPERTIES (p) nameType, number, NEW, DELETE 
@@ -89,14 +124,14 @@ DESIGN contact {
 
 FORM contacts 'Контакты'
     OBJECTS o = Contact
-    PROPERTIES(o) READONLY id, lastName, firstName, middleName, nameCustomer, nameLegalEntity, position, email, phone, addPhones, skype, note
+    PROPERTIES(o) READONLY id, lastName, firstName, middleName, nameCustomer, nameLegalEntity, namePosition, email, phone, addPhones, skype, note
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
     ORDER lastName(o)
 ;
 
 FORM dialogContacts 'Контакты'
     OBJECTS o = Contact
-    PROPERTIES(o) READONLY id, lastName, firstName, middleName, nameCustomer, nameLegalEntity, position, email, phone, addPhones, skype, note
+    PROPERTIES(o) READONLY id, lastName, firstName, middleName, nameCustomer, nameLegalEntity, namePosition, email, phone, addPhones, skype, note
     ORDER lastName(o)
     
     LIST Contact OBJECT o

@@ -56,7 +56,11 @@ printAgreementWord 'Сформировать по шаблону' (Agreement ag)
         value(TemplateEntry d) <- OVERRIDE shortName(authorisedPersonLegalEntity(ag)), '' WHERE key(d) = 'SHORT_NAME_AUTHORISED_PERSON_CUSTOMER' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE fullName(authorisedPersonLegalEntity(ag)), '' WHERE key(d) = 'FULL_NAME_AUTHORISED_PERSON_CUSTOMER' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE shortName(authorisedPersonCompany(ag)), '' WHERE key(d) = 'SHORT_NAME_AUTHORISED_PERSON_COMPANY' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE shortName(authorisedPersonCompany(ag)), '' WHERE key(d) = 'FULL_NAME_AUTHORISED_PERSON_COMPANY' AND template (d) == t;
+        value(TemplateEntry d) <- OVERRIDE fullName(authorisedPersonCompany(ag)), '' WHERE key(d) = 'FULL_NAME_AUTHORISED_PERSON_COMPANY' AND template (d) == t;
+        value(TemplateEntry d) <- OVERRIDE namePosition(authorisedPersonCompany(ag)), '' WHERE key(d) = 'POSITION_AUTHORISED_PERSON_COMPANY' AND template (d) == t;
+        value(TemplateEntry d) <- OVERRIDE nameRpPosition(authorisedPersonCompany(ag)), '' WHERE key(d) = 'POSITION_RP_AUTHORISED_PERSON_COMPANY' AND template (d) == t;
+        value(TemplateEntry d) <- OVERRIDE namePosition(authorisedPersonLegalEntity(ag)), '' WHERE key(d) = 'POSITION_AUTHORISED_PERSON_CUSTOMER' AND template (d) == t;
+        value(TemplateEntry d) <- OVERRIDE nameRpPosition(authorisedPersonLegalEntity(ag)), '' WHERE key(d) = 'POSITION_RP_AUTHORISED_PERSON_CUSTOMER' AND template (d) == t;
         
         SHOW editTemplate OBJECTS t = t;
     }

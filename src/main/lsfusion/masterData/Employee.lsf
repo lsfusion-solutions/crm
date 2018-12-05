@@ -15,7 +15,7 @@ active 'Активный' (Employee e) = NOT inactive(e);
 
 FORM employee 'Сотрудник'
     OBJECTS o = Employee PANEL
-    PROPERTIES(o) id, number, login, sha256Password ON CHANGE changeSHA256Password(o), nameMainRole, firstName, lastName, position, nameLegalEntity, email, phone, addPhones, skype, note, inactive
+    PROPERTIES(o) id, number, login, sha256Password ON CHANGE changeSHA256Password(o), nameMainRole, firstName, lastName, namePosition, nameLegalEntity, email, phone, addPhones, skype, note, inactive
         
     OBJECTS p = Phone
     PROPERTIES (p) nameType, number, NEW, DELETE 
@@ -32,7 +32,7 @@ DESIGN employee {
 
 FORM employees 'Сотрудники'
     OBJECTS o = Employee
-    PROPERTIES(o) READONLYIF isReadonly() id, number, login, nameMainRole, name, position, nameLegalEntity, email, phone, addPhones, skype, note, inactive
+    PROPERTIES(o) READONLYIF isReadonly() id, number, login, nameMainRole, name, namePosition, nameLegalEntity, email, phone, addPhones, skype, note, inactive
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
     ORDER name(o)
     
@@ -43,7 +43,7 @@ FORM employees 'Сотрудники'
 
 FORM dialogEmployees 'Сотрудники'
     OBJECTS o = Employee
-    PROPERTIES(o) READONLY id, number, login, name, position, nameLegalEntity, email, phone, addPhones, skype, note, inactive
+    PROPERTIES(o) READONLY id, number, login, name, namePosition, nameLegalEntity, email, phone, addPhones, skype, note, inactive
     ORDER name(o)
     
     FILTERGROUP active FILTER 'Активные' NOT inactive(o) DEFAULT
