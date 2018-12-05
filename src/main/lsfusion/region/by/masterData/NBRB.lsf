@@ -1,7 +1,7 @@
 MODULE NBRB;
 
 REQUIRE System,
-        Currency,
+        Currency, Utils,
         SchedulerDefaultData;
 
 
@@ -17,19 +17,49 @@ importNBRBExchangeRateDaysCount 'Кол-во дней' = DATA INTEGER() IN nbrb;
 importNBRBExchangeRateDateFromDateToAction 'Импортировать курсы НБРБ'  INTERNAL  'lsfusion.crm.region.by.masterdata.ImportNBRBExchangeRateDateFromDateToActionProperty' (Currency) IN nbrb;
 importNBRBExchangeRateLastDaysAction 'Импортировать последние курсы НБРБ'  INTERNAL  'lsfusion.crm.region.by.masterdata.ImportNBRBExchangeRateLastDaysActionProperty' (Currency) IN nbrb;
 
-importNBRBExchangeRateDateFromDateTo 'Импортировать курсы НБРБ'()  { 
+cur_Abbreviation = DATA LOCAL VARSTRING[255] (INTEGER);
+cur_ID = DATA LOCAL INTEGER (INTEGER);
+cur_Scale = DATA LOCAL INTEGER (INTEGER);
+cur_OfficialRate = DATA LOCAL NUMERIC[20,13](INTEGER);
+dateTime = DATA LOCAL VARSTRING[255] (INTEGER );
+
+importNBRBExchangeRate 'Импортировать курсы НБРБ за период'(DATE dateFrom, DATE dateTo)  { 
+    LOCAL result = FILE();
+    EXTERNAL HTTP GET 'http://www.nbrb.by/API/ExRates/Currencies' PARAMS System.exportFile() TO result;
+    IMPORT JSON FROM result() TO cur_Abbreviation = Cur_Abbreviation, cur_ID = Cur_ID, cur_Scale = Cur_Scale;
     FOR Currency c IS Currency DO {
-        importNBRBExchangeRateDateFromDateToAction(c);
+        FOR NOT typeExchange('НБРБ (' +shortName(c)+')') NEW te = TypeExchange DO {
+            name(te)<-'НБРБ (' +shortName(c)+')';
+            currency(te)<-c;
+        }
+        FOR cur_Abbreviation(INTEGER i) = shortName(c) DO{
+            LOCAL result2 = FILE();
+            LOCAL aaa = VARSTRING[255]();
+            EXTERNAL HTTP GET 'http://www.nbrb.by/API/ExRates/Rates/Dynamics/' + cur_ID(i)
+                                                  + '?startDate=' + [FORMULA VARSTRING[20] 'to_char(($1),\'MM/DD/YYYY\')'](dateFrom) 
+                                                  + '&endDate=' +  [FORMULA VARSTRING[20] 'to_char(($1),\'MM/DD/YYYY\')'](dateTo) TO result2;
+            IMPORT JSON FROM result2() TO cur_OfficialRate = Cur_OfficialRate, dateTime = Date;
+            FOR cur_OfficialRate(INTEGER j) AND DATE date1 = DATE(getWord(dateTime(j), 'T', 1)) DO {
+                rate(TypeExchange te,c,date1 ) <- NUMERIC[20,13](cur_OfficialRate(j)/cur_Scale(i)) WHERE shortName(currency(te))  = 'BYN' ;
+                rate(TypeExchange te,Currency c1,date1 ) <- NUMERIC[20,13](1/(cur_OfficialRate(j)/cur_Scale(i))) WHERE shortName(c1)  = 'BYN' AND currency(te) = c;
+            }
+        }
     }
-    EXEC apply();
+    apply();
+} IN nbrb;
+
+importNBRBExchangeRateDateFromDateTo 'Импортировать курсы НБРБ'()  { 
+    IF sum(importNBRBExchangeRateDateFrom(),365)<= importNBRBExchangeRateDateTo() THEN 
+        ASK 'Период задан больше 365 дней, будет принято только первые 365 дней' DO {importNBRBExchangeRate(importNBRBExchangeRateDateFrom(),importNBRBExchangeRateDateTo());} ELSE{RETURN ;}
+        ELSE importNBRBExchangeRate(importNBRBExchangeRateDateFrom(),importNBRBExchangeRateDateTo());
 } IN nbrb;
 
 importNBRBExchangeRateLastDays 'Импортировать последние курсы НБРБ'()  { 
-    FOR Currency c IS Currency DO {
-        importNBRBExchangeRateLastDaysAction(c);
-    }
-    APPLY;
+    IF importNBRBExchangeRateDaysCount()>365 THEN 
+        ASK 'Кол-во дней задана больше 365 дней, будет принято только первые 365 дней' DO {importNBRBExchangeRate(subtract(currentDate(),importNBRBExchangeRateDaysCount()),currentDate());} ELSE{RETURN ;}
+        ELSE importNBRBExchangeRate(subtract(currentDate(),importNBRBExchangeRateDaysCount()),currentDate());
 } IN nbrb;
+
 
 EXTEND FORM typeExchangeCurrencyDate
     PROPERTIES() importNBRBExchangeRateDateFrom, importNBRBExchangeRateDateTo, importNBRBExchangeRateDateFromDateTo
