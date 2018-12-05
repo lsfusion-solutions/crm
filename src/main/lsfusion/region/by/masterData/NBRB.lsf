@@ -14,9 +14,6 @@ importNBRBExchangeRateDateTo 'Дата по' = DATA DATE () IN nbrb;
 
 importNBRBExchangeRateDaysCount 'Кол-во дней' = DATA INTEGER() IN nbrb;
 
-importNBRBExchangeRateDateFromDateToAction 'Импортировать курсы НБРБ'  INTERNAL  'lsfusion.crm.region.by.masterdata.ImportNBRBExchangeRateDateFromDateToActionProperty' (Currency) IN nbrb;
-importNBRBExchangeRateLastDaysAction 'Импортировать последние курсы НБРБ'  INTERNAL  'lsfusion.crm.region.by.masterdata.ImportNBRBExchangeRateLastDaysActionProperty' (Currency) IN nbrb;
-
 cur_Abbreviation = DATA LOCAL VARSTRING[255] (INTEGER);
 cur_ID = DATA LOCAL INTEGER (INTEGER);
 cur_Scale = DATA LOCAL INTEGER (INTEGER);
