@@ -106,6 +106,10 @@ printContractWord 'Сформировать по шаблону' (Contract ct) {
         value(TemplateEntry d) <- OVERRIDE fullName(authorisedPersonLegalEntity(ct)), '' WHERE key(d) = 'FULL_NAME_AUTHORISED_PERSON_CUSTOMER' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE shortName(authorisedPersonCompany(ct)), '' WHERE key(d) = 'SHORT_NAME_AUTHORISED_PERSON_COMPANY' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE shortName(authorisedPersonCompany(ct)), '' WHERE key(d) = 'FULL_NAME_AUTHORISED_PERSON_COMPANY' AND template (d) == t;
+        value(TemplateEntry d) <- OVERRIDE shortNameRp(authorisedPersonLegalEntity(ct)), '' WHERE key(d) = 'SHORT_NAME_RP_AUTHORISED_PERSON_CUSTOMER' AND template (d) == t;
+        value(TemplateEntry d) <- OVERRIDE fullNameRp(authorisedPersonLegalEntity(ct)), '' WHERE key(d) = 'FULL_NAME_RP_AUTHORISED_PERSON_CUSTOMER' AND template (d) == t;
+        value(TemplateEntry d) <- OVERRIDE shortNameRp(authorisedPersonCompany(ct)), '' WHERE key(d) = 'SHORT_NAME_RP_AUTHORISED_PERSON_COMPANY' AND template (d) == t;
+        value(TemplateEntry d) <- OVERRIDE shortNameRp(authorisedPersonCompany(ct)), '' WHERE key(d) = 'FULL_NAME_RP_AUTHORISED_PERSON_COMPANY' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE namePosition(authorisedPersonCompany(ct)), '' WHERE key(d) = 'POSITION_AUTHORISED_PERSON_COMPANY' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE nameRpPosition(authorisedPersonCompany(ct)), '' WHERE key(d) = 'POSITION_RP_AUTHORISED_PERSON_COMPANY' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE namePosition(authorisedPersonLegalEntity(ct)), '' WHERE key(d) = 'POSITION_AUTHORISED_PERSON_CUSTOMER' AND template (d) == t;

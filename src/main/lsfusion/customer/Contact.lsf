@@ -24,6 +24,8 @@ middleName 'Отчество' = DATA VARSTRING[100](Contact) CHARWIDTH 15;
 initials 'Инициалы' (Contact c) = VARSTRING[5](CONCAT '', left(firstName(c), 1) + '. ', left(lastName(c), 1) + '.') CHARWIDTH 5;
 shortName 'ФИО (сокр.)' (Contact c) = CONCAT ' ', lastName(c), initials(c) CHARWIDTH 20;
 fullName 'ФИО (полное)' (Contact c) = CONCAT ' ', lastName(c), firstName(c), middleName(c) CHARWIDTH 30;
+shortNameRp 'ФИО (сокр.)(р.п.)' (Contact c) = DATA VARSTRING[100] (Contact) CHARWIDTH 20;
+fullNameRp 'ФИО (полное)(р.п.)' (Contact c) = DATA VARSTRING[100] (Contact) CHARWIDTH 30;
 
 CLASS Position 'Должность';
 TABLE position (Position);
