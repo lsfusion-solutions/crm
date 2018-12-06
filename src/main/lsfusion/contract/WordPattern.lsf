@@ -50,7 +50,7 @@ DESIGN patterns {
 
 select 'Отм.' = DATA LOCAL BOOLEAN (TemplateEntry, Pattern);
 
-text (TemplateEntry te) =  GROUP CONCAT (CONCAT '', text(Pattern pt), note(pt)) IF select(te, pt), '\r\n';
+text (TemplateEntry te) =  GROUP CONCAT text(Pattern pt) IF select(te, pt), '\r\n';
 
 FORM editTemplatePattern 'Заготовки'
     OBJECTS te = TemplateEntry PANEL 

@@ -62,7 +62,7 @@ deleteFile 'Удалить' (Attachment c) {
 
 FORM attachment 'Документ'
     OBJECTS o = Attachment PANEL
-    PROPERTIES(o) id, nameCustomer, number, date, nameType, note, nameCreatedUser, createdDate, loadFile, openFile SHOWIF file(o), deleteFile SHOWIF file(o)
+    PROPERTIES(o) id, nameCustomer, number, date, nameType, note, nameCreatedUser, createdDate, loadFile, openFile SHOWIF TRUE IF file(o), deleteFile SHOWIF TRUE IF file(o)
     
     EDIT Attachment OBJECT o
 ;

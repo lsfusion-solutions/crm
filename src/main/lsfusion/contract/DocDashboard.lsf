@@ -53,7 +53,7 @@ FORM docDashboard 'Обработка документов'
 
     PROPERTIES nameFilterDocClass()
     OBJECTS d = Document
-    PROPERTIES (d) in, sign SHOWIF notSign(d), send SHOWIF notSend(d), receive SHOWIF notReceive(d), open SHOWIF file(d), edit, close SHOWIF NOT dateClosing(d)
+    PROPERTIES (d) in, sign SHOWIF notSign(d), send SHOWIF notSend(d), receive SHOWIF notReceive(d), open SHOWIF TRUE IF file(d), edit, close SHOWIF NOT dateClosing(d)
     PROPERTIES (d) READONLY nameDocType, id, number, date, nameCustomer, nameType, numberContract, nameLegalEntityContract, 
                             nameCompanyContract, dateSigningCompany, dateSending, dateSigningCustomer, dateReceiving, dateClosing
     ORDER date(d)

@@ -42,7 +42,7 @@ EXTEND FORM contract
     ORDER date(f), time(f)
     FILTERS document(f) == o
     
-    PROPERTIES (o) loadFile, openFile SHOWIF file(o)
+    PROPERTIES (o) loadFile, openFile SHOWIF TRUE IF file(o)
 ;
 
 DESIGN contract {
@@ -81,7 +81,7 @@ EXTEND FORM agreement
     ORDER date(f), time(f)
     FILTERS document(f) == o
     
-    PROPERTIES (o) loadFile, openFile SHOWIF file(o)
+    PROPERTIES (o) loadFile, openFile SHOWIF TRUE IF file(o)
 ;
 
 DESIGN agreement {

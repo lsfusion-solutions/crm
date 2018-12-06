@@ -129,7 +129,7 @@ deleteFile 'Удалить' (Act c) {
 FORM act 'Акт выполненных работ'
     OBJECTS o = Act PANEL
     PROPERTIES(o) id, number, date, nameType, numberContract, numberAgreement, nameCustomer, nameLegalEntity, sum, dateSending, dateReceiving, dateClosing, note, text,
-                  loadFile, openFile SHOWIF file(o), deleteFile SHOWIF file(o), nameNumerator, series, 
+                  loadFile, openFile SHOWIF TRUE IF file(o), deleteFile SHOWIF TRUE IF file(o), nameNumerator, series, 
                   nameCompany, nameAuthorisedPersonLegalEntity, nameAuthorisedPersonCompany, authorisedDocumentLegalEntity, authorisedDocumentCompany
     
     EDIT Act OBJECT o
