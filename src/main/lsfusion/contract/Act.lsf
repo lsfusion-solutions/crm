@@ -105,6 +105,7 @@ customer(Act c) += customer(c);
 legalEntity(Act a) += legalEntity(contract(a));
 company(Act a) += company(contract(a));
 contract(Act a) += contract(a);
+sum(Act c) += sum(c);
 
 EXTEND CLASS DocType {
     act 'Акт выполненных работ'

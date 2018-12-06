@@ -1,6 +1,6 @@
 MODULE Payment;
 
-REQUIRE Act, Currency, Finance;
+REQUIRE LegalEntity, Currency, Finance;
 
 NAMESPACE Payment;
 
@@ -19,19 +19,6 @@ nameCustomer 'Клиент' (Payment p) = name(customer(p));
 company = DATA LegalEntity(Payment);
 nameCompany 'Компания' (Payment p) = name(company(p)) IN id;
 
-contract = DATA Contract(Payment);
-idContract 'Код договора' (Payment a) = id(contract(a));
-numberContract 'Номер договора' (Payment a) = number(contract(a)) IN id;
-typeContract (Payment p) = type(contract(p));
-nameTypeContract 'Тип договора' (Payment p) = nameType(contract(p));
-
-act = DATA Act(Payment);
-idAct 'Код акта' (Payment a) = id(act(a));
-numberAct 'Номер акта' (Payment a) = number(act(a)) IN id;
-
-agreement = DATA Agreement(Payment);
-numberAgreement 'Номер соглашения' (Payment p) = number(agreement(p));
-
 number 'Номер документа оплаты' = DATA VARSTRING[15](Payment) IN id;
 date 'Дата' = DATA DATE (Payment) IN id;
 year 'Год' (Payment p) = extractYear(date(p));
@@ -44,15 +31,6 @@ nameCurrency 'Валюта платежа' (Payment p) = name(currency(p));
 shortNameCurrency 'Валюта (сокр.)' (Payment p) = shortName(currency(p));
 
 sumCurrency 'Сумма в валюте' (Payment p) = round2(sum(p) * OVERRIDE rateOn(defaultTypeExchange(), currency(p), date(p)), 1);
-
-paid 'Оплачено' (Contract c) = GROUP SUM sum(Payment p) BY contract(p);
-paid 'Оплачено' (Act c) = GROUP SUM sum(Payment p) BY act(p);
-
-CONSTRAINT company(Payment p) AND NOT isCompany(company(p)) CHECKED BY company[Payment] MESSAGE 'Компания платежа не является компанией';
-CONSTRAINT legalEntity(Payment p) != legalEntity(contract(p)) CHECKED BY contract[Payment] MESSAGE 'Организация платежа должна совпадать с организацией договора';
-CONSTRAINT company(Payment p) != company(contract(p)) CHECKED BY contract[Payment] MESSAGE 'Компания платежа должна совпадать с компанией договора';
-CONSTRAINT contract(agreement(Payment p)) != contract(p) CHECKED BY agreement[Payment] MESSAGE 'Договор соглашения должен совпадать с договором платежа';
-CONSTRAINT contract(act(Payment p)) != contract(p) CHECKED BY act[Payment] MESSAGE 'Договор акта должен совпадать с договором платежа';
 
 FORM dialogInputSum 'Сумма нового платежа'
     OBJECTS n = NUMERIC[16,5] PANEL
@@ -70,27 +48,9 @@ DESIGN dialogInputSum {
     }
 }
 
-split 'Разбить платеж' (Payment p) {
-    NEWSESSION DIALOG dialogInputSum OBJECTS n INPUT DO {
-        IF n < sum(p) THEN NEW pp = Payment {
-            sum(p) <- sum(p) (-) n;
-            sum(pp) <- n;
-            legalEntity(pp) <- legalEntity(p);
-            contract(pp) <- contract(p);
-            act(pp) <- act(p);
-            number(pp) <- number(p);
-            date(pp) <- date(p);
-            note(pp) <- note(p);
-            currency(pp) <- currency(p);
-            APPLY;
-        }
-        ELSE MESSAGE 'Сумма больше суммы платежа';
-    }
-}
-
 FORM payment 'Платёж'
     OBJECTS o = Payment PANEL
-    PROPERTIES(o) id, nameLegalEntity, nameCompany, numberContract, numberAgreement, numberAct, number, date, sum, shortNameCurrency, sumCurrency, note
+    PROPERTIES(o) id, nameLegalEntity, nameCompany, number, date, sum, shortNameCurrency, sumCurrency, note
         
     EDIT Payment OBJECT o
 ;
@@ -113,9 +73,6 @@ DESIGN payment {
         NEW docs AFTER contacts {
             type = CONTAINERH;
             caption = 'Документы';
-            MOVE PROPERTY (numberContract(o));
-            MOVE PROPERTY (numberAgreement(o));
-            MOVE PROPERTY (numberAct(o));
         }
         NEW sum AFTER docs {
             type = CONTAINERH;
@@ -134,18 +91,18 @@ DESIGN payment {
 
 FORM payments 'Платежи'
     OBJECTS o = Payment LAST 
-    PROPERTIES(o) READONLY id, nameLegalEntity,nameCustomer, nameCompany, numberContract, nameTypeContract, numberAgreement, numberAct, number, date, 
+    PROPERTIES(o) READONLY id, nameLegalEntity,nameCustomer, nameCompany, number, date, 
                            year, monthNumber, sum, shortNameCurrency, sumCurrency, note    
-    ORDER date(o), nameLegalEntity(o), nameCompany(o), numberContract(o)
+    ORDER date(o), nameLegalEntity(o), nameCompany(o)
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
     ORDER date(o)
 ;
 
 FORM dialogPayments 'Платежи'
     OBJECTS o = Payment LAST 
-    PROPERTIES(o) READONLY id, nameLegalEntity, nameCustomer, nameCompany, numberContract, nameTypeContract, numberAgreement, numberAct, number, date, 
+    PROPERTIES(o) READONLY id, nameLegalEntity, nameCustomer, nameCompany, number, date, 
                            year, monthNumber, sum, shortNameCurrency, sumCurrency, note    
-    ORDER date(o), nameLegalEntity(o), nameCompany(o), numberContract(o)
+    ORDER date(o), nameLegalEntity(o), nameCompany(o)
     
     LIST Payment OBJECT o
 ;

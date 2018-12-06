@@ -8,7 +8,7 @@ CLASS ABSTRACT Document 'Документ';
 TABLE document(Document);
 
 id 'Код' = ABSTRACT VARSTRING[15] (Document) IN id CHARWIDTH 5;
-number 'Номер' = ABSTRACT VARSTRING[15](Document) IN id;
+number 'Номер' = ABSTRACT VARSTRING[15](Document) IN id CHARWIDTH 10;
 date 'Дата' = ABSTRACT DATE (Document) IN id;
 nameType 'Тип' = ABSTRACT VARISTRING[100](Document) CHARWIDTH 15;
 dateSigningCompany 'Дата подписания компанией' = ABSTRACT DATE (Document);
@@ -17,6 +17,9 @@ dateSigningCustomer 'Дата подписания клиентом' = ABSTRACT 
 dateReceiving 'Дата получения' = ABSTRACT DATE (Document);
 dateClosing 'Дата закрытия' = ABSTRACT DATE (Document);
 file 'Файл' = ABSTRACT FILE (Document);
+sum 'Сумма' = ABSTRACT NUMERIC[16,5](Document);
+paid 'Оплачено' = ABSTRACT NUMERIC[16,5](Document);
+balance 'Остаток' (Document d) = sum(d) (-) paid(d);
 
 customer = ABSTRACT Customer (Document);
 nameCustomer 'Клиент' (Document d) = name(customer(d));

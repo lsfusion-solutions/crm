@@ -1,6 +1,6 @@
 MODULE PaymentImport;
 
-REQUIRE Payment;
+REQUIRE PaymentAct;
 
 NAMESPACE Payment;
 

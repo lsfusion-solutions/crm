@@ -117,7 +117,7 @@ text 'Текст' = DATA TEXT (Contract);
 textString 'Текст' (Contract c) = VARSTRING[500](text(c)) CHARWIDTH 20;
 
 contract = ABSTRACT Contract (Document);
-numberContract 'Номер договора' (Document d) = number(contract(d));
+numberContract 'Номер договора' (Document d) = number(contract(d)) CHARWIDTH 10;
 dateContract 'Дата договора' (Document d) = date(contract(d));
 nameTypeContract 'Тип договора' (Document d) = nameType(contract(d));
 
@@ -134,6 +134,8 @@ customer(Contract c) += customer(c);
 legalEntity(Contract c) += legalEntity(c);
 company(Contract c) += company(c);
 contract(Contract c) += c IF c IS Contract;
+sum(Contract c) += sum(c);
+
 EXTEND CLASS DocType {
     contract 'Договор'
 }

@@ -1,6 +1,6 @@
 MODULE ContractDashboard;
 
-REQUIRE Payment, Dashboard, DocFile;
+REQUIRE PaymentAct, Dashboard, DocFile;
 
 NAMESPACE Contract;
 
@@ -31,13 +31,13 @@ FORM contractDashboard 'Работа с договорами'
         FILTER 'Активные' NOT dateClosing(o) < currentDate() DEFAULT
     
     OBJECTS ag = Agreement LAST 
-    PROPERTIES (ag) READONLY id, numberContract, number, date, nameType, sum, dateClosing, dateSending, dateReceiving, note, textString
+    PROPERTIES (ag) READONLY id, numberContract, number, date, nameType, sum, paid, balance, dateClosing, dateSending, dateReceiving, note, textString
     PROPERTIES (ag) openFile DRAW ag TOOLBAR 
     ORDER date(ag)
     FILTERS contract(ag) == o
     
     OBJECTS ac = Act LAST 
-    PROPERTIES (ac) READONLY id, numberContract, numberAgreement, number, date, nameType, sum, dateClosing, dateSending, dateReceiving, note, textString
+    PROPERTIES (ac) READONLY id, numberContract, numberAgreement, number, date, nameType, sum, paid, balance, dateClosing, dateSending, dateReceiving, note, textString
     PROPERTIES (ac) openFile DRAW ac TOOLBAR 
     ORDER date(ac)
     FILTERS contract(ac) == o

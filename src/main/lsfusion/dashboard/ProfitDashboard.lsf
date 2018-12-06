@@ -1,6 +1,6 @@
 MODULE ProfitDashboard;
 
-REQUIRE Dashboard, Payment, TimeEntryExpense;
+REQUIRE Dashboard, PaymentAct, TimeEntryExpense;
 
 NAMESPACE Dashboard;
 

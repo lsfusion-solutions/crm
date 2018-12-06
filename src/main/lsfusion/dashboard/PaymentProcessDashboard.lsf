@@ -1,6 +1,6 @@
 MODULE PaymentProcessDashboard;
 
-REQUIRE Payment, Expense, Dashboard;
+REQUIRE PaymentAct, Expense, Dashboard;
 
 NAMESPACE Dashboard;
 

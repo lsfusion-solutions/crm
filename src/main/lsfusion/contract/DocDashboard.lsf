@@ -55,7 +55,7 @@ FORM docDashboard 'Обработка документов'
     OBJECTS d = Document
     PROPERTIES (d) in, sign SHOWIF notSign(d), send SHOWIF notSend(d), receive SHOWIF notReceive(d), open SHOWIF TRUE IF file(d), edit, close SHOWIF NOT dateClosing(d)
     PROPERTIES (d) READONLY nameDocType, id, number, date, nameCustomer, nameType, numberContract, nameLegalEntityContract, 
-                            nameCompanyContract, dateSigningCompany, dateSending, dateSigningCustomer, dateReceiving, dateClosing
+                            nameCompanyContract, sum, paid, balance, dateSigningCompany, dateSending, dateSigningCustomer, dateReceiving, dateClosing
     ORDER date(d)
     FILTERS docType(d) = filterDocType() OR NOT filterDocType()
     FILTERGROUP open FILTER 'Открыт' NOT dateClosing(d) DEFAULT 
