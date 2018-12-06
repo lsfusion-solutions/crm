@@ -42,3 +42,7 @@ FORM dialogDocTypes 'Типы документа'
 
 docType = ABSTRACT DocType(Document);
 nameDocType 'Вид договора' (Document d) = name(docType(d));
+
+WHEN LOCAL SET (Document d IS Document) DO {
+    date(d) <- currentDate();    
+}

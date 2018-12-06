@@ -11,6 +11,14 @@ addEvent 'Добавить' (Customer c) {
     }
 } IMAGE 'add.png';
 
+addContact 'Добавить' (Customer c) {
+    NEWSESSION NEW e = Contact.Contact {
+        customer(e) <- c;
+        SHOW contact OBJECTS o = e DOCKED;
+    }
+} IMAGE 'add.png';
+
+
 FORM dashboardCustomer 'Работа с клиентами'
     
     OBJECTS c = Customer PANEL 
@@ -24,7 +32,8 @@ FORM dashboardCustomer 'Работа с клиентами'
     
     OBJECTS ct = Contact.Contact
     PROPERTIES (ct) READONLY id, name, nameLegalEntity, namePosition, email, phone, addPhones, skype, note
-    PROPERTIES (ct) NEWSESSION NEW, EDIT, DELETE 
+    PROPERTIES addContact(c) DRAW ct TOOLBAR 
+    PROPERTIES (ct) NEWSESSION EDIT, DELETE 
     FILTERS customer(ct) == c
     ORDER name(ct)
     

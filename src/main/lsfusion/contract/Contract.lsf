@@ -258,3 +258,21 @@ NAVIGATOR {
        NEW contracts;   
     }
 }
+
+defaultCompany = DATA LegalEntity();
+nameDefaultCompany 'Компания по умолчанию' () = name(defaultCompany());
+
+EXTEND FORM options PROPERTIES nameDefaultCompany();
+
+DESIGN options {
+    pane {
+        NEW contracts {
+            caption = 'Договор';
+            MOVE PROPERTY (nameDefaultCompany());
+        }
+    }
+}
+
+WHEN LOCAL SET (Contract c IS Contract) DO {
+    company(c) <- defaultCompany();
+}
