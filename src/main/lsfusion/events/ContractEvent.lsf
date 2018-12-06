@@ -1,0 +1,17 @@
+MODULE ContractEvent;
+
+REQUIRE Contract, Event;
+
+NAMESPACE ContractEvent;
+
+contract = DATA Contract(Event);
+numberContract 'Договор' (Event e) = number(contract(e));
+
+EXTEND FORM events PROPERTIES numberContract(o);
+EXTEND FORM event PROPERTIES numberContract(o);
+
+DESIGN event {
+    docs {
+        MOVE PROPERTY (numberContract(o));
+    }
+}

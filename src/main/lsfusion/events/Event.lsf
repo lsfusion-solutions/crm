@@ -68,6 +68,10 @@ DESIGN event {
             MOVE PROPERTY (nameLegalEntity(o));
             MOVE PROPERTY (nameContact(o));
         }
+        NEW docs {
+            caption = 'Документы';
+            type = CONTAINERH;
+        }
         NEW employee {
             caption = 'Сотрудник';
             alignment = STRETCH;

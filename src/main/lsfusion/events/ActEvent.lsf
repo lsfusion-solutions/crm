@@ -1,0 +1,17 @@
+MODULE ActEvent;
+
+REQUIRE Act, Event;
+
+NAMESPACE ActEvent;
+
+act = DATA Act(Event);
+numberAct 'Акт' (Event e) = number(act(e));
+
+EXTEND FORM events PROPERTIES numberAct(o);
+EXTEND FORM event PROPERTIES numberAct(o);
+
+DESIGN event {
+    docs {
+        MOVE PROPERTY (numberAct(o));
+    }
+}

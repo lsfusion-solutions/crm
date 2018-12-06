@@ -1,0 +1,9 @@
+MODULE DocEvent;
+
+REQUIRE ContractEvent, AgreementEvent, ActEvent, DocDashboard;
+
+EXTEND FORM docDashboard 
+    OBJECTS e = Event
+    PROPERTIES (e) READONLY id, name, nameCustomer, nameLegalEntity, nameEmployee, nameContact, date, time, dateNext, descriptionString, additionString
+    FILTERS contract(e) == d OR agreement(e) == d OR act(e) == d
+;
