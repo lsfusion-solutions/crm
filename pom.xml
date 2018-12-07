@@ -13,13 +13,13 @@
     <parent>
         <groupId>lsfusion.platform.build</groupId>
         <artifactId>logics</artifactId>
-        <version>2.0-SNAPSHOT</version>
+        <version>3.beta.0-SNAPSHOT</version>
         <relativePath>../platform/build/logics/pom.xml</relativePath>
     </parent>
 
     <groupId>by.luxsoft</groupId>
     <artifactId>crm</artifactId>
-    <version>3.beta.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>CRM</name>
 
