@@ -68,10 +68,10 @@ setText 'Использовать заготовки' (TemplateEntry te) {
 }
 
 countPattern 'Есть заготовки' (TemplateEntry te) = GROUP SUM 1 IF in(te, Pattern p);
+background (TemplateEntry te) += WHEN countPattern(te) THEN RGB (235, 255, 235);
 
 EXTEND FORM editTemplate 
-    PROPERTIES p 'Есть заготовки' = BOOLEAN (countPattern(te)) AFTER value(te)
-    PROPERTIES setText(te) GRID READONLYIF NOT countPattern(te) BEFORE p
+    PROPERTIES setText(te) GRID READONLYIF NOT countPattern(te) BACKGROUND background(te)
 ;
 
 overCopy(TemplateEntry n, TemplateEntry t) + {

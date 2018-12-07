@@ -62,13 +62,17 @@ createWordOnOK 'Сформировать' (Template t) {
     }
 }
 
+background = ABSTRACT CASE COLOR (TemplateEntry);
+backgroundValue (TemplateEntry te) = CASE WHEN required(te) THEN RGB (255, 235, 235)
+                                                   WHEN NOT required(te) THEN background(te);
+
 FORM editTemplate 'Шаблон' 
     OBJECTS t = Template PANEL 
     PROPERTIES (t) READONLY name, id
     
     OBJECTS te = TemplateEntry
-    PROPERTIES (te) READONLY isTable, key, description
-    PROPERTIES (te) value
+    PROPERTIES (te) READONLY BACKGROUND background(te) isTable, key, description
+    PROPERTIES (te) value BACKGROUND backgroundValue(te)
     PROPERTIES createWordOnOK(t)
     
     FILTERS template (te) = t
