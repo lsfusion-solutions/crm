@@ -1,6 +1,6 @@
 MODULE Customer;
 
-REQUIRE Utils, MasterData;
+REQUIRE Utils, MasterData, Address;
 
 NAMESPACE Customer;
 
@@ -17,6 +17,15 @@ phone 'Тел. приёмной' = DATA VARISTRING[50] (Customer) CHARWIDTH 20;
 site 'Сайт' = DATA VARISTRING[100] (Customer) CHARWIDTH 20;
 note 'Примечание' = DATA VARISTRING[100] (Customer) CHARWIDTH 20;
 dateFrom 'Дата начала' = DATA DATE (Customer);
+
+customer = DATA Customer(Address);
+nameCustomer 'Клиент' (Address a) = name(customer(a));
+physicalAddress (Customer l) = GROUP LAST Address a ORDER a IF in(a, AddressType.physical) BY customer(a);
+namePhysicalAddress 'Физ. адрес' (Customer l) = name(physicalAddress(l));
+legalAddress (Customer l) = GROUP LAST Address a ORDER a IF in(a, AddressType.legal) BY customer(a);
+nameLegalAddress 'Юр. адрес' (Customer l) = name(legalAddress(l));
+address (Customer l) = GROUP LAST Address a ORDER a BY customer(a);
+nameAddress 'Адрес' (Customer c) = name(address(c));
 
 CLASS StatusCustomer 'Статус клиента';
 TABLE StatusCustomer (StatusCustomer);
@@ -44,13 +53,17 @@ nameStatus 'Статус' (Customer c) = name(status(c));
 FORM customer 'Клиент'
     OBJECTS o = Customer PANEL
     PROPERTIES(o) id, name, nameStatus, email, phone, site, note, dateFrom, inactive
-        
+    
+    OBJECTS a = Address
+    PROPERTIES (a) types, postcode, region, district, locality, street, houseNumber, officeNumber, NEW, DELETE 
+    FILTERS customer(a) == o
+    
     EDIT Customer OBJECT o
 ;
 
 FORM customers 'Клиенты'
     OBJECTS o = Customer
-    PROPERTIES(o) READONLYIF isReadonly() id, name, nameStatus, email, phone, site, note, dateFrom, inactive
+    PROPERTIES(o) READONLYIF isReadonly() id, name, nameStatus, nameAddress, email, phone, site, note, dateFrom, inactive
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
     ORDER name(o)
     
@@ -61,7 +74,7 @@ FORM customers 'Клиенты'
 
 FORM dialogCustomers 'Клиенты'
     OBJECTS o = Customer
-    PROPERTIES(o) READONLY id, name, nameStatus, email, phone, site, note, dateFrom, inactive
+    PROPERTIES(o) READONLY id, name, nameStatus, nameAddress, email, phone, site, note, dateFrom, inactive
     ORDER name(o)
     
     FILTERGROUP active FILTER 'Активные' NOT inactive(o) DEFAULT

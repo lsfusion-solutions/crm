@@ -1,6 +1,6 @@
 MODULE LegalEntity;
 
-REQUIRE Customer, Currency;
+REQUIRE Customer, Currency, Address;
 
 NAMESPACE LegalEntity;
 
@@ -15,17 +15,15 @@ extId 'Код для экспорта' = DATA VARSTRING[15](LegalEntity) IN id;
 legalEntityEx (id) = GROUP AGGR LegalEntity le BY extId (le);
 
 name 'Наименование' = DATA VARISTRING[250] (LegalEntity) CHARWIDTH 20 IN id;
-postcode 'Индекс' = DATA VARISTRING[10] (LegalEntity) CHARWIDTH 6;
-region 'Область' = DATA VARISTRING[20] (LegalEntity) CHARWIDTH 15;
-district 'Район' = DATA VARISTRING[20] (LegalEntity) CHARWIDTH 15;
-locality 'Нас. пункт' = DATA VARISTRING[50] (LegalEntity) CHARWIDTH 20 IN id;
-street 'Улица' = DATA VARISTRING[50] (LegalEntity) CHARWIDTH 20;
-houseNumber 'Дом' = DATA VARISTRING[20] (LegalEntity) CHARWIDTH 6;
-officeNumber 'Офис' = DATA VARISTRING[20] (LegalEntity) CHARWIDTH 6;
 UNP 'УНП' = DATA VARSTRING[9] (LegalEntity) CHARWIDTH 9 FIXED;
 OKPO 'ОКПО' = DATA VARSTRING[20] (LegalEntity) CHARWIDTH 15;
 
-address 'Адрес' (LegalEntity l) = CONCAT ', ', locality(l), street(l), houseNumber(l), officeNumber(l);
+legalEntity = DATA LegalEntity(Address);
+nameLegalEntity 'Организация' (Address a) = name(legalEntity(a));
+physicalAddress (LegalEntity l) = GROUP LAST Address a ORDER a IF in(a, AddressType.physical) BY legalEntity(a);
+namePhysicalAddress 'Физ. адрес' (LegalEntity l) = name(physicalAddress(l));
+legalAddress (LegalEntity l) = GROUP LAST Address a ORDER a IF in(a, AddressType.legal) BY legalEntity(a);
+nameLegalAddress 'Юр. адрес' (LegalEntity l) = name(legalAddress(l));
 
 customer = DATA Customer(LegalEntity);
 idCustomer 'Код клиента' (LegalEntity l) = id(customer(l));
@@ -121,13 +119,18 @@ note 'Примечание'  = DATA VARSTRING[50] (Account);
 
 FORM legalEntity 'Организация'
     OBJECTS o = LegalEntity PANEL
-    PROPERTIES(o) id, extId, name, nameCustomer, postcode, region, district, locality, street, houseNumber, officeNumber, UNP, OKPO, nameBank, numberAccount, isCompany
+    PROPERTIES(o) id, extId, name, nameCustomer, nameLegalAddress, UNP, OKPO, nameBank, numberAccount, isCompany
     ORDER name(o)
     
     OBJECTS a=Account
     PROPERTIES(a)  inactive, number, numberNew, nameCurrency, nameBank, addressBank, MFOBank, note, NEW, DELETE GRID
     FILTERS legalEntity(a) == o
     PROPERTIES equals(o, a)
+    
+    OBJECTS d = Address
+    PROPERTIES (d) types, postcode, region, district, locality, street, houseNumber, officeNumber, NEW, DELETE 
+    FILTERS legalEntity(d) == o
+    
     FILTERGROUP inactive FILTER 'Активный' active(a) 'ctrl F10' DEFAULT 
     
     EDIT LegalEntity OBJECT o
@@ -158,25 +161,19 @@ DESIGN legalEntity {
                 MOVE PROPERTY (OKPO(o));
             }
         }
-        NEW address AFTER row {
-            caption = 'Адрес';
-            type = COLUMNS;
-            columns = 4;
-            MOVE PROPERTY (postcode(o));
-            MOVE PROPERTY (region(o));
-            MOVE PROPERTY (district(o));
-            MOVE PROPERTY (locality(o));
-            MOVE PROPERTY (street(o));
-            MOVE PROPERTY (houseNumber(o));
-            MOVE PROPERTY (officeNumber(o));
+        NEW tab {
+            fill = 1;
+            type = TABBED;
+            MOVE BOX (a);
+            MOVE BOX (d);
         }
     }
 }
 
 FORM legalEntities 'Организации'
     OBJECTS o = LegalEntity
-    PROPERTIES(o) READONLYIF isReadonly() id, extId, name, nameCustomer, postcode, region, district, locality, street, houseNumber, officeNumber, 
-                                          UNP, OKPO, numberBank, nameBank, addressBank, mfoBank, numberAccount, isCompany
+    PROPERTIES(o) READONLYIF isReadonly() id, extId, name, nameCustomer, nameLegalAddress, UNP, OKPO, numberBank, 
+                             nameBank, addressBank, mfoBank, numberAccount, isCompany
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
     ORDER name(o)
 ;
@@ -185,8 +182,7 @@ FORM legalEntities 'Организации'
 
 FORM dialogLegalEntities 'Организации'
     OBJECTS o = LegalEntity
-    PROPERTIES(o) READONLY id, extId, name, nameCustomer, postcode, region, district, locality, street, houseNumber, officeNumber, 
-                           UNP, OKPO, numberBank, nameBank, addressBank, mfoBank, numberAccount, isCompany
+    PROPERTIES(o) READONLY id, extId, name, nameCustomer, nameLegalAddress, UNP, OKPO, numberBank, nameBank, addressBank, mfoBank, numberAccount, isCompany
     ORDER name(o)
     
     LIST LegalEntity OBJECT o

@@ -1,0 +1,31 @@
+MODULE Address;
+
+NAMESPACE Address;
+
+CLASS Address 'Адрес';
+TABLE address(Address);
+
+CLASS AddressType 'Тип адреса' {
+    physical 'Физический',
+    legal 'Юридический'
+}
+name(AddressType t) = staticCaption(t) IF t IS AddressType;
+
+in 'Вкл.' = DATA BOOLEAN (Address, AddressType);
+types 'Тип' (Address a) = GROUP CONCAT name(AddressType t) IF in(a, t), ', ' CHARWIDTH 15;
+
+postcode 'Индекс' = DATA VARISTRING[10] (Address) CHARWIDTH 6;
+region 'Область' = DATA VARISTRING[20] (Address) CHARWIDTH 15;
+district 'Район' = DATA VARISTRING[20] (Address) CHARWIDTH 15;
+locality 'Нас. пункт' = DATA VARISTRING[50] (Address) CHARWIDTH 20 IN id;
+street 'Улица' = DATA VARISTRING[50] (Address) CHARWIDTH 20;
+houseNumber 'Дом' = DATA VARISTRING[20] (Address) CHARWIDTH 6;
+officeNumber 'Офис' = DATA VARISTRING[20] (Address) CHARWIDTH 6;
+name 'Адрес' (Address a) = CONCAT ', ', locality(a), street(a), houseNumber(a), officeNumber(a);
+
+FORM addresses 'Адреса'
+    OBJECTS a = Address
+    PROPERTIES (a) READONLY types, postcode, region, district, locality, street, houseNumber, officeNumber, name
+    
+    LIST Address OBJECT a
+;

@@ -64,8 +64,8 @@ printAgreementWord 'Сформировать по шаблону' (Agreement ag)
         value(TemplateEntry d) <- OVERRIDE nameRpPosition(authorisedPersonCompany(ag)), '' WHERE key(d) = 'POSITION_RP_AUTHORISED_PERSON_COMPANY' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE namePosition(authorisedPersonLegalEntity(ag)), '' WHERE key(d) = 'POSITION_AUTHORISED_PERSON_CUSTOMER' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE nameRpPosition(authorisedPersonLegalEntity(ag)), '' WHERE key(d) = 'POSITION_RP_AUTHORISED_PERSON_CUSTOMER' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE address(company(ag)), '' WHERE key(d) = 'ADDRESS_COMPANY' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE postcode(company(ag)), '' WHERE key(d) = 'POSTCODE_COMPANY' AND template (d) == t;
+        value(TemplateEntry d) <- OVERRIDE nameLegalAddress(company(ag)), '' WHERE key(d) = 'ADDRESS_COMPANY' AND template (d) == t;
+        value(TemplateEntry d) <- OVERRIDE postcode(legalAddress(company(ag))), '' WHERE key(d) = 'POSTCODE_COMPANY' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE number(account(company(ag))), '' WHERE key(d) = 'ACCOUNT_COMPANY' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE nameBank(company(ag)), '' WHERE key(d) = 'NAME_BANK_COMPANY' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE postcodeBank(company(ag)), '' WHERE key(d) = 'POSTCODE_BANK_COMPANY' AND template (d) == t;
@@ -73,8 +73,8 @@ printAgreementWord 'Сформировать по шаблону' (Agreement ag)
         value(TemplateEntry d) <- OVERRIDE mfoBank(company(ag)), '' WHERE key(d) = 'MFO_BANK_COMPANY' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE UNP(company(ag)), '' WHERE key(d) = 'UNP_COMPANY' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE OKPO(company(ag)), '' WHERE key(d) = 'OKPO_COMPANY' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE address(legalEntity(ag)), '' WHERE key(d) = 'ADDRESS_LEGAL_ENTITY' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE postcode(legalEntity(ag)), '' WHERE key(d) = 'POSTCODE_LEGAL_ENTITY' AND template (d) == t;
+        value(TemplateEntry d) <- OVERRIDE nameLegalAddress(legalEntity(ag)), '' WHERE key(d) = 'ADDRESS_LEGAL_ENTITY' AND template (d) == t;
+        value(TemplateEntry d) <- OVERRIDE postcode(legalAddress(legalEntity(ag))), '' WHERE key(d) = 'POSTCODE_LEGAL_ENTITY' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE number(account(legalEntity(ag))), '' WHERE key(d) = 'ACCOUNT_LEGAL_ENTITY' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE nameBank(legalEntity(ag)), '' WHERE key(d) = 'NAME_BANK_LEGAL_ENTITY' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE postcodeBank(legalEntity(ag)), '' WHERE key(d) = 'POSTCODE_BANK_LEGAL_ENTITY' AND template (d) == t;

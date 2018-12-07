@@ -16,13 +16,20 @@ importLegalEntities 'Импорт организаций' (FILE f) {
     LOCAL idLegalEntity = VARSTRING[15](INTEGER);
     LOCAL extIdLegalEntity = VARSTRING[15](INTEGER);
     LOCAL nameLegalEntity = VARSTRING[250](INTEGER);
-    LOCAL postcode = VARSTRING[10](INTEGER);
-    LOCAL region = VARSTRING[20](INTEGER);
-    LOCAL district = VARSTRING[20](INTEGER);
-    LOCAL locality = VARSTRING[50](INTEGER);
-    LOCAL street = VARSTRING[50](INTEGER);
-    LOCAL house = VARSTRING[20](INTEGER);
-    LOCAL office = VARSTRING[20](INTEGER);
+    LOCAL postcodeL = VARSTRING[10](INTEGER);
+    LOCAL regionL = VARSTRING[20](INTEGER);
+    LOCAL districtL = VARSTRING[20](INTEGER);
+    LOCAL localityL = VARSTRING[50](INTEGER);
+    LOCAL streetL = VARSTRING[50](INTEGER);
+    LOCAL houseL = VARSTRING[20](INTEGER);
+    LOCAL officeL = VARSTRING[20](INTEGER);
+    LOCAL postcodeP = VARSTRING[10](INTEGER);
+    LOCAL regionP = VARSTRING[20](INTEGER);
+    LOCAL districtP = VARSTRING[20](INTEGER);
+    LOCAL localityP = VARSTRING[50](INTEGER);
+    LOCAL streetP = VARSTRING[50](INTEGER);
+    LOCAL houseP = VARSTRING[20](INTEGER);
+    LOCAL officeP = VARSTRING[20](INTEGER);
     LOCAL unp = VARSTRING[9](INTEGER);
     LOCAL okpo = VARSTRING[20](INTEGER);
     LOCAL idBank = VARSTRING[15](INTEGER);
@@ -33,7 +40,8 @@ importLegalEntities 'Импорт организаций' (FILE f) {
     LOCAL account = VARSTRING[50](INTEGER);
     
     IMPORT XLS NOHEADER FROM f TO idCustomer, nameCustomer, status, emailCustomer, phoneCustomer, siteCustomer, noteCustomer, dateCustomer, 
-                         idLegalEntity, extIdLegalEntity, nameLegalEntity, postcode, region, district, locality, street, house, office, unp, okpo, 
+                         idLegalEntity, extIdLegalEntity, nameLegalEntity, postcodeL, regionL, districtL, localityL, streetL, houseL, officeL, 
+                         postcodeP, regionP, districtP, localityP, streetP, houseP, officeP, unp, okpo, 
                          account, idBank, numberBank, nameBank, addressBank, mfoBank;
                          
     FOR [GROUP SUM 1 IF INTEGER i > 0 BY trim(idCustomer(i))](VARSTRING[15] id) AND id AND NOT customer(id) DO NEW c = Customer {
@@ -58,28 +66,56 @@ importLegalEntities 'Импорт организаций' (FILE f) {
         site(c) <- trim(siteCustomer(i));
         note(c) <- trim(noteCustomer(i));
         dateFrom(c) <- dateCustomer(i);
+        
+        FOR customer(Address a) == c DO {
+            DELETE a;
+        }
     }
     
     FOR LegalEntity l = legalEntity(idLegalEntity(INTEGER i)) AND trim(idLegalEntity(i)) != '' DO {
         extId(l) <- trim(extIdLegalEntity(i)) IF (trim(extIdLegalEntity(i)) != '' AND NOT legalEntityEx(trim(extIdLegalEntity(i))));
         name(l) <- trim(nameLegalEntity(i));
-        postcode(l) <- trim(postcode(i));
-        region(l) <- trim(region(i));
-        district(l) <- trim(district(i));
-        locality(l) <- trim(locality(i));
-        street(l) <- trim(street(i));
-        houseNumber(l) <- trim(house(i));
-        officeNumber(l) <- trim(office(i));
         UNP(l) <- trim(unp(i));
         OKPO(l) <- trim(okpo(i));
         
-        IF NOT account(account(i), l) THEN NEW a = Account {
-            number(a) <- account(i);
+        FOR legalEntity(Address a) == l DO {
+            DELETE a;
+        }
+        
+        IF NOT account(trim(account(i)), l) AND trim(account(i)) != '' THEN NEW a = Account {
+            number(a) <- trim(account(i));
             legalEntity(a) <- l;
             bank(a) <- bank(trim(idBank(i)));
         }
-        FOR Account a == account(account(i), l) DO {
+        FOR Account a == account(account(i), l) AND trim(account(i)) != '' DO {
             userAccount(l) <- a;
+        }
+    }
+    
+    FOR legalEntity(idLegalEntity(INTEGER i)) OR customer(idCustomer(i)) DO {
+        NEW a = Address {
+            in(a, AddressType t) <- TRUE IF t == AddressType.physical;
+            postcode(a) <- trim(postcodeP(i)) IF trim(postcodeP(i)) != '';
+            region(a) <- trim(regionP(i)) IF trim(regionP(i)) != '';
+            district(a) <- trim(districtP(i)) IF trim(districtP(i)) != '';
+            locality(a) <- trim(localityP(i)) IF trim(localityP(i)) != '';
+            street(a) <- trim(streetP(i)) IF trim(streetP(i)) != '';
+            houseNumber(a) <- trim(houseP(i)) IF trim(houseP(i)) != '';
+            officeNumber(a) <- trim(officeP(i)) IF trim(officeP(i)) != '';
+            customer(a) <- customer(idCustomer(i));
+            legalEntity(a) <- legalEntity(idLegalEntity(i));
+        }
+        NEW a = Address {
+            in(a, AddressType t) <- TRUE IF t == AddressType.legal;
+            postcode(a) <- trim(postcodeL(i)) IF trim(postcodeL(i)) != '';
+            region(a) <- trim(regionL(i)) IF trim(regionL(i)) != '';
+            district(a) <- trim(districtL(i)) IF trim(districtL(i)) != '';
+            locality(a) <- trim(localityL(i)) IF trim(localityL(i)) != '';
+            street(a) <- trim(streetL(i)) IF trim(streetL(i)) != '';
+            houseNumber(a) <- trim(houseL(i)) IF trim(houseL(i)) != '';
+            officeNumber(a) <- trim(officeL(i)) IF trim(officeL(i)) != '';
+            customer(a) <- customer(idCustomer(i));
+            legalEntity(a) <- legalEntity(idLegalEntity(i));
         }
     }
     
