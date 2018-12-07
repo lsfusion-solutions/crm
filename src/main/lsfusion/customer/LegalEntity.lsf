@@ -15,8 +15,6 @@ extId 'Код для экспорта' = DATA VARSTRING[15](LegalEntity) IN id;
 legalEntityEx (id) = GROUP AGGR LegalEntity le BY extId (le);
 
 name 'Наименование' = DATA VARISTRING[250] (LegalEntity) CHARWIDTH 20 IN id;
-UNP 'УНП' = DATA VARSTRING[9] (LegalEntity) CHARWIDTH 9 FIXED;
-OKPO 'ОКПО' = DATA VARSTRING[20] (LegalEntity) CHARWIDTH 15;
 
 legalEntity = DATA LegalEntity(Address);
 nameLegalEntity 'Организация' (Address a) = name(legalEntity(a));
@@ -119,7 +117,7 @@ note 'Примечание'  = DATA VARSTRING[50] (Account);
 
 FORM legalEntity 'Организация'
     OBJECTS o = LegalEntity PANEL
-    PROPERTIES(o) id, extId, name, nameCustomer, UNP, OKPO, nameBank, numberAccount, isCompany
+    PROPERTIES(o) id, extId, name, nameCustomer, nameBank, numberAccount, isCompany
     ORDER name(o)
     
     OBJECTS a=Account
@@ -158,8 +156,6 @@ DESIGN legalEntity {
                 type = CONTAINERH;
                 MOVE PROPERTY (numberAccount(o));
                 MOVE PROPERTY (nameBank(o)) { charWidth = 30; }
-                MOVE PROPERTY (UNP(o));
-                MOVE PROPERTY (OKPO(o));
             }
         }
         NEW tab {
@@ -173,7 +169,7 @@ DESIGN legalEntity {
 
 FORM legalEntities 'Организации'
     OBJECTS o = LegalEntity
-    PROPERTIES(o) READONLYIF isReadonly() id, extId, name, nameCustomer, nameLegalAddress, UNP, OKPO, numberBank, 
+    PROPERTIES(o) READONLYIF isReadonly() id, extId, name, nameCustomer, nameLegalAddress, numberBank, 
                              nameBank, addressBank, mfoBank, numberAccount, isCompany
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
     ORDER name(o)
@@ -183,7 +179,7 @@ FORM legalEntities 'Организации'
 
 FORM dialogLegalEntities 'Организации'
     OBJECTS o = LegalEntity
-    PROPERTIES(o) READONLY id, extId, name, nameCustomer, nameLegalAddress, UNP, OKPO, numberBank, nameBank, addressBank, mfoBank, numberAccount, isCompany
+    PROPERTIES(o) READONLY id, extId, name, nameCustomer, nameLegalAddress, numberBank, nameBank, addressBank, mfoBank, numberAccount, isCompany
     ORDER name(o)
     
     LIST LegalEntity OBJECT o

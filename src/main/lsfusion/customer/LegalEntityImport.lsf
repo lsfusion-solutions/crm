@@ -1,6 +1,6 @@
 MODULE LegalEntityImport;
 
-REQUIRE LegalEntity, Utils;
+REQUIRE LegalEntityBy, Utils;
 
 NAMESPACE LegalEntity;
 

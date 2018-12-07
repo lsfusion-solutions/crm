@@ -1,6 +1,6 @@
 MODULE ContractWord;
 
-REQUIRE ContractDashboard, Word;
+REQUIRE ContractDashboard, Word, LegalEntityBy;
 
 NAMESPACE Contract;
 
@@ -161,7 +161,7 @@ DESIGN contract {
 overCopy ABSTRACT LIST (TemplateEntry, TemplateEntry);
 
 copy 'Копировать' (Template t) {
-    NEW n = Template {
+    NEWSESSION NEW n = Template {
         name(n) <- name(t);
         file(n) <- file(t);
         FOR template(TemplateEntry e) == t DO NEW ne = TemplateEntry {
@@ -172,7 +172,7 @@ copy 'Копировать' (Template t) {
             value(ne) <- value(e);
             overCopy(ne, e);
         }
-        SEEK documentTemplates.t = n;
+        SHOW template OBJECTS t = t DOCKED;
     }
 }
 EXTEND FORM documentTemplates PROPERTIES copy(t) DRAW t TOOLBAR;

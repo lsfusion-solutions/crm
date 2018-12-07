@@ -1,6 +1,6 @@
 MODULE CustomerDashboard;
 
-REQUIRE Project, PaymentAct, Event, Issue, TimeEntry, Dashboard;
+REQUIRE Project, PaymentAct, Event, Issue, TimeEntry, Dashboard, LegalEntityBy;
 
 NAMESPACE Dashboard;
 
