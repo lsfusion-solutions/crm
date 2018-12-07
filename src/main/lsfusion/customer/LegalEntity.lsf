@@ -119,7 +119,7 @@ note 'Примечание'  = DATA VARSTRING[50] (Account);
 
 FORM legalEntity 'Организация'
     OBJECTS o = LegalEntity PANEL
-    PROPERTIES(o) id, extId, name, nameCustomer, nameLegalAddress, UNP, OKPO, nameBank, numberAccount, isCompany
+    PROPERTIES(o) id, extId, name, nameCustomer, UNP, OKPO, nameBank, numberAccount, isCompany
     ORDER name(o)
     
     OBJECTS a=Account
@@ -129,6 +129,7 @@ FORM legalEntity 'Организация'
     
     OBJECTS d = Address
     PROPERTIES (d) types, postcode, region, district, locality, street, houseNumber, officeNumber, NEW, DELETE 
+    ORDER types(d) DESC 
     FILTERS legalEntity(d) == o
     
     FILTERGROUP inactive FILTER 'Активный' active(a) 'ctrl F10' DEFAULT 

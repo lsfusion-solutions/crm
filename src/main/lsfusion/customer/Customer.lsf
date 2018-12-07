@@ -24,7 +24,7 @@ physicalAddress (Customer l) = GROUP LAST Address a ORDER a IF in(a, AddressType
 namePhysicalAddress 'Физ. адрес' (Customer l) = name(physicalAddress(l));
 legalAddress (Customer l) = GROUP LAST Address a ORDER a IF in(a, AddressType.legal) BY customer(a);
 nameLegalAddress 'Юр. адрес' (Customer l) = name(legalAddress(l));
-address (Customer l) = GROUP LAST Address a ORDER a BY customer(a);
+address (Customer l) = GROUP LAST Address a ORDER DESC types(a),a BY customer(a);
 nameAddress 'Адрес' (Customer c) = name(address(c));
 
 CLASS StatusCustomer 'Статус клиента';
@@ -56,6 +56,7 @@ FORM customer 'Клиент'
     
     OBJECTS a = Address
     PROPERTIES (a) types, postcode, region, district, locality, street, houseNumber, officeNumber, NEW, DELETE 
+    ORDER types(a) DESC 
     FILTERS customer(a) == o
     
     EDIT Customer OBJECT o

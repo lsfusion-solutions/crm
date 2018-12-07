@@ -94,6 +94,7 @@ DESIGN editTemplate {
             REMOVE PROPERTY (formOk());
         }
     }
+    PROPERTY (value(te)) { charWidth = 80; }
 }
 
 printContractWord 'Сформировать по шаблону' (Contract ct) {

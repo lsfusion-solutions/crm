@@ -9,23 +9,46 @@ TABLE pattern (Pattern);
 
 text 'Текст' = DATA TEXT (Pattern) CHARWIDTH 50;
 note 'Примечание' = DATA TEXT (Pattern) CHARWIDTH 20;
+order 'Номер' = DATA INTEGER (Pattern);
 
 FORM pattern 'Заготовка'
     OBJECTS o = Pattern PANEL
-    PROPERTIES(o) text, note
+    PROPERTIES(o) order, note, text 
     
     EDIT Pattern OBJECT o
 ;
 
+DESIGN pattern {
+    BOX (o) {
+        fill = 1;
+        type = CONTAINERV;
+        NEW note {
+            height = 100;
+            alignment = STRETCH;
+            caption = 'Примечание';
+            MOVE PROPERTY (note(o)) { caption = ''; fill = 1; }
+        }
+        NEW text {
+            fill = 1;
+            caption = 'Текст';
+            MOVE PROPERTY (text(o)) { caption = ''; fill = 1; }
+        }
+    }
+}
+
 FORM patterns 'Заготовки'
     OBJECTS p = Pattern
-    PROPERTIES(p) READONLY text, note
+    PROPERTIES(p) READONLYIF isReadonly() order, note, text
     PROPERTIES(p) NEWSESSION NEW, EDIT, DELETE
+    ORDER order(p)
 ;
+
+@extendFormEditable(patterns);
 
 FORM dialogPatterns 'Заготовки'
     OBJECTS p = Pattern
-    PROPERTIES(p) READONLY text, note
+    PROPERTIES(p) READONLY order, note, text
+    ORDER order(p)
     
     LIST Pattern OBJECT p
 ;

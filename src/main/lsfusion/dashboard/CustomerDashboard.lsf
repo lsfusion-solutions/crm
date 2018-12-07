@@ -183,6 +183,7 @@ DESIGN customer {
         NEW add AFTER contacts {
             type = CONTAINERH;
             caption = 'Дополнительные параметры';
+            MOVE PROPERTY (nameStatus(o));
             MOVE PROPERTY (dateFrom(o));
             MOVE PROPERTY (site(o));
             MOVE PROPERTY (note(o));
