@@ -101,7 +101,7 @@ importLegalEntities 'Импорт организаций' (FILE f) {
         street(a) <- trim(streetP(i)) IF trim(streetP(i)) != '';
         houseNumber(a) <- trim(houseP(i)) IF trim(houseP(i)) != '';
         officeNumber(a) <- trim(officeP(i)) IF trim(officeP(i)) != '';
-        customer(a) <- customer(idCustomer(i));
+        customer(a) <- OVERRIDE customer(legalEntity(trim(idLegalEntity(i)))), customer(trim(idCustomer(i)));
         legalEntity(a) <- legalEntity(idLegalEntity(i));
     }
 
@@ -114,7 +114,7 @@ importLegalEntities 'Импорт организаций' (FILE f) {
         street(a) <- trim(streetL(i)) IF trim(streetL(i)) != '';
         houseNumber(a) <- trim(houseL(i)) IF trim(houseL(i)) != '';
         officeNumber(a) <- trim(officeL(i)) IF trim(officeL(i)) != '';
-        customer(a) <- customer(idCustomer(i));
+        customer(a) <- OVERRIDE customer(legalEntity(trim(idLegalEntity(i)))), customer(trim(idCustomer(i)));
         legalEntity(a) <- legalEntity(idLegalEntity(i));
     }
     
