@@ -72,24 +72,23 @@ importLegalEntities 'Импорт организаций' (FILE f) {
         }
     }
     
+    DELETE Address a WHERE GROUP SUM 1 IF LegalEntity l = legalEntity(idLegalEntity(INTEGER i)) AND trim(idLegalEntity(i)) != '' AND legalEntity(a) = l;
     FOR LegalEntity l = legalEntity(idLegalEntity(INTEGER i)) AND trim(idLegalEntity(i)) != '' DO {
         extId(l) <- trim(extIdLegalEntity(i)) IF (trim(extIdLegalEntity(i)) != '' AND NOT legalEntityEx(trim(extIdLegalEntity(i))));
         name(l) <- trim(nameLegalEntity(i));
         UNP(l) <- trim(unp(i));
         OKPO(l) <- trim(okpo(i));
+    }
         
-        FOR legalEntity(Address a) == l DO {
-            DELETE a;
-        }
-        
-        IF NOT account(trim(account(i)), l) AND trim(account(i)) != '' THEN NEW a = Account {
-            number(a) <- trim(account(i));
-            legalEntity(a) <- l;
-            bank(a) <- bank(trim(idBank(i)));
-        }
-        FOR Account a == account(account(i), l) AND trim(account(i)) != '' DO {
-            userAccount(l) <- a;
-        }
+    FOR LegalEntity l = legalEntity(idLegalEntity(INTEGER i)) AND trim(idLegalEntity(i)) != '' AND NOT account(trim(account(i)), l) AND trim(account(i)) != '' DO NEW a = Account {
+        number(a) <- trim(account(i));
+        legalEntity(a) <- l;
+        bank(a) <- bank(trim(idBank(i)));
+    }
+
+    FOR LegalEntity l = legalEntity(idLegalEntity(INTEGER i)) AND trim(idLegalEntity(i)) != '' AND 
+        Account a == account(account(i), l) AND trim(account(i)) != '' DO {
+        userAccount(l) <- a;
     }
     
     FOR legalEntity(idLegalEntity(INTEGER i)) OR customer(idCustomer(i)) DO NEW a = Address {
@@ -102,7 +101,7 @@ importLegalEntities 'Импорт организаций' (FILE f) {
         houseNumber(a) <- trim(houseP(i)) IF trim(houseP(i)) != '';
         officeNumber(a) <- trim(officeP(i)) IF trim(officeP(i)) != '';
         customer(a) <- OVERRIDE customer(legalEntity(trim(idLegalEntity(i)))), customer(trim(idCustomer(i)));
-        legalEntity(a) <- legalEntity(idLegalEntity(i));
+        legalEntity(a) <- legalEntity(trim(idLegalEntity(i)));
     }
 
     FOR legalEntity(idLegalEntity(INTEGER i)) OR customer(idCustomer(i)) DO NEW a = Address {
@@ -115,7 +114,7 @@ importLegalEntities 'Импорт организаций' (FILE f) {
         houseNumber(a) <- trim(houseL(i)) IF trim(houseL(i)) != '';
         officeNumber(a) <- trim(officeL(i)) IF trim(officeL(i)) != '';
         customer(a) <- OVERRIDE customer(legalEntity(trim(idLegalEntity(i)))), customer(trim(idCustomer(i)));
-        legalEntity(a) <- legalEntity(idLegalEntity(i));
+        legalEntity(a) <- legalEntity(trim(idLegalEntity(i)));
     }
     
     FOR Bank b = bank(idBank(INTEGER i)) AND trim(idBank(i)) != '' DO {
