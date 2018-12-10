@@ -22,7 +22,9 @@ FORM profit 'Прибыль по клиентам'
     PROPERTIES (p) READONLY id, nameLegalEntity, nameCustomer, numberContract, nameTypeContract, numberAct, number, date, 
                                                        year, monthNumber, sum, nameCurrency, shortNameCurrency, sumCurrency, note
     
-    FILTERS customer(p) == c, date(p) >= df AND date(p) <= dt
+    FILTERS customer(p) == c
+    FILTERGROUP paymentInterval
+        FILTER 'За интервал' date(p) >= df AND date(p) <= dt DEFAULT
     
     OBJECTS e = Employee
     PROPERTIES READONLY name(e), hours(e, c, df, dt)

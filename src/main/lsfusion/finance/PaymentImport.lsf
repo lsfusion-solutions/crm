@@ -69,7 +69,7 @@ importPayments 'Импорт платежей' (FILE f) {
 //            sum(p) <- sum;
 //        }
         
-        FOR Payment p = payment(trim(idLegalEntity(INTEGER i)), date(i), sum(i)) AND company(contract(i)) = company(p) AND i > 0 DO {
+        FOR Payment p = payment(trim(idLegalEntity(INTEGER i)), date(i), sum(i)) AND company(contract(i)) = company(p) AND contract(act(idAct(i))) = contract(i) AND i > 0 DO {
             
             contract(p) <- contract(i);
             act(p) <- act(idAct(i));
