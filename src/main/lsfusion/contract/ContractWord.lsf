@@ -58,7 +58,7 @@ createWordOnOK 'Сформировать' (Template t) {
         formOk();
     }
     ELSE {
-        MESSAGE 'Заполнены не все обязательные поля:\r\n' + [GROUP CONCAT description(TemplateEntry te), ', ' BY template(te)](t) NOWAIT;
+        MESSAGE 'Заполнены не все обязательные поля:\r\n' + [GROUP CONCAT description(TemplateEntry te) IF required(te) AND NOT value(te), ', ' ORDER te BY template(te)](t) NOWAIT;
     }
 }
 
@@ -106,7 +106,7 @@ numSpelled = FORMULA TEXT 'num_spelled($1,$2,string_to_array($3,\',\'),$4,string
 numSpelledRouble (NUMERIC[14,2] number, VARSTRING[10] decFormat) = numSpelled(number, 'M', 'рубль,рубля,рублей', 'F', 'копейка,копейки,копеек', decFormat);
 
 printContractWord 'Сформировать по шаблону' (Contract ct) {
-    NEWSESSION DIALOG dialogContractTypeTemplates OBJECTS c = type(ct), t INPUT DO {
+    DIALOG dialogContractTypeTemplates OBJECTS c = type(ct), t INPUT DO {
         value(TemplateEntry d) <- OVERRIDE number(ct), '' WHERE key(d) = 'NUMBER_DOCUMENT' AND template (d) == t;
         value(TemplateEntry d) <- TEXT (toDateDDMMYY(date(ct))) WHERE key(d) = 'DATE_DOCUMENT' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE nameCustomer(ct), '' WHERE key(d) = 'NAME_CUSTOMER' AND template (d) == t;
