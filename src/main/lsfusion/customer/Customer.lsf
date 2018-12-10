@@ -55,7 +55,7 @@ FORM customer 'Клиент'
     PROPERTIES(o) id, name, nameStatus, email, phone, site, note, dateFrom, inactive
     
     OBJECTS a = Address
-    PROPERTIES (a) types, postcode, region, district, locality, street, houseNumber, officeNumber, NEW, DELETE 
+    PROPERTIES (a) types ON CHANGE changeAddressTypes(a), postcode, region, district, locality, street, houseNumber, officeNumber, NEW, DELETE 
     ORDER types(a) DESC 
     FILTERS customer(a) == o
     

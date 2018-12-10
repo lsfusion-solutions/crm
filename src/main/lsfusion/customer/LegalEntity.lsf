@@ -115,6 +115,15 @@ nameCurrency 'Валюта счета' = name(currency(Account account));
 
 note 'Примечание'  = DATA VARSTRING[50] (Account);
 
+EXTEND FORM customer PROPERTIES nameLegalEntity(a) AFTER types(a);
+
+WHEN CHANGED (legalEntity(Address a)) AND NOT customer(a) DO {
+    customer(a) <- customer(legalEntity(a));
+}
+
+CONSTRAINT legalEntity(Address a) AND customer(a) AND NOT customer(legalEntity(a)) == customer(a) CHECKED BY legalEntity[Address], customer[Address] 
+    MESSAGE 'Организация адреса не соответствует организации клиента адреса';
+
 FORM legalEntity 'Организация'
     OBJECTS o = LegalEntity PANEL
     PROPERTIES(o) id, extId, name, nameCustomer, nameBank, numberAccount, isCompany
@@ -126,7 +135,7 @@ FORM legalEntity 'Организация'
     PROPERTIES equals(o, a)
     
     OBJECTS d = Address
-    PROPERTIES (d) types, postcode, region, district, locality, street, houseNumber, officeNumber, NEW, DELETE 
+    PROPERTIES (d) types ON CHANGE changeAddressTypes(d), postcode, region, district, locality, street, houseNumber, officeNumber, NEW, DELETE 
     ORDER types(d) DESC 
     FILTERS legalEntity(d) == o
     

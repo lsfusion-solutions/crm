@@ -9,10 +9,21 @@ CLASS AddressType 'Тип адреса' {
     physical 'Физический',
     legal 'Юридический'
 }
-name(AddressType t) = staticCaption(t) IF t IS AddressType;
+name 'Наименование' (AddressType t) = staticCaption(t) IF t IS AddressType;
 
 in 'Вкл.' = DATA BOOLEAN (Address, AddressType);
-types 'Тип' (Address a) = GROUP CONCAT name(AddressType t) IF in(a, t), ', ' CHARWIDTH 15;
+types 'Тип' (Address a) = GROUP CONCAT name(AddressType t) IF in(a, t), ', ' ORDER DESC name(t) CHARWIDTH 15;
+
+
+FORM dialogAddressTypes 'Типы адреса'
+    OBJECTS a = Address PANEL 
+    OBJECTS t = AddressType
+    PROPERTIES in(a, t), name(t) READONLY 
+;
+
+changeAddressTypes (Address a) {
+    SHOW dialogAddressTypes;
+}
 
 postcode 'Индекс' = DATA VARISTRING[10] (Address) CHARWIDTH 6;
 region 'Область' = DATA VARISTRING[20] (Address) CHARWIDTH 15;

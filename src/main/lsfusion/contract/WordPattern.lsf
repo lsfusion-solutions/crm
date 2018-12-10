@@ -72,6 +72,9 @@ background (TemplateEntry te) += WHEN countPattern(te) THEN RGB (235, 255, 235);
 
 EXTEND FORM editTemplate 
     PROPERTIES setText(te) GRID READONLYIF NOT countPattern(te) BACKGROUND background(te)
+    FILTERGROUP entry FILTER 'Незаполненные' NOT value(te)
+                      FILTER 'С заготовками' countPattern(te)
+                      FILTER 'Обязательные' required(te)
 ;
 
 overCopy(TemplateEntry n, TemplateEntry t) + {
@@ -85,7 +88,8 @@ createTemplateEntriesMain 'Сформировать строки' (Template t) {
     NEW te = TemplateEntry { template(te) <- t; key(te) <- 'NAME_CUSTOMER'; description(te) <- 'Клиент'; }
     NEW te = TemplateEntry { template(te) <- t; key(te) <- 'NAME_COMPANY'; description(te) <- 'Компания'; }
     NEW te = TemplateEntry { template(te) <- t; key(te) <- 'NAME_LEGAL_ENTITY'; description(te) <- 'Организация'; }
-    NEW te = TemplateEntry { template(te) <- t; key(te) <- 'SUM_DOCUMENT'; description(te) <- 'Сумма'; }
+    NEW te = TemplateEntry { template(te) <- t; key(te) <- 'SUM_DOCUMENT_NUMERIC'; description(te) <- 'Сумма (число)'; }
+    NEW te = TemplateEntry { template(te) <- t; key(te) <- 'SUM_DOCUMENT_WORDS'; description(te) <- 'Сумма (прописью)'; }
     NEW te = TemplateEntry { template(te) <- t; key(te) <- 'SENDING_DATE_DOCUMENT'; description(te) <- 'Дата отправки'; }
     NEW te = TemplateEntry { template(te) <- t; key(te) <- 'RECEIVING_DATE_DOCUMENT'; description(te) <- 'Дата получения'; }
     NEW te = TemplateEntry { template(te) <- t; key(te) <- 'NOTE_DOCUMENT'; description(te) <- 'Примечание'; }
