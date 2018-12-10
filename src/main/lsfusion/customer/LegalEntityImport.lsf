@@ -92,31 +92,30 @@ importLegalEntities 'Импорт организаций' (FILE f) {
         }
     }
     
-    FOR legalEntity(idLegalEntity(INTEGER i)) OR customer(idCustomer(i)) DO {
-        NEW a = Address {
-            in(a, AddressType t) <- TRUE IF t == AddressType.physical;
-            postcode(a) <- trim(postcodeP(i)) IF trim(postcodeP(i)) != '';
-            region(a) <- trim(regionP(i)) IF trim(regionP(i)) != '';
-            district(a) <- trim(districtP(i)) IF trim(districtP(i)) != '';
-            locality(a) <- trim(localityP(i)) IF trim(localityP(i)) != '';
-            street(a) <- trim(streetP(i)) IF trim(streetP(i)) != '';
-            houseNumber(a) <- trim(houseP(i)) IF trim(houseP(i)) != '';
-            officeNumber(a) <- trim(officeP(i)) IF trim(officeP(i)) != '';
-            customer(a) <- customer(idCustomer(i));
-            legalEntity(a) <- legalEntity(idLegalEntity(i));
-        }
-        NEW a = Address {
-            in(a, AddressType t) <- TRUE IF t == AddressType.legal;
-            postcode(a) <- trim(postcodeL(i)) IF trim(postcodeL(i)) != '';
-            region(a) <- trim(regionL(i)) IF trim(regionL(i)) != '';
-            district(a) <- trim(districtL(i)) IF trim(districtL(i)) != '';
-            locality(a) <- trim(localityL(i)) IF trim(localityL(i)) != '';
-            street(a) <- trim(streetL(i)) IF trim(streetL(i)) != '';
-            houseNumber(a) <- trim(houseL(i)) IF trim(houseL(i)) != '';
-            officeNumber(a) <- trim(officeL(i)) IF trim(officeL(i)) != '';
-            customer(a) <- customer(idCustomer(i));
-            legalEntity(a) <- legalEntity(idLegalEntity(i));
-        }
+    FOR legalEntity(idLegalEntity(INTEGER i)) OR customer(idCustomer(i)) DO NEW a = Address {
+        in(a, AddressType t) <- TRUE IF t == AddressType.physical;
+        postcode(a) <- trim(postcodeP(i)) IF trim(postcodeP(i)) != '';
+        region(a) <- trim(regionP(i)) IF trim(regionP(i)) != '';
+        district(a) <- trim(districtP(i)) IF trim(districtP(i)) != '';
+        locality(a) <- trim(localityP(i)) IF trim(localityP(i)) != '';
+        street(a) <- trim(streetP(i)) IF trim(streetP(i)) != '';
+        houseNumber(a) <- trim(houseP(i)) IF trim(houseP(i)) != '';
+        officeNumber(a) <- trim(officeP(i)) IF trim(officeP(i)) != '';
+        customer(a) <- customer(idCustomer(i));
+        legalEntity(a) <- legalEntity(idLegalEntity(i));
+    }
+
+    FOR legalEntity(idLegalEntity(INTEGER i)) OR customer(idCustomer(i)) DO NEW a = Address {
+        in(a, AddressType t) <- TRUE IF t == AddressType.legal;
+        postcode(a) <- trim(postcodeL(i)) IF trim(postcodeL(i)) != '';
+        region(a) <- trim(regionL(i)) IF trim(regionL(i)) != '';
+        district(a) <- trim(districtL(i)) IF trim(districtL(i)) != '';
+        locality(a) <- trim(localityL(i)) IF trim(localityL(i)) != '';
+        street(a) <- trim(streetL(i)) IF trim(streetL(i)) != '';
+        houseNumber(a) <- trim(houseL(i)) IF trim(houseL(i)) != '';
+        officeNumber(a) <- trim(officeL(i)) IF trim(officeL(i)) != '';
+        customer(a) <- customer(idCustomer(i));
+        legalEntity(a) <- legalEntity(idLegalEntity(i));
     }
     
     FOR Bank b = bank(idBank(INTEGER i)) AND trim(idBank(i)) != '' DO {
