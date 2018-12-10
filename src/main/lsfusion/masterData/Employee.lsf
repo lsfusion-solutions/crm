@@ -16,7 +16,7 @@ active 'Активный' (Employee e) = NOT inactive(e);
 FORM employee 'Сотрудник'
     OBJECTS o = Employee PANEL
     PROPERTIES(o) id, number, login, sha256Password ON CHANGE changeSHA256Password(o), nameMainRole, firstName, lastName, middleName,
-                  shortName, fullName, fullNameRp, namePosition, nameLegalEntity, nameCustomer, email, phone, skype, note, inactive
+                  shortName, fullName, fullNameRp, namePosition, nameLegalEntity, nameCustomer, email, phone, skype, note, inactive, authorisedDocument
         
     OBJECTS p = Phone
     PROPERTIES (p) nameType, number, NEW, DELETE 
@@ -73,19 +73,24 @@ DESIGN employee {
             MOVE PROPERTY (phone(o)) { charWidth = 20;}
             MOVE PROPERTY (skype(o));
         }
-        NEW note {
+        NEW dop {
             caption = 'Дополнительные параметры';
             alignment = STRETCH;
-            type = CONTAINERH;
-            MOVE PROPERTY (inactive(o));
-            MOVE PROPERTY (note(o));
+            NEW note {
+                alignment = STRETCH;
+                type = CONTAINERH;
+                MOVE PROPERTY (inactive(o));
+                MOVE PROPERTY (note(o));
+            }
+            MOVE PROPERTY (authorisedDocument(o));
         }
         MOVE BOX (p);
     }
 }
 FORM employees 'Сотрудники'
     OBJECTS o = Employee
-    PROPERTIES(o) READONLYIF isReadonly() id, number, login, nameMainRole, name, namePosition, nameLegalEntity, email, phone, addPhones, skype, note, inactive
+    PROPERTIES(o) READONLYIF isReadonly() id, number, login, nameMainRole, name, namePosition, nameLegalEntity, email, 
+                                          phone, addPhones, skype, note, inactive, authorisedDocument
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
     ORDER name(o)
     
@@ -96,7 +101,7 @@ FORM employees 'Сотрудники'
 
 FORM dialogEmployees 'Сотрудники'
     OBJECTS o = Employee
-    PROPERTIES(o) READONLY id, number, login, name, namePosition, nameLegalEntity, email, phone, addPhones, skype, note, inactive
+    PROPERTIES(o) READONLY id, number, login, name, namePosition, nameLegalEntity, email, phone, addPhones, skype, note, inactive, authorisedDocument
     ORDER name(o)
     
     FILTERGROUP active FILTER 'Активные' NOT inactive(o) DEFAULT

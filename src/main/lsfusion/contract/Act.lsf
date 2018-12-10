@@ -28,10 +28,12 @@ nameCompany 'Компания' (Act a) = name(company(a));
 authorisedPersonLegalEntity = DATA Contact.Contact(Act);
 nameAuthorisedPersonLegalEntity 'Уп. лицо организации' (Act c) = name(authorisedPersonLegalEntity(c));
 authorisedDocumentLegalEntity 'На основании' = DATA VARSTRING[1000](Act) CHARWIDTH 20;
+overAuthorisedDocumentLE 'На основании' (Act c) = OVERRIDE authorisedDocument(authorisedPersonLegalEntity(c)), authorisedDocumentLegalEntity(c);
 
 authorisedPersonCompany  (Act c) = DATA Contact.Contact(Act);
 nameAuthorisedPersonCompany 'Уп. лицо компании' (Act c) = name(authorisedPersonCompany(c));
 authorisedDocumentCompany 'На основании' = DATA VARSTRING[1000](Act) CHARWIDTH 20;
+overAuthorisedDocumentC 'На основании' (Act c) = OVERRIDE authorisedDocument(authorisedPersonLegalEntity(c)), authorisedDocumentLegalEntity(c);
 
 WHEN LOCAL CHANGED (legalEntity(Act c)) DO {
     authorisedPersonLegalEntity (c) <- authorisedPerson(legalEntity(c));
@@ -129,9 +131,10 @@ deleteFile 'Удалить' (Act c) {
 
 FORM act 'Акт выполненных работ'
     OBJECTS o = Act PANEL
-    PROPERTIES(o) id, number, date, nameType, numberContract, numberAgreement, nameCustomer, nameLegalEntity, sum, dateSending, dateReceiving, dateClosing, note, text,
+    PROPERTIES(o) id, number, date, nameType, numberContract, numberAgreement, nameCustomer READONLY, nameLegalEntity READONLY, sum, 
+                  dateSending, dateReceiving, dateClosing, note, text, nameCompany READONLY,
                   loadFile, openFile SHOWIF TRUE IF file(o), deleteFile SHOWIF TRUE IF file(o), nameNumerator, series, 
-                  nameCompany, nameAuthorisedPersonLegalEntity, nameAuthorisedPersonCompany, authorisedDocumentLegalEntity, authorisedDocumentCompany
+                  nameAuthorisedPersonLegalEntity, nameAuthorisedPersonCompany, authorisedDocumentLegalEntity, authorisedDocumentCompany
     
     EDIT Act OBJECT o
 ;

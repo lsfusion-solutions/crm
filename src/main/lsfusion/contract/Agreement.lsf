@@ -27,10 +27,12 @@ nameCompany 'Компания' (Agreement a) = name(company(a));
 authorisedPersonLegalEntity = DATA Contact.Contact(Agreement);
 nameAuthorisedPersonLegalEntity 'Уп. лицо организации' (Agreement c) = name(authorisedPersonLegalEntity(c));
 authorisedDocumentLegalEntity 'На основании' = DATA VARSTRING[1000](Agreement) CHARWIDTH 20;
+overAuthorisedDocumentLE 'На основании' (Agreement c) = OVERRIDE authorisedDocument(authorisedPersonLegalEntity(c)), authorisedDocumentLegalEntity(c);
 
 authorisedPersonCompany  (Agreement c) = DATA Contact.Contact(Agreement);
 nameAuthorisedPersonCompany 'Уп. лицо компании' (Agreement c) = name(authorisedPersonCompany(c));
 authorisedDocumentCompany 'На основании' = DATA VARSTRING[1000](Agreement) CHARWIDTH 20;
+overAuthorisedDocumentC 'На основании' (Agreement c) = OVERRIDE authorisedDocument(authorisedPersonLegalEntity(c)), authorisedDocumentLegalEntity(c);
 
 WHEN LOCAL CHANGED (legalEntity(Agreement c)) DO {
     authorisedPersonLegalEntity (c) <- authorisedPerson(legalEntity(c));
@@ -105,8 +107,8 @@ docType(Agreement a) += DocType.agreement IF a IS Agreement;
 
 FORM agreement 'Соглашение'
     OBJECTS o = Agreement PANEL
-    PROPERTIES(o) id, nameNumerator, series, number, date, nameType, numberContract, nameCustomer, nameLegalEntity, sum, 
-                  dateSending, dateReceiving, dateClosing, note, text, nameCompany, nameAuthorisedPersonLegalEntity, nameAuthorisedPersonCompany, 
+    PROPERTIES(o) id, nameNumerator, series, number, date, nameType, numberContract, nameCustomer READONLY, nameLegalEntity READONLY, sum, 
+                  dateSending, dateReceiving, dateClosing, note, text, nameCompany READONLY, nameAuthorisedPersonLegalEntity, nameAuthorisedPersonCompany, 
                   authorisedDocumentLegalEntity, authorisedDocumentCompany
     
     EDIT Agreement OBJECT o

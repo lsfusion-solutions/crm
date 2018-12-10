@@ -113,9 +113,12 @@ WHEN LOCAL SETCHANGED (customer(legalEntity(Contact c))) DO {
     customer(c) <- customer(legalEntity(c));
 }
 
+authorisedDocument 'На основании' = DATA VARSTRING[1000](Contact) CHARWIDTH 15;
+
 FORM contact 'Контакт'
     OBJECTS o = Contact PANEL
-    PROPERTIES(o) id, lastName, firstName, middleName, shortName, fullName, fullNameRp, nameCustomer, nameLegalEntity, namePosition, email, phone, skype, note
+    PROPERTIES(o) id, lastName, firstName, middleName, shortName, fullName, fullNameRp, nameCustomer, nameLegalEntity, 
+                  namePosition, email, phone, skype, note, authorisedDocument
     
     OBJECTS p = Phone
     PROPERTIES (p) nameType, number, NEW, DELETE 
@@ -169,6 +172,7 @@ DESIGN contact {
             caption = 'Дополнительные параметры';
             alignment = STRETCH;
             MOVE PROPERTY (note(o));
+            MOVE PROPERTY (authorisedDocument(o));
         }
         MOVE BOX (p);
     }
@@ -176,14 +180,14 @@ DESIGN contact {
 
 FORM contacts 'Контакты'
     OBJECTS o = Contact
-    PROPERTIES(o) READONLY id, lastName, firstName, middleName, nameCustomer, nameLegalEntity, namePosition, email, phone, addPhones, skype, note
+    PROPERTIES(o) READONLY id, lastName, firstName, middleName, nameCustomer, nameLegalEntity, namePosition, email, phone, addPhones, skype, note, authorisedDocument
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
     ORDER lastName(o)
 ;
 
 FORM dialogContacts 'Контакты'
     OBJECTS o = Contact
-    PROPERTIES(o) READONLY id, lastName, firstName, middleName, nameCustomer, nameLegalEntity, namePosition, email, phone, addPhones, skype, note
+    PROPERTIES(o) READONLY id, lastName, firstName, middleName, nameCustomer, nameLegalEntity, namePosition, email, phone, addPhones, skype, note, authorisedDocument
     ORDER lastName(o)
     
     LIST Contact OBJECT o

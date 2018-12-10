@@ -28,19 +28,26 @@ nameCompany 'Компания' (Contract c) = name(company(c)) IN id;
 authorisedPersonLegalEntity = DATA Contact.Contact(Contract);
 nameAuthorisedPersonLegalEntity 'Уп. лицо организации' (Contract c) = name(authorisedPersonLegalEntity(c));
 authorisedDocumentLegalEntity 'На основании' = DATA VARSTRING[1000](Contract) CHARWIDTH 20;
+overAuthorisedDocumentLE 'На основании' (Contract c) = OVERRIDE authorisedDocument(authorisedPersonLegalEntity(c)), authorisedDocumentLegalEntity(c);
 
 authorisedPersonCompany  (Contract c) = DATA Contact.Contact(Contract);
 nameAuthorisedPersonCompany 'Уп. лицо компании' (Contract c) = name(authorisedPersonCompany(c));
 authorisedDocumentCompany 'На основании' = DATA VARSTRING[1000](Contract) CHARWIDTH 20;
+overAuthorisedDocumentC 'На основании' (Contract c) = OVERRIDE authorisedDocument(authorisedPersonCompany(c)), authorisedDocumentCompany(c);
 
 WHEN LOCAL CHANGED (legalEntity(Contract c)) DO {
+    authorisedDocumentLegalEntity(c) <- authorisedDocument(legalEntity(c));
     authorisedPersonLegalEntity (c) <- authorisedPerson(legalEntity(c));
-    authorisedDocumentLegalEntity (c) <- authorisedDocument(legalEntity(c));
 }
-
+WHEN LOCAL CHANGED (authorisedPersonLegalEntity(Contract c)) DO {
+    authorisedDocumentLegalEntity (c) <- authorisedDocument(authorisedPersonLegalEntity(c));
+}
 WHEN LOCAL CHANGED (company(Contract c)) DO {
+    authorisedDocumentCompany(c) <- authorisedDocument(company(c));
     authorisedPersonCompany (c) <- authorisedPerson(company(c));
-    authorisedDocumentCompany (c) <- authorisedDocument(company(c));
+}
+WHEN LOCAL CHANGED (authorisedPersonCompany(Contract c)) DO {
+    authorisedDocumentCompany (c) <- authorisedDocument(authorisedPersonCompany(c));
 }
 
 CONSTRAINT authorisedPersonLegalEntity(Contract c) AND NOT legalEntity(authorisedPersonLegalEntity(c)) == legalEntity(c) 
@@ -261,6 +268,8 @@ NAVIGATOR {
 
 defaultCompany = DATA LegalEntity();
 nameDefaultCompany 'Компания по умолчанию' () = name(defaultCompany());
+
+CONSTRAINT defaultCompany() AND NOT isCompany(defaultCompany()) CHECKED BY defaultCompany[] MESSAGE 'Компания по умолчанию не является компанией';
 
 EXTEND FORM options PROPERTIES nameDefaultCompany();
 

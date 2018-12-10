@@ -20,8 +20,9 @@ importContacts (FILE f) {
     LOCAL phone6 = VARSTRING[30](INTEGER);
     LOCAL skype = VARSTRING[50](INTEGER);
     LOCAL note = VARSTRING[100](INTEGER);
+    LOCAL authorised = VARSTRING[1000](INTEGER);
     
-    IMPORT XLS NOHEADER FROM f TO idContact, idCustomer, idLegalEntity, name, position, email, phone1, phone2, phone3, phone4, phone5, phone6, skype, note;
+    IMPORT XLS NOHEADER FROM f TO idContact, idCustomer, idLegalEntity, name, position, email, phone1, phone2, phone3, phone4, phone5, phone6, skype, note, authorised;
 
     FOR INTEGER i = [GROUP MIN INTEGER ii IF ii > 0 BY trim(idContact(ii))](VARSTRING[15] id) AND id AND NOT contact(id) AND customer(trim(idCustomer(i))) DO NEW c = Contact {
         id(c) <- id;
@@ -55,6 +56,7 @@ importContacts (FILE f) {
         email(c) <- trim(email(i));
         skype(c) <- trim(skype(i));
         note(c) <- trim(note(i));
+        authorisedDocument(c) <- trim(authorised(i));
         phone(c) <- trim(phone1(i));
         
         IF trim(phone2(i)) != '' AND NOT [GROUP SUM 1 BY contact(Phone p), number(p)](c, trim(phone2(i))) THEN NEW p = Phone {
