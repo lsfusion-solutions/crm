@@ -125,7 +125,7 @@ EXTEND FORM contract
 DESIGN contract {
     details {
         NEW debt {
-            caption = 'Оплата';
+            caption = 'Задолженность';
             NEW sums {
                 type = CONTAINERH;
                 NEW firstRow {
@@ -159,7 +159,7 @@ EXTEND FORM contractDashboard
 DESIGN contractDashboard {
     tab {
         NEW debt {
-            caption = 'Оплата';
+            caption = 'Задолженность';
             MOVE BOX (d);
         }
     }

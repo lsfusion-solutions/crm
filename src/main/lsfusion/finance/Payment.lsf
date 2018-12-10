@@ -19,6 +19,8 @@ nameCustomer 'Клиент' (Payment p) = name(customer(p));
 company = DATA LegalEntity(Payment);
 nameCompany 'Компания' (Payment p) = name(company(p)) IN id;
 
+CONSTRAINT company(Payment p) AND NOT isCompany(company(p)) CHECKED BY company[Payment] MESSAGE 'Компания платежа не является компанией';
+
 number 'Номер документа оплаты' = DATA VARSTRING[15](Payment) IN id;
 date 'Дата' = DATA DATE (Payment) IN id;
 year 'Год' (Payment p) = extractYear(date(p));

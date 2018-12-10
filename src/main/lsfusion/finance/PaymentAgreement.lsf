@@ -1,0 +1,31 @@
+MODULE PaymentAgreement;
+
+REQUIRE PaymentContract, Agreement;
+
+NAMESPACE Payment;
+
+agreement = DATA Agreement(Payment);
+numberAgreement 'Номер соглашения' (Payment p) = number(agreement(p));
+
+paid 'Оплачено' (Agreement c) = GROUP SUM sum(Payment p) BY agreement(p);
+
+paid(Agreement c) += paid(c);             
+
+CONSTRAINT contract(agreement(Payment p)) != contract(p) CHECKED BY agreement[Payment] MESSAGE 'Договор соглашения должен совпадать с договором платежа';
+
+EXTEND FORM payment PROPERTIES (o) numberAgreement;
+
+DESIGN payment {
+    docs {
+        MOVE PROPERTY (numberAgreement(o));
+    }
+}
+
+EXTEND FORM payments 
+    PROPERTIES (o) READONLY numberAgreement
+;
+EXTEND FORM dialogPayments 
+    PROPERTIES (o) READONLY numberAgreement
+;
+
+EXTEND FORM contract PROPERTIES READONLY paid(ag);

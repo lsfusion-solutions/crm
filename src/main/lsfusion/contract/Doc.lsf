@@ -2,10 +2,9 @@ MODULE Doc;
 
 REQUIRE Customer, LegalEntity;
 
-NAMESPACE Contract;
+NAMESPACE Doc;
 
 CLASS ABSTRACT Document 'Документ';
-TABLE document(Document);
 
 id 'Код' = ABSTRACT VARSTRING[15] (Document) IN id CHARWIDTH 5;
 number 'Номер' = ABSTRACT VARSTRING[15](Document) IN id CHARWIDTH 10;

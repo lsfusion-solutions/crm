@@ -166,7 +166,7 @@ DESIGN agreement {
         NEW row3 {
             type = CONTAINERH;
             NEW payment {
-                caption = 'Оплата';
+                caption = 'Задолженность';
                 type = CONTAINERH;
                 MOVE PROPERTY(sum(o));
             }

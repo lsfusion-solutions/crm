@@ -78,7 +78,9 @@ DESIGN contractDashboard {
                 }
                 MOVE BOX (ag);
                 MOVE BOX (ac);
-                MOVE BOX (p);
+                MOVE BOX (p) {
+                    caption = 'Платежи';
+                }
             }
         }
     }

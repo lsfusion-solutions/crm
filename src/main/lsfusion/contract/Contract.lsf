@@ -213,7 +213,7 @@ DESIGN contract {
                     type = CONTAINERH;
                     alignment = STRETCH;
                     NEW payment {
-                        caption = 'Оплата';
+                        caption = 'Задолженность';
                         type = CONTAINERH;
                         MOVE PROPERTY (sum(o));
                         MOVE PROPERTY (shortNameCurrency(o));

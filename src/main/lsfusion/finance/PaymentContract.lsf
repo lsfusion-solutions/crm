@@ -1,0 +1,35 @@
+MODULE PaymentContract;
+
+REQUIRE Payment, Contract;
+
+NAMESPACE Payment;
+
+contract = DATA Contract(Payment);
+idContract 'Код договора' (Payment a) = id(contract(a));
+numberContract 'Номер договора' (Payment a) = number(contract(a)) IN id;
+typeContract (Payment p) = type(contract(p));
+nameTypeContract 'Тип договора' (Payment p) = nameType(contract(p));
+
+CONSTRAINT legalEntity(Payment p) != legalEntity(contract(p)) CHECKED BY contract[Payment] MESSAGE 'Организация платежа должна совпадать с организацией договора';
+CONSTRAINT company(Payment p) != company(contract(p)) CHECKED BY contract[Payment] MESSAGE 'Компания платежа должна совпадать с компанией договора';
+
+paid 'Оплачено' (Contract c) = GROUP SUM sum(Payment p) BY contract(p);
+
+paid(Contract c) += paid(c);
+
+EXTEND FORM payment PROPERTIES (o) numberContract;
+
+DESIGN payment {
+    docs {
+        MOVE PROPERTY (numberContract(o));
+    }
+}
+
+EXTEND FORM payments 
+    PROPERTIES (o) READONLY numberContract, nameTypeContract
+    ORDER numberContract(o)
+;
+EXTEND FORM dialogPayments 
+    PROPERTIES (o) READONLY numberContract, nameTypeContract
+    ORDER numberContract(o)
+;

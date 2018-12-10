@@ -1,22 +1,11 @@
 MODULE PaymentAct;
 
-REQUIRE Payment, Act;
-
-contract = DATA Contract(Payment);
-idContract 'Код договора' (Payment a) = id(contract(a));
-numberContract 'Номер договора' (Payment a) = number(contract(a)) IN id;
-typeContract (Payment p) = type(contract(p));
-nameTypeContract 'Тип договора' (Payment p) = nameType(contract(p));
+REQUIRE PaymentAgreement, Act;
 
 act = DATA Act(Payment);
 idAct 'Код акта' (Payment a) = id(act(a));
 numberAct 'Номер акта' (Payment a) = number(act(a)) IN id;
 
-agreement = DATA Agreement(Payment);
-numberAgreement 'Номер соглашения' (Payment p) = number(agreement(p));
-
-paid 'Оплачено' (Contract c) = GROUP SUM sum(Payment p) BY contract(p);
-paid 'Оплачено' (Agreement c) = GROUP SUM sum(Payment p) BY agreement(p);
 paidPayment 'Оплачено' (Act c) = GROUP SUM sum(Payment p) BY act(p);
 
 paidContract 'Оплачено' (Act c) = PARTITION UNGROUP paid
@@ -26,14 +15,8 @@ paidContract 'Оплачено' (Act c) = PARTITION UNGROUP paid
                                                       
 paid 'Оплачено' (Act a) = paidContract(a) (+) paidPayment(a);
 
-paid(Contract c) += paid(c);
-paid(Agreement c) += paid(c);             
 paid(Act c) += paid(c);                          
 
-CONSTRAINT company(Payment p) AND NOT isCompany(company(p)) CHECKED BY company[Payment] MESSAGE 'Компания платежа не является компанией';
-CONSTRAINT legalEntity(Payment p) != legalEntity(contract(p)) CHECKED BY contract[Payment] MESSAGE 'Организация платежа должна совпадать с организацией договора';
-CONSTRAINT company(Payment p) != company(contract(p)) CHECKED BY contract[Payment] MESSAGE 'Компания платежа должна совпадать с компанией договора';
-CONSTRAINT contract(agreement(Payment p)) != contract(p) CHECKED BY agreement[Payment] MESSAGE 'Договор соглашения должен совпадать с договором платежа';
 CONSTRAINT contract(act(Payment p)) != contract(p) CHECKED BY act[Payment] MESSAGE 'Договор акта должен совпадать с договором платежа';
 
 split 'Разбить платеж' (Payment p) {
@@ -54,23 +37,19 @@ split 'Разбить платеж' (Payment p) {
     }
 }
 
-EXTEND FORM payment PROPERTIES (o) numberContract, numberAgreement, numberAct;
+EXTEND FORM payment PROPERTIES (o) numberAct;
 
 DESIGN payment {
     docs {
-        MOVE PROPERTY (numberContract(o));
-        MOVE PROPERTY (numberAgreement(o));
         MOVE PROPERTY (numberAct(o));
     }
 }
 
 EXTEND FORM payments 
-    PROPERTIES (o) numberContract, nameTypeContract, numberAgreement, numberAct
-    ORDER numberContract(o)
+    PROPERTIES (o) READONLY numberAct
 ;
 EXTEND FORM dialogPayments 
-    PROPERTIES (o) numberContract, nameTypeContract, numberAgreement, numberAct
-    ORDER numberContract(o)
+    PROPERTIES (o) READONLY numberAct
 ;
 
-EXTEND FORM contract PROPERTIES READONLY paid(ag), paid(ac);
+EXTEND FORM contract PROPERTIES READONLY paid(ac);
