@@ -38,23 +38,42 @@ TABLE position (Position);
 
 name 'Наименование' = DATA VARISTRING[100] (Position) CHARWIDTH 15;
 nameRp 'Наименование (род.падеж)' = DATA VARISTRING[100] (Position) CHARWIDTH 15;
+inactive 'Неактивный' = DATA BOOLEAN (Position);
+
+in 'Отм.' = DATA LOCAL BOOLEAN (Position);
+
+merge ABSTRACT LIST (Position, Position);
+
+merge 'Объединить' (Position p) {
+    NEWSESSION NESTED (in[Position]) {
+        FOR in(Position pp) DO {
+            name(p) <- OVERRIDE name(p), name(pp);
+            nameRp(p) <- OVERRIDE nameRp(p), nameRp(pp);
+            merge(pp, p);
+            DELETE pp WHERE pp != p;
+        }
+        APPLY;
+    }
+} CONFIRM;
 
 FORM position 'Должность'
     OBJECTS o = Position PANEL
-    PROPERTIES(o) name, nameRp
+    PROPERTIES(o) name, nameRp, inactive
     
     EDIT Position OBJECT o
 ;
 
-FORM positions 'Должность'
+FORM positions 'Должности'
     OBJECTS o = Position
-    PROPERTIES(o) READONLY name, nameRp
+    PROPERTIES(o) in, merge DRAW o TOOLBAR
+    PROPERTIES(o) READONLY name, nameRp, inactive 
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
 ;
 
-FORM dialogPositions 'Должность'
+FORM dialogPositions 'Должности'
     OBJECTS o = Position
-    PROPERTIES(o) READONLY name
+    PROPERTIES(o) READONLY name, inactive
+    FILTERGROUP active FILTER 'Активные' NOT inactive(o) DEFAULT
     
     LIST Position OBJECT o
 ;
@@ -68,6 +87,8 @@ NAVIGATOR {
 position = DATA Position(Contact);
 namePosition 'Должность' (Contact c) = name(position(c)) CHARWIDTH 20; 
 nameRpPosition 'Должность (р.п.)' (Contact c) = nameRp(position(c));
+
+merge(Position from, Position to) + { position(Contact c) <- to WHERE position(c) == from; }
 
 skype 'Skype' = DATA VARSTRING[50](Contact) CHARWIDTH 15;
 note 'Примечание' = DATA VARSTRING[100](Contact) CHARWIDTH 20;
