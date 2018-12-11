@@ -4,18 +4,27 @@ REQUIRE PaymentAct, Expense, Dashboard;
 
 NAMESPACE Dashboard;
 
-receipt 'Доход' (Month m, INTEGER y) = GROUP SUM sumCurrency(Payment p) BY extractMonth(date(p)), extractYear(date(p));
-shipment 'Расход' (Month m, INTEGER y) = GROUP SUM sumCurrency(Expense p) BY extractMonth(date(p)), extractYear(date(p));
+skipReceipt 'Не учитывать в доходах' = DATA BOOLEAN (LegalEntity);
+
+EXTEND FORM legalEntity PROPERTIES skipReceipt(o);
+DESIGN legalEntity {
+    main {
+        MOVE PROPERTY (skipReceipt(o));
+    }   
+}
+
+receipt 'Доход' (Month m, INTEGER y) = GROUP SUM sumCurrency(Payment p) IF NOT skipReceipt(legalEntity(p)) BY extractMonth(date(p)), extractYear(date(p));
+shipment 'Расход' (Month m, INTEGER y) = GROUP SUM sumCurrency(Expense p) IF NOT skipExpense(type(p)) BY extractMonth(date(p)), extractYear(date(p));
 profit 'Прибыль' (Month m, INTEGER y) = receipt(m, y) (-) shipment(m, y);
 
-receipt 'Доход' (Month m, INTEGER y, ContractType t) = GROUP SUM sumCurrency(Payment p) BY extractMonth(date(p)), extractYear(date(p)), type(contract(p));
-shipment 'Расход' (Month m, INTEGER y, ExpenseType t) = GROUP SUM sumCurrency(Expense p) BY extractMonth(date(p)), extractYear(date(p)), type(p);
-receiptOther 'Прочее' (Month m, INTEGER y) = GROUP SUM sumCurrency(Payment p) IF NOT type(contract(p)) BY extractMonth(date(p)), extractYear(date(p));
-shipmentOther 'Прочее' (Month m, INTEGER y) = GROUP SUM sumCurrency(Expense p) IF NOT type(p) BY extractMonth(date(p)), extractYear(date(p));
-receipt 'Доход' (INTEGER yf, INTEGER yt, ContractType t) = GROUP SUM sumCurrency(Payment p) IF year(p) >= yf AND year(p) <= yt BY type(contract(p));
-shipment 'Расход' (INTEGER yf, INTEGER yt, ExpenseType t) = GROUP SUM sumCurrency(Expense p) IF extractYear(date(p)) >= yf AND extractYear(date(p)) <= yt BY type(p);
-receipt 'Доход' (DATE df, DATE dt, ContractType t) = GROUP SUM sumCurrency(Payment p) IF date(p) >= df AND date(p) <= dt BY type(contract(p));
-shipment 'Расход' (DATE df, DATE dt, ExpenseType t) = GROUP SUM sumCurrency(Expense p) IF date(p) >= df AND date(p) <= dt BY type(p);
+receipt 'Доход' (Month m, INTEGER y, ContractType t) = GROUP SUM sumCurrency(Payment p) IF NOT skipReceipt(legalEntity(p)) BY extractMonth(date(p)), extractYear(date(p)), type(contract(p));
+shipment 'Расход' (Month m, INTEGER y, ExpenseType t) = GROUP SUM sumCurrency(Expense p) IF NOT skipExpense(type(p)) BY extractMonth(date(p)), extractYear(date(p)), type(p);
+receiptOther 'Прочее' (Month m, INTEGER y) = GROUP SUM sumCurrency(Payment p) IF NOT type(contract(p)) AND NOT skipReceipt(legalEntity(p)) BY extractMonth(date(p)), extractYear(date(p));
+shipmentOther 'Прочее' (Month m, INTEGER y) = GROUP SUM sumCurrency(Expense p) IF NOT type(p) AND NOT skipExpense(type(p)) BY extractMonth(date(p)), extractYear(date(p));
+receipt 'Доход' (INTEGER yf, INTEGER yt, ContractType t) = GROUP SUM sumCurrency(Payment p) IF year(p) >= yf AND year(p) <= yt AND NOT skipReceipt(legalEntity(p)) BY type(contract(p));
+shipment 'Расход' (INTEGER yf, INTEGER yt, ExpenseType t) = GROUP SUM sumCurrency(Expense p) IF extractYear(date(p)) >= yf AND extractYear(date(p)) <= yt AND NOT skipExpense(type(p)) BY type(p);
+receipt 'Доход' (DATE df, DATE dt, ContractType t) = GROUP SUM sumCurrency(Payment p) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(legalEntity(p)) BY type(contract(p));
+shipment 'Расход' (DATE df, DATE dt, ExpenseType t) = GROUP SUM sumCurrency(Expense p) IF date(p) >= df AND date(p) <= dt AND NOT skipExpense(type(p)) BY type(p);
 
 backgroundReceipt() = RGB (222, 255, 222);
 backgroundShipment() = RGB (255, 222, 222);
@@ -40,12 +49,12 @@ FORM profitMonthDashboard 'Прибыль по месяцам'
     OBJECTS p = Payment
     PROPERTIES (p) READONLY id, nameLegalEntity, nameCustomer, numberContract, nameTypeContract, numberAct, number, date, 
                             year, monthNumber, sum, shortNameCurrency, sumCurrency BACKGROUND backgroundReceipt(), note
-    FILTERS year(p) == y, extractMonth(date(p)) == m
+    FILTERS year(p) == y, extractMonth(date(p)) == m, NOT skipReceipt(legalEntity(p))
     
     OBJECTS e = Expense
     PROPERTIES (e) READONLY nameCompany, nameLegalEntity, nameCustomer, date, datePayment, nameType, sum, shortNameCurrency, 
                             sumCurrency BACKGROUND backgroundShipment(), noteString
-    FILTERS extractYear(date(e)) == y, extractMonth(date(e)) == m
+    FILTERS extractYear(date(e)) == y, extractMonth(date(e)) == m, NOT skipExpense(type(e))
     
     EVENTS ON INIT {
         SEEK profitMonthDashboard.years OBJECTS yf = extractYear(currentDate()), yt = extractYear(currentDate());

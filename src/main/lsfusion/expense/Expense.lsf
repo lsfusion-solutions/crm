@@ -21,17 +21,18 @@ CLASS ExpenseType 'Вид оплаты';
 TABLE expenseType (ExpenseType);
 
 name 'Наименование' = DATA VARISTRING[100] (ExpenseType) CHARWIDTH 15;
+skipExpense 'Не учитывать в расходах' = DATA BOOLEAN (ExpenseType);
 
 FORM expenseType 'Вид оплаты'
     OBJECTS o = ExpenseType PANEL
-    PROPERTIES(o) name
+    PROPERTIES(o) name, skipExpense
     
     EDIT ExpenseType OBJECT o
 ;
 
 FORM expenseTypes 'Виды оплаты'
     OBJECTS o = ExpenseType
-    PROPERTIES(o) READONLY name
+    PROPERTIES(o) READONLY name, skipExpense
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
     
     LIST ExpenseType OBJECT o
