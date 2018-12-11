@@ -20,7 +20,7 @@ paid(Act c) += paid(c);
 CONSTRAINT contract(act(Payment p)) != contract(p) CHECKED BY act[Payment] MESSAGE 'Договор акта должен совпадать с договором платежа';
 
 split 'Разбить платеж' (Payment p) {
-    NEWSESSION DIALOG dialogInputSum OBJECTS n INPUT DO {
+    DIALOG dialogInputSum OBJECTS n INPUT DO {
         IF n < sum(p) THEN NEW pp = Payment {
             sum(p) <- sum(p) (-) n;
             sum(pp) <- n;
@@ -32,7 +32,6 @@ split 'Разбить платеж' (Payment p) {
             date(pp) <- date(p);
             note(pp) <- note(p);
             currency(pp) <- currency(p);
-            APPLY;
         }
         ELSE MESSAGE 'Сумма больше суммы платежа';
     }
