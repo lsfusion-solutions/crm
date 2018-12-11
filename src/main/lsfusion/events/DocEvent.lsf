@@ -2,8 +2,19 @@ MODULE DocEvent;
 
 REQUIRE ContractEvent, AgreementEvent, ActEvent, DocDashboard;
 
+addEventDoc 'Добавить' (Document d) {
+    NEWSESSION NEW e = Event {
+        contract(e) <- d IF d IS Contract;
+        agreement(e) <- d IF d IS Agreement;
+        act(e) <- d IF d IS Act;
+        SHOW event OBJECTS o = e DOCKED;
+    }
+} IMAGE 'add.png';
+
 EXTEND FORM docDashboard 
     OBJECTS e = Event
     PROPERTIES (e) READONLY id, name, nameCustomer, nameLegalEntity, nameEmployee, nameContact, date, time, dateNext, descriptionString, additionString
+    PROPERTIES  addEventDoc(d) DRAW e TOOLBAR 
+    PROPERTIES (e) NEWSESSION EDIT, DELETE 
     FILTERS contract(e) == d OR agreement(e) == d OR act(e) == d
 ;
