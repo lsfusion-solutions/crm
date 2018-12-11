@@ -5,10 +5,15 @@ REQUIRE Dashboard, PaymentAct, TimeEntryExpense;
 NAMESPACE Dashboard;
 
 receipt 'Доход' (Customer c, DATE df, DATE dt) = GROUP SUM sum(Payment p) IF date(p) >= df AND date(p) <= dt BY customer(p);
+receipt 'Доход' (Customer c, Month m, INTEGER y, DATE df, DATE dt) = GROUP SUM sum(Payment p) IF date(p) >= df AND date(p) <= dt BY customer(p), extractMonth(date(p)), extractYear(date(p));
 receiptCurrency 'Доход, USD' (Customer c, DATE df, DATE dt) = round2(receipt(c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
+receiptCurrency 'Доход, USD' (Customer c, Month m, INTEGER y, DATE df, DATE dt) = round2(receipt(c, m, y, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
 shipmentCurrency 'Расход, USD' (Customer c, DATE df, DATE dt) = round2(costSum(c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
+shipmentCurrency 'Расход, USD' (Customer c, Month m, INTEGER y, DATE df, DATE dt) = round2(costSum(c, m, y, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
 diff 'Прибыль, USD' (Customer c, DATE df, DATE dt) = receiptCurrency(c, df, dt) (-) shipmentCurrency(c, df, dt);
 diffPercent 'Прибыль, %' (Customer c, DATE df, DATE dt) = round2(diff(c, df, dt) / receiptCurrency(c, df, dt) * 100);
+diff 'Прибыль, USD' (Customer c, Month m, INTEGER y, DATE df, DATE dt) = receiptCurrency(c, m, y, df, dt) (-) shipmentCurrency(c, m, y, df, dt);
+diffPercent 'Прибыль, %' (Customer c, Month m, INTEGER y, DATE df, DATE dt) = round2(diff(c, m, y, df, dt) / receiptCurrency(c, m, y, df, dt) * 100);
 shipmentCurrency 'Расход, USD' (Employee e, Customer c, DATE df, DATE dt) = round2(costSum(e, c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
 shipmentCurrency 'Расход, USD' (Project p, Customer c, DATE df, DATE dt) = round2(costSum(p, c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
 shipmentCurrency 'Расход, USD' (Project p, Employee e, Customer c, DATE df, DATE dt) = round2(costSum(p, e, c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
@@ -18,7 +23,8 @@ FORM profit 'Прибыль по клиентам'
     PROPERTIES 'Дата с' = VALUE (df), 'Дата по' = VALUE (dt)
     
     OBJECTS c = Customer
-    PROPERTIES READONLY name(c), receiptCurrency(c, df, dt), shipmentCurrency(c, df, dt), diff(c, df, dt), diffPercent(c, df, dt)
+    PROPERTIES READONLY name(c)
+    PROPERTIES (c, df, dt) READONLY receiptCurrency, shipmentCurrency, diff, diffPercent
     FILTERS costSum(c, df, dt) OR receipt(c, df, dt)
     
     OBJECTS p = Payment
@@ -52,6 +58,12 @@ FORM profit 'Прибыль по клиентам'
     PROPERTIES (tt) READONLY id, hours, commentsString, date, nameActivity, numberIssue, nameIssue
     FILTERS employee(tt) == ee, date(tt) >= df AND date(tt) <= dt, customer(tt) == c, project(tt) == pp
     FILTERGROUP active FILTER 'Активные' NOT inactive(c) DEFAULT 
+    
+    OBJECTS my = (m = Month, y = INTEGER)
+    PROPERTIES READONLY number(m), 'Месяц' = staticCaption(m), year 'Год' = VALUE (y)
+    PROPERTIES (c, m, y, df, dt) READONLY receiptCurrency, shipmentCurrency, diff, diffPercent
+    FILTERS costSum(c, m, y, df, dt) OR receipt(c, m, y, df, dt)
+    ORDER year, number(m)
 ;
 
 DESIGN profit {
@@ -77,6 +89,10 @@ DESIGN profit {
                     MOVE BOX (ee) { fill = 1; }
                     MOVE BOX (tt) { fill = 4; }
                 }
+            }
+            NEW month {
+                caption = 'По месяцам';
+                MOVE BOX (my);
             }
         }
     }
