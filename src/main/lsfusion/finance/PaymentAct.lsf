@@ -25,6 +25,7 @@ split 'Разбить платеж' (Payment p) {
             sum(p) <- sum(p) (-) n;
             sum(pp) <- n;
             legalEntity(pp) <- legalEntity(p);
+            company(pp) <- company(p);
             contract(pp) <- contract(p);
             act(pp) <- act(p);
             number(pp) <- number(p);
