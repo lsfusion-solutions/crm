@@ -9,6 +9,7 @@ receiptCurrency 'Доход, USD' (Customer c, DATE df, DATE dt) = round2(receip
 shipmentCurrency 'Расход, USD' (Customer c, DATE df, DATE dt) = round2(costSum(c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
 diff 'Прибыль, USD' (Customer c, DATE df, DATE dt) = receiptCurrency(c, df, dt) (-) shipmentCurrency(c, df, dt);
 diffPercent 'Прибыль, %' (Customer c, DATE df, DATE dt) = round2(diff(c, df, dt) / receiptCurrency(c, df, dt) * 100);
+shipmentCurrency 'Расход, USD' (Employee e, Customer c, DATE df, DATE dt) = round2(costSum(e, c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
 
 FORM profit 'Прибыль по клиентам'
     OBJECTS period = (df = DATE, dt = DATE) PANEL
@@ -27,7 +28,8 @@ FORM profit 'Прибыль по клиентам'
         FILTER 'За интервал' date(p) >= df AND date(p) <= dt DEFAULT
     
     OBJECTS e = Employee
-    PROPERTIES READONLY name(e), hours(e, c, df, dt)
+    PROPERTIES READONLY name(e)
+    PROPERTIES (e, c, df, dt) READONLY hours, costSum, shipmentCurrency
     FILTERS hours(e, c, df, dt)
     
     OBJECTS t = TimeEntry

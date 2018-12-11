@@ -20,17 +20,18 @@ CLASS ExpenseType 'Тип расхода';
 TABLE expenseType (ExpenseType);
 
 name 'Наименование' = DATA VARISTRING[100] (ExpenseType) CHARWIDTH 15;
+percent 'Процент потерь, %' = DATA NUMERIC[5,2](ExpenseType);
 
 FORM expenseType 'Тип расхода'
     OBJECTS o = ExpenseType PANEL
-    PROPERTIES(o) name
+    PROPERTIES(o) name, percent
     
     EDIT ExpenseType OBJECT o
 ;
 
 FORM expenseTypes 'Типы расхода'
     OBJECTS o = ExpenseType 
-    PROPERTIES(o) READONLY name
+    PROPERTIES(o) READONLY name, percent
     PROPERTIES (o) NEWSESSION NEW, EDIT, DELETE
     
     LIST ExpenseType OBJECT o

@@ -4,7 +4,7 @@ REQUIRE EmployeeExpense, Currency, TimeEntry, WorkingHours;
 
 NAMESPACE Project;
 
-cost 'Расход за час' (Employee e, INTEGER y, Month m) = round2([GROUP SUM sum(Expense t) BY employee(t), year(t), month(t)](e, y, m)/monthHours(y, m));   
+cost 'Расход за час' (Employee e, INTEGER y, Month m) = round2([GROUP SUM (sum(Expense t) * 100 / (100 (-) percent(type(t)))) BY employee(t), year(t), month(t)](e, y, m)/monthHours(y, m));   
 cost 'Расход за час' (TimeEntry t) = cost(employee(t), year(t), month(t));
 
 costSum 'Расход' (TimeEntry t) = hours(t) * cost(t);
@@ -22,3 +22,4 @@ costSum 'Расход по проекту' (Employee e, INTEGER y, Month m, Proj
 costSum 'Расход по клиенту' (Employee e, INTEGER y, Month m, Customer c) = GROUP SUM costSum(TimeEntry t) BY employee(t), year(t), month(t), customer(t);
 
 costSum 'Расход' (Customer c, DATE df, DATE dt) = GROUP SUM costSum(TimeEntry t) IF date(t) >= df AND date(t) <= dt BY customer(t);
+costSum 'Расход' (Employee e, Customer c, DATE df, DATE dt) = GROUP SUM costSum(TimeEntry t) IF date(t) >= df AND date(t) <= dt BY  employee(t), customer(t);
