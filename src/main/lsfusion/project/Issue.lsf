@@ -62,7 +62,7 @@ TABLE issue (Issue);
 id 'Код' = DATA VARSTRING[15] (Issue) INDEXED CHARWIDTH 5 IN id;
 number 'Номер' (Issue s) = INTEGER (id(s)) CHARWIDTH 5;
 
-name 'Тема' = DATA VARSTRING[500] (Issue) CHARWIDTH 50;
+name 'Тема' = DATA VARSTRING[500] (Issue) CHARWIDTH 30;
 description 'Описание' = DATA TEXT (Issue);
 descriptionString 'Описание' (Issue i) = VARSTRING[1000](description(i)) CHARWIDTH 30;
 dateTo 'Дата завершения' = DATA DATE (Issue);

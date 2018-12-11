@@ -68,6 +68,8 @@ hours 'Трудозатраты' (Employee e, DATE d) = GROUP SUM hours(TimeEntr
 hours 'Трудозатраты' (Employee e, INTEGER y, Month m) = GROUP SUM hours(TimeEntry t) BY employee(t), year(t), month(t);
 hours 'Трудозатраты' (Employee e, INTEGER y) = GROUP SUM hours(TimeEntry t) BY employee(t), year(t);
 hours 'Трудозатраты' (Employee e, Customer c, DATE df, DATE dt) = GROUP SUM hours(TimeEntry t) IF date(t) >= df AND date(t) <= dt BY employee(t), customer(t);
+hours 'Трудозатраты' (Project p, Customer c, DATE df, DATE dt) = GROUP SUM hours(TimeEntry t) IF date(t) >= df AND date(t) <= dt BY project(t), customer(t);
+hours 'Трудозатраты' (Project p, Employee e, Customer c, DATE df, DATE dt) = GROUP SUM hours(TimeEntry t) IF date(t) >= df AND date(t) <= dt BY project(t), employee(t), customer(t);
 hours 'Трудозатраты' (Employee e, Project p, INTEGER y, Month m) = GROUP SUM hours(TimeEntry t) BY employee(t), project(t), year(t), month(t);
 hours 'Трудозатраты' (Employee e, Project p, INTEGER y) = GROUP SUM hours(TimeEntry t) BY employee(t), project(t), year(t);
 

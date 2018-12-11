@@ -10,6 +10,8 @@ shipmentCurrency 'Расход, USD' (Customer c, DATE df, DATE dt) = round2(cos
 diff 'Прибыль, USD' (Customer c, DATE df, DATE dt) = receiptCurrency(c, df, dt) (-) shipmentCurrency(c, df, dt);
 diffPercent 'Прибыль, %' (Customer c, DATE df, DATE dt) = round2(diff(c, df, dt) / receiptCurrency(c, df, dt) * 100);
 shipmentCurrency 'Расход, USD' (Employee e, Customer c, DATE df, DATE dt) = round2(costSum(e, c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
+shipmentCurrency 'Расход, USD' (Project p, Customer c, DATE df, DATE dt) = round2(costSum(p, c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
+shipmentCurrency 'Расход, USD' (Project p, Employee e, Customer c, DATE df, DATE dt) = round2(costSum(p, e, c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
 
 FORM profit 'Прибыль по клиентам'
     OBJECTS period = (df = DATE, dt = DATE) PANEL
@@ -36,6 +38,19 @@ FORM profit 'Прибыль по клиентам'
     PROPERTIES (t) READONLY id, hours, commentsString, date, nameActivity, nameProject, nameEmployee, numberIssue, nameIssue
     FILTERS employee(t) == e, date(t) >= df AND date(t) <= dt, customer(t) == c
     
+    OBJECTS pp = Project
+    PROPERTIES READONLY name(pp)
+    PROPERTIES (pp, c, df, dt) READONLY hours, costSum, shipmentCurrency
+    FILTERS hours(pp, c, df, dt)
+    
+    OBJECTS ee = Employee
+    PROPERTIES READONLY name(ee)
+    PROPERTIES (pp, ee, c, df, dt) READONLY hours, costSum, shipmentCurrency
+    FILTERS hours(pp, ee, c, df, dt)
+    
+    OBJECTS tt = TimeEntry
+    PROPERTIES (tt) READONLY id, hours, commentsString, date, nameActivity, numberIssue, nameIssue
+    FILTERS employee(tt) == ee, date(tt) >= df AND date(tt) <= dt, customer(tt) == c, project(tt) == pp
     FILTERGROUP active FILTER 'Активные' NOT inactive(c) DEFAULT 
 ;
 
@@ -45,11 +60,23 @@ DESIGN profit {
             type = TABBED;
             fill = 1;
             MOVE BOX (p) { caption = 'Платежи'; }
-            NEW employee {
+            NEW hours {
+                type = TABBED;
+                fill = 1;
                 caption = 'Трудозатраты';
-                type = CONTAINERH;
-                MOVE BOX (e) { fill = 1; }
-                MOVE BOX (t) { fill = 5; }
+                NEW employee {
+                    caption = 'По сотрудникам';
+                    type = CONTAINERH;
+                    MOVE BOX (e) { fill = 1; }
+                    MOVE BOX (t) { fill = 5; }
+                }
+                NEW project {
+                    caption = 'По проектам';
+                    type = CONTAINERH;
+                    MOVE BOX (pp) { fill = 1; }
+                    MOVE BOX (ee) { fill = 1; }
+                    MOVE BOX (tt) { fill = 4; }
+                }
             }
         }
     }
