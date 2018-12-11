@@ -117,7 +117,7 @@ dateSigningCustomer 'Дата подписания клиентом' = DATA DATE
 dateReceiving 'Дата получения' = DATA DATE (Contract);
 dateTo 'Дата окончания' = DATA DATE (Contract);
 dateClosing 'Дата закрытия' = DATA DATE (Contract);
-note 'Примечание' = DATA VARSTRING[100](Contract) CHARWIDTH 20;
+note 'Примечание' = DATA VARISTRING[100](Contract) CHARWIDTH 20;
 text 'Текст' = DATA TEXT (Contract);
 textString 'Текст' (Contract c) = VARSTRING[500](text(c)) CHARWIDTH 20;
 

@@ -84,7 +84,7 @@ dateSigningCompany 'Дата подписания компанией' = DATA DAT
 dateSending 'Дата отправки' = DATA DATE (Agreement);
 dateSigningCustomer 'Дата подписания клиентом' = DATA DATE (Agreement);
 dateReceiving 'Дата получения' = DATA DATE (Agreement);
-note 'Примечание' = DATA VARSTRING[100](Agreement) CHARWIDTH 20;
+note 'Примечание' = DATA VARISTRING[100](Agreement) CHARWIDTH 20;
 text 'Текст' = DATA TEXT (Agreement);
 textString 'Текст' (Agreement c) = VARSTRING[500](text(c)) CHARWIDTH 20;
 

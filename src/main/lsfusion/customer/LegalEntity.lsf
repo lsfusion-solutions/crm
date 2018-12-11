@@ -113,7 +113,7 @@ legalEntityAccount (VARSTRING[20] number) = legalEntity(account(number));
 currency = DATA Currency (Account);
 nameCurrency 'Валюта счета' = name(currency(Account account));
 
-note 'Примечание'  = DATA VARSTRING[50] (Account);
+note 'Примечание'  = DATA VARISTRING[50] (Account);
 
 EXTEND FORM customer PROPERTIES nameLegalEntity(a) AFTER types(a);
 

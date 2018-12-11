@@ -91,7 +91,7 @@ nameRpPosition 'Должность (р.п.)' (Contact c) = nameRp(position(c));
 merge(Position from, Position to) + { position(Contact c) <- to WHERE position(c) == from; }
 
 skype 'Skype' = DATA VARSTRING[50](Contact) CHARWIDTH 15;
-note 'Примечание' = DATA VARSTRING[100](Contact) CHARWIDTH 20;
+note 'Примечание' = DATA VARISTRING[100](Contact) CHARWIDTH 20;
 
 CLASS Phone 'Телефон';
 TABLE phone(Phone);
