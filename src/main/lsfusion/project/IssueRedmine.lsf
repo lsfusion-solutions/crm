@@ -112,10 +112,10 @@ open (Issue i) + {
     } 
 }
 
-apiKey = DATA VARSTRING[50] (External, Employee);
+apiKey = DATA VARSTRING[50] (External, User);
 EXTEND FORM external
-    OBJECTS e = Employee
-    PROPERTIES(e) READONLY name, login
+    OBJECTS e = User
+    PROPERTIES(e) READONLY name, login GRID
     PROPERTIES(o, e) apiKey
     
     FILTERGROUP active
