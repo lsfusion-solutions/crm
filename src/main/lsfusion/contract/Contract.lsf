@@ -255,6 +255,9 @@ FORM dialogContracts 'Договоры'
                            dateSending, dateReceiving, dateTo, dateClosing, note, textString
     ORDER date(o)
     
+    FILTERGROUP active
+        FILTER 'Активные' NOT dateClosing(o) < currentDate() DEFAULT
+    
     LIST Contract OBJECT o
 ;
 

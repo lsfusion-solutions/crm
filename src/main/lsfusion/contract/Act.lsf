@@ -227,6 +227,9 @@ FORM dialogActs 'Акты выполненных работ'
     OBJECTS o = Act LAST 
     PROPERTIES(o) READONLY id, numberContract, numberAgreement, number, date, nameType, sum, dateClosing, dateSending, dateReceiving, note, textString
     ORDER date(o)
+
+    FILTERGROUP active
+        FILTER 'Активные' NOT dateClosing(o) < currentDate() DEFAULT
     
     LIST Act OBJECT o
 ;
