@@ -127,7 +127,7 @@ changeStatus (Issue i, IssueStatus s) + {
         IF apiKey(e, currentUser()) THEN {
             stringToFile('\{ "issue": \{ "status_id" : "' + id(e, s) + '" \} \}', 'UTF-8', 'json');
             LOCAL result = FILE();
-            EXTERNAL HTTP url(e) + '/issues/' + id(i) + '.json?key' + apiKey(e, currentUser()) PARAMS resultFile() TO result; 
+            EXTERNAL HTTP PUT url(e) + '/issues/' + id(i) + '.json?key=' + apiKey(e, currentUser()) PARAMS resultFile() TO result; 
         } ELSE
             MESSAGE 'Для пользователя не задан api key. Статус в Redmine не будет изменен.';
 }
