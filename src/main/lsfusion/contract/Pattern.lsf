@@ -39,7 +39,8 @@ DESIGN pattern {
 FORM patterns 'Заготовки'
     OBJECTS p = Pattern
     PROPERTIES(p) READONLYIF isReadonly() order, note, text
-    PROPERTIES(p) NEWSESSION NEW, EDIT, DELETE
+    PROPERTIES(p) SHOWIF isReadonly() NEWSESSION NEW, EDIT, DELETE
+    PROPERTIES(p) SHOWIF isEditable() new = NEW, delete = DELETE
     ORDER order(p)
 ;
 
