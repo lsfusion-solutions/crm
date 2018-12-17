@@ -78,7 +78,6 @@ inactive 'Неактивная' = DATA BOOLEAN (Account);
 active 'Активная' (Account a) = a IS Account AND NOT inactive(a);
 
 number 'Номер расчетного счета'  = DATA VARSTRING[50] (Account) IN id CHARWIDTH 28 FIXED;
-numberNew 'Номер расчетного счета IBAN'  = DATA VARSTRING[50] (Account) IN id CHARWIDTH 28 FIXED;
 
 account (number) = GROUP MAX Account account BY number(account);
 
@@ -130,7 +129,7 @@ FORM legalEntity 'Организация'
     ORDER name(o)
     
     OBJECTS a=Account
-    PROPERTIES(a)  inactive, number, numberNew, nameCurrency, nameBank, addressBank, MFOBank, note, NEW, DELETE GRID
+    PROPERTIES(a)  inactive, number, nameCurrency, nameBank, addressBank, MFOBank, note, NEW, DELETE GRID
     FILTERS legalEntity(a) == o
     PROPERTIES equals(o, a)
     

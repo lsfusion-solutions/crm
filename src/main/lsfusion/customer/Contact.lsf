@@ -128,7 +128,7 @@ addPhones 'Доп. телефоны' (Contact c) = GROUP CONCAT number(Phone p),
 skipCustomer 'Клиент не обязателен' = ABSTRACT BOOLEAN (Contact);
 
 CONSTRAINT Contact c IS Contact AND NOT customer(c) AND NOT skipCustomer(c) MESSAGE 'Для контакта должен быть задан клиент';
-CONSTRAINT customer(Contact c) != customer(legalEntity(c)) CHECKED BY legalEntity[Contact] MESSAGE 'Клиент не совпадает с организацией';
+CONSTRAINT legalEntity(Contact c) AND customer(c) AND NOT customer(c) = customer(legalEntity(c)) CHECKED BY legalEntity[Contact] MESSAGE 'Клиент не совпадает с организацией';
 
 WHEN LOCAL SETCHANGED (customer(legalEntity(Contact c))) DO {
     customer(c) <- customer(legalEntity(c));
