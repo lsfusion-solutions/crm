@@ -1,6 +1,6 @@
 MODULE Debt;
 
-REQUIRE ContractDashboard, Dashboard;
+REQUIRE Dashboard, Contract;
 
 NAMESPACE Contract;
 
@@ -148,22 +148,6 @@ DESIGN contract {
     }
 }
 
-
-EXTEND FORM contractDashboard
-    OBJECTS d = Debt
-    PROPERTIES (d) READONLY date, sum, shortNameCurrency, sumCurrency, paid
-    ORDER date(o)
-    FILTERS contract(d) == o
-;
-
-DESIGN contractDashboard {
-    tab {
-        NEW debt {
-            caption = 'Задолженность';
-            MOVE BOX (d);
-        }
-    }
-}
 
 sumDebt 'Сумма задолженности' (Month m, INTEGER y, ContractType t) = GROUP SUM sum(Debt d) BY extractMonth(date(d)), extractYear(date(d)), type(contract(d));
 sumDebt 'Сумма задолженности' (Month m, INTEGER y) = GROUP SUM sum(Debt d) BY extractMonth(date(d)), extractYear(date(d));

@@ -2,6 +2,8 @@ MODULE AgreementWord;
 
 REQUIRE ContractWord;
 
+NAMESPACE Agreement;
+
 in 'Вкл.' = DATA BOOLEAN (AgreementType, Template);
 
 EXTEND FORM documentTemplates

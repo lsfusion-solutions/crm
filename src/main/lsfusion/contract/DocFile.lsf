@@ -1,6 +1,8 @@
 MODULE DocFile;
 
-REQUIRE Contract, Agreement, Act, Authentication;
+REQUIRE Doc, Authentication;
+
+NAMESPACE Doc;
 
 CLASS DocumentFile 'Версия файла документа';
 TABLE contractFile (DocumentFile);
@@ -18,91 +20,3 @@ document = DATA Document(DocumentFile);
 open 'Открыть' (DocumentFile c) {
     open(file(c));
 }
-
-file (Contract c) = GROUP LAST file(DocumentFile f) ORDER dateTime(f), f IF c == document(f);
-file (Agreement c) = GROUP LAST file(DocumentFile f) ORDER dateTime(f), f IF c == document(f);
- 
-loadFile 'Загрузить' (Contract c) { 
-    NEWSESSION INPUT f = FILE DO NEW cf = DocumentFile {
-        document(cf) <- c;
-        file(cf) <- f;
-        dateTime(cf) <- currentDateTime();
-        user(cf) <- currentUser();
-        APPLY;
-    } 
-}
-openFile 'Открыть' (Contract c) { open(file(c)); }
-
-file(Contract c) += file(c);
-
-EXTEND FORM contract 
-    OBJECTS f = DocumentFile
-    PROPERTIES(f) READONLY date, time, nameUser, loginUser
-    PROPERTIES(f) GRID open, DELETE 
-    ORDER date(f), time(f)
-    FILTERS document(f) == o
-    
-    PROPERTIES (o) loadFile, openFile SHOWIF TRUE IF file(o)
-;
-
-DESIGN contract {
-    details {
-        NEW files AFTER text {
-            type = CONTAINERV;
-            caption = 'Файл';
-            NEW file {
-                caption = 'Текущий файл документа';
-                type = CONTAINERH;
-                MOVE PROPERTY (loadFile(o));
-                MOVE PROPERTY (openFile(o));
-            }
-            MOVE BOX (f);
-        }
-    }
-}
-
-loadFile 'Загрузить' (Agreement c) { 
-    NEWSESSION INPUT f = FILE DO NEW cf = DocumentFile {
-        document(cf) <- c;
-        file(cf) <- f;
-        dateTime(cf) <- currentDateTime();
-        user(cf) <- currentUser();
-        APPLY;
-    } 
-}
-openFile 'Открыть' (Agreement c) { open(file(c)); }
-
-file(Agreement c) += file(c);
-
-EXTEND FORM agreement 
-    OBJECTS f = DocumentFile
-    PROPERTIES(f) READONLY date, time, nameUser, loginUser
-    PROPERTIES(f) GRID open, DELETE 
-    ORDER date(f), time(f)
-    FILTERS document(f) == o
-    
-    PROPERTIES (o) loadFile, openFile SHOWIF TRUE IF file(o)
-;
-
-DESIGN agreement {
-    BOX (o) {
-        NEW details {
-            type = TABBED;
-            fill = 1;
-            MOVE PROPERTY (text(o));
-            NEW files {
-                type = CONTAINERV;
-                caption = 'Файл';
-                NEW file {
-                    caption = 'Текущий файл документа';
-                    type = CONTAINERH;
-                    MOVE PROPERTY (loadFile(o));
-                    MOVE PROPERTY (openFile(o));
-                }
-                MOVE BOX (f);
-            }
-        }
-    }
-}
-
-EXTEND FORM contract PROPERTIES DRAW ag TOOLBAR openFile(ag);

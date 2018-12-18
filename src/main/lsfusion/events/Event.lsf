@@ -29,7 +29,7 @@ legalEntity = DATA LegalEntity(Event);
 idLegalEntity 'Код организации' (Event e) = id(legalEntity(e));
 nameLegalEntity 'Организация' (Event e) = name(legalEntity(e));
 
-CONSTRAINT customer(Event e) != customer(legalEntity(e)) CHECKED BY legalEntity[Event], customer[Event] MESSAGE 'Клиент не совпадает с организацией';
+CONSTRAINT customer(Event e) AND legalEntity(e) AND NOT customer(e) = customer(legalEntity(e)) CHECKED BY legalEntity[Event] MESSAGE 'Клиент не совпадает с организацией';
 
 WHEN LOCAL SETCHANGED (customer(legalEntity(Event e))) DO {
     customer(e) <- customer(legalEntity(e));

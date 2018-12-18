@@ -118,8 +118,7 @@ FORM agreement 'Соглашение'
 ;
 
 DESIGN agreement {
-    BOX (o) {
-        fill = 1;
+    OBJECTS {
         NEW row1 {
             type = CONTAINERH;
             alignment = STRETCH;
@@ -176,9 +175,16 @@ DESIGN agreement {
                 MOVE PROPERTY(note(o));
             }
         }
-        MOVE PROPERTY(text(o)) {
-            panelCaptionAbove = TRUE;
-            flex = 1;
+        NEW details {
+            type = TABBED;
+            fill = 1;
+            NEW text {
+                caption = 'Текст';
+                MOVE PROPERTY (text(o)) { 
+                    caption = '';
+                    fill = 1;
+                }
+            }
         }
     }
 }

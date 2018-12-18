@@ -2,6 +2,8 @@ MODULE ActWord;
 
 REQUIRE ContractWord, Doc;
 
+NAMESPACE Act;
+
 in 'Вкл.' = DATA BOOLEAN (ActType, Template);
 
 EXTEND FORM documentTemplates
