@@ -63,6 +63,10 @@ FORM editTemplatePattern 'Заготовки'
         value(te) <- text(te);
     }
 ;
+
+DESIGN editTemplatePattern {
+    size = (1200, 800);
+}
 setText 'Использовать заготовки' (TemplateEntry te) {
     SHOW editTemplatePattern OBJECTS te = te;
 }
