@@ -1,0 +1,107 @@
+MODULE ContractImport;
+
+REQUIRE Contract;
+
+NAMESPACE Contract;
+
+importContracts 'Импорт договоров' (FILE f) {
+    LOCAL idContract = VARSTRING[15](INTEGER);
+    LOCAL idLegalEntity = VARSTRING[15](INTEGER);
+    LOCAL idCompany = VARSTRING[15](INTEGER);
+    LOCAL number = VARSTRING[15](INTEGER);
+    LOCAL date1 = DATE (INTEGER);
+    LOCAL sum = NUMERIC[16,5] (INTEGER);
+    LOCAL type = VARSTRING[50](INTEGER);
+    LOCAL sending = VARSTRING[50](INTEGER);
+    LOCAL date2 = DATE (INTEGER);
+    LOCAL date3 = DATE (INTEGER);
+    LOCAL date4 = DATE (INTEGER);
+    LOCAL date5 = DATE (INTEGER);
+    LOCAL date6 = DATE (INTEGER);
+    LOCAL note = VARSTRING[100](INTEGER);
+    LOCAL text = TEXT(INTEGER);
+    LOCAL message = VARSTRING[2000] ();
+    LOCAL count = INTEGER ();
+    
+    message() <- '';
+    count() <- 0;
+    
+    IMPORT XLS NOHEADER FROM f TO idContract, idLegalEntity, idCompany, number, date1, sum, type, sending, date2, date3, date4, date5, date6, note, text;
+    
+    FOR imported(INTEGER i) AND i > 2 AND trim(idCompany(i)) AND NOT isCompany(legalEntity(trim(idCompany(i)))) DO {
+    
+        message() <- CONCAT ' ', message() + '\r\nстрока:', (i + 1), 'id:', idContract(i), 'Код компании:', idCompany(i);
+        count() <- count() + 1;
+    }
+    
+    IF count() > 0 THEN {
+        MESSAGE CONCAT ' ', 'Неимпортированные договоры, в которых компания не является компанией: ', count(), message();
+    }
+    
+    FOR [GROUP SUM 1 IF INTEGER i > 2 AND isCompany(legalEntity(trim(idCompany(i)))) BY trim(idContract(i))](VARSTRING[15] id) AND id != '' AND NOT contract(id) DO NEW c = Contract {
+        id(c) <- id;
+    }
+    
+    FOR [GROUP SUM 1 IF INTEGER i > 2 BY trim(type(i))](VARSTRING[50] type) AND type != '' 
+        AND NOT (GROUP MAX ContractType t IF upper(name(t)) == upper(type)) DO NEW t = ContractType {
+        
+        name(t) <- type; 
+    }
+    
+    FOR [GROUP SUM 1 IF INTEGER i > 2 BY trim(sending(i))](VARSTRING[50] sending) AND sending != '' 
+        AND NOT (GROUP MAX ContractSendingWay t IF upper(name(t)) == upper(sending)) DO NEW t = ContractSendingWay {
+        
+        name(t) <- sending; 
+    }
+    FOR Contract c = contract(trim(idContract(INTEGER i))) AND isCompany(legalEntity(trim(idCompany(i)))) AND trim(idContract(i)) != '' AND i > 2 DO {
+        
+        legalEntity(c) <- legalEntity(trim(idLegalEntity(i)));
+        company(c) <- legalEntity(trim(idCompany(i)));
+        number(c) <- trim(number(i));
+        date(c) <- date1(i);
+        sum(c) <- sum(i);
+        type(c) <- GROUP MAX ContractType t IF upper(name(t)) == upper(trim(type(i)));
+        sendingWay(c) <- GROUP MAX ContractSendingWay s IF upper(name(s)) == upper(trim(sending(i)));
+        dateSending(c) <- date2(i);
+        dateReceiving(c) <- date3(i);
+        dateSigningCompany(c) <- date4(i);
+        dateTo(c) <- date5(i);
+        dateClosing(c) <- date6(i);
+        note(c) <- trim(note(i));
+        text(c) <- trim(text(i));
+    }
+}
+
+importContracts 'Импорт договоров' () {
+    NEWSESSION INPUT f = FILE DO {
+        importContracts(f);
+        APPLY;
+    }
+}
+
+EXTEND FORM migrationData PROPERTIES() importContracts;
+
+documentPath 'Путь к папке с документами' = DATA VARSTRING[250]();
+
+importContractDocumentsXls 'Импорт документов договоров' () {
+    
+    NEWSESSION {
+        LOCAL id = VARSTRING[15](INTEGER);
+        LOCAL path = VARSTRING[250](INTEGER);
+        LOCAL file = FILE();
+        
+        INPUT f = FILE DO {
+            IMPORT XLS NOHEADER FROM f TO id, path;
+            
+            FOR Contract c = contract(id(INTEGER i)) AND id(i) AND i > 0 DO {
+                TRY {
+                    READ 'file://' + documentPath() + '/' + replace(upper(trim(path(i))), '\\', '/') TO file;
+                    file(c) <- file();
+                }
+            }
+        }
+        APPLY;
+    }
+}
+
+EXTEND FORM migrationData PROPERTIES() importContractDocumentsXls, documentPath;
