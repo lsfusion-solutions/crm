@@ -33,7 +33,7 @@ EXTEND FORM patterns
     FILTERS in(t, p)
        
     OBJECTS te = TemplateEntry
-    PROPERTIES (te) READONLY isTable, key, description, value
+    PROPERTIES (te) READONLY captionType, key, description, value
     FILTERS template(te) == t, in(te, p)
 ;
 
