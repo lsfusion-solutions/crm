@@ -2,7 +2,7 @@ MODULE AgreementEvent;
 
 REQUIRE Agreement, Event;
 
-NAMESPACE AgreementEvent;
+NAMESPACE Agreement;
 
 agreement = DATA Agreement(Event);
 numberAgreement 'Соглашение' (Event e) = number(agreement(e));

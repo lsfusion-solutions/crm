@@ -2,6 +2,8 @@ MODULE TimesheetDashboard;
 
 REQUIRE TimeEntryTotalDashboard;
 
+NAMESPACE Project;
+
 hours 'Часы' (Employee e, AbsenceReason r, INTEGER y) = GROUP SUM hours(Absence a) BY employee(a), reason(a), extractYear(date(a));
 
 addTimeEntry 'Добавить' (DATE d) {

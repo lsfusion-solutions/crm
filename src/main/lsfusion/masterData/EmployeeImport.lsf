@@ -2,7 +2,7 @@ MODULE EmployeeImport;
 
 REQUIRE Employee;
 
-NAMESPACE Contact;
+NAMESPACE Employee;
 
 employee (VARSTRING[15] id) = GROUP AGGR Employee e BY id(e);
 

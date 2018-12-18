@@ -4,10 +4,6 @@ REQUIRE Debt, Act, ActWord;
 
 NAMESPACE Contract;
 
-act = DATA Act (Debt);
-numberAct 'Номер акта' (Debt d) = number(act(d));
-dateAct 'Дата акта' (Debt d) = date(act(d));
-
 actTemplate = DATA Template (Contract);
 nameActTemplate 'Шаблон для акта' (Contract c) = name(actTemplate(c));
 

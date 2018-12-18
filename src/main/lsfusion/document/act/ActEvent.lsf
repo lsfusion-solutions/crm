@@ -2,7 +2,7 @@ MODULE ActEvent;
 
 REQUIRE Act, Event;
 
-NAMESPACE ActEvent;
+NAMESPACE Act;
 
 act = DATA Act(Event);
 numberAct 'Акт' (Event e) = number(act(e));

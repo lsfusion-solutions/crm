@@ -1,6 +1,6 @@
 MODULE Debt;
 
-REQUIRE Dashboard, Contract;
+REQUIRE Dashboard, Contract, Act;
 
 NAMESPACE Contract;
 
@@ -27,6 +27,10 @@ paid 'Оплачено' (Debt d) = PARTITION UNGROUP paid
                                                       LIMIT sum(d)
                                                       ORDER date(d),d 
                                                       BY contract(d); 
+
+act = DATA Act (Debt);
+numberAct 'Номер акта' (Debt d) = number(act(d));
+dateAct 'Дата акта' (Debt d) = date(act(d));
 
 FORM debt 'Задолженность'
     OBJECTS o = Debt PANEL

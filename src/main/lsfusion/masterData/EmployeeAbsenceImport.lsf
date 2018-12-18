@@ -2,6 +2,8 @@ MODULE EmployeeAbsenceImport;
 
 REQUIRE EmployeeAbsence, EmployeeImport;
 
+NAMESPACE Employee;
+
 importEmployeeAbsences 'Импорт отсутствия сотрудников' (FILE f) {
     
     LOCAL idEmployeeAbsence = VARSTRING[15](INTEGER);

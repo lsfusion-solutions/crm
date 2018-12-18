@@ -2,6 +2,8 @@ MODULE PaymentAct;
 
 REQUIRE PaymentAgreement, Act;
 
+NAMESPACE Payment;
+
 act = DATA Act(Payment);
 idAct 'Код акта' (Payment a) = id(act(a));
 numberAct 'Номер акта' (Payment a) = number(act(a)) IN id;

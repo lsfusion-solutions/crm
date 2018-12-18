@@ -2,6 +2,8 @@ MODULE EventImport;
 
 REQUIRE Event;
 
+NAMESPACE Event;
+
 importEvents 'Импорт событий' (FILE f) {
 
     LOCAL idEvent = VARSTRING[15](INTEGER);

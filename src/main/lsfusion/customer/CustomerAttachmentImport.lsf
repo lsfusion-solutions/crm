@@ -3,6 +3,8 @@ MODULE CustomerAttachmentImport;
 REQUIRE CustomerAttachment, ContractImport, AgreementImport, ActImport, ContactImport, LegalEntityImport, EventImport, 
         EmployeeExpenseImport, PaymentImport, EmployeeAbsenceImport, EmployeeImport;
 
+NAMESPACE Customer;
+
 importAttachments 'Импорт договоров' (FILE f) {
     LOCAL idAttachment = VARSTRING[15](INTEGER);
     LOCAL idCustomer = VARSTRING[15](INTEGER);

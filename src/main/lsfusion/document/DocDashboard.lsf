@@ -1,8 +1,8 @@
 MODULE DocDashboard;
 
-REQUIRE Doc, Time, Dashboard, Contract, Agreement, Act;
+REQUIRE Doc, Time, Dashboard, Contract;
 
-NAMESPACE Contract;
+NAMESPACE Doc;
 
 in 'Отм.' = DATA LOCAL BOOLEAN (Document);
 

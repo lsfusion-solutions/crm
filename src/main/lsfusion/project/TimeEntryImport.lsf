@@ -2,6 +2,8 @@ MODULE TimeEntryImport;
 
 REQUIRE TimeEntry, ProjectRedmine;
 
+NAMESPACE Project;
+
 importTimeEntryXls 'Импорт отметок времени' (External e) {
     NEWSESSION {
         LOCAL idTimeEntry = VARSTRING[15](INTEGER);
