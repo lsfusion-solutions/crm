@@ -71,8 +71,8 @@ FORM editTemplate 'Шаблон'
     PROPERTIES (t) READONLY name, id
     
     OBJECTS te = TemplateEntry
-    PROPERTIES (te) READONLY BACKGROUND background(te) captionType, key, description
     PROPERTIES (te) value BACKGROUND backgroundValue(te)
+    PROPERTIES (te) READONLY BACKGROUND background(te) nameType, key, description
     PROPERTIES createWordOnOK(t)
     
     FILTERS template (te) = t

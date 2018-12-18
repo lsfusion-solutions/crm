@@ -33,7 +33,7 @@ EXTEND FORM patterns
     FILTERS in(t, p)
        
     OBJECTS te = TemplateEntry
-    PROPERTIES (te) READONLY captionType, key, description, value
+    PROPERTIES (te) READONLY nameType, key, description, value
     FILTERS template(te) == t, in(te, p)
 ;
 
@@ -50,7 +50,7 @@ DESIGN patterns {
 
 select 'Отм.' = DATA LOCAL BOOLEAN (TemplateEntry, Pattern);
 
-text (TemplateEntry te) =  GROUP CONCAT text(Pattern pt) IF select(te, pt), '';
+text (TemplateEntry te) =  GROUP CONCAT text(Pattern pt) IF select(te, pt), (IF type(te) = Type.list THEN '\r' ELSE '');
 
 FORM editTemplatePattern 'Заготовки'
     OBJECTS te = TemplateEntry PANEL 
@@ -66,6 +66,9 @@ FORM editTemplatePattern 'Заготовки'
 
 DESIGN editTemplatePattern {
     size = (1200, 800);
+    PROPERTY(text(p)) {
+        valueHeight = 130;
+    }
 }
 setText 'Использовать заготовки' (TemplateEntry te) {
     SHOW editTemplatePattern OBJECTS te = te;
