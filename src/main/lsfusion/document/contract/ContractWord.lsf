@@ -107,7 +107,6 @@ numSpelledRouble (NUMERIC[14,2] number, VARSTRING[10] decFormat) = numSpelled(nu
 
 printContractWord 'Сформировать по шаблону' (Contract ct) {
     DIALOG dialogContractTypeTemplates OBJECTS c = type(ct), t INPUT DO {
-        value(TemplateEntry d) <- '' WHERE template(d) = t; // пишем пустую строку в значения, чтобы те идентификаторы, которые не заданы автоматически удалялись из документа
         value(TemplateEntry d) <- OVERRIDE number(ct), '' WHERE key(d) = 'NUMBER_DOCUMENT' AND template (d) == t;
         value(TemplateEntry d) <- TEXT (toDateDDMMYY(date(ct))) WHERE key(d) = 'DATE_DOCUMENT' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE nameCustomer(ct), '' WHERE key(d) = 'NAME_CUSTOMER' AND template (d) == t;

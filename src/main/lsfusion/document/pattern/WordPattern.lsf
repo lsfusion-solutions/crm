@@ -60,7 +60,7 @@ FORM editTemplatePattern 'Заготовки'
     FILTERS in(te, p)
     
     EVENTS ON OK {
-        value(te) <- text(te);
+        value(te) <- OVERRIDE text(te), '';
     }
 ;
 
