@@ -4,7 +4,7 @@ REQUIRE Contact, Security;
 
 NAMESPACE Contact;
 
-CLASS Employee 'Сотрудник' : Contact, CustomUser;
+CLASS Employee 'Сотрудник' : Contact.Contact, CustomUser;
 TABLE employee(Employee);
 
 number 'Номер' = DATA VARSTRING[15] (Employee);

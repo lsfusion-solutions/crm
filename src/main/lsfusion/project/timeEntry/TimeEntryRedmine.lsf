@@ -1,0 +1,75 @@
+MODULE TimeEntryRedmine;
+
+REQUIRE TimeEntry, ProjectExternal;
+
+NAMESPACE Project;
+
+importTimeEntry 'Импорт отметок времени' (External e) {
+    NEWSESSION {
+        LOCAL id = INTEGER(INTEGER);
+        LOCAL hours = NUMERIC[5,2] (INTEGER);
+        LOCAL comments = TEXT (INTEGER);
+        LOCAL spent_on = DATE (INTEGER);
+        LOCAL activity_name = VARSTRING[100] (INTEGER);
+        LOCAL project_id = INTEGER (INTEGER);
+        LOCAL login = TEXT (INTEGER);
+        LOCAL issue_id = INTEGER (INTEGER);
+        LOCAL message = VARSTRING[1000] ();
+        LOCAL count = INTEGER ();
+            
+        LOCAL file = FILE ();
+        READ path(e) + '@SELECT time_entries.id, hours, comments, spent_on, activities.name AS activity_name, time_entries.project_id, users.login, issue_id FROM time_entries LEFT JOIN users ON time_entries.user_id = users.id LEFT JOIN enumerations activities ON time_entries.activity_id = activities.id' TO file;
+        
+        IMPORT TABLE FROM file() TO id, hours, comments, spent_on, activity_name, project_id, login, issue_id;
+        
+        FOR INTEGER ii = [GROUP MIN INTEGER i BY VARSTRING[15](id(i))](VARSTRING[15] id) AND id != '' AND NOT timeEntry(id, e) DO NEW s = TimeEntry {
+            id(s) <- id;
+            external(s) <- e;
+        }
+        
+        FOR TimeEntry s = timeEntry(VARSTRING[15](id(INTEGER i)), e) AND id(i) DO {
+        
+            hours(s) <- hours(i);
+            comments(s) <- comments(i);
+            date(s) <- spent_on(i);
+            activity(s) <- activity(activity_name(i));
+            project(s) <- project(VARSTRING[15](project_id(i)), e);
+            employee(s) <- GROUP MAX Employee p IF login(p) == trim(login(i));
+            issue(s) <- issue(VARSTRING[15](issue_id(i)), e);
+        }
+        
+        FOR external(TimeEntry s) == e AND NOT [GROUP SUM 1 IF imported(INTEGER i) BY VARSTRING[15](id(i))](id(s)) DO {
+            DELETE s;
+        }
+        
+        message() <- '';
+        count() <- 0;
+        
+        FOR imported(INTEGER i) AND NOT [GROUP MAX Employee p BY login(p)](trim(login(i))) DO {
+            count() <- count() + 1;
+            message() <- CONCAT ' ', message() + '\r\nстрока:', (i + 1), 'login:', trim(login(i));
+        }
+        
+        IF count() > 0 THEN {
+            MESSAGE CONCAT ' ', 'Импортированные отметки времени без сотрудника:', count(), message();
+        }
+        
+        APPLY;
+    }
+}
+
+importActivity 'Импорт деятельностей' (External e) {
+    NEWSESSION {
+        LOCAL name = VARSTRING[100](INTEGER);
+            
+        LOCAL file = FILE ();
+        READ path(e) + '@SELECT name FROM enumerations activities WHERE type = \'TimeEntryActivity\'' TO file;
+        
+        IMPORT TABLE FROM file() TO name;
+        
+        FOR [GROUP MIN INTEGER i BY name(i)](VARSTRING[100] name) AND name != '' AND NOT activity(name) DO NEW s = Activity {
+            name(s) <- name;
+        }
+        APPLY;
+    }
+}

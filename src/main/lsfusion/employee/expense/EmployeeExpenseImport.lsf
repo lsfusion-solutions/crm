@@ -1,0 +1,38 @@
+MODULE EmployeeExpenseImport;
+
+REQUIRE EmployeeExpense;
+
+NAMESPACE Employee;
+
+importEmployeeExpense 'Импорт расходов по сотрудникам' () {
+    
+    NEWSESSION {
+        LOCAL number = VARSTRING[15] (INTEGER);
+        LOCAL year = INTEGER (INTEGER);
+        LOCAL month = INTEGER (INTEGER);
+        LOCAL type = VARSTRING[100](INTEGER);
+        LOCAL sum = NUMERIC[18,4](INTEGER);
+        
+        INPUT f = FILE DO {
+            IMPORT XLS NOHEADER FROM f TO number, year, month, type, sum;
+            
+            FOR [GROUP MIN INTEGER i IF employeeNumber(number(i)) BY type(i)](VARSTRING[15] name) 
+                AND NOT [GROUP MAX ExpenseType t BY name(t)](name) DO NEW t = ExpenseType {
+                
+                name(t) <- name;
+            }
+            
+            FOR employeeNumber(number(INTEGER i)) AND number(i) DO NEW e = Expense {
+            
+                employee(e) <- employeeNumber(number(i));
+                year(e) <- year(i);
+                month(e) <- GROUP MAX Month m IF number(m) == month(i);
+                type(e) <- GROUP MAX ExpenseType t IF name(t) == type(i);
+                sum(e) <- sum(i);
+            }
+        }
+        APPLY;
+    }
+}
+
+EXTEND FORM migrationData PROPERTIES importEmployeeExpense();
