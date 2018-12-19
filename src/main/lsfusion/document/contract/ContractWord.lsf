@@ -71,8 +71,8 @@ FORM editTemplate 'Шаблон'
     PROPERTIES (t) READONLY name, id
     
     OBJECTS te = TemplateEntry
-    PROPERTIES (te) value BACKGROUND backgroundValue(te)
     PROPERTIES (te) READONLY BACKGROUND background(te) nameType, key, description
+    PROPERTIES (te) value BACKGROUND backgroundValue(te)
     PROPERTIES createWordOnOK(t)
     
     FILTERS template (te) = t
@@ -108,7 +108,7 @@ numSpelledRouble (NUMERIC[14,2] number, VARSTRING[10] decFormat) = numSpelled(nu
 printContractWord 'Сформировать по шаблону' (Contract ct) {
     DIALOG dialogContractTypeTemplates OBJECTS c = type(ct), t INPUT DO {
         value(TemplateEntry d) <- OVERRIDE number(ct), '' WHERE key(d) = 'NUMBER_DOCUMENT' AND template (d) == t;
-        value(TemplateEntry d) <- TEXT (toDateDDMMYY(date(ct))) WHERE key(d) = 'DATE_DOCUMENT' AND template (d) == t;
+        value(TemplateEntry d) <- TEXT (toDateDDMMYYYY(date(ct))) WHERE key(d) = 'DATE_DOCUMENT' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE nameCustomer(ct), '' WHERE key(d) = 'NAME_CUSTOMER' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE nameLegalEntity(ct), '' WHERE key(d) = 'NAME_LEGAL_ENTITY' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE nameCompany(ct), '' WHERE key(d) = 'NAME_COMPANY' AND template (d) == t;
@@ -116,12 +116,12 @@ printContractWord 'Сформировать по шаблону' (Contract ct) {
         TRY { value(TemplateEntry d) <- numSpelledRouble(sum(ct), '00d') WHERE key(d) = 'SUM_DOCUMENT_WORDS' AND template (d) == t; }
         value(TemplateEntry d) <- OVERRIDE nameType(ct), '' WHERE key(d) = 'TYPE_DOCUMENT' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE nameSendingWay(ct), '' WHERE key(d) = 'SENDING_WAY' AND template (d) == t;
-        value(TemplateEntry d) <- TEXT (toDateDDMMYY(dateSending(ct))) WHERE key(d) = 'SENDING_DATE_DOCUMENT' AND template (d) == t;
-        value(TemplateEntry d) <- TEXT (toDateDDMMYY(dateReceiving(ct))) WHERE key(d) = 'RECEIVING_DATE_DOCUMENT' AND template (d) == t;
-        value(TemplateEntry d) <- TEXT (toDateDDMMYY(dateSigningCompany(ct))) WHERE key(d) = 'SIGNING_DATE_COMPANY' AND template (d) == t;
-        value(TemplateEntry d) <- TEXT (toDateDDMMYY(dateSigningCustomer(ct))) WHERE key(d) = 'SIGNING_DATE_CUSTOMER' AND template (d) == t;
-        value(TemplateEntry d) <- TEXT (toDateDDMMYY(dateTo(ct))) WHERE key(d) = 'TO_DATE_DOCUMENT' AND template (d) == t;
-        value(TemplateEntry d) <- TEXT (toDateDDMMYY(dateClosing(ct))) WHERE key(d) = 'CLOSING_DATE_DOCUMENT' AND template (d) == t;
+        value(TemplateEntry d) <- TEXT (toDateDDMMYYYY(dateSending(ct))) WHERE key(d) = 'SENDING_DATE_DOCUMENT' AND template (d) == t;
+        value(TemplateEntry d) <- TEXT (toDateDDMMYYYY(dateReceiving(ct))) WHERE key(d) = 'RECEIVING_DATE_DOCUMENT' AND template (d) == t;
+        value(TemplateEntry d) <- TEXT (toDateDDMMYYYY(dateSigningCompany(ct))) WHERE key(d) = 'SIGNING_DATE_COMPANY' AND template (d) == t;
+        value(TemplateEntry d) <- TEXT (toDateDDMMYYYY(dateSigningCustomer(ct))) WHERE key(d) = 'SIGNING_DATE_CUSTOMER' AND template (d) == t;
+        value(TemplateEntry d) <- TEXT (toDateDDMMYYYY(dateTo(ct))) WHERE key(d) = 'TO_DATE_DOCUMENT' AND template (d) == t;
+        value(TemplateEntry d) <- TEXT (toDateDDMMYYYY(dateClosing(ct))) WHERE key(d) = 'CLOSING_DATE_DOCUMENT' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE note(ct), '' WHERE key(d) = 'NOTE_DOCUMENT' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE text(ct), '' WHERE key(d) = 'TEXT_DOCUMENT' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE authorisedDocumentLegalEntity(ct), '' WHERE key(d) = 'AUTHORISED_DOCUMENT_CUSTOMER' AND template (d) == t;
