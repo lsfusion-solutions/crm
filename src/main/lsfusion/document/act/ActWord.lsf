@@ -102,3 +102,5 @@ printActWord 'Сформировать по шаблону' (Act ag) {
 
 //EXTEND FORM contractDashboard PROPERTIES printActWord(ac) DRAW ac TOOLBAR;
 EXTEND FORM contract PROPERTIES printActWord(ac) DRAW ac TOOLBAR;
+EXTEND FORM act PROPERTIES printActWord(o);
+DESIGN act { file { MOVE PROPERTY(printActWord(o)); } }
