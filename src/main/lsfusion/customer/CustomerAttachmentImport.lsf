@@ -1,7 +1,6 @@
 MODULE CustomerAttachmentImport;
 
-REQUIRE CustomerAttachment, ContractImport, AgreementImport, ActImport, ContactImport, LegalEntityImport, EventImport, 
-        EmployeeExpenseImport, PaymentImport, EmployeeAbsenceImport, EmployeeImport;
+REQUIRE CustomerAttachment, Import;
 
 NAMESPACE Customer;
 
@@ -85,35 +84,4 @@ importAttachmentDocumentsXls 'Импорт документов клиентов
 }
 
 EXTEND FORM migrationData PROPERTIES() importAttachmentDocumentsXls;
-
-DESIGN migrationData {
-    NEW importData FIRST {
-        caption = 'Импорт';
-        type = COLUMNS;
-        columns = 3;
-        MOVE PROPERTY (importContracts());
-        MOVE PROPERTY (importAgreements());
-        MOVE PROPERTY (importActs());
-        MOVE PROPERTY (importLegalEntities());
-        MOVE PROPERTY (importContacts());
-        MOVE PROPERTY (importEmployees());
-        MOVE PROPERTY (importEmployeeExpense());
-        MOVE PROPERTY (importEmployeeAbsences());
-        MOVE PROPERTY (importEvents());
-        MOVE PROPERTY (importPayments());
-        MOVE PROPERTY (importPaymentContracts());
-        MOVE PROPERTY (importAttachments());
-    }
-    NEW documents AFTER importData {
-        caption = 'Импорт документов';
-        MOVE PROPERTY (documentPath());
-        NEW importDocuments {
-            type = COLUMNS;
-            columns = 2;
-            MOVE PROPERTY (importContractDocumentsXls());
-            MOVE PROPERTY (importAgreementDocumentsXls());
-            MOVE PROPERTY (importActDocumentsXls());
-            MOVE PROPERTY (importAttachmentDocumentsXls());
-        }
-    }
-}
+DESIGN migrationData { importDocuments { MOVE PROPERTY(importAttachmentDocumentsXls()); } }

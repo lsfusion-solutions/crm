@@ -10,6 +10,8 @@ TABLE employee(Employee);
 number 'Номер' = DATA VARSTRING[15] (Employee);
 employeeNumber = GROUP MAX Employee e BY number(e);
 
+employee (VARSTRING[15] id) = GROUP AGGR Employee e BY id(e);
+
 inactive 'Неактивный' = DATA BOOLEAN (Employee);
 active 'Активный' (Employee e) = NOT inactive(e);
 

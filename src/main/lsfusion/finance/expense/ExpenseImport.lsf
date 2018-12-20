@@ -59,9 +59,3 @@ importExpense 'Импорт расходов' () {
 }
 
 EXTEND FORM migrationData PROPERTIES importExpense();
-
-DESIGN migrationData {
-    importData {
-        MOVE PROPERTY (importExpense());
-    }
-}

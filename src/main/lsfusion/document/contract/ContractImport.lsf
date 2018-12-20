@@ -1,6 +1,6 @@
 MODULE ContractImport;
 
-REQUIRE Contract;
+REQUIRE Contract, Import;
 
 NAMESPACE Contract;
 
@@ -81,8 +81,6 @@ importContracts 'Импорт договоров' () {
 
 EXTEND FORM migrationData PROPERTIES() importContracts;
 
-documentPath 'Путь к папке с документами' = DATA VARSTRING[250]();
-
 importContractDocumentsXls 'Импорт документов договоров' () {
     
     NEWSESSION {
@@ -104,4 +102,5 @@ importContractDocumentsXls 'Импорт документов договоров
     }
 }
 
-EXTEND FORM migrationData PROPERTIES() importContractDocumentsXls, documentPath;
+EXTEND FORM migrationData PROPERTIES() importContractDocumentsXls;
+DESIGN migrationData { importDocuments { MOVE PROPERTY(importContractDocumentsXls()); } }

@@ -1,0 +1,14 @@
+MODULE Import;
+
+documentPath 'Путь к папке с документами' = DATA VARSTRING[250]();
+
+EXTEND FORM migrationData PROPERTIES() documentPath;
+
+DESIGN migrationData {
+    OBJECTS {
+        NEW importDocuments {
+            caption = 'Документы';
+            MOVE PROPERTY(documentPath());
+        }
+    }
+}

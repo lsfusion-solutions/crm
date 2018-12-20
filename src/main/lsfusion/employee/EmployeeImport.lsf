@@ -4,8 +4,6 @@ REQUIRE Employee;
 
 NAMESPACE Employee;
 
-employee (VARSTRING[15] id) = GROUP AGGR Employee e BY id(e);
-
 importEmployees (FILE f) {
     
     LOCAL idEmployee = VARSTRING[15](INTEGER);

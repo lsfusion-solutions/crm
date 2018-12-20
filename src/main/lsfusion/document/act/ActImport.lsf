@@ -91,3 +91,4 @@ importActDocumentsXls 'Импорт документов актов' () {
 }
 
 EXTEND FORM migrationData PROPERTIES() importActDocumentsXls;
+DESIGN migrationData { importDocuments { MOVE PROPERTY(importActDocumentsXls()); } }
