@@ -35,6 +35,7 @@ importNBRBExchangeRate 'Импортировать курсы НБРБ за пе
             EXTERNAL HTTP GET 'http://www.nbrb.by/API/ExRates/Rates/Dynamics/' + cur_ID(i)
                                                   + '?startDate=' + [FORMULA VARSTRING[20] 'to_char(($1),\'MM/DD/YYYY\')'](dateFrom) 
                                                   + '&endDate=' +  [FORMULA VARSTRING[20] 'to_char(($1),\'MM/DD/YYYY\')'](dateTo) TO result2;
+            cur_OfficialRate(INTEGER j) <- NULL;
             IMPORT JSON FROM result2() TO cur_OfficialRate = Cur_OfficialRate, dateTime = Date;
             FOR cur_OfficialRate(INTEGER j) AND DATE date1 = DATE(getWord(dateTime(j), 'T', 1)) DO {
                 rate(TypeExchange te,c,date1 ) <- NUMERIC[20,13](cur_OfficialRate(j)/cur_Scale(i)) WHERE shortName(currency(te))  = 'BYN' ;
