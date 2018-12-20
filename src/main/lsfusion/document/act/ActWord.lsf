@@ -1,6 +1,6 @@
 MODULE ActWord;
 
-REQUIRE ContractWord, Doc;
+REQUIRE ContractWord, Act;
 
 NAMESPACE Act;
 
@@ -84,6 +84,13 @@ createActTemplate (Act ag, Template t) {
         value(TemplateEntry d) <- OVERRIDE mfoBank(legalEntity(ag)), '' WHERE key(d) = 'MFO_BANK_LEGAL_ENTITY' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE UNP(legalEntity(ag)), '' WHERE key(d) = 'UNP_LEGAL_ENTITY' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE OKPO(legalEntity(ag)), '' WHERE key(d) = 'OKPO_LEGAL_ENTITY' AND template (d) == t;
+}
+
+createTemplateEntries(Template t, DocType d) +{
+    IF d == DocType.act THEN {
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'NUMBER_CONTRACT'; description(te) <- 'Номер договора'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'NUMBER_AGREEMENT'; description(te) <- 'Номер соглашения'; }
+    }
 }
 
 printActWord 'Сформировать по шаблону' (Act ag) {

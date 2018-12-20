@@ -1,0 +1,81 @@
+MODULE DocWord;
+
+REQUIRE Word;
+
+NAMESPACE Doc;
+
+required 'Обязателен для заполнения' = DATA BOOLEAN (TemplateEntry);
+
+createWordOnOK 'Сформировать' (Template t) {
+    IF NOT [GROUP SUM 1 IF required(TemplateEntry d) AND NOT value(d) BY template(d)](t) THEN {
+        process(t);
+        open(resultTemplate());
+        formOk();
+    }
+    ELSE {
+        MESSAGE 'Заполнены не все обязательные поля:\r\n' + [GROUP CONCAT description(TemplateEntry te) IF required(te) AND NOT value(te), ', ' ORDER te BY template(te)](t) NOWAIT;
+    }
+}
+
+background = ABSTRACT CASE COLOR (TemplateEntry);
+backgroundValue (TemplateEntry te) = CASE WHEN required(te) THEN RGB (255, 235, 235)
+                                                   WHEN NOT required(te) THEN background(te);
+
+FORM editTemplate 'Шаблон' 
+    OBJECTS t = Template PANEL 
+    PROPERTIES (t) READONLY name, id
+    
+    OBJECTS te = TemplateEntry
+    PROPERTIES (te) READONLY BACKGROUND background(te) nameType, key, description
+    PROPERTIES (te) value BACKGROUND backgroundValue(te)
+    PROPERTIES createWordOnOK(t)
+    
+    FILTERS template (te) = t
+;
+
+DESIGN editTemplate {
+    BOX {
+        size = (1200, 768);
+        type = CONTAINERV;
+        MOVE BOX(t) {
+            type = CONTAINERH;
+            NEW row1 {
+                type = CONTAINERH;
+                MOVE PROPERTY(name(t));
+                MOVE PROPERTY(id(t));
+            };
+        }
+        MOVE BOX(te);
+    }
+    MOVE TOOLBARBOX {
+        TOOLBARRIGHT {
+            MOVE PROPERTY (createWordOnOK(t)) AFTER PROPERTY (formOk()) { alignment = STRETCH; }
+            REMOVE PROPERTY (formOk());
+        }
+    }
+    PROPERTY (value(te)) { charWidth = 80; }
+}
+
+toCharRus (NUMERIC[18,2] n) = replace(replace(TEXT (round2(n)), ',', ' '), '.', ',');
+numSpelled = FORMULA TEXT 'num_spelled($1,$2,string_to_array($3,\',\'),$4,string_to_array($5,\',\'),$6)';
+numSpelledRouble (NUMERIC[14,2] number, VARSTRING[10] decFormat) = numSpelled(number, 'M', 'рубль,рубля,рублей', 'F', 'копейка,копейки,копеек', decFormat);
+
+// Копирование шаблона
+
+overCopy ABSTRACT LIST (TemplateEntry, TemplateEntry);
+
+copy 'Копировать' (Template t) {
+    NEWSESSION NEW n = Template {
+        name(n) <- name(t);
+        file(n) <- file(t);
+        FOR template(TemplateEntry e) == t DO NEW ne = TemplateEntry {
+            template(ne) <- n;
+            type(ne) <- type(e);
+            key(ne) <- key(e);
+            description(ne) <- description(e);
+            value(ne) <- value(e);
+            overCopy(ne, e);
+        }
+        SHOW template OBJECTS t = t DOCKED;
+    }
+}

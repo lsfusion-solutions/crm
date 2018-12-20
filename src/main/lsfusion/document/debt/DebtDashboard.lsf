@@ -59,7 +59,7 @@ deleteAct 'Удалить акт' (Debt d) {
 } CONFIRM;
 
 filterDebtContractType = DATA LOCAL ContractType();
-nameDebtFilterContractType 'Тип договора' () = name(filterContractType());
+nameDebtFilterContractType 'Тип договора' () = name(filterDebtContractType());
 
 editContract 'Редактировать договор' (Debt d) {
     NEWSESSION SHOW contract OBJECTS o = contract(d) DOCKED;
@@ -73,7 +73,7 @@ FORM debtDashboard 'Контроль задолженности'
     PROPERTIES (d) READONLY date, numberContract, nameContractType, nameCustomer, nameLegalEntity, numberAct, dateAct, sum, paid
     PROPERTIES (d) TOOLBAR editContract
     ORDER date(d)
-    FILTERS  contractType(d) == filterContractType() OR NOT filterContractType()
+    FILTERS  contractType(d) == filterDebtContractType() OR NOT filterDebtContractType()
     FILTERGROUP paid FILTER 'Не оплачено' NOT paid(d) >= sum(d) DEFAULT 
 ;
 

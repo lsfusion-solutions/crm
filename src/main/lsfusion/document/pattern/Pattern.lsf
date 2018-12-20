@@ -1,6 +1,6 @@
 MODULE Pattern;
 
-REQUIRE Contract;
+REQUIRE Utils, Word;
 
 NAMESPACE Pattern;
 
@@ -55,7 +55,7 @@ FORM dialogPatterns 'Заготовки'
 ;
 
 NAVIGATOR {
-    contractFolder {
+    templatesNavigator {
         NEW patterns;
     }
 }

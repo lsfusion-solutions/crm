@@ -12,4 +12,4 @@ REQUIRE Scheduler, Service, SystemEvents, Backup, EvalScript, SQLUtils, ProcessU
         CustomerDashboard, ProfitDashboard, ContractDashboard, TimeEntryTotalDashboard, DocDashboard, DocFile, EventDashboard,
         ContractWord, AgreementWord, ActWord, WorkingHours, CustomerAttachment, TimeEntryImport, TimesheetDashboard, DebtDashboard, CustomerAttachmentImport,
         Expense, ExpenseImport, ProfitMonthDashboard, PaymentProcessDashboard, 
-        Numerator, Pattern, WordPattern;
+        Numerator, Pattern, PatternWord;

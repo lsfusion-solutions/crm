@@ -1,6 +1,6 @@
 MODULE ContractWord;
 
-REQUIRE ContractDashboard, Word, LegalEntityBy;
+REQUIRE ContractFile, DocWord, LegalEntityBy;
 
 NAMESPACE Contract;
 
@@ -12,7 +12,8 @@ FORM documentTemplates 'Шаблоны'
     
     OBJECTS t = Template
     PROPERTIES in(ct, t), name(t) READONLY, id(t) READONLY 
-    PROPERTIES (t) NEWSESSION NEW, EDIT, DELETE 
+    PROPERTIES (t) NEWSESSION NEW, EDIT, DELETE
+    PROPERTIES copy(t) DRAW t TOOLBAR 
     
     FILTERGROUP in FILTER 'Отмеченные' in(ct, t) 
 ;
@@ -48,62 +49,6 @@ FORM dialogContractTypeTemplates 'Шаблоны Word'
     PROPERTIES (t) READONLY name, id
     FILTERS in(c, t)
 ;
-
-required 'Обязателен для заполнения' = DATA BOOLEAN (TemplateEntry);
-
-createWordOnOK 'Сформировать' (Template t) {
-    IF NOT [GROUP SUM 1 IF required(TemplateEntry d) AND NOT value(d) BY template(d)](t) THEN {
-        process(t);
-        open(resultTemplate());
-        formOk();
-    }
-    ELSE {
-        MESSAGE 'Заполнены не все обязательные поля:\r\n' + [GROUP CONCAT description(TemplateEntry te) IF required(te) AND NOT value(te), ', ' ORDER te BY template(te)](t) NOWAIT;
-    }
-}
-
-background = ABSTRACT CASE COLOR (TemplateEntry);
-backgroundValue (TemplateEntry te) = CASE WHEN required(te) THEN RGB (255, 235, 235)
-                                                   WHEN NOT required(te) THEN background(te);
-
-FORM editTemplate 'Шаблон' 
-    OBJECTS t = Template PANEL 
-    PROPERTIES (t) READONLY name, id
-    
-    OBJECTS te = TemplateEntry
-    PROPERTIES (te) READONLY BACKGROUND background(te) nameType, key, description
-    PROPERTIES (te) value BACKGROUND backgroundValue(te)
-    PROPERTIES createWordOnOK(t)
-    
-    FILTERS template (te) = t
-;
-
-DESIGN editTemplate {
-    BOX {
-        size = (1200, 768);
-        type = CONTAINERV;
-        MOVE BOX(t) {
-            type = CONTAINERH;
-            NEW row1 {
-                type = CONTAINERH;
-                MOVE PROPERTY(name(t));
-                MOVE PROPERTY(id(t));
-            };
-        }
-        MOVE BOX(te);
-    }
-    MOVE TOOLBARBOX {
-        TOOLBARRIGHT {
-            MOVE PROPERTY (createWordOnOK(t)) AFTER PROPERTY (formOk()) { alignment = STRETCH; }
-            REMOVE PROPERTY (formOk());
-        }
-    }
-    PROPERTY (value(te)) { charWidth = 80; }
-}
-
-toCharRus (NUMERIC[18,2] n) = replace(replace(TEXT (round2(n)), ',', ' '), '.', ',');
-numSpelled = FORMULA TEXT 'num_spelled($1,$2,string_to_array($3,\',\'),$4,string_to_array($5,\',\'),$6)';
-numSpelledRouble (NUMERIC[14,2] number, VARSTRING[10] decFormat) = numSpelled(number, 'M', 'рубль,рубля,рублей', 'F', 'копейка,копейки,копеек', decFormat);
 
 printContractWord 'Сформировать по шаблону' (Contract ct) {
     DIALOG dialogContractTypeTemplates OBJECTS c = type(ct), t INPUT DO {
@@ -167,21 +112,69 @@ DESIGN contract {
     }
 }
 
-overCopy ABSTRACT LIST (TemplateEntry, TemplateEntry);
+createTemplateEntries ABSTRACT LIST (Template, DocType);
 
-copy 'Копировать' (Template t) {
-    NEWSESSION NEW n = Template {
-        name(n) <- name(t);
-        file(n) <- file(t);
-        FOR template(TemplateEntry e) == t DO NEW ne = TemplateEntry {
-            template(ne) <- n;
-            type(ne) <- type(e);
-            key(ne) <- key(e);
-            description(ne) <- description(e);
-            value(ne) <- value(e);
-            overCopy(ne, e);
-        }
-        SHOW template OBJECTS t = t DOCKED;
+createTemplateEntries(Template t, DocType d) +{
+    IF d IS DocType THEN {
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'NUMBER_DOCUMENT'; description(te) <- 'Номер документа'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'DATE_DOCUMENT'; description(te) <- 'Дата документа'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'TYPE_DOCUMENT'; description(te) <- 'Тип документа'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'NAME_CUSTOMER'; description(te) <- 'Клиент'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'NAME_COMPANY'; description(te) <- 'Компания'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'NAME_LEGAL_ENTITY'; description(te) <- 'Организация'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'SUM_DOCUMENT_NUMERIC'; description(te) <- 'Сумма (число)'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'SUM_DOCUMENT_WORDS'; description(te) <- 'Сумма (прописью)'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'SENDING_DATE_DOCUMENT'; description(te) <- 'Дата отправки'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'RECEIVING_DATE_DOCUMENT'; description(te) <- 'Дата получения'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'NOTE_DOCUMENT'; description(te) <- 'Примечание'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'TEXT_DOCUMENT'; description(te) <- 'Текст'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'AUTHORISED_DOCUMENT_COMPANY'; description(te) <- 'Основание уп. лица компании'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'AUTHORISED_DOCUMENT_CUSTOMER'; description(te) <- 'Основание уп. лица организации'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'SHORT_NAME_AUTHORISED_PERSON_COMPANY'; description(te) <- 'ФИО(сокр.) уп. лица компании'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'FULL_NAME_AUTHORISED_PERSON_COMPANY'; description(te) <- 'ФИО(полное) уп. лица компании'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'FULL_NAME_RP_AUTHORISED_PERSON_COMPANY'; description(te) <- 'ФИО(полное)(р.п.) уп. лица компании'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'SHORT_NAME_AUTHORISED_PERSON_CUSTOMER'; description(te) <- 'ФИО(сокр.) уп. лица организации'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'FULL_NAME_AUTHORISED_PERSON_CUSTOMER'; description(te) <- 'ФИО(полное) уп. лица организации'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'FULL_NAME_RP_AUTHORISED_PERSON_CUSTOMER'; description(te) <- 'ФИО(полное)(р.п.) уп. лица организации'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'POSITION_AUTHORISED_PERSON_COMPANY'; description(te) <- 'Должность уп. лица компании'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'POSITION_RP_AUTHORISED_PERSON_COMPANY'; description(te) <- 'Должность(р.п.) уп. лица компании'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'POSITION_AUTHORISED_PERSON_CUSTOMER'; description(te) <- 'Должность уп. лица организации'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'POSITION_RP_AUTHORISED_PERSON_CUSTOMER'; description(te) <- 'Должность(р.п.) уп. лица организации'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'ADDRESS_COMPANY'; description(te) <- 'Адрес компании'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'POSTCODE_COMPANY'; description(te) <- 'Почтовый индекс компании'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'ACCOUNT_COMPANY'; description(te) <- 'Номер р/с компании'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'NAME_BANK_COMPANY'; description(te) <- 'Наименование банка компании'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'POSTCODE_BANK_COMPANY'; description(te) <- 'Почтовый индекс банка компании'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'ADDRESS_BANK_COMPANY'; description(te) <- 'Адрес банка компании'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'MFO_BANK_COMPANY'; description(te) <- 'МФО банка компании'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'UNP_COMPANY'; description(te) <- 'УНП компании'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'OKPO_COMPANY'; description(te) <- 'ОКПО компании'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'ADDRESS_LEGAL_ENTITY'; description(te) <- 'Адрес организации'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'POSTCODE_LEGAL_ENTITY'; description(te) <- 'Почтовый индекс организации'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'ACCOUNT_LEGAL_ENTITY'; description(te) <- 'Номер р/с организации'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'NAME_BANK_LEGAL_ENTITY'; description(te) <- 'Наименование банка организации'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'POSTCODE_BANK_LEGAL_ENTITY'; description(te) <- 'Почтовый индекс банка организации'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'ADDRESS_BANK_LEGAL_ENTITY'; description(te) <- 'Адрес банка организации'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'MFO_BANK_LEGAL_ENTITY'; description(te) <- 'МФО банка организации'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'UNP_LEGAL_ENTITY'; description(te) <- 'УНП организации'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'OKPO_LEGAL_ENTITY'; description(te) <- 'ОКПО организации'; }
     }
 }
-EXTEND FORM documentTemplates PROPERTIES copy(t) DRAW t TOOLBAR;
+
+createTemplateEntries(Template t, DocType d) +{
+    IF d == DocType.contract THEN {
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'SENDING_WAY'; description(te) <- 'Способ отправки договора'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'SIGNING_DATE_COMPANY'; description(te) <- 'Дата подписания компанией'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'SIGNING_DATE_CUSTOMER'; description(te) <- 'Дата подписания организацией'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'TO_DATE_DOCUMENT'; description(te) <- 'Дата окончания'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'CLOSING_DATE_DOCUMENT'; description(te) <- 'Дата закрытия'; }
+    }
+}
+
+createTimeEntriesDialog 'Сформировать строки' (Template t) {
+    DIALOG dialogDocTypes OBJECTS d INPUT DO {
+        createTemplateEntries(t, d);
+    }
+}
+
+EXTEND FORM template PROPERTIES createTimeEntriesDialog(t) DRAW te TOOLBAR, required(te) AFTER value(te);

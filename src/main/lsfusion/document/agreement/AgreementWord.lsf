@@ -1,6 +1,6 @@
 MODULE AgreementWord;
 
-REQUIRE ContractWord;
+REQUIRE ContractWord, Agreement;
 
 NAMESPACE Agreement;
 
@@ -87,6 +87,12 @@ printAgreementWord 'Сформировать по шаблону' (Agreement ag)
         value(TemplateEntry d) <- OVERRIDE OKPO(legalEntity(ag)), '' WHERE key(d) = 'OKPO_LEGAL_ENTITY' AND template (d) == t;
         
         SHOW editTemplate OBJECTS t = t;
+    }
+}
+
+createTemplateEntries(Template t, DocType d) +{
+    IF d == DocType.agreement THEN {
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'NUMBER_CONTRACT'; description(te) <- 'Номер договора'; }
     }
 }
 
