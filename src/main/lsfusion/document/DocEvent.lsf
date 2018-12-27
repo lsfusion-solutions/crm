@@ -35,7 +35,7 @@ CONSTRAINT contact(Event e) AND legalEntity(e) AND NOT legalEntity(e) == legalEn
 
 EXTEND FORM docDashboard 
     OBJECTS e = Event
-    PROPERTIES (e) READONLY id, name, nameCustomer, nameLegalEntity, nameEmployee, nameContact, date, time, dateNext, descriptionString, additionString
+    PROPERTIES (e) READONLY id, name, nameType, nameCustomer, nameLegalEntity, nameEmployee, nameContact, date, time, dateNext, descriptionString, additionString
     PROPERTIES  addEventDoc(d) DRAW e TOOLBAR 
     PROPERTIES (e) NEWSESSION EDIT, DELETE 
     FILTERS contract(e) == d OR agreement(e) == d OR act(e) == d

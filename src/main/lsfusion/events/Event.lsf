@@ -43,9 +43,32 @@ contact = DATA Contact.Contact(Event);
 idContact 'Код контактного лица' (Event e) = id(contact(e));
 nameContact 'Контактное лицо' (Event e) = name(contact(e));
 
+CLASS EventType 'Тип события';
+TABLE eventType (EventType);
+
+name 'Наименование' = DATA VARISTRING[100] (EventType) CHARWIDTH 15;
+
+FORM eventType 'Тип события'
+    OBJECTS o = EventType PANEL
+    PROPERTIES(o) name
+    
+    EDIT EventType OBJECT o
+;
+
+FORM eventTypes 'Тип события'
+    OBJECTS o = EventType
+    PROPERTIES(o) READONLY name
+    PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
+    
+    LIST EventType OBJECT o
+;
+
+type = DATA EventType(Event);
+nameType 'Тип события' (Event e) = name(type(e));
+
 FORM event 'Событие'
     OBJECTS o = Event PANEL
-    PROPERTIES(o)  id, name, nameCustomer, nameLegalEntity, nameEmployee, nameContact, date, time, dateNext, description, addition
+    PROPERTIES(o)  id, name, nameType, nameCustomer, nameLegalEntity, nameEmployee, nameContact, date, time, dateNext, description, addition
     
     EDIT Event OBJECT o
 ;
@@ -60,6 +83,7 @@ DESIGN event {
             MOVE PROPERTY (time(o));
             MOVE PROPERTY (dateNext(o));
             MOVE PROPERTY (name(o)) { charWidth = 30; }
+            MOVE PROPERTY (nameType(o));
         }
         NEW contact {
             caption = 'Контакты';
@@ -111,14 +135,14 @@ WHEN LOCAL SET (Event e IS Event) DO {
 
 FORM events 'События'
     OBJECTS o = Event LAST 
-    PROPERTIES(o) READONLY id, name, nameCustomer, nameLegalEntity, nameEmployee, nameContact, date, time, dateNext, descriptionString, additionString
+    PROPERTIES(o) READONLY id, name, nameType, nameCustomer, nameLegalEntity, nameEmployee, nameContact, date, time, dateNext, descriptionString, additionString
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
     ORDER date(o), time(o)
 ;
 
 FORM dialogEvents 'События'
     OBJECTS o = Event LAST 
-    PROPERTIES(o) READONLY id, name, nameCustomer, nameLegalEntity, nameEmployee, nameContact, date, time, dateNext, descriptionString, additionString
+    PROPERTIES(o) READONLY id, name, nameType, nameCustomer, nameLegalEntity, nameEmployee, nameContact, date, time, dateNext, descriptionString, additionString
     ORDER date(o), time(o)
     
     LIST Event OBJECT o

@@ -76,7 +76,7 @@ FORM dashboardCustomer 'Работа с клиентами'
     ORDER date(pm) DESC
     
     OBJECTS ev = Event
-    PROPERTIES (ev) READONLY id, name, nameLegalEntity, nameEmployee, nameContact, date, time, dateNext, descriptionString
+    PROPERTIES (ev) READONLY id, name, nameType, nameLegalEntity, nameEmployee, nameContact, date, time, dateNext, descriptionString
     PROPERTIES addEvent(c) DRAW ev TOOLBAR 
     PROPERTIES (ev) NEWSESSION EDIT, DELETE 
     FILTERS customer(ev) == c
