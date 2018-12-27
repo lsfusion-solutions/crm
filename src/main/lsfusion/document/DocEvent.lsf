@@ -20,12 +20,14 @@ WHEN LOCAL CHANGED (contract(Event e)) AND NOT CHANGED (customer(e)) AND NOT CHA
 WHEN LOCAL CHANGED (agreement(Event e)) AND NOT CHANGED (contract(e)) AND NOT contract(e) DO {
     contract(e) <- contract(agreement(e));
 }
-WHEN LOCAL CHANGED (act(Event e)) AND NOT CHANGED (contract(e)) AND NOT contract(e) DO {
-    contract(e) <- contract(act(e));
+WHEN LOCAL CHANGED (act(Event e)) AND NOT CHANGED (contract(e)) DO {
+    IF NOT contract(e) THEN contract(e) <- contract(act(e));
+    IF NOT agreement(e) THEN agreement(e) <- agreement(act(e));
 }
 
 CONSTRAINT contract(Event e) AND agreement(e) AND NOT contract(agreement(e)) == contract(e) CHECKED BY agreement[Event] MESSAGE 'Соглашение не соответствует договору';
 CONSTRAINT contract(Event e) AND act(e) AND NOT contract(act(e)) == contract(e) CHECKED BY act[Event] MESSAGE 'Акт не соответствует договору';
+CONSTRAINT agreement(Event e) AND act(e) AND NOT agreement(act(e)) == agreement(e) CHECKED BY act[Event] MESSAGE 'Акт не соответствует соглашению';
 
 EXTEND FORM docDashboard 
     OBJECTS e = Event
