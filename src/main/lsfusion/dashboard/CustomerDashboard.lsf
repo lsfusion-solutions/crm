@@ -18,6 +18,12 @@ addContact 'Добавить' (Customer c) {
     }
 } IMAGE 'add.png';
 
+addLegalEntity 'Добавить' (Customer c) {
+    NEWSESSION NEW e = LegalEntity {
+        customer(e) <- c;
+        SHOW legalEntity OBJECTS o = e DOCKED;
+    }
+} IMAGE 'add.png';
 
 FORM dashboardCustomer 'Работа с клиентами'
     
@@ -26,7 +32,8 @@ FORM dashboardCustomer 'Работа с клиентами'
     
     OBJECTS le = LegalEntity
     PROPERTIES (le) READONLY id, name, nameLegalAddress, UNP, OKPO, numberBank, nameBank, addressBank, mfoBank, isCompany
-    PROPERTIES (le) NEWSESSION NEW, EDIT, DELETE 
+    PROPERTIES addLegalEntity(c) DRAW le TOOLBAR
+    PROPERTIES (le) NEWSESSION EDIT, DELETE 
     FILTERS customer(le) == c
     ORDER name(le)
     
