@@ -1,0 +1,19 @@
+MODULE ContractWordBy;
+
+REQUIRE ContractWord, LegalEntityBy;
+
+NAMESPACE Contract;
+
+overPrintContractWord (Contract ct, Template t) + {
+    value(TemplateEntry d) <- OVERRIDE UNP(legalEntity(ct)), '' WHERE key(d) = 'UNP_LEGAL_ENTITY' AND template (d) == t;
+    value(TemplateEntry d) <- OVERRIDE OKPO(legalEntity(ct)), '' WHERE key(d) = 'OKPO_LEGAL_ENTITY' AND template (d) == t;
+    value(TemplateEntry d) <- OVERRIDE UNP(company(ct)), '' WHERE key(d) = 'UNP_COMPANY' AND template (d) == t;
+    value(TemplateEntry d) <- OVERRIDE OKPO(company(ct)), '' WHERE key(d) = 'OKPO_COMPANY' AND template (d) == t;
+}
+
+createTemplateEntries(Template t, DocType d) + {
+    IF d IS DocType THEN {
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'UNP_LEGAL_ENTITY'; description(te) <- 'УНП организации'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'OKPO_LEGAL_ENTITY'; description(te) <- 'ОКПО организации'; }
+    }
+}

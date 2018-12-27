@@ -1,6 +1,6 @@
 MODULE ContractWord;
 
-REQUIRE ContractFile, DocWord, LegalEntityBy;
+REQUIRE ContractFile, DocWord, LegalEntity;
 
 NAMESPACE Contract;
 
@@ -50,6 +50,8 @@ FORM dialogContractTypeTemplates 'Шаблоны Word'
     FILTERS in(c, t)
 ;
 
+overPrintContractWord ABSTRACT LIST (Contract, Template);
+
 printContractWord 'Сформировать по шаблону' (Contract ct) {
     DIALOG dialogContractTypeTemplates OBJECTS c = type(ct), t INPUT DO {
         value(TemplateEntry d) <- OVERRIDE number(ct), '' WHERE key(d) = 'NUMBER_DOCUMENT' AND template (d) == t;
@@ -88,8 +90,6 @@ printContractWord 'Сформировать по шаблону' (Contract ct) {
         value(TemplateEntry d) <- OVERRIDE postcodeBank(company(ct)), '' WHERE key(d) = 'POSTCODE_BANK_COMPANY' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE addressBank(company(ct)), '' WHERE key(d) = 'ADDRESS_BANK_COMPANY' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE mfoBank(company(ct)), '' WHERE key(d) = 'MFO_BANK_COMPANY' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE UNP(company(ct)), '' WHERE key(d) = 'UNP_COMPANY' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE OKPO(company(ct)), '' WHERE key(d) = 'OKPO_COMPANY' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE nameLegalAddress(legalEntity(ct)), '' WHERE key(d) = 'ADDRESS_LEGAL_ENTITY' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE postcode(legalAddress(legalEntity(ct))), '' WHERE key(d) = 'POSTCODE_LEGAL_ENTITY' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE number(account(legalEntity(ct))), '' WHERE key(d) = 'ACCOUNT_LEGAL_ENTITY' AND template (d) == t;
@@ -97,8 +97,7 @@ printContractWord 'Сформировать по шаблону' (Contract ct) {
         value(TemplateEntry d) <- OVERRIDE postcodeBank(legalEntity(ct)), '' WHERE key(d) = 'POSTCODE_BANK_LEGAL_ENTITY' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE addressBank(legalEntity(ct)), '' WHERE key(d) = 'ADDRESS_BANK_LEGAL_ENTITY' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE mfoBank(legalEntity(ct)), '' WHERE key(d) = 'MFO_BANK_LEGAL_ENTITY' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE UNP(legalEntity(ct)), '' WHERE key(d) = 'UNP_LEGAL_ENTITY' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE OKPO(legalEntity(ct)), '' WHERE key(d) = 'OKPO_LEGAL_ENTITY' AND template (d) == t;
+        overPrintContractWord(ct, t);
         
         SHOW editTemplate OBJECTS t = t;
     }
@@ -156,8 +155,6 @@ createTemplateEntries(Template t, DocType d) +{
         NEW te = TemplateEntry { template(te) <- t; key(te) <- 'POSTCODE_BANK_LEGAL_ENTITY'; description(te) <- 'Почтовый индекс банка организации'; }
         NEW te = TemplateEntry { template(te) <- t; key(te) <- 'ADDRESS_BANK_LEGAL_ENTITY'; description(te) <- 'Адрес банка организации'; }
         NEW te = TemplateEntry { template(te) <- t; key(te) <- 'MFO_BANK_LEGAL_ENTITY'; description(te) <- 'МФО банка организации'; }
-        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'UNP_LEGAL_ENTITY'; description(te) <- 'УНП организации'; }
-        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'OKPO_LEGAL_ENTITY'; description(te) <- 'ОКПО организации'; }
     }
 }
 

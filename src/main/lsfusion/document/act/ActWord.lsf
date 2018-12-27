@@ -39,6 +39,9 @@ FORM dialogActTypeTemplates 'Шаблоны Word'
     PROPERTIES (t) READONLY name, id
     FILTERS in(c, t)
 ;
+
+overPrintActWord ABSTRACT LIST (Act, Template);
+
 createActTemplate (Act ag, Template t) {
         value(TemplateEntry d) <- OVERRIDE number(ag), '' WHERE key(d) = 'NUMBER_DOCUMENT' AND template (d) == t;
         value(TemplateEntry d) <- TEXT (toDateDDMMYYYY(date(ag))) WHERE key(d) = 'DATE_DOCUMENT' AND template (d) == t;
@@ -73,8 +76,6 @@ createActTemplate (Act ag, Template t) {
         value(TemplateEntry d) <- OVERRIDE postcodeBank(company(ag)), '' WHERE key(d) = 'POSTCODE_BANK_COMPANY' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE addressBank(company(ag)), '' WHERE key(d) = 'ADDRESS_BANK_COMPANY' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE mfoBank(company(ag)), '' WHERE key(d) = 'MFO_BANK_COMPANY' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE UNP(company(ag)), '' WHERE key(d) = 'UNP_COMPANY' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE OKPO(company(ag)), '' WHERE key(d) = 'OKPO_COMPANY' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE nameLegalAddress(legalEntity(ag)), '' WHERE key(d) = 'ADDRESS_LEGAL_ENTITY' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE postcode(legalAddress(legalEntity(ag))), '' WHERE key(d) = 'POSTCODE_LEGAL_ENTITY' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE number(account(legalEntity(ag))), '' WHERE key(d) = 'ACCOUNT_LEGAL_ENTITY' AND template (d) == t;
@@ -82,8 +83,7 @@ createActTemplate (Act ag, Template t) {
         value(TemplateEntry d) <- OVERRIDE postcodeBank(legalEntity(ag)), '' WHERE key(d) = 'POSTCODE_BANK_LEGAL_ENTITY' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE addressBank(legalEntity(ag)), '' WHERE key(d) = 'ADDRESS_BANK_LEGAL_ENTITY' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE mfoBank(legalEntity(ag)), '' WHERE key(d) = 'MFO_BANK_LEGAL_ENTITY' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE UNP(legalEntity(ag)), '' WHERE key(d) = 'UNP_LEGAL_ENTITY' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE OKPO(legalEntity(ag)), '' WHERE key(d) = 'OKPO_LEGAL_ENTITY' AND template (d) == t;
+        overPrintActWord(ag, t);
 }
 
 createTemplateEntries(Template t, DocType d) +{

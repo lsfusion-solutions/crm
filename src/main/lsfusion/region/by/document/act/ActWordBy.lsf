@@ -1,0 +1,12 @@
+MODULE ActWordBy;
+
+REQUIRE ActWord, LegalEntityBy;
+
+NAMESPACE Act;
+
+overPrintActWord (Act ag, Template t) + {
+    value(TemplateEntry d) <- OVERRIDE UNP(company(ag)), '' WHERE key(d) = 'UNP_COMPANY' AND template (d) == t;
+    value(TemplateEntry d) <- OVERRIDE OKPO(company(ag)), '' WHERE key(d) = 'OKPO_COMPANY' AND template (d) == t;
+    value(TemplateEntry d) <- OVERRIDE UNP(legalEntity(ag)), '' WHERE key(d) = 'UNP_LEGAL_ENTITY' AND template (d) == t;
+    value(TemplateEntry d) <- OVERRIDE OKPO(legalEntity(ag)), '' WHERE key(d) = 'OKPO_LEGAL_ENTITY' AND template (d) == t;
+}

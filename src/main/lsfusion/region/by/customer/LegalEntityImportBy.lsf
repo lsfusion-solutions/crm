@@ -1,0 +1,17 @@
+MODULE LegalEntityImportBy;
+
+REQUIRE LegalEntityImport, LegalEntityBy;
+
+overLegalEntityImport(FILE f) + {
+    
+    LOCAL idLegalEntity = VARSTRING[15](INTEGER);
+    LOCAL unp = VARSTRING[9](INTEGER);
+    LOCAL okpo = VARSTRING[20](INTEGER);
+
+    IMPORT XLS NOHEADER FROM f AS FILE TO idLegalEntity = I, unp = Z, okpo = AA;
+
+    FOR LegalEntity l = legalEntity(idLegalEntity(INTEGER i)) AND trim(idLegalEntity(i)) != '' DO {
+        UNP(l) <- trim(unp(i));
+        OKPO(l) <- trim(okpo(i));
+    }
+}

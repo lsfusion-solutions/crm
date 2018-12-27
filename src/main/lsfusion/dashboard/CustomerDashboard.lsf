@@ -1,6 +1,6 @@
 MODULE CustomerDashboard;
 
-REQUIRE Project, PaymentAct, Event, Issue, TimeEntry, Dashboard, LegalEntityBy;
+REQUIRE Project, PaymentAct, Event, Issue, TimeEntry, Dashboard, LegalEntity;
 
 NAMESPACE Dashboard;
 
@@ -31,7 +31,7 @@ FORM dashboardCustomer 'Работа с клиентами'
     PROPERTIES name(c) SELECTOR 
     
     OBJECTS le = LegalEntity
-    PROPERTIES (le) READONLY id, name, nameLegalAddress, UNP, OKPO, numberBank, nameBank, addressBank, mfoBank, isCompany
+    PROPERTIES (le) READONLY id, name, nameLegalAddress, numberBank, nameBank, addressBank, mfoBank, isCompany
     PROPERTIES addLegalEntity(c) DRAW le TOOLBAR
     PROPERTIES (le) NEWSESSION EDIT, DELETE 
     FILTERS customer(le) == c
@@ -165,7 +165,7 @@ NAVIGATOR {
 
 EXTEND FORM customer
     OBJECTS le = LegalEntity
-    PROPERTIES (le) id, extId, name, nameLegalAddress, UNP, OKPO, numberBank, nameBank, addressBank, mfoBank, isCompany, NEW, DELETE 
+    PROPERTIES (le) id, extId, name, nameLegalAddress, numberBank, nameBank, addressBank, mfoBank, isCompany, NEW, DELETE 
     FILTERS customer(le) = o
     
     OBJECTS c = Contact.Contact

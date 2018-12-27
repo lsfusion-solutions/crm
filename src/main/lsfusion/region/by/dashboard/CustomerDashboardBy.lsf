@@ -1,0 +1,6 @@
+MODULE CustomerDashboardBy;
+
+REQUIRE CustomerDashboard, LegalEntityBy;
+
+EXTEND FORM dashboardCustomer PROPERTIES (le) READONLY UNP, OKPO;
+EXTEND FORM customer PROPERTIES (le) UNP, OKPO;

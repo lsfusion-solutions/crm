@@ -1,8 +1,10 @@
 MODULE LegalEntityImport;
 
-REQUIRE LegalEntityBy, Utils;
+REQUIRE LegalEntity, Utils;
 
 NAMESPACE LegalEntity;
+
+overLegalEntityImport ABSTRACT LIST (FILE);
 
 importLegalEntities 'Импорт организаций' (FILE f) {
     LOCAL idCustomer = VARSTRING[15](INTEGER);
@@ -30,8 +32,6 @@ importLegalEntities 'Импорт организаций' (FILE f) {
     LOCAL streetP = VARSTRING[50](INTEGER);
     LOCAL houseP = VARSTRING[20](INTEGER);
     LOCAL officeP = VARSTRING[20](INTEGER);
-    LOCAL unp = VARSTRING[9](INTEGER);
-    LOCAL okpo = VARSTRING[20](INTEGER);
     LOCAL idBank = VARSTRING[15](INTEGER);
     LOCAL numberBank = VARSTRING[10](INTEGER);
     LOCAL nameBank = VARSTRING[100](INTEGER);
@@ -41,8 +41,7 @@ importLegalEntities 'Импорт организаций' (FILE f) {
     
     IMPORT XLS NOHEADER FROM f TO idCustomer, nameCustomer, status, emailCustomer, phoneCustomer, siteCustomer, noteCustomer, dateCustomer, 
                          idLegalEntity, extIdLegalEntity, nameLegalEntity, postcodeL, regionL, districtL, localityL, streetL, houseL, officeL, 
-                         postcodeP, regionP, districtP, localityP, streetP, houseP, officeP, unp, okpo, 
-                         account, idBank, numberBank, nameBank, addressBank, mfoBank;
+                         postcodeP, regionP, districtP, localityP, streetP, houseP, officeP, account = AB, idBank, numberBank, nameBank, addressBank, mfoBank;
                          
     FOR [GROUP SUM 1 IF INTEGER i > 0 BY trim(idCustomer(i))](VARSTRING[15] id) AND id AND NOT customer(id) DO NEW c = Customer {
         id(c) <- id;
@@ -76,8 +75,6 @@ importLegalEntities 'Импорт организаций' (FILE f) {
     FOR LegalEntity l = legalEntity(idLegalEntity(INTEGER i)) AND trim(idLegalEntity(i)) != '' DO {
         extId(l) <- trim(extIdLegalEntity(i)) IF (trim(extIdLegalEntity(i)) != '' AND NOT legalEntityEx(trim(extIdLegalEntity(i))));
         name(l) <- trim(nameLegalEntity(i));
-        UNP(l) <- trim(unp(i));
-        OKPO(l) <- trim(okpo(i));
     }
         
     FOR LegalEntity l = legalEntity(idLegalEntity(INTEGER i)) AND trim(idLegalEntity(i)) != '' AND NOT account(trim(account(i)), l) AND trim(account(i)) != '' DO NEW a = Account {
@@ -123,6 +120,7 @@ importLegalEntities 'Импорт организаций' (FILE f) {
         address(b) <- trim(addressBank(i));
         mfo(b) <- trim(mfoBank(i));
     }
+    overLegalEntityImport(f);
 }
 
 importLegalEntities 'Импорт организаций' () {
