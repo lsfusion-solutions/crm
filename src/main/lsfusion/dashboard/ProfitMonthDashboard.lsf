@@ -18,8 +18,10 @@ shipment 'Расход' (Month m, INTEGER y) = GROUP SUM sumCurrency(Expense p) 
 profit 'Прибыль' (Month m, INTEGER y) = receipt(m, y) (-) shipment(m, y);
 
 receipt 'Доход' (Month m, INTEGER y, ContractType t) = GROUP SUM sumCurrency(Payment p) IF NOT skipReceipt(legalEntity(p)) BY extractMonth(date(p)), extractYear(date(p)), type(contract(p));
+receipt 'Доход' (Month m, INTEGER y, ContractGroup t) = GROUP SUM sumCurrency(Payment p) IF NOT skipReceipt(legalEntity(p)) BY extractMonth(date(p)), extractYear(date(p)), group(contract(p));
 shipment 'Расход' (Month m, INTEGER y, ExpenseType t) = GROUP SUM sumCurrency(Expense p) IF NOT skipExpense(type(p)) BY extractMonth(date(p)), extractYear(date(p)), type(p);
 receiptOther 'Прочее' (Month m, INTEGER y) = GROUP SUM sumCurrency(Payment p) IF NOT type(contract(p)) AND NOT skipReceipt(legalEntity(p)) BY extractMonth(date(p)), extractYear(date(p));
+receiptOtherGroups 'Без группы' (Month m, INTEGER y) = GROUP SUM sumCurrency(Payment p) IF NOT group(contract(p)) AND NOT skipReceipt(legalEntity(p)) BY extractMonth(date(p)), extractYear(date(p));
 shipmentOther 'Прочее' (Month m, INTEGER y) = GROUP SUM sumCurrency(Expense p) IF NOT type(p) AND NOT skipExpense(type(p)) BY extractMonth(date(p)), extractYear(date(p));
 receipt 'Доход' (INTEGER yf, INTEGER yt, ContractType t) = GROUP SUM sumCurrency(Payment p) IF year(p) >= yf AND year(p) <= yt AND NOT skipReceipt(legalEntity(p)) BY type(contract(p));
 shipment 'Расход' (INTEGER yf, INTEGER yt, ExpenseType t) = GROUP SUM sumCurrency(Expense p) IF extractYear(date(p)) >= yf AND extractYear(date(p)) <= yt AND NOT skipExpense(type(p)) BY type(p);
@@ -37,11 +39,13 @@ FORM profitMonthDashboard 'Прибыль по месяцам'
     PROPERTIES 'Год с' = VALUE (yf), 'Год по' = VALUE (yt)
     
     OBJECTS ct = ContractType
+    OBJECTS cg = ContractGroup
     OBJECTS et = ExpenseType
     OBJECTS my = (m = Month, y = INTEGER)
     PROPERTIES READONLY number(m), 'Месяц' = staticCaption(m), year 'Год' = VALUE (y), receipt(m, y) BACKGROUND backgroundReceipt(), 
                         shipment(m, y) BACKGROUND backgroundShipment(), profit(m, y),
                         receipt(m, y, ct) COLUMNS (ct) HEADER name(ct) BACKGROUND backgroundReceipt(), receiptOther(m, y) BACKGROUND backgroundReceipt(),
+                        receipt(m, y, cg) COLUMNS (cg) HEADER name(cg) BACKGROUND backgroundReceipt(), receiptOtherGroups(m, y) BACKGROUND backgroundReceipt(),
                         shipment(m, y, et) COLUMNS (et) HEADER name(et) BACKGROUND backgroundShipment(), shipmentOther(m, y) BACKGROUND backgroundShipment()
     ORDER year, number(m)
     FILTERS y >= yf AND y <= yt, receipt(m, y) OR shipment(m, y), receipt(yf, yt, ct), shipment(yf, yt, et)

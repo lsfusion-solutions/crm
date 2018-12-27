@@ -9,9 +9,10 @@ idContract 'Код договора' (Payment a) = id(contract(a));
 numberContract 'Номер договора' (Payment a) = number(contract(a)) IN id;
 typeContract (Payment p) = type(contract(p));
 nameTypeContract 'Тип договора' (Payment p) = nameType(contract(p));
+nameGroupContract 'Группа договора' (Payment p) = nameGroup(contract(p));
 
-CONSTRAINT contract(Payment p) AND NOT legalEntity(p) = legalEntity(contract(p)) CHECKED BY contract[Payment] MESSAGE 'Организация платежа должна совпадать с организацией договора';
-CONSTRAINT contract(Payment p) AND NOT company(p) = company(contract(p)) CHECKED BY contract[Payment] MESSAGE 'Компания платежа должна совпадать с компанией договора';
+CONSTRAINT contract(Payment p) AND legalEntity(p) AND NOT legalEntity(p) = legalEntity(contract(p)) CHECKED BY contract[Payment] MESSAGE 'Организация платежа должна совпадать с организацией договора';
+CONSTRAINT contract(Payment p) AND company(p) AND NOT company(p) = company(contract(p)) CHECKED BY contract[Payment] MESSAGE 'Компания платежа должна совпадать с компанией договора';
 
 paid 'Оплачено' (Contract c) = GROUP SUM sum(Payment p) BY contract(p);
 
@@ -26,11 +27,11 @@ DESIGN payment {
 }
 
 EXTEND FORM payments 
-    PROPERTIES (o) READONLY numberContract, nameTypeContract
+    PROPERTIES (o) READONLY numberContract, nameTypeContract, nameGroupContract
     ORDER numberContract(o)
 ;
 EXTEND FORM dialogPayments 
-    PROPERTIES (o) READONLY numberContract, nameTypeContract
+    PROPERTIES (o) READONLY numberContract, nameTypeContract, nameGroupContract
     ORDER numberContract(o)
 ;
 

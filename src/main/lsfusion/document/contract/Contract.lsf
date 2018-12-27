@@ -89,6 +89,29 @@ FORM contractTypes 'Типы договора'
 type = DATA ContractType(Contract);
 nameType 'Тип договора' (Contract c) = name(type(c)) CHARWIDTH 15;
 
+CLASS ContractGroup 'Группа договоров';
+TABLE contractGroup(ContractGroup);
+
+name 'Наименование' = DATA VARISTRING[50](ContractGroup) CHARWIDTH 15;
+
+FORM contractGroup 'Группа договоров'
+    OBJECTS o = ContractGroup PANEL
+    PROPERTIES(o) name
+    
+    EDIT ContractGroup OBJECT o
+;
+
+FORM contractGroups 'Группы договоров'
+    OBJECTS o = ContractGroup
+    PROPERTIES(o) READONLY name
+    PROPERTIES (o) NEWSESSION NEW, EDIT, DELETE
+    
+    LIST ContractGroup OBJECT o
+;
+
+group = DATA ContractGroup(Contract);
+nameGroup 'Группа договоров' (Contract c) = name(group(c)) CHARWIDTH 15;
+
 CLASS ContractSendingWay 'Способ отправки договора';
 TABLE contractSendingWay(ContractSendingWay);
 
@@ -148,7 +171,7 @@ docType(Contract c) += DocType.contract IF c IS Contract;
 
 FORM contract 'Договор'
     OBJECTS o = Contract PANEL
-    PROPERTIES(o) id, nameCustomer READONLY, nameLegalEntity, nameCompany, number, date, sum, nameType, nameSendingWay, 
+    PROPERTIES(o) id, nameCustomer READONLY, nameLegalEntity, nameCompany, number, date, sum, nameType, nameGroup, nameSendingWay, 
                   dateSigningCompany, dateSending, dateSigningCustomer, dateReceiving, dateTo, dateClosing, note, text,
                   shortNameCurrency, sumCurrency, nameNumerator, series, nameAuthorisedPersonLegalEntity, nameAuthorisedPersonCompany,
                   authorisedDocumentLegalEntity, authorisedDocumentCompany
@@ -175,6 +198,7 @@ DESIGN contract {
                         }
                         MOVE PROPERTY (date(o));
                         MOVE PROPERTY (nameType(o));
+                        MOVE PROPERTY (nameGroup(o));
                     }
                     NEW legalEntities {
                         caption = 'Контрагенты';
@@ -243,7 +267,7 @@ DESIGN contract {
 
 FORM contracts 'Договоры'
     OBJECTS o = Contract LAST 
-    PROPERTIES(o) READONLY id, nameCustomer, nameLegalEntity, nameCompany, number, date, sum, shortNameCurrency, sumCurrency, nameType, nameSendingWay, 
+    PROPERTIES(o) READONLY id, nameCustomer, nameLegalEntity, nameCompany, number, date, sum, shortNameCurrency, sumCurrency, nameType, nameGroup, nameSendingWay, 
                            dateSending, dateReceiving, dateTo, dateClosing, note, textString
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
     ORDER date(o)
@@ -251,7 +275,7 @@ FORM contracts 'Договоры'
 
 FORM dialogContracts 'Договоры'
     OBJECTS o = Contract LAST 
-    PROPERTIES(o) READONLY id, nameCustomer, nameLegalEntity, nameCompany, number, date, sum, shortNameCurrency, sumCurrency, nameType, nameSendingWay, 
+    PROPERTIES(o) READONLY id, nameCustomer, nameLegalEntity, nameCompany, number, date, sum, shortNameCurrency, sumCurrency, nameType, nameGroup, nameSendingWay, 
                            dateSending, dateReceiving, dateTo, dateClosing, note, textString
     ORDER date(o)
     
