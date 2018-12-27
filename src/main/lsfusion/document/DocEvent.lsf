@@ -13,6 +13,20 @@ addEventDoc 'Добавить' (Document d) {
     }
 } IMAGE 'add.png';
 
+WHEN LOCAL CHANGED (contract(Event e)) AND NOT CHANGED (customer(e)) AND NOT CHANGED (legalEntity(e)) DO {
+    customer(e) <- customer(contract(e));
+    legalEntity(e) <- legalEntity(contract(e));
+}
+WHEN LOCAL CHANGED (agreement(Event e)) AND NOT CHANGED (contract(e)) AND NOT contract(e) DO {
+    contract(e) <- contract(agreement(e));
+}
+WHEN LOCAL CHANGED (act(Event e)) AND NOT CHANGED (contract(e)) AND NOT contract(e) DO {
+    contract(e) <- contract(act(e));
+}
+
+CONSTRAINT contract(Event e) AND agreement(e) AND NOT contract(agreement(e)) == contract(e) CHECKED BY agreement[Event] MESSAGE 'Соглашение не соответствует договору';
+CONSTRAINT contract(Event e) AND act(e) AND NOT contract(act(e)) == contract(e) CHECKED BY act[Event] MESSAGE 'Акт не соответствует договору';
+
 EXTEND FORM docDashboard 
     OBJECTS e = Event
     PROPERTIES (e) READONLY id, name, nameCustomer, nameLegalEntity, nameEmployee, nameContact, date, time, dateNext, descriptionString, additionString
