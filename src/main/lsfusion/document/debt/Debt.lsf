@@ -14,7 +14,11 @@ currency = DATA Currency(Debt);
 nameCurrency 'Валюта платежа' (Debt p) = name(currency(p));
 shortNameCurrency 'Валюта (сокр.)' (Debt p) = shortName(currency(p));
 
-sumCurrency 'Сумма в валюте' (Debt p) = round2(sum(p) * OVERRIDE rateOn(defaultTypeExchange(), currency(p), date(p)), 1);
+sumCurrency 'Сумма в валюте' (Debt p) = DATA NUMERIC[16,5](Debt);
+
+WHEN LOCAL (SETCHANGED (sumCurrency(Debt d)) OR CHANGED (currency(d))) AND NOT CHANGED (sum(d)) DO {
+    sum(d) <- round2(sumCurrency(d) / OVERRIDE (rateOn(defaultTypeExchange(), currency(d), date(d))), 1);
+}
 
 contract = DATA Contract(Debt) NONULL DELETE;
 numberContract 'Номер договора' (Debt d) = number(contract(d));
@@ -81,6 +85,12 @@ createDebts 'Сгенерировать задолженность' (Contract c)
         LOCAL month = INTEGER ();
         LOCAL year = INTEGER ();
         LOCAL date = DATE ();
+        LOCAL rest = NUMERIC[16,5]();
+        
+        DELETE Debt d WHERE contract(d) == c AND date(d) > currentDate();
+        
+        rest() <- CASE WHEN NOT inCurrency(c) THEN (sum(c) (-) [GROUP SUM sum(Debt d) BY contract(d)](c))
+                                              ELSE (sumCurrency(c) (-) [GROUP SUM sumCurrency(Debt d) BY contract(d)](c));
         
         IF extractDay(currentDate()) > paymentDay(c) THEN {
             month() <- extractMonthNumber(currentDate());
@@ -92,7 +102,9 @@ createDebts 'Сгенерировать задолженность' (Contract c)
         year() <- extractYear(currentDate());
         
         FOR iterate(INTEGER i, 1, countMonthsDebt()) DO {
-        
+            
+            IF NOT rest() THEN BREAK;
+            
             month() <- month() (+) 1;
             
             IF month() > 12 THEN {
@@ -112,7 +124,19 @@ createDebts 'Сгенерировать задолженность' (Contract c)
             }
             
             FOR Debt d = debt(date(), c) DO {
-                sum(d) <- sumMonth(c);
+            
+                currency(d) <- currency(c);
+                
+                IF inCurrency(c) THEN {
+                    rest() <-rest() (+) sumCurrency(d);
+                    sumCurrency(d) <- CASE WHEN rest() >= sumMonth(c) THEN sumMonth(c) ELSE rest();
+                    rest() <- rest() (-) sumCurrency(d);
+                }
+                ELSE {
+                    rest() <-rest() (+) sum(d);
+                    sum(d) <- CASE WHEN rest() >= sumMonth(c) THEN sumMonth(c) ELSE rest();
+                    rest() <- rest() (-) sum(d);
+                }
             }
         }
     }
@@ -121,8 +145,8 @@ createDebts 'Сгенерировать задолженность' (Contract c)
 EXTEND FORM contract 
     PROPERTIES (o) sumMonth, paymentDay, createDebts
     OBJECTS d = Debt
-    PROPERTIES (d) date, sum, shortNameCurrency, sumCurrency, paid, NEW, DELETE
-    ORDER date(o)
+    PROPERTIES (d) date, sum, shortNameCurrency, sumCurrency SHOWIF inCurrency(o), paid, NEW, DELETE
+    ORDER date(d)
     FILTERS contract(d) == o
 ;
 
@@ -137,6 +161,7 @@ DESIGN contract {
                     caption = 'Стоимость';
                     MOVE PROPERTY (sum(o));
                     MOVE PROPERTY (shortNameCurrency(o));
+                    MOVE PROPERTY (inCurrency(o));
                     MOVE PROPERTY (sumCurrency(o));
                 }
                 NEW secondRow {

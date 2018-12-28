@@ -169,11 +169,14 @@ EXTEND CLASS DocType {
 }
 docType(Contract c) += DocType.contract IF c IS Contract;
 
+inCurrency 'В валюте' = DATA BOOLEAN (Contract);
+
 FORM contract 'Договор'
     OBJECTS o = Contract PANEL
     PROPERTIES(o) id, nameCustomer READONLY, nameLegalEntity, nameCompany, number, date, sum, nameType, nameGroup, nameSendingWay, 
                   dateSigningCompany, dateSending, dateSigningCustomer, dateReceiving, dateTo, dateClosing, note, text,
-                  shortNameCurrency, sumCurrency, nameNumerator, series, nameAuthorisedPersonLegalEntity, nameAuthorisedPersonCompany,
+                  inCurrency, shortNameCurrency, sumCurrency SHOWIF inCurrency(o), 
+                  nameNumerator, series, nameAuthorisedPersonLegalEntity, nameAuthorisedPersonCompany,
                   authorisedDocumentLegalEntity, authorisedDocumentCompany
     
     EDIT Contract OBJECT o
@@ -241,6 +244,7 @@ DESIGN contract {
                         type = CONTAINERH;
                         MOVE PROPERTY (sum(o));
                         MOVE PROPERTY (shortNameCurrency(o));
+                        MOVE PROPERTY (inCurrency(o));
                     }
                     NEW add {
                         caption = 'Дополнительно';
