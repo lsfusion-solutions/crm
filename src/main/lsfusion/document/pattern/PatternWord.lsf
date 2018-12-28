@@ -8,7 +8,7 @@ in 'Вкл.' = DATA BOOLEAN (TemplateEntry, Pattern);
 
 EXTEND FORM template 
     OBJECTS p = Pattern
-    PROPERTIES in(te, p), text(p) READONLY, note(p) READONLY 
+    PROPERTIES in(te, p), text(p) READONLY PANEL, noteString(p) READONLY 
 ;
 
 DESIGN template {
@@ -20,7 +20,17 @@ DESIGN template {
             MOVE BOX (te) {
                 PROPERTY (value(te)) { valueWidth = 50; }
             }
-            MOVE BOX (p);
+            NEW  pattern {
+                caption = 'Заготовка';
+                type = CONTAINERH;
+                fill = 1;
+                MOVE BOX (p);
+                NEW text {
+                    caption = 'Текст';
+                    fill = 1;
+                    MOVE PROPERTY (text(p)) { caption = ''; fill = 1; }
+                }
+            }
         }
     }
 }
@@ -52,11 +62,16 @@ select 'Отм.' = DATA LOCAL BOOLEAN (TemplateEntry, Pattern);
 
 text (TemplateEntry te) =  GROUP CONCAT text(Pattern pt) IF select(te, pt), (IF type(te) = Type.list THEN (OVERRIDE rowSeparator(te),'\r') ELSE '');
 
+resetSelected 'Сбросить отмеченные' (TemplateEntry te) {
+    select(te, Pattern p) <- NULL;
+}
+
 FORM editTemplatePattern 'Заготовки'
     OBJECTS te = TemplateEntry PANEL 
     OBJECTS p = Pattern
     PROPERTIES select(te, p)
-    PROPERTIES (p) READONLY text, note
+    PROPERTIES (p) READONLY text PANEL, noteString
+    PROPERTIES resetSelected(te) DRAW p TOOLBAR 
     FILTERS in(te, p)
     
     EVENTS ON OK {
@@ -66,8 +81,17 @@ FORM editTemplatePattern 'Заготовки'
 
 DESIGN editTemplatePattern {
     size = (1200, 800);
-    PROPERTY(text(p)) {
-        valueHeight = 130;
+    OBJECTS {
+        NEW main FIRST {
+            type = CONTAINERH;
+            fill = 1;
+            MOVE BOX (p);
+            NEW text {
+                caption = 'Текст';
+                fill = 1;
+                MOVE PROPERTY (text(p)) { fill = 1; caption = ''; }
+            }
+        }
     }
 }
 setText 'Использовать заготовки' (TemplateEntry te) {

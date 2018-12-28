@@ -9,6 +9,7 @@ TABLE pattern (Pattern);
 
 text 'Текст' = DATA TEXT (Pattern) CHARWIDTH 50;
 note 'Примечание' = DATA TEXT (Pattern) CHARWIDTH 20;
+noteString 'Примечание' (Pattern p) = VARISTRING[1000](note(p)) CHARWIDTH 20;
 order 'Номер' = DATA INTEGER (Pattern);
 
 FORM pattern 'Заготовка'
