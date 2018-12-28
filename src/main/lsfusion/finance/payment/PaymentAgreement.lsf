@@ -7,7 +7,14 @@ NAMESPACE Payment;
 agreement = DATA Agreement(Payment);
 numberAgreement 'Номер соглашения' (Payment p) = number(agreement(p));
 
-paid 'Оплачено' (Agreement c) = GROUP SUM sum(Payment p) BY agreement(p);
+paidPayment 'Оплачено' (Agreement a) = GROUP SUM sum(Payment p) BY agreement(p);
+
+paidContract 'Оплачено' (Agreement a) = PARTITION UNGROUP paid
+                                                      LIMIT sum(a) (-) paidPayment(a)
+                                                      ORDER date(a),a 
+                                                      BY contract(a); 
+                                                      
+paid 'Оплачено' (Agreement a) = paidContract(a) (+) paidPayment(a);
 
 paid(Agreement c) += paid(c);             
 
