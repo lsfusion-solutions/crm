@@ -36,7 +36,7 @@ FORM timesheetDashboard 'Табель рабочего времени'
     
     OBJECTS a = Absence
     PROPERTIES (a) READONLY id, nameEmployee, nameReason, dateFrom, dateTo, hours, workingHours, date, note
-    PROPERTIES (a) NEWSESSION NEW, EDIT, DELETE 
+    PROPERTIES (a) NEWSESSION NEW, EDIT SHOWIF isEditable(a), DELETE SHOWIF isEditable(a)
     ORDER date(a)
     FILTERS employee(a) == e, extractMonth(date(a)) == m, extractYear(date(a)) == y
     FILTERGROUP aday FILTER 'За день' date(a) == d 

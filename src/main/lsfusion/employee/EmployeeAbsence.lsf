@@ -18,18 +18,26 @@ CLASS AbsenceReason 'Причина отсутствия';
 TABLE absenceReason (AbsenceReason);
 
 name 'Наименование' = DATA VARISTRING[100] (AbsenceReason) CHARWIDTH 15;
+inactive 'Неактивный' = DATA BOOLEAN (AbsenceReason);
 
 FORM absenceReason 'Причина отсутствия'
     OBJECTS o = AbsenceReason PANEL
-    PROPERTIES(o) name
+    PROPERTIES(o) name, inactive
     
     EDIT AbsenceReason OBJECT o
 ;
 
 FORM absenceReasons 'Причины отсутствия'
     OBJECTS o = AbsenceReason
-    PROPERTIES(o) READONLY name
+    PROPERTIES(o) READONLY name, inactive
+    FILTERGROUP active FILTER 'Активные' NOT inactive(o) DEFAULT 
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
+;
+
+FORM dialogAbsenceReasons 'Причины отсутствия'
+    OBJECTS o = AbsenceReason
+    PROPERTIES(o) READONLY name, inactive
+    FILTERGROUP active FILTER 'Активные' NOT inactive(o) DEFAULT 
     
     LIST AbsenceReason OBJECT o
 ;
@@ -42,6 +50,14 @@ dateTo 'Дата по' = DATA DATE (Absence);
 hours 'Кол-во часов' = DATA NUMERIC[7,2](Absence);
 date 'Дата ввода' = DATA DATE (Absence);
 note 'Примечание' = DATA VARISTRING[100] (Absence) CHARWIDTH 30;
+
+CONSTRAINT dateTo(Absence a) < dateFrom(a) MESSAGE 'Дата по должна быть не раньше даты с';
+
+@addRoleApplicationSetting(editDays, 'Дней для редактирования отсутствия', INTEGER);
+
+isEditable (Absence a) = NOT dateFrom(a) < sum(currentDate(), -editDays(mainRole(currentUser()))) AND NOT dateTo(a) > sum(currentDate(), editDays(mainRole(currentUser())));
+
+CONSTRAINT (CHANGED(dateFrom(Absence a)) OR CHANGED(dateTo(a))) AND NOT isEditable(a) MESSAGE 'Дата отсутствия не попадает в период редактирования';
 
 workingHours 'Рабочих часов за интервал' (Absence a) = GROUP SUM workingHours(DATE d) IF iterate(d, dateFrom(a), dateTo(a));
 
@@ -101,7 +117,7 @@ DESIGN absence {
 FORM absences 'Отсутствие сотрудников'
     OBJECTS o = Absence LAST 
     PROPERTIES(o) READONLY id, nameEmployee, nameReason, dateFrom, dateTo, hours, workingHours, date, note
-    PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
+    PROPERTIES(o) NEWSESSION NEW, EDIT SHOWIF isEditable(o), DELETE SHOWIF isEditable(o)
     ORDER date(o)
 
     OBJECTS d = DATE
@@ -128,5 +144,6 @@ FORM dialogAbsences 'Отсутствие сотрудников'
 NAVIGATOR {
     employeeFolder {
         NEW absences;
+        NEW absenceReasons;
     }
 }
