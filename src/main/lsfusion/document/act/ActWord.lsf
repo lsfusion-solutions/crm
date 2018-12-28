@@ -1,6 +1,6 @@
 MODULE ActWord;
 
-REQUIRE ContractWord, Act;
+REQUIRE ContractWord, ActFile;
 
 NAMESPACE Act;
 

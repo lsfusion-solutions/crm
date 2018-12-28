@@ -1,6 +1,6 @@
 MODULE AgreementImport;
 
-REQUIRE Agreement, Import;
+REQUIRE AgreementFile, Import;
 
 NAMESPACE Agreement;
 
@@ -80,7 +80,12 @@ importAgreementDocumentsXls 'Импорт документов соглашен�
             FOR Agreement c = agreement(id(INTEGER i)) AND id(i) AND i > 0 DO {
                 TRY {
                     READ 'file://' + documentPath() + '/' + replace(upper(trim(path(i))), '\\', '/') TO file;
-                    file(c) <- file();
+                    NEW df = DocumentFile {
+                        document(df) <- c;
+                        file(df) <- file();
+                        dateTime(df) <- currentDateTime();
+                        user(df) <- currentUser();
+                    }
                 }
             }
         }

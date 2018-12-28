@@ -39,7 +39,12 @@ createActs 'Создать акты' () {
             FOR Template t = actTemplate(contract(d)) DO {
                 createActTemplate(a, t);
                 process(t);
-                file(a) <- FILE (resultTemplate());
+                NEW df = DocumentFile {
+                    document(df) <- a;
+                    file(df) <- FILE (resultTemplate());
+                    dateTime(df) <- currentDateTime();
+                    user(df) <- currentUser();
+                }
             }
         }
         in(Debt t) <- NULL;

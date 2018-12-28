@@ -95,7 +95,6 @@ dateReceiving 'Дата получения' = DATA DATE (Act);
 note 'Примечание' = DATA VARISTRING[100](Act) CHARWIDTH 20;
 text 'Текст' = DATA TEXT (Act);
 textString 'Текст' (Act c) = VARSTRING[500](text(c)) CHARWIDTH 20;
-file 'Файл' = DATA FILE (Act);
 
 id(Act c) += id(c);
 number(Act c) += number(c);
@@ -106,7 +105,6 @@ dateSending(Act c) += dateSending(c);
 dateSigningCustomer(Act c) += dateSigningCustomer(c);
 dateReceiving(Act c) += dateReceiving(c);
 dateClosing(Act c) += dateClosing(c);
-file(Act c) += file(c);
 customer(Act c) += customer(c);
 legalEntity(Act a) += legalEntity(a);
 company(Act a) += company(contract(a));
@@ -118,26 +116,10 @@ EXTEND CLASS DocType {
 }
 docType(Act a) += DocType.act IF a IS Act;
 
-loadFile 'Загрузить' (Act c) { 
-    NEWSESSION INPUT f = FILE DO { 
-        file(c) <- f; 
-        APPLY;
-    } 
-}
-openFile 'Открыть' (Act c) { open(file(c)); }
-
-deleteFile 'Удалить' (Act c) { 
-    NEWSESSION { 
-        file(c) <- NULL; 
-        APPLY;
-    } 
-} CONFIRM;
-
 FORM act 'Акт выполненных работ'
     OBJECTS o = Act PANEL
     PROPERTIES(o) id, number, date, nameType, numberContract, numberAgreement, nameCustomer READONLY, nameLegalEntity READONLY, sum, 
-                  dateSending, dateReceiving, dateClosing, note, text, nameCompany READONLY,
-                  loadFile, openFile SHOWIF TRUE IF file(o), deleteFile SHOWIF TRUE IF file(o), nameNumerator, series, 
+                  dateSending, dateReceiving, dateClosing, note, text, nameCompany READONLY, nameNumerator, series, 
                   nameAuthorisedPersonLegalEntity, nameAuthorisedPersonCompany, authorisedDocumentLegalEntity, authorisedDocumentCompany
     
     EDIT Act OBJECT o
@@ -203,16 +185,13 @@ DESIGN act {
                 MOVE PROPERTY(note(o));
             }
         }
-        NEW file {
-            caption = 'Файл документа';
-            type = CONTAINERH;
-            MOVE PROPERTY (loadFile(o));
-            MOVE PROPERTY (openFile(o));
-            MOVE PROPERTY (deleteFile(o));
-        }
-        MOVE PROPERTY(text(o)) {
-            panelCaptionAbove = TRUE;
-            flex = 1;
+        NEW tab {
+            type = TABBED;
+            fill = 1;
+            MOVE PROPERTY(text(o)) {
+                panelCaptionAbove = TRUE;
+                flex = 1;
+            }
         }
     }
 }
@@ -252,7 +231,7 @@ addAct 'Добавить' (Contract c) {
 EXTEND FORM contract 
     OBJECTS ac = Act LAST 
     PROPERTIES (ac) READONLY id, numberContract, numberAgreement, number, date, nameType, sum, dateClosing, dateSending, dateReceiving, note, textString
-    PROPERTIES DRAW ac TOOLBAR addAct(o), openFile(ac) 
+    PROPERTIES DRAW ac TOOLBAR addAct(o)
     PROPERTIES(ac) NESTEDSESSION EDIT, DELETE
     ORDER date(ac)
     FILTERS contract(ac) == o

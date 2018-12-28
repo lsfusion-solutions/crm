@@ -1,6 +1,6 @@
 MODULE ContractImport;
 
-REQUIRE Contract, Import;
+REQUIRE ContractFile, Import;
 
 NAMESPACE Contract;
 
@@ -94,7 +94,12 @@ importContractDocumentsXls 'Импорт документов договоров
             FOR Contract c = contract(id(INTEGER i)) AND id(i) AND i > 0 DO {
                 TRY {
                     READ 'file://' + documentPath() + '/' + replace(upper(trim(path(i))), '\\', '/') TO file;
-                    file(c) <- file();
+                    NEW df = DocumentFile {
+                        document(df) <- c;
+                        file(df) <- file();
+                        dateTime(df) <- currentDateTime();
+                        user(df) <- currentUser();
+                    }
                 }
             }
         }
