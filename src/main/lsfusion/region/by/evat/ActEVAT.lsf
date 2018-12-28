@@ -1,0 +1,103 @@
+MODULE ActEVAT;
+
+REQUIRE Act, EVAT;
+
+NAMESPACE Act;
+
+lastEVATAct 'Последний ЭСЧФ по акту' = GROUP LAST EVAT e ORDER date(e), e WHERE NOT cancelled(e) BY EVATDocument(e) MATERIALIZED ;
+
+in 'Вкл.' = DATA LOCAL BOOLEAN (Act);
+
+generateEVAT 'Сформировать ЭСЧФ' ()  {
+     
+    FOR in(Act a) DO NEWSESSION {
+        NEW e = EVAT {
+            EVATDocument(e) <- a;
+            generateSeriesNumber(e);
+            unpSender(e) <- '101262078';
+            date(e) <- currentDate();
+            customer(e) <- legalEntity(contract(a));
+            supplier(e) <- company(contract(a));
+            dataDateDoc(e) <- date(a);
+            numberContract(e) <- numberContract(a);
+            dateContract(e) <- dateContract(a);
+            numberDoc(e) <- number(a);
+            
+            NEW d = EVATDetail {
+                EVAT(d) <- e;
+                number(d) <- 1; 
+                quantity(d) <- 0;
+                price(d) <- 0;
+                sum(d) <- sum(a);
+                exciseSum(d) <- 0;
+                vatRate(d) <- 0;
+                vatRateType(d) <- 'NO_VAT';
+                vatSum(d) <- 0;
+                sumWithVAT(d) <- sum(d) + vatSum(d);
+                codeOced(d) <-'62010';
+                code(d) <-'';
+                name(d) <- 'По договору '+numberContract(a);
+                descriptionType(d) <- DescriptionType.vatExcemption;
+            }
+        }
+        in(a) <- NULL;
+        APPLY;
+    }
+}
+
+
+FORM ActEVATs 'Формирование электронных счет-фактур'
+    OBJECTS a = Act
+    PROPERTIES(a) in
+    PROPERTIES(a) READONLY number, date, nameType, numberContract, numberAgreement, nameCustomer, nameLegalEntity, sum SELECTOR
+    PROPERTIES() TOOLBAR generateEVAT
+    FILTERS NOT lastEVATAct(a)
+    
+    OBJECTS dates = (dFrom = DATE, dTo = DATE) PANEL
+    PROPERTIES dFrom = VALUE(dFrom), dTo = VALUE(dTo)
+    
+    OBJECTS e = EVAT
+    PROPERTIES(e) READONLYIF isReadonly() exported, cancelled, unpSender, number, exportYear, exportNumber, dateDoc, numberDoc, seriesDoc,
+                  nameSupplier, nameCustomer, totalSum,
+                  totalExciseSum, totalVATSum, totalSumWithVAT
+    
+    FILTERS date(e) >= dFrom, date(e) <= dTo
+    
+    FILTERGROUP exported FILTER 'Выгруженные' exported(e) 
+                         FILTER 'Не выгруженные' noexported(e) 
+    FILTERGROUP cancelled FILTER 'Отмененные' cancelled(e) 
+                          FILTER 'Не отмененные' nocancelled(e) DEFAULT 
+;
+
+DESIGN ActEVATs {
+    OBJECTS{
+        NEW acts BEFORE BOX(e){
+            type = TABBED;
+            fill = 1;
+            
+            MOVE BOX(a) {
+                MOVE PROPERTY(generateEVAT());
+            }
+        }
+        NEW filters BEFORE BOX(e) {
+            MOVE BOX(dates) {
+                GROUP(,dates) {
+                    type = CONTAINERH;
+                    PROPERTY(dFrom) {
+                        caption = 'Дата с';
+                    }
+                    PROPERTY(dTo) {
+                        caption = 'Дата по';
+                    }
+                }
+            }
+        }
+    }
+}
+
+NAVIGATOR {
+    EVATFolder {
+        NEW ActEVATs;
+    }
+}
+

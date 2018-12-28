@@ -1,0 +1,467 @@
+MODULE EVAT;
+
+REQUIRE Doc, Numerator;
+
+NAMESPACE EVAT;
+
+CLASS EVAT 'Электронный счёт-фактура';
+TABLE EVAT(EVAT);
+
+EVATDocument 'Документ' = DATA Document (EVAT) INDEXED;
+
+CONSTRAINT EVAT e IS EVAT AND NOT EVATDocument(e)
+    MESSAGE 'У ЭСЧФ должна быть задана ссылка на документ !';
+
+@defineNumbered(EVAT);
+@defineNumeratedDefault(EVAT, 'ЭСЧФ', 'ЭС');
+
+in 'Вкл.' = DATA LOCAL BOOLEAN (EVAT);
+exported 'Выгружен' = DATA BOOLEAN (EVAT);
+noexported 'Не выгружен' (EVAT e) = NOT exported(e);
+
+cancelled 'Отмененный' = DATA BOOLEAN (EVAT);
+nocancelled 'Не отмененный' (EVAT e) = NOT cancelled(e);
+
+CONSTRAINT DROPPED (EVAT e IS EVAT) AND PREV (exported(e)) MESSAGE 'Запрещено удалять Выгруженные счета-фактуры';
+CONSTRAINT SET (cancelled(EVAT e)) AND exported(e) MESSAGE 'Запрещено отменять Выгруженные счета-фактуры';
+
+unpSender 'Субъект хозяйствования, составляющий ЭСЧФ' = DATA VARSTRING[100](EVAT);
+exportYear 'Год для экспорта' = DATA INTEGER (EVAT);
+date 'Дата совершения операции' = DATA DATE (EVAT);
+
+padNumber = ABSTRACT VALUE VARSTRING[20] (EVAT);
+padNumber (EVAT e) += VARSTRING[20](lpad(number(e), 10, '0'));
+
+exportNumber 'Номер для экспорта' (EVAT e) = unpSender(e) + '-' + (OVERRIDE exportYear(e), Time.extractYear(currentDate()) IF e IS EVAT ) + '-' + padNumber(e);
+exportDNumber 'Номер для экспорта' (EVAT e) = unpSender(e) + '-' + exportYear(e) + '-' + padNumber(e);
+EVATExportNumber 'ЭСЧФ по номеру для экспорта' = GROUP AGGR EVAT e BY exportDNumber(e); 
+
+//WHEN SET(exported(EVAT e)) DO exportYear(e) <- Time.extractYear(currentDate());
+WHEN SET(EVAT e IS EVAT) DO exportYear(e) <- Time.extractYear(currentDate());
+
+documentType 'Название вида документа' = DATA VARSTRING[30] (EVAT);
+
+codeDocType 'Код вида документа' = DATA INTEGER (EVAT);
+blankCodeDoc 'Код типа бланка' = DATA VARSTRING[100] (EVAT);
+dataDateDoc 'Дата' = DATA DATE (EVAT);
+dateDoc 'Дата' (EVAT e)= OVERRIDE dataDateDoc(e), date(e);
+seriesDoc 'Серия' = DATA VARSTRING[100] (EVAT);
+
+numberContract 'Номер договора на поставку товара' = DATA VARSTRING[15] (EVAT);
+dateContract 'Дата договора на поставку товара' = DATA DATE (EVAT);
+numberDoc 'Номер документа' = DATA VARSTRING[15] (EVAT);
+
+//Поставщик
+supplier 'Поставщик' = DATA LegalEntity(EVAT);
+nameSupplier 'Поставщик' (EVAT e) = name(supplier(e));
+branchCodeSupplier 'Код филиала поставщика' = DATA INTEGER (EVAT);
+// Клеить адрес из полей !!!
+addressSupplier 'Адрес поставщика' (EVAT e) = locality(supplier(e));
+dependentPersonSupplier 'Взаимозависимое лицо' = DATA BOOLEAN (EVAT);
+residentsOfOffshoreSupplier 'Сделка с резидентом оффшорной зоны ' = DATA BOOLEAN (EVAT);
+specialDealGoodsSupplier 'Спец. сделка' = DATA BOOLEAN (EVAT);
+bigCompanySupplier 'Крупный плательщик (поставщик)' = DATA BOOLEAN (EVAT);
+countryCodeSupplier 'Код страны поставщика' = DATA VARISTRING[30] (EVAT);
+unpSupplier 'УНП поставщика' (EVAT e) = UNP(supplier(e));
+legalEntityStatusSupplier 'Статус поставщика' = DATA VARISTRING[30] (EVAT);
+
+//Получатель
+customer 'Получатель' = DATA LegalEntity(EVAT);
+nameCustomer 'Получатель' (EVAT e) = name(customer(e));
+branchCodeCustomer 'Код филиала получателя' = DATA INTEGER (EVAT);
+// Клеить адрес из полей !!!
+addressCustomer 'Адрес получателя' (EVAT e) = locality(customer(e));
+dependentPersonCustomer 'Взаимозависимое лицо' = DATA BOOLEAN (EVAT);
+residentsOfOffshoreCustomer 'Сделка с резидентом оффшорной зоны ' = DATA BOOLEAN (EVAT);
+specialDealGoodsCustomer 'Спец. сделка' = DATA BOOLEAN (EVAT);
+bigCompanyCustomer 'Крупный плательщик (получатель)' = DATA BOOLEAN (EVAT);
+countryCodeCustomer 'Код страны получателя' = DATA VARISTRING[30] (EVAT);
+unpCustomer 'УНП получателя' (EVAT e) = UNP(customer(e));
+legalEntityStatusCustomer 'Статус получателя' = DATA VARISTRING[30] (EVAT);
+
+
+//Товар
+CLASS EVATDetail 'Строка электронного счёта-фактуры';
+TABLE EVATDetail(EVATDetail);
+
+EVAT = DATA EVAT (EVATDetail) NONULL DELETE INDEXED;
+number 'Порядковый номер' = DATA INTEGER (EVATDetail);
+name 'Наименование' = DATA VARSTRING[255] (EVATDetail);
+code 'Код ТНВЭД' = DATA VARSTRING[10] (EVATDetail);
+codeOced 'Код видов деятельности (ОКЭД)' = DATA VARSTRING[100] (EVATDetail);
+quantity 'Количество' = DATA NUMERIC[16,5] (EVATDetail); 
+price 'Цена' = DATA NUMERIC[16,5] (EVATDetail);
+sum 'Сумма' = DATA NUMERIC[16,5] (EVATDetail) NONULL;
+exciseSum 'Сумма акциза' = DATA NUMERIC[16,5] (EVATDetail);
+vatRate 'Ставка НДС' = DATA NUMERIC[16,5] (EVATDetail);
+vatRateType 'Тип НДС' = DATA VARISTRING[20] (EVATDetail);
+vatSum 'Сумма НДС' = DATA NUMERIC[16,5] (EVATDetail);
+sumWithVAT 'Сумма с НДС' = DATA NUMERIC[16,5] (EVATDetail);
+
+CLASS DescriptionType 'Описание' {
+    deductionInFull 'Вычет в полном объеме',
+    vatExcemption 'Освобождение от НДС',
+    outsideRB 'Реализация за пределами Республики Беларусь',
+    importVAT 'Ввозной НДС'
+}
+
+FORM descriptionTypes
+    OBJECTS d = DescriptionType
+    PROPERTIES(d) READONLY staticCaption
+    LIST DescriptionType OBJECT d
+;
+
+descriptionType = DATA DescriptionType(EVATDetail);
+nameDescriptionType (EVATDetail d) = staticName(descriptionType(d));
+captionDescriptionType 'Описание' (EVATDetail d)= staticCaption(descriptionType(d));
+
+totalSum 'Сумма (всего)' (EVAT e) = GROUP SUM sum(EVATDetail d) BY EVAT(d);  
+totalExciseSum 'Сумма акциза (всего)' (EVAT e) = GROUP SUM exciseSum(EVATDetail d) BY EVAT(d);  
+totalVATSum 'Сумма НДС (всего)' (EVAT e) = GROUP SUM vatSum(EVATDetail d) BY EVAT(d);  
+totalSumWithVAT 'Сумма с НДС (всего)' (EVAT e) = GROUP SUM sumWithVAT(EVATDetail d) BY EVAT(d);  
+
+FORM EVAT 'Электронная счёт-фактура'
+    OBJECTS e=EVAT PANEL
+    PROPERTIES(e) unpSender, number, exportYear, exportNumber, exported, cancelled, documentType,
+                  numberContract, dateContract, numberDoc,
+                  bigCompanySupplier, dependentPersonSupplier, residentsOfOffshoreSupplier, specialDealGoodsSupplier,
+                  bigCompanyCustomer, dependentPersonCustomer, residentsOfOffshoreCustomer, specialDealGoodsCustomer,
+                  nameSupplier, unpSupplier, countryCodeSupplier, addressSupplier, 
+                  nameCustomer, unpCustomer, countryCodeCustomer, addressCustomer, 
+                  branchCodeSupplier, branchCodeCustomer,
+                  codeDocType, blankCodeDoc, dateDoc, seriesDoc, 
+                  totalSum, totalExciseSum, totalVATSum, totalSumWithVAT
+
+    OBJECTS d = EVATDetail
+    PROPERTIES(d) name, code, quantity, price, sum, exciseSum, vatRate, vatRateType, vatSum, sumWithVAT, captionDescriptionType, NEW, DELETE
+    FILTERS EVAT(d) == e
+    EDIT EVAT OBJECT e
+;
+
+DESIGN EVAT {    NEW top {
+        type = TABBED;
+        fill = 1;
+        NEW general {
+            caption = 'Общие';
+            fill = 1;
+            MOVE PROPERTY(unpSender(e));
+            MOVE PROPERTY(number(e));
+            MOVE PROPERTY(exportYear(e));
+            MOVE PROPERTY(exportNumber(e));
+            MOVE PROPERTY(exported(e));
+            MOVE PROPERTY(cancelled(e));
+            MOVE PROPERTY(documentType(e));
+        }
+        NEW supplier{
+            caption = 'Поставщик';
+            fill = 1;
+            MOVE PROPERTY(nameSupplier(e));
+            MOVE PROPERTY(unpSupplier(e));
+            MOVE PROPERTY(countryCodeSupplier(e));
+            MOVE PROPERTY(addressSupplier(e));            
+            MOVE PROPERTY(bigCompanySupplier(e));
+            MOVE PROPERTY(dependentPersonSupplier(e));
+            MOVE PROPERTY(residentsOfOffshoreSupplier(e));
+            MOVE PROPERTY(specialDealGoodsSupplier(e));
+            MOVE PROPERTY(branchCodeSupplier(e));
+        }
+        NEW customer{
+            caption = 'Получатель';
+            fill = 1;
+            MOVE PROPERTY(nameCustomer(e));
+            MOVE PROPERTY(unpCustomer(e));
+            MOVE PROPERTY(countryCodeCustomer(e));
+            MOVE PROPERTY(addressCustomer(e));  
+            MOVE PROPERTY(bigCompanyCustomer(e));
+            MOVE PROPERTY(dependentPersonCustomer(e));
+            MOVE PROPERTY(residentsOfOffshoreCustomer(e));
+            MOVE PROPERTY(specialDealGoodsCustomer(e));
+            MOVE PROPERTY(branchCodeCustomer(e));
+        }           
+        NEW deliveryCondition {
+            caption = 'Условия поставки';
+            fill = 1;
+            MOVE PROPERTY(codeDocType(e));
+            MOVE PROPERTY(blankCodeDoc(e));
+            MOVE PROPERTY(dateDoc(e));
+            MOVE PROPERTY(seriesDoc(e));
+            MOVE PROPERTY(numberContract(e));
+            MOVE PROPERTY(dateContract(e));
+            MOVE PROPERTY(numberDoc(e));
+        }
+        NEW roster {
+            caption = 'Данные по товарам';
+            fill = 1;
+            MOVE PROPERTY(totalSum(e));
+            MOVE PROPERTY(totalExciseSum(e));
+            MOVE PROPERTY(totalVATSum(e));
+            MOVE PROPERTY(totalSumWithVAT(e));            
+            MOVE BOX(d);
+        }
+    }
+    MOVE TOOLBARBOX;
+}
+
+
+FORM EVATs 'Электронные счета-фактуры'
+    
+    OBJECTS dates = (dFrom = DATE, dTo = DATE) PANEL
+    PROPERTIES dFrom = VALUE(dFrom), dTo = VALUE(dTo)
+    
+    OBJECTS e = EVAT
+    PROPERTIES(e) in
+    PROPERTIES(e) READONLYIF isReadonly() exported, cancelled, unpSender, number, exportYear, exportNumber, numberDoc, dateDoc, seriesDoc,
+                  nameSupplier, nameCustomer, totalSum,
+                  totalExciseSum, totalVATSum, totalSumWithVAT
+ 
+    PROPERTIES(e) NEWSESSION NEW, EDIT, DELETE 
+    PROPERTIES(e) d=DELETE GRID
+    FILTERS date(e) >= dFrom, date(e) <= dTo
+    
+    OBJECTS d = EVATDetail
+    PROPERTIES(d) READONLYIF isReadonly() name, code, quantity, price, sum, exciseSum, vatRate, vatSum, sumWithVAT, captionDescriptionType
+    FILTERS EVAT(d) == e
+    LIST EVAT OBJECT e
+    
+    FILTERGROUP exported FILTER 'Выгруженные' exported(e) 
+                         FILTER 'Не выгруженные' noexported(e) 
+    FILTERGROUP cancelled FILTER 'Отмененные' cancelled(e) 
+                          FILTER 'Не отмененные' nocancelled(e) DEFAULT 
+;
+
+DESIGN EVATs {
+    OBJECTS{
+        NEW filters BEFORE BOX(e) {
+            MOVE BOX(dates) {
+                GROUP(,dates) {
+                    type = CONTAINERH;
+                    PROPERTY(dFrom) {
+                        caption = 'Дата с';
+                    }
+                    PROPERTY(dTo) {
+                        caption = 'Дата по';
+                    }
+                }
+            }
+        }
+        NEW pane AFTER BOX(e){
+            type = TABBED;
+            fill = 0.2;
+            MOVE BOX(d);
+        }
+    }
+}
+
+//NAVIGATOR {
+//    contractFolder {
+//        NEW EVATs;
+//    }
+//}
+NAVIGATOR {
+    NEW FOLDER EVATFolder 'ЭСЧФ' BEFORE masterData WINDOW toolbar {
+       NEW EVATs;   
+    }
+}
+
+///// экспорт ЭСЧФ в XML
+exportPathEVAT 'Каталог для экспорта ЭСЧФ' = DATA VARSTRING[255] ();
+EXTEND FORM options PROPERTIES exportPathEVAT();
+DESIGN options { 
+    commons { 
+        MOVE PROPERTY(exportPathEVAT());
+    } 
+}
+
+dateIssuance 'Текущая дата (симв.)' = DATA LOCAL VARSTRING[10] ();
+dateTransaction 'Дата операции (симв.)' = DATA LOCAL VARSTRING[10] ();
+dateContract 'Дата договора' = DATA LOCAL VARSTRING[10] ();
+dateDoc 'Дата документа' = DATA LOCAL VARSTRING[10] ();
+
+GROUP general;
+GROUP provider;
+GROUP recipient;
+GROUP senderReceiver;
+GROUP deliveryCondition;
+GROUP contract : deliveryCondition;
+GROUP documents : contract;
+GROUP document : documents;
+GROUP docType : document;
+GROUP roster;
+GROUP rosterItem : roster;
+GROUP vat;
+GROUP descriptions;
+
+FORM issuance
+    OBJECTS e = EVAT
+    PROPERTIES sender =unpSender(e) ATTR
+    //PROPERTIES xmlns  ='http://www.w3schools.com' ATTR  ///// !!!!! - нужна доработка
+    
+    PROPERTIES   IN general =exportNumber(e) EXTID 'number', =documentType(e) EXTID 'documentType'
+    PROPERTIES() IN general dateIssuance, dateTransaction
+    PROPERTIES  IN provider =legalEntityStatusCustomer(e) EXTID 'providerStatus',
+                            =IF dependentPersonCustomer(e) THEN 'true' ELSE 'false' EXTID 'dependentPerson',
+                            =IF residentsOfOffshoreCustomer(e) THEN 'true' ELSE 'false' EXTID 'residentsOfOffshore',
+                            =IF specialDealGoodsCustomer(e) THEN 'true' ELSE 'false' EXTID 'specialDealGoods',
+                            =IF bigCompanyCustomer(e) THEN 'true' ELSE 'false' EXTID 'bigCompany',
+                            =countryCodeCustomer(e) EXTID 'countryCode',
+                            =unpCustomer(e) EXTID 'unp',
+                            =nameCustomer(e) EXTID 'name',
+                            =addressCustomer(e) EXTID 'address'
+                            
+    PROPERTIES IN recipient =legalEntityStatusSupplier(e) EXTID 'recipientStatus',
+                            =IF dependentPersonSupplier(e) THEN 'true' ELSE 'false' EXTID 'dependentPerson',
+                            =IF residentsOfOffshoreSupplier(e) THEN 'true' ELSE 'false' EXTID 'residentsOfOffshore',
+                            =IF specialDealGoodsSupplier(e) THEN 'true' ELSE 'false' EXTID 'specialDealGoods',
+                            =IF bigCompanySupplier(e) THEN 'true' ELSE 'false' EXTID 'bigCompany',
+                            =countryCodeSupplier(e) EXTID 'countryCode',
+                            =unpSupplier(e) EXTID 'unp',
+                            =nameSupplier(e) EXTID 'name',
+                            =addressSupplier(e) EXTID 'address'
+    
+    PROPERTIES IN senderReceiver ='' EXTID 'consignors', ='' EXTID 'consignees' 
+    
+    PROPERTIES IN contract =numberContract(e) EXTID 'number',
+                           =dateContract() EXTID 'date'
+                           
+    PROPERTIES IN docType  =codeDocType(e) EXTID 'code'
+    PROPERTIES IN document =dateDoc() EXTID 'date', =blankCodeDoc(e) EXTID 'blankCode', =numberDoc(e) EXTID 'number', =seriesDoc(e) EXTID 'seria' 
+    
+    PROPERTIES IN roster totalCost =IF totalSum(e) THEN totalSum(e) ELSE 0 ATTR,
+                         totalVat =IF totalVATSum(e) THEN totalVATSum(e) ELSE 0 ATTR,
+                         totalExcise =IF totalExciseSum(e) THEN totalExciseSum(e) ELSE 0 ATTR,
+                         totalCostVat =IF totalSumWithVAT(e) THEN totalSumWithVAT(e) ELSE 0 ATTR
+                         
+    OBJECTS rosterItem = EVATDetail IN roster
+    PROPERTIES =number(rosterItem) EXTID 'number', =name(rosterItem) EXTID 'name',
+                             =code(rosterItem) EXTID 'code', =codeOced(rosterItem) EXTID 'code_oced', 
+                             =IF price(rosterItem) THEN price(rosterItem) ELSE 0 EXTID 'price',
+                             =IF exciseSum(rosterItem) THEN exciseSum(rosterItem) ELSE 0 EXTID 'summaExcise',
+                             =IF sum(rosterItem) THEN sum(rosterItem) ELSE 0 EXTID 'cost',
+                             =IF sum(rosterItem) THEN sum(rosterItem) ELSE 0 EXTID 'costVat'
+    
+    PROPERTIES IN vat =IF vatRate(rosterItem) THEN vatRate(rosterItem) ELSE 0 EXTID 'rate',
+                      =vatRateType(rosterItem) EXTID 'rateType',
+                      =IF vatSum(rosterItem) THEN vatSum(rosterItem) ELSE 0 EXTID 'summaVat' 
+    PROPERTIES IN descriptions =descriptionType(rosterItem) EXTID 'description'
+    
+    FILTERS EVAT(rosterItem) = e
+
+;
+
+exportToXml 'Экспорт ЭСЧФ' () {
+    FOR in(EVAT e) DO NEWSESSION {
+        dateIssuance() <- VARSTRING[10] ([FORMULA 'to_char(($1),($2))'](currentDate(), 'YYYY-MM-DD'));
+        dateTransaction() <- VARSTRING[10] ([FORMULA 'to_char(($1),($2))'](date(e), 'YYYY-MM-DD'));
+        dateContract() <- VARSTRING[10] ([FORMULA 'to_char(($1),($2))'](dateContract(e), 'YYYY-MM-DD'));
+        dateDoc() <- VARSTRING[10] ([FORMULA 'to_char(($1),($2))'](dateDoc(e), 'YYYY-MM-DD'));
+        
+        exported(e) <- TRUE;
+        in(e) <- NULL;
+        
+        documentType(e) <- 'ORIGINAL';
+        legalEntityStatusCustomer(e) <- 'SELLER';
+        countryCodeCustomer(e) <- '112';
+        
+        legalEntityStatusSupplier(e) <- 'CUSTOMER';
+        countryCodeSupplier(e) <- '112';
+        
+        codeDocType(e) <- 606;
+        
+        blankCodeDoc(e) <- '';
+        seriesDoc(e) <- '';
+        
+        EXPORT issuance OBJECTS e = e XML TO System.exportFile;
+        WRITE 'file://' + exportPathEVAT() + exportNumber(e) FROM System.exportFile();
+        
+        APPLY ;
+    }
+}
+EXTEND FORM EVATs PROPERTIES() TOOLBAR exportToXml;
+
+// Сверка переданных ЭСЧФ с CSV-файлом
+CLASS ListEVAT 'ЭСЧФ из CSV-файла';
+
+number 'Номер' = DATA VARSTRING[28] (ListEVAT);
+unpSupplier 'УНП поставщика' = DATA VARSTRING[9] (ListEVAT);
+unpCustomer 'УНП получателя' = DATA VARSTRING[9] (ListEVAT);
+nameCustomer 'Наименование получателя' = DATA VARSTRING[250] (ListEVAT);
+sumWithVAT 'Сумма с НДС' = DATA NUMERIC[16,2] (ListEVAT);
+datev 'Дата выставления' = DATA DATE (ListEVAT);
+dates 'Дата совершения' = DATA DATE (ListEVAT);
+
+EVATNumber = GROUP LAST EVAT e BY exportNumber(e), date(e);
+EVAT (ListEVAT li) = EVATNumber(number(li), dates(li));
+
+backgroundColor (ListEVAT li) = CASE
+    WHEN EVAT(li) AND NOT sumWithVAT(li) == totalSumWithVAT(EVAT(li)) THEN RGB(255, 255, 128)
+    WHEN li IS ListEVAT AND NOT EVAT(li) THEN RGB(255, 70, 64);
+
+listEVATNumber = GROUP LAST ListEVAT li BY number(li), dates(li); 
+listEVAT (EVAT e) = listEVATNumber(exportNumber(e), date(e));
+
+backgroundColor (EVAT e) = CASE
+    WHEN listEVAT(e) AND NOT sumWithVAT(listEVAT(e)) == totalSumWithVAT(e) THEN RGB(255, 255, 128)
+    WHEN e IS EVAT AND NOT listEVAT(e) THEN RGB(255, 70, 64);
+
+controlWithCsvFile 'Сверка с CSV-файлом' ()  { 
+    
+    LOCAL number       = VARSTRING[28](INTEGER);
+    LOCAL unpSupplier  = VARSTRING[9](INTEGER);
+    LOCAL unpCustomer  = VARSTRING[9](INTEGER);
+    LOCAL nameCustomer = VARSTRING[250](INTEGER);
+    LOCAL sumWithVAT   = NUMERIC[16,2](INTEGER);
+    LOCAL datev        = DATE (INTEGER);
+    LOCAL dates        = DATE (INTEGER);
+    
+    INPUT f = FILE DO {
+        IMPORT CSV ';' NOHEADER CHARSET 'cp1251' FROM f AS FILE TO number = O,unpSupplier = B, unpCustomer = I,
+                       nameCustomer = K, sumWithVAT = AQ, datev = S, dates = T;
+        
+        DELETE ListEVAT li WHERE li IS ListEVAT;
+        
+        FOR trim(number(INTEGER i)) AND i > 1 NEW li = ListEVAT DO {
+            number(li) <- number(i);
+            unpSupplier(li) <- unpSupplier(i);
+            unpCustomer(li) <- unpCustomer(i);
+            nameCustomer(li) <- nameCustomer(i);
+            sumWithVAT(li) <- sumWithVAT(i);
+            datev(li) <- datev(i);
+            dates(li) <- dates(i);
+        }
+    }
+}
+
+FORM compareListEVAT 'Сравнение со списком ЭСЧФ из CSV-файла'
+    OBJECTS dates = (dFrom = DATE, dTo = DATE) PANEL
+    PROPERTIES dFrom = VALUE(dFrom), dTo = VALUE(dTo)
+    
+    PROPERTIES controlWithCsvFile() DRAW dates  
+    
+    OBJECTS e = EVAT
+    PROPERTIES(e) READONLY BACKGROUND backgroundColor(e) date, exportNumber, unpCustomer, nameCustomer, totalSumWithVAT
+    ORDER exportNumber(e)
+    FILTERS date(e) >= dFrom, date(e) <= dTo AND nocancelled(e)
+    
+    OBJECTS li = ListEVAT
+    PROPERTIES(li) READONLY BACKGROUND backgroundColor(li) dates, number, unpCustomer, nameCustomer, sumWithVAT
+
+    ORDER number(li)
+    //FILTERS dates(li) >= dFrom, dates(li) <= dTo
+;
+
+DESIGN compareListEVAT {
+    MOVE BOX(dates);
+    NEW EVATBox {
+        fill = 1;
+        type = SPLITH;
+        MOVE BOX(e);
+        MOVE BOX(li);
+    }
+    MOVE TOOLBARBOX;
+}
+  
+NAVIGATOR {
+    EVATFolder {
+        NEW compareListEVAT ;
+    }
+}  
