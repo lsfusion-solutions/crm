@@ -73,3 +73,5 @@ importActivity 'Импорт деятельностей' (External e) {
         APPLY;
     }
 }
+
+disableEditing (TimeEntry t) += TRUE IF external(t);

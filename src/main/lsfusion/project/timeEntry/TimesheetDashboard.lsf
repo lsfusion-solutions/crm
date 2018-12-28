@@ -29,7 +29,7 @@ FORM timesheetDashboard 'Табель рабочего времени'
     OBJECTS t = TimeEntry
     PROPERTIES (t) READONLY id, hours, commentsString, date, nameActivity, nameProject, nameCustomer, numberIssue, nameIssue
     PROPERTIES addTimeEntry(d) DRAW t TOOLBAR 
-    PROPERTIES (t) NEWSESSION EDIT, DELETE 
+    PROPERTIES (t) SHOWIF NOT disableEditing(t) NEWSESSION EDIT, DELETE 
     ORDER date(t)
     FILTERS employee(t) == e, extractMonth(date(t)) == m, extractYear(date(t)) == y
     FILTERGROUP tday FILTER 'За день' date(t) == d DEFAULT 
