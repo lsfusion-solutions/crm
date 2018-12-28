@@ -1,6 +1,6 @@
 MODULE EVAT;
 
-REQUIRE Doc, Numerator;
+REQUIRE Doc, Numerator, LegalEntityBy;
 
 NAMESPACE EVAT;
 
@@ -56,7 +56,7 @@ supplier 'Поставщик' = DATA LegalEntity(EVAT);
 nameSupplier 'Поставщик' (EVAT e) = name(supplier(e));
 branchCodeSupplier 'Код филиала поставщика' = DATA INTEGER (EVAT);
 // Клеить адрес из полей !!!
-addressSupplier 'Адрес поставщика' (EVAT e) = locality(supplier(e));
+addressSupplier 'Адрес поставщика' (EVAT e) = nameLegalAddress(supplier(e));
 dependentPersonSupplier 'Взаимозависимое лицо' = DATA BOOLEAN (EVAT);
 residentsOfOffshoreSupplier 'Сделка с резидентом оффшорной зоны ' = DATA BOOLEAN (EVAT);
 specialDealGoodsSupplier 'Спец. сделка' = DATA BOOLEAN (EVAT);
@@ -70,7 +70,7 @@ customer 'Получатель' = DATA LegalEntity(EVAT);
 nameCustomer 'Получатель' (EVAT e) = name(customer(e));
 branchCodeCustomer 'Код филиала получателя' = DATA INTEGER (EVAT);
 // Клеить адрес из полей !!!
-addressCustomer 'Адрес получателя' (EVAT e) = locality(customer(e));
+addressCustomer 'Адрес получателя' (EVAT e) = nameLegalAddress(customer(e));
 dependentPersonCustomer 'Взаимозависимое лицо' = DATA BOOLEAN (EVAT);
 residentsOfOffshoreCustomer 'Сделка с резидентом оффшорной зоны ' = DATA BOOLEAN (EVAT);
 specialDealGoodsCustomer 'Спец. сделка' = DATA BOOLEAN (EVAT);
