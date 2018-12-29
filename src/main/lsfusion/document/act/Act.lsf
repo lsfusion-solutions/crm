@@ -189,6 +189,7 @@ DESIGN act {
             type = TABBED;
             fill = 1;
             MOVE PROPERTY(text(o)) {
+                caption = 'Текст';
                 panelCaptionAbove = TRUE;
                 flex = 1;
             }
