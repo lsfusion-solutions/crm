@@ -29,6 +29,7 @@ receipt 'Доход' (DATE df, DATE dt, ContractType t) = GROUP SUM sumCurrency(
 shipment 'Расход' (DATE df, DATE dt, ExpenseType t) = GROUP SUM sumCurrency(Expense p) IF date(p) >= df AND date(p) <= dt AND NOT skipExpense(type(p)) BY type(p);
 
 backgroundReceipt() = RGB (222, 255, 222);
+backgroundGroup() = RGB (222, 222, 255);
 backgroundShipment() = RGB (255, 222, 222);
 
 FORM profitMonthDashboard 'Прибыль по месяцам'
@@ -45,13 +46,13 @@ FORM profitMonthDashboard 'Прибыль по месяцам'
     PROPERTIES READONLY number(m), 'Месяц' = staticCaption(m), year 'Год' = VALUE (y), receipt(m, y) BACKGROUND backgroundReceipt(), 
                         shipment(m, y) BACKGROUND backgroundShipment(), profit(m, y),
                         receipt(m, y, ct) COLUMNS (ct) HEADER name(ct) BACKGROUND backgroundReceipt(), receiptOther(m, y) BACKGROUND backgroundReceipt(),
-                        receipt(m, y, cg) COLUMNS (cg) HEADER name(cg) BACKGROUND backgroundReceipt(), receiptOtherGroups(m, y) BACKGROUND backgroundReceipt(),
+                        receipt(m, y, cg) COLUMNS (cg) HEADER name(cg) BACKGROUND backgroundGroup(), receiptOtherGroups(m, y) BACKGROUND backgroundGroup(),
                         shipment(m, y, et) COLUMNS (et) HEADER name(et) BACKGROUND backgroundShipment(), shipmentOther(m, y) BACKGROUND backgroundShipment()
     ORDER year, number(m)
     FILTERS y >= yf AND y <= yt, receipt(m, y) OR shipment(m, y), receipt(yf, yt, ct), shipment(yf, yt, et)
     
     OBJECTS p = Payment
-    PROPERTIES (p) READONLY id, nameLegalEntity, nameCustomer, numberContract, nameTypeContract, numberAct, number, date, 
+    PROPERTIES (p) READONLY id, nameLegalEntity, nameCustomer, numberContract, nameTypeContract, nameGroupContract, numberAct, number, date, 
                             year, monthNumber, sum, shortNameCurrency, sumCurrency BACKGROUND backgroundReceipt(), note
     FILTERS year(p) == y, extractMonth(date(p)) == m, NOT skipReceipt(legalEntity(p))
     
