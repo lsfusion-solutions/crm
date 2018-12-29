@@ -20,8 +20,7 @@ DESIGN template {
             MOVE BOX (te) {
                 PROPERTY (value(te)) { valueWidth = 50; }
             }
-            NEW  pattern {
-                caption = 'Заготовка';
+            NEW pattern {
                 type = CONTAINERH;
                 fill = 1;
                 MOVE BOX (p);
