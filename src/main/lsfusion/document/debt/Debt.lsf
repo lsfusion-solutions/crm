@@ -143,7 +143,7 @@ createDebts 'Сгенерировать задолженность' (Contract c)
 }
 
 EXTEND FORM contract 
-    PROPERTIES (o) sumMonth, paymentDay, createDebts
+    PROPERTIES (o) sumMonth, paymentDay, createDebts SHOWIF (sumMonth(o) AND paymentDay(o))
     OBJECTS d = Debt
     PROPERTIES (d) date, sum, shortNameCurrency, sumCurrency SHOWIF inCurrency(o), paid, NEW, DELETE
     ORDER date(d)

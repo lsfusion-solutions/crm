@@ -24,8 +24,8 @@ FORM contractDashboard 'Работа с договорами'
     ORDER date(o)
     FILTERS type(o) == filterContractType() OR NOT filterContractType()
     
-    FILTERGROUP paid FILTER 'Не оплачен' paid(o) < sumCurrency(o)
-                     FILTER 'Оплачен' paid(o) >= sumCurrency(o)
+    FILTERGROUP paid FILTER 'Не оплачен' paid(o) < sum(o)
+                     FILTER 'Оплачен' paid(o) >= sum(o)
     
     FILTERGROUP activeContract
         FILTER 'Активные' NOT dateClosing(o) < currentDate() DEFAULT
