@@ -50,7 +50,7 @@ FORM ActEVATs 'Формирование электронных счет-факт
     OBJECTS a = Act
     PROPERTIES(a) in
     PROPERTIES(a) READONLY number, date, nameType, numberContract, numberAgreement, nameCustomer, nameLegalEntity, sum SELECTOR
-    PROPERTIES() TOOLBAR generateEVAT
+    PROPERTIES() generateEVAT DRAW a TOOLBAR
     FILTERS NOT lastEVATAct(a)
     
     OBJECTS dates = (dFrom = DATE, dTo = DATE) PANEL
