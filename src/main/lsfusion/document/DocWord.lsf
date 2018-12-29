@@ -13,7 +13,8 @@ createWordOnOK 'Сформировать' (Template t) {
         formOk();
     }
     ELSE {
-        MESSAGE 'Заполнены не все обязательные поля:\r\n' + [GROUP CONCAT description(TemplateEntry te) IF required(te) AND NOT value(te), ', ' ORDER te BY template(te)](t) NOWAIT;
+        MESSAGE CONCAT '', 'Заполнены не все обязательные поля:', '\r\n' + 
+            [GROUP CONCAT (OVERRIDE description(TemplateEntry te), key(te)) IF required(te) AND NOT value(te), ', ' ORDER te BY template(te)](t) NOWAIT;
     }
 }
 
@@ -21,12 +22,21 @@ background = ABSTRACT CASE COLOR (TemplateEntry);
 backgroundValue (TemplateEntry te) = CASE WHEN required(te) THEN RGB (255, 235, 235)
                                                    WHEN NOT required(te) THEN background(te);
 
+valueString 'Значение' (TemplateEntry te) = VARISTRING[1000] (value(te)) CHARWIDTH 20;
+
+changeTextTemplateEntry (TemplateEntry te) {
+    INPUT t = VARISTRING[1000] DO {
+        value(te) <- t;
+    }
+}
+
 FORM editTemplate 'Шаблон' 
     OBJECTS t = Template PANEL 
     PROPERTIES (t) READONLY name, id
     
     OBJECTS te = TemplateEntry
-    PROPERTIES (te) READONLY nameType BACKGROUND background(te), key BACKGROUND backgroundValue(te), description BACKGROUND backgroundValue(te)
+    PROPERTIES (te) READONLY nameType BACKGROUND background(te), key BACKGROUND background(te), description BACKGROUND background(te)
+    PROPERTIES (te) BACKGROUND backgroundValue(te) valueString ON CHANGE changeTextTemplateEntry(te)
     PROPERTIES (te) value PANEL
     PROPERTIES createWordOnOK(t)
     

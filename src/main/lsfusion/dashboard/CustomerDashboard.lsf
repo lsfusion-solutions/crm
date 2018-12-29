@@ -28,7 +28,7 @@ addLegalEntity 'Добавить' (Customer c) {
 FORM dashboardCustomer 'Работа с клиентами'
     
     OBJECTS c = Customer PANEL 
-    PROPERTIES name(c) SELECTOR 
+    PROPERTIES (c) name SELECTOR, info
     
     OBJECTS le = LegalEntity
     PROPERTIES (le) READONLY id, name, nameLegalAddress, numberBank, nameBank, addressBank, mfoBank, isCompany
@@ -153,6 +153,11 @@ DESIGN dashboardCustomer {
                 }
                 MOVE BOX (te) { caption = 'Отметки времени'; }
             }
+            NEW info {
+                caption = 'Информация';
+                fill = 1;
+                MOVE PROPERTY (info(c)) { caption = ''; fill = 1; }
+            }
         }
     }
 }
@@ -201,6 +206,11 @@ DESIGN customer {
             MOVE BOX (le) { caption = 'Организации'; }
             MOVE BOX (a) { caption = 'Адреса'; }
             MOVE BOX (c) { caption = 'Контакты'; }
+            NEW info {
+                caption = 'Информация';
+                fill = 1;
+                MOVE PROPERTY (info(o)) { caption = ''; fill = 1; }
+            }
         }
     }
 }

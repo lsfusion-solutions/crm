@@ -38,10 +38,11 @@ importLegalEntities 'Импорт организаций' (FILE f) {
     LOCAL addressBank = VARSTRING[250](INTEGER);
     LOCAL mfoBank = VARSTRING[11](INTEGER);
     LOCAL account = VARSTRING[50](INTEGER);
+    LOCAL info = VARISTRING[1000](INTEGER);
     
     IMPORT XLS NOHEADER FROM f TO idCustomer, nameCustomer, status, emailCustomer, phoneCustomer, siteCustomer, noteCustomer, dateCustomer, 
                          idLegalEntity, extIdLegalEntity, nameLegalEntity, postcodeL, regionL, districtL, localityL, streetL, houseL, officeL, 
-                         postcodeP, regionP, districtP, localityP, streetP, houseP, officeP, account = AB, idBank, numberBank, nameBank, addressBank, mfoBank;
+                         postcodeP, regionP, districtP, localityP, streetP, houseP, officeP, account = AB, idBank, numberBank, nameBank, addressBank, mfoBank, info;
                          
     FOR [GROUP SUM 1 IF INTEGER i > 0 BY trim(idCustomer(i))](VARSTRING[15] id) AND id AND NOT customer(id) DO NEW c = Customer {
         id(c) <- id;
@@ -65,6 +66,7 @@ importLegalEntities 'Импорт организаций' (FILE f) {
         site(c) <- trim(siteCustomer(i));
         note(c) <- trim(noteCustomer(i));
         dateFrom(c) <- dateCustomer(i);
+        info(c) <- trim(info(i));
         
         FOR customer(Address a) == c DO {
             DELETE a;

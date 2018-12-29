@@ -8,7 +8,7 @@ in 'Вкл.' = DATA BOOLEAN (TemplateEntry, Pattern);
 
 EXTEND FORM template 
     OBJECTS p = Pattern
-    PROPERTIES in(te, p), text(p) READONLY PANEL, noteString(p) READONLY 
+    PROPERTIES in(te, p), text(p) READONLY PANEL, noteString(p) READONLY, textString(p) READONLY 
 ;
 
 DESIGN template {
@@ -69,7 +69,7 @@ FORM editTemplatePattern 'Заготовки'
     OBJECTS te = TemplateEntry PANEL 
     OBJECTS p = Pattern
     PROPERTIES select(te, p)
-    PROPERTIES (p) READONLY text PANEL, noteString
+    PROPERTIES (p) READONLY text PANEL, noteString, textString
     PROPERTIES resetSelected(te) DRAW p TOOLBAR 
     FILTERS in(te, p)
     

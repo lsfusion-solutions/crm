@@ -26,6 +26,8 @@ legalAddress (Customer l) = GROUP LAST Address a ORDER a IF in(a, AddressType.le
 nameLegalAddress 'Юр. адрес' (Customer l) = name(legalAddress(l));
 address (Customer l) = GROUP LAST Address a ORDER DESC types(a),a BY customer(a);
 nameAddress 'Адрес' (Customer c) = name(address(c));
+info 'Информация' = DATA TEXT (Customer);
+infoString 'Информация' (Customer c) = VARISTRING[1000](info(c)) CHARWIDTH 20;
 
 CLASS StatusCustomer 'Статус клиента';
 TABLE StatusCustomer (StatusCustomer);
@@ -52,7 +54,7 @@ nameStatus 'Статус' (Customer c) = name(status(c));
 
 FORM customer 'Клиент'
     OBJECTS o = Customer PANEL
-    PROPERTIES(o) id, name, nameStatus, email, phone, site, note, dateFrom, inactive
+    PROPERTIES(o) id, name, nameStatus, email, phone, site, note, dateFrom, inactive, info
     
     OBJECTS a = Address
     PROPERTIES (a) types ON CHANGE changeAddressTypes(a), postcode, region, district, locality, street, houseNumber, officeNumber, NEW, DELETE 
@@ -64,7 +66,7 @@ FORM customer 'Клиент'
 
 FORM customers 'Клиенты'
     OBJECTS o = Customer
-    PROPERTIES(o) READONLYIF isReadonly() id, name, nameStatus, nameAddress, email, phone, site, note, dateFrom, inactive
+    PROPERTIES(o) READONLYIF isReadonly() id, name, nameStatus, nameAddress, email, phone, site, note, dateFrom, infoString, inactive
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
     ORDER name(o)
     
@@ -75,7 +77,7 @@ FORM customers 'Клиенты'
 
 FORM dialogCustomers 'Клиенты'
     OBJECTS o = Customer
-    PROPERTIES(o) READONLY id, name, nameStatus, nameAddress, email, phone, site, note, dateFrom, inactive
+    PROPERTIES(o) READONLY id, name, nameStatus, nameAddress, email, phone, site, note, dateFrom, infoString, inactive
     ORDER name(o)
     
     FILTERGROUP active FILTER 'Активные' NOT inactive(o) DEFAULT

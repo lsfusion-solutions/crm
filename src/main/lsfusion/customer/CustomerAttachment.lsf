@@ -140,6 +140,6 @@ EXTEND FORM dashboardCustomer
 
 DESIGN dashboardCustomer {
     tabPane {
-        MOVE BOX (at) { caption = 'Документы'; }
+        MOVE BOX (at) BEFORE info { caption = 'Документы'; }
     }
 }
