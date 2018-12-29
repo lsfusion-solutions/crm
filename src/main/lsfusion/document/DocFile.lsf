@@ -20,3 +20,101 @@ document = DATA Document(DocumentFile);
 open 'Открыть' (DocumentFile c) {
     open(file(c));
 }
+
+CLASS DocumentFileType 'Тип файла документа';
+TABLE documentFileType (DocumentFileType);
+
+name 'Наименование' = DATA VARISTRING[100] (DocumentFileType) CHARWIDTH 15;
+
+in 'Вкл.' = DATA BOOLEAN (DocumentFileType, DocType);
+docTypes 'Типы документов' (DocumentFileType t) = GROUP CONCAT name(DocType d) IF in(t, d), ', ' CHARWIDTH 20;
+
+FORM inDocTypes 'Типы документов'
+    OBJECTS d = DocumentFileType PANEL 
+    OBJECTS t = DocType
+    PROPERTIES in(d, t), name(t) READONLY 
+;
+
+changeDocTypes (DocumentFileType d) {
+    SHOW inDocTypes OBJECTS d = d;
+}
+
+FORM documentFileType 'Тип файла документа'
+    OBJECTS o = DocumentFileType PANEL
+    PROPERTIES(o) name, docTypes ON CHANGE changeDocTypes(o)
+    
+    EDIT DocumentFileType OBJECT o
+;
+
+FORM documentFileTypes 'Тип файла документа'
+    OBJECTS o = DocumentFileType
+    PROPERTIES(o) READONLY name, docTypes
+    PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
+;
+
+FORM dialogDocumentFileTypes 'Тип файла документа'
+    OBJECTS o = DocumentFileType
+    PROPERTIES(o) READONLY name, docTypes
+    
+    LIST DocumentFileType OBJECT o
+;
+
+fileType = DATA DocumentFileType(DocumentFile);
+nameFileType 'Тип файла документа' (DocumentFile f) = name(fileType(f));
+file (Document d, DocumentFileType t) = GROUP LAST file(DocumentFile f) ORDER dateTime(f), f BY document(f), fileType(f);
+
+docFileType = DATA LOCAL DocumentFileType();
+nameDocFileType 'Тип файла документа' () = name(docFileType());
+
+FORM docFileTypes 'Тип файла документа'
+    OBJECTS d = Document PANEL 
+    OBJECTS o = DocumentFileType
+    PROPERTIES(o) READONLY name
+    FILTERS in(o, docType(d))
+;
+
+changeDocFileType (Document d) {
+    DIALOG docFileTypes OBJECTS d = d, o INPUT NULL DO {
+        docFileType() <- o;
+    }
+}
+
+FORM dialogLoadDocumentFileTypes 'Тип файла документа'
+    OBJECTS d = Document PANEL 
+    PROPERTIES nameDocFileType() ON CHANGE changeDocFileType(d)
+    FILTERS in(docFileType(), docType(d))
+;
+
+FORM dialogOpenDocumentFileTypes 'Тип файла документа'
+    OBJECTS d = Document PANEL 
+    OBJECTS o = DocumentFileType
+    PROPERTIES(o) READONLY name
+    FILTERS in(o, docType(d)), TRUE IF file(d, o)
+;
+
+loadFile 'Загрузить' (Document d) { 
+    DIALOG dialogLoadDocumentFileTypes OBJECTS d = d DO {
+        INPUT f = FILE DO NEW cf = DocumentFile {
+            document(cf) <- d;
+            file(cf) <- f;
+            dateTime(cf) <- currentDateTime();
+            user(cf) <- currentUser();
+            fileType(cf) <- docFileType();
+        } 
+    }
+}
+loadFileApply 'Загрузить' (Document d) {
+    NEWSESSION {
+        loadFile(d);
+        APPLY;
+    }
+}
+
+openFile 'Открыть' (Document d) { 
+    IF (GROUP SUM 1 IF file(d, DocumentFileType t)) > 1 THEN {
+        DIALOG dialogOpenDocumentFileTypes OBJECTS d = d, o INPUT DO {
+            open(file(d, o)); 
+        }
+    }
+    ELSE TRY { open(file(d)); }
+}

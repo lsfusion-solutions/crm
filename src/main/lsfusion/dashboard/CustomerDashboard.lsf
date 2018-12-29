@@ -1,6 +1,6 @@
 MODULE CustomerDashboard;
 
-REQUIRE Project, PaymentAct, Event, Issue, TimeEntry, Dashboard, LegalEntity;
+REQUIRE Project, PaymentAct, Event, Issue, TimeEntry, Dashboard, LegalEntity, DocFile;
 
 NAMESPACE Dashboard;
 
@@ -212,5 +212,11 @@ DESIGN customer {
                 MOVE PROPERTY (info(o)) { caption = ''; fill = 1; }
             }
         }
+    }
+}
+
+NAVIGATOR {
+    contractFolder {
+        NEW documentFileTypes;
     }
 }

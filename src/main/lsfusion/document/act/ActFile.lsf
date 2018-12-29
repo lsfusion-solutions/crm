@@ -5,22 +5,11 @@ REQUIRE Act, DocFile;
 NAMESPACE Act;
 
 file (Act c) = GROUP LAST file(DocumentFile f) ORDER dateTime(f), f IF c == document(f);
-
-loadFile 'Загрузить' (Act c) { 
-    INPUT f = FILE DO NEW cf = DocumentFile {
-        document(cf) <- c;
-        file(cf) <- f;
-        dateTime(cf) <- currentDateTime();
-        user(cf) <- currentUser();
-    } 
-}
-openFile 'Открыть' (Act c) { open(file(c)); }
-
 file(Act c) += file(c);
 
 EXTEND FORM act 
     OBJECTS f = DocumentFile
-    PROPERTIES(f) READONLY date, time, nameUser, loginUser
+    PROPERTIES(f) READONLY date, time, nameUser, loginUser, nameFileType
     PROPERTIES(f) GRID open, DELETE 
     ORDER date(f), time(f)
     FILTERS document(f) == o

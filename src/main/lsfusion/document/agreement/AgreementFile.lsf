@@ -5,22 +5,11 @@ REQUIRE Agreement, DocFile;
 NAMESPACE Agreement;
 
 file (Agreement c) = GROUP LAST file(DocumentFile f) ORDER dateTime(f), f IF c == document(f);
-
-loadFile 'Загрузить' (Agreement c) { 
-    INPUT f = FILE DO NEW cf = DocumentFile {
-        document(cf) <- c;
-        file(cf) <- f;
-        dateTime(cf) <- currentDateTime();
-        user(cf) <- currentUser();
-    } 
-}
-openFile 'Открыть' (Agreement c) { open(file(c)); }
-
 file(Agreement c) += file(c);
 
 EXTEND FORM agreement 
     OBJECTS f = DocumentFile
-    PROPERTIES(f) READONLY date, time, nameUser, loginUser
+    PROPERTIES(f) READONLY date, time, nameUser, loginUser, nameFileType
     PROPERTIES(f) GRID open, DELETE 
     ORDER date(f), time(f)
     FILTERS document(f) == o
