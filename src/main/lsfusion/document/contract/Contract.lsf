@@ -313,6 +313,6 @@ DESIGN options {
     }
 }
 
-WHEN LOCAL SET (Contract c IS Contract) DO {
+WHEN LOCAL SET (Contract c IS Contract) AND NOT CHANGED(company(c))DO {
     company(c) <- defaultCompany();
 }

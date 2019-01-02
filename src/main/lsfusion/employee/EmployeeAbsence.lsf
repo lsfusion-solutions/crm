@@ -51,7 +51,7 @@ hours 'Кол-во часов' = DATA NUMERIC[7,2](Absence);
 date 'Дата ввода' = DATA DATE (Absence);
 note 'Примечание' = DATA VARISTRING[100] (Absence) CHARWIDTH 30;
 
-CONSTRAINT dateTo(Absence a) < dateFrom(a) MESSAGE 'Дата по должна быть не раньше даты с';
+CONSTRAINT dateTo(Absence a) <= dateFrom(a) MESSAGE 'Дата по должна быть не раньше даты с';
 
 @addRoleApplicationSetting(editDays, 'Дней для редактирования отсутствия', INTEGER);
 
@@ -69,12 +69,10 @@ hours 'Часы' (Absence a, DATE d) = PARTITION UNGROUP hours
 
 absenceHours 'Часы' (Employee e, DATE d) = GROUP SUM hours(Absence a, d) BY employee(a);
 
-WHEN LOCAL SET (Absence a IS Absence) DO {
-    employee(a) <- currentUser();
-    date(a) <- currentDate();
-    dateFrom(a) <- currentDate();
-    dateTo(a) <- currentDate();
-}
+employee(Absence a) <- currentUser() WHEN SET(a IS Absence);
+date(Absence a) <- currentDate() WHEN SET(a IS Absence);
+dateFrom(Absence a) <- currentDate() WHEN SET(a IS Absence);
+dateTo(Absence a) <- currentDate() WHEN SET(a IS Absence);
 
 FORM absence 'Отсутствие сотрудников'
     OBJECTS o = Absence PANEL

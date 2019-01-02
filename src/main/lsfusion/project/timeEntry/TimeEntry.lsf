@@ -76,12 +76,8 @@ hours 'Трудозатраты' (Employee e, Project p, INTEGER y, Month m) = G
 hours 'Трудозатраты' (Employee e, Project p, INTEGER y) = GROUP SUM hours(TimeEntry t) BY employee(t), project(t), year(t);
 
 
-WHEN LOCAL SET (TimeEntry e IS TimeEntry) DO {
-    employee(e) <- currentUser();
-    IF NOT date(e) THEN {
-        date(e) <- currentDate();
-    }
-}
+employee(TimeEntry e) <- currentUser() WHEN SET(e IS TimeEntry);
+date(TimeEntry e) <- currentDate() WHEN SET(e IS TimeEntry);
 
 FORM timeEntry 'Отметка времени'
     OBJECTS o = TimeEntry PANEL
