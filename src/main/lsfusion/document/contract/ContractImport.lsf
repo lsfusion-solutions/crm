@@ -100,10 +100,10 @@ importContractDocumentsXls 'Импорт документов договоров
                         dateTime(df) <- currentDateTime();
                         user(df) <- currentUser();
                     }
+                    APPLY;
                 }
             }
         }
-        APPLY;
     }
 }
 

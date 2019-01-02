@@ -83,10 +83,10 @@ importActDocumentsXls 'Импорт документов актов' () {
                 TRY {
                     READ 'file://' + documentPath() + '/' + replace(upper(trim(path(i))), '\\', '/') TO file;
                     file(c) <- file();
+                    APPLY;
                 }
             }
         }
-        APPLY;
     }
 }
 
