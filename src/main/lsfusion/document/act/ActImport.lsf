@@ -82,11 +82,16 @@ importActDocumentsXls 'Импорт документов актов' () {
             FOR Act c = act(id(INTEGER i)) AND id(i) AND i > 0 DO {
                 TRY {
                     READ 'file://' + documentPath() + '/' + replace(upper(trim(path(i))), '\\', '/') TO file;
-                    file(c) <- file();
-                    APPLY;
+                    NEW df = DocumentFile {
+                        document(df) <- c;
+                        file(df) <- file();
+                        dateTime(df) <- currentDateTime();
+                        user(df) <- currentUser();
+                    }
                 }
             }
         }
+        APPLY;
     }
 }
 
