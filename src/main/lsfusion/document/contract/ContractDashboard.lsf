@@ -37,7 +37,7 @@ FORM contractDashboard 'Работа с договорами'
     FILTERS contract(ag) == o
     
     OBJECTS ac = Act LAST 
-    PROPERTIES (ac) READONLY id, numberContract, numberAgreement, number, date, nameType, sum, paid, balance, dateClosing, dateSending, dateReceiving, note, textString
+    PROPERTIES (ac) READONLY id, numberContract, numberAgreement, number, date, nameType, sum, paid, balance, dateSending, dateReceiving, dateClosing, note, textString
     PROPERTIES (ac) openFile DRAW ac TOOLBAR 
     ORDER date(ac)
     FILTERS contract(ac) == o

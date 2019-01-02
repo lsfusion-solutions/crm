@@ -54,13 +54,13 @@ FORM dashboardCustomer 'Работа с клиентами'
         FILTER 'Активные' NOT dateClosing(cr) < currentDate() DEFAULT
     
     OBJECTS ag = Agreement
-    PROPERTIES (ag) READONLY id, number, date, nameType, sum, dateClosing, dateSending, dateReceiving, note, textString
+    PROPERTIES (ag) READONLY id, number, date, nameType, sum, dateSending, dateReceiving, dateClosing, note, textString
     PROPERTIES (ag) NEWSESSION EDIT 
     FILTERS contract(ag) == cr
     ORDER date(ag) DESC
     
     OBJECTS ac = Act
-    PROPERTIES (ac) READONLY id, numberAgreement, number, date, paid, nameType, sum, dateClosing, dateSending, dateReceiving, note, textString
+    PROPERTIES (ac) READONLY id, numberAgreement, number, date, paid, nameType, sum, dateSending, dateReceiving, dateClosing, note, textString
     PROPERTIES (ac) NEWSESSION EDIT 
     FILTERS contract(ac) == cr
     ORDER date(ac) DESC
