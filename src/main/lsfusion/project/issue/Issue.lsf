@@ -64,7 +64,7 @@ number 'Номер' (Issue s) = INTEGER (id(s)) CHARWIDTH 5;
 
 name 'Тема' = DATA VARSTRING[500] (Issue) CHARWIDTH 30;
 description 'Описание' = DATA TEXT (Issue);
-descriptionString 'Описание' (Issue i) = VARSTRING[1000](description(i)) CHARWIDTH 30;
+descriptionString 'Описание' (Issue i) = VARISTRING[1000](description(i)) CHARWIDTH 30;
 dateTo 'Дата завершения' = DATA DATE (Issue);
 dateTimeCreated 'Дата/время создания' = DATA DATETIME (Issue);
 dateTimeUpdated 'Дата/время обновления' = DATA DATETIME (Issue);

@@ -134,7 +134,7 @@ WHEN LOCAL SETCHANGED (customer(legalEntity(Contact c))) DO {
     customer(c) <- customer(legalEntity(c));
 }
 
-authorisedDocument 'На основании' = DATA VARSTRING[1000](Contact) CHARWIDTH 15;
+authorisedDocument 'На основании' = DATA VARISTRING[1000](Contact) CHARWIDTH 15;
 
 FORM contact 'Контакт'
     OBJECTS o = Contact PANEL
@@ -222,7 +222,7 @@ NAVIGATOR {
 
 authorisedPerson = DATA Contact(LegalEntity);
 nameAuthorisedPerson 'Уполномоченное лицо' (LegalEntity l) = name(authorisedPerson(l));
-authorisedDocument 'На основании' = DATA VARSTRING[1000](LegalEntity) CHARWIDTH 20;
+authorisedDocument 'На основании' = DATA VARISTRING[1000](LegalEntity) CHARWIDTH 20;
 
 CONSTRAINT authorisedPerson(LegalEntity l) AND NOT legalEntity(authorisedPerson(l)) == l CHECKED BY authorisedPerson[LegalEntity] 
     MESSAGE 'Организация уполномоченного лица не соответствует организации';

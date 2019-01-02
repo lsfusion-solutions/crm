@@ -28,11 +28,11 @@ nameCompany 'Компания' (Act a) = name(company(a));
 
 authorisedPersonLegalEntity = DATA Contact.Contact(Act);
 nameAuthorisedPersonLegalEntity 'Уп. лицо организации' (Act c) = name(authorisedPersonLegalEntity(c));
-authorisedDocumentLegalEntity 'На основании' = DATA VARSTRING[1000](Act) CHARWIDTH 20;
+authorisedDocumentLegalEntity 'На основании' = DATA VARISTRING[1000](Act) CHARWIDTH 20;
 
 authorisedPersonCompany  (Act c) = DATA Contact.Contact(Act);
 nameAuthorisedPersonCompany 'Уп. лицо компании' (Act c) = name(authorisedPersonCompany(c));
-authorisedDocumentCompany 'На основании' = DATA VARSTRING[1000](Act) CHARWIDTH 20;
+authorisedDocumentCompany 'На основании' = DATA VARISTRING[1000](Act) CHARWIDTH 20;
 
 WHEN LOCAL CHANGED (legalEntity(Act c)) DO {
     authorisedPersonLegalEntity (c) <- authorisedPerson(legalEntity(c));

@@ -15,9 +15,9 @@ date 'Дата ввода' = DATA DATE (Event);
 time 'Время ввода' = DATA TIME (Event);
 dateNext 'Дата следующего' = DATA DATE (Event);
 description 'Содержание' = DATA TEXT (Event);
-descriptionString 'Содержание' (Event e) = VARSTRING[1000](description(e)) CHARWIDTH 30;
+descriptionString 'Содержание' (Event e) = VARISTRING[1000](description(e)) CHARWIDTH 30;
 addition 'Дополнение' = DATA TEXT (Event);
-additionString 'Дополнение' (Event e) = VARSTRING[1000](addition(e)) CHARWIDTH 30;
+additionString 'Дополнение' (Event e) = VARISTRING[1000](addition(e)) CHARWIDTH 30;
 
 customer = DATA Customer(Event);
 idCustomer 'Код клиента' (Event e) = id(customer(e));
@@ -127,11 +127,9 @@ DESIGN event {
     }
 }
 
-WHEN LOCAL SET (Event e IS Event) DO {
-    employee(e) <- currentUser();
-    date(e) <- currentDate();
-    time(e) <- currentTime();
-}
+employee(e) <- currentUser() WHEN SET(e IS Event);
+date(e) <- currentDate() WHEN SET(e IS Event);
+time(e) <- currentTime() WHEN SET(e IS Event);
 
 FORM events 'События'
     OBJECTS o = Event LAST 

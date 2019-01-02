@@ -50,7 +50,7 @@ shortNameCurrency 'Валюта' (Expense e) = shortName(currency(e));
 sumCurrency 'Сумма в валюте' (Expense e) = round2(sum(e) * OVERRIDE (rateOn(defaultTypeExchange(), currency(e), date(e))), 1);
 
 note 'Примечание' = DATA TEXT (Expense);
-noteString 'Примечание' (Expense e) = VARSTRING[1000](note(e)) CHARWIDTH 20;
+noteString 'Примечание' (Expense e) = VARISTRING[1000](note(e)) CHARWIDTH 20;
 
 FORM expense 'Расход'
     OBJECTS o = Expense PANEL

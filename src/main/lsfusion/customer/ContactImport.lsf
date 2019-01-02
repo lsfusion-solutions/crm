@@ -20,7 +20,7 @@ importContacts (FILE f) {
     LOCAL phone6 = VARSTRING[30](INTEGER);
     LOCAL skype = VARSTRING[50](INTEGER);
     LOCAL note = VARSTRING[100](INTEGER);
-    LOCAL authorised = VARSTRING[1000](INTEGER);
+    LOCAL authorised = VARISTRING[1000](INTEGER);
     
     IMPORT XLS NOHEADER FROM f TO idContact, idCustomer, idLegalEntity, name, position, email, phone1, phone2, phone3, phone4, phone5, phone6, skype, note, authorised;
 
