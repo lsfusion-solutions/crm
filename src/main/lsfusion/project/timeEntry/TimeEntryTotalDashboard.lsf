@@ -83,7 +83,7 @@ FORM timeEntryDashboard 'Контроль отмеченного времени'
     PROPERTIES READONLY VALUE(abd), extractDOWName(abd), hours(ab, abd)
     FILTERS hours(ab, abd)
     
-    FILTERGROUP ee FILTER 'С отметкой' absenceHours(ee, y) DEFAULT 
+    FILTERGROUP ee FILTER 'С отметкой' absenceHours(ee, yy) DEFAULT 
                    FILTER 'Активные' active(ee)
                   
     EVENTS ON INIT {
