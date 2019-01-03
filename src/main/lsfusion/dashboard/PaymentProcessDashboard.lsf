@@ -96,18 +96,21 @@ importPaymentsDbf 'Импорт платежей (dbf)' (DATE df, DATE dt) {
             name(t) <- type;
         }
                 
-        FOR imported(INTEGER i) AND sum(i) < 0 AND NOT expense(i) AND date(i) >= df AND date(i) <= dt AND legalEntityEx(idLegalEntity(i)) DO NEW p = Expense {
+        FOR imported(INTEGER i) AND sum(i) < 0 AND NOT expense(i) AND date(i) >= df AND date(i) <= dt DO NEW p = Expense {
             date(p) <- date(i);
             legalEntity(p) <- legalEntityEx(idLegalEntity(i));
+            company(p) <- OVERRIDE legalEntity(idCompany(i)), defaultCompany();
+            currency(p) <- defaultCurrency();
             note(p) <- text(i);
             sum(p) <- round2(-sum(i)/extractDay(date(i)));
             type(p) <- GROUP MAX ExpenseType t IF name(t) == type(i);
-            company(p) <- OVERRIDE legalEntity(idCompany(i)), defaultCompany();
         }
         
-        FOR imported(INTEGER i) AND sum(i) > 0 AND NOT payment(i) AND date(i) >= df AND date(i) <= dt AND legalEntityEx(idLegalEntity(i)) DO NEW p = Payment {
+        FOR imported(INTEGER i) AND sum(i) > 0 AND NOT payment(i) AND date(i) >= df AND date(i) <= dt DO NEW p = Payment {
             date(p) <- date(i);
             legalEntity(p) <- legalEntityEx(idLegalEntity(i));
+            company(p) <- OVERRIDE legalEntity(idCompany(i)), defaultCompany();
+            currency(p) <- defaultCurrency();
             note(p) <- text(i);
             sum(p) <- round2(sum(i)/extractDay(date(i)));
         }
