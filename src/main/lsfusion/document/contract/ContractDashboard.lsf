@@ -28,7 +28,7 @@ FORM contractDashboard 'Работа с договорами'
                      FILTER 'Оплачен' paid(o) >= sum(o)
     
     FILTERGROUP activeContract
-        FILTER 'Активные' NOT dateClosing(o) < currentDate() DEFAULT
+        FILTER 'Активные' NOT dateClosing(o) <= currentDate() DEFAULT
     
     OBJECTS ag = Agreement LAST 
     PROPERTIES (ag) READONLY id, number, date, name, nameType, sum, paid, balance, dateClosing, dateSending, dateReceiving, note, textString

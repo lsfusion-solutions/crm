@@ -51,7 +51,7 @@ FORM dashboardCustomer 'Работа с клиентами'
     ORDER date(cr) DESC
     
     FILTERGROUP activeContract
-        FILTER 'Активные' NOT dateClosing(cr) < currentDate() DEFAULT
+        FILTER 'Активные' NOT dateClosing(cr) <= currentDate() DEFAULT
     
     OBJECTS ag = Agreement
     PROPERTIES (ag) READONLY id, number, date, name, nameType, sum, dateSending, dateReceiving, dateClosing, note, textString

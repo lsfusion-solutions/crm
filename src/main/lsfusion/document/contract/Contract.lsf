@@ -289,7 +289,7 @@ FORM dialogContracts 'Договоры'
     ORDER date(o)
     
     FILTERGROUP active
-        FILTER 'Активные' NOT dateClosing(o) < currentDate() DEFAULT
+        FILTER 'Активные' NOT dateClosing(o) <= currentDate() DEFAULT
     
     LIST Contract OBJECT o
 ;

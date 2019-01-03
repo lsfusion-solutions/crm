@@ -217,7 +217,7 @@ FORM dialogActs 'Акты выполненных работ'
     ORDER date(o)
 
     FILTERGROUP active
-        FILTER 'Активные' NOT dateClosing(o) < currentDate() DEFAULT
+        FILTER 'Активные' NOT dateClosing(o) <= currentDate() DEFAULT
     
     LIST Act OBJECT o
 ;

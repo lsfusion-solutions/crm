@@ -12,9 +12,9 @@ importAgreements 'Импорт соглашений' (FILE f) {
     LOCAL name = VARSTRING[150](INTEGER);
     LOCAL type = VARSTRING[50](INTEGER);
     LOCAL sum = NUMERIC[16,5] (INTEGER);
-    LOCAL closed = DATE (INTEGER);
-    LOCAL date2 = DATE (INTEGER);
-    LOCAL date3 = DATE (INTEGER);
+    LOCAL sending = DATE (INTEGER);
+    LOCAL receiving = DATE (INTEGER);
+    LOCAL closing = DATE (INTEGER);
     LOCAL note = VARSTRING[100](INTEGER);
     LOCAL text = TEXT(INTEGER);
     LOCAL message = VARSTRING[2000] ();
@@ -23,7 +23,7 @@ importAgreements 'Импорт соглашений' (FILE f) {
     message() <- '';
     count() <- 0;
         
-    IMPORT XLS NOHEADER FROM f TO idAgreement, idContract, number, date1, name, type, sum, closed, date2, date3, note, text;
+    IMPORT XLS NOHEADER FROM f TO idAgreement, idContract, number, date1, name, type, sum, sending, receiving, closing, note, text;
           
     FOR imported(INTEGER i) AND i > 2 AND trim(idContract(i)) AND NOT contract(trim(idContract(i))) DO {
     
@@ -52,9 +52,9 @@ importAgreements 'Импорт соглашений' (FILE f) {
         name(a) <- trim(name(i));
         sum(a) <- sum(i);
         type(a) <- GROUP MAX AgreementType t IF upper(name(t)) == upper(trim(type(i)));
-        dateClosing(a) <- closed(i);
-        dateSending(a) <- date2(i);
-        dateReceiving(a) <- date3(i);
+        dateSending(a) <- sending(i);
+        dateReceiving(a) <- receiving(i);
+        dateClosing(a) <- closing(i);
         note(a) <- trim(note(i));
         text(a) <- trim(text(i));
     }
