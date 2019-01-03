@@ -31,20 +31,20 @@ FORM contractDashboard 'Работа с договорами'
         FILTER 'Активные' NOT dateClosing(o) < currentDate() DEFAULT
     
     OBJECTS ag = Agreement LAST 
-    PROPERTIES (ag) READONLY id, numberContract, number, date, name, nameType, sum, paid, balance, dateClosing, dateSending, dateReceiving, note, textString
+    PROPERTIES (ag) READONLY id, number, date, name, nameType, sum, paid, balance, dateClosing, dateSending, dateReceiving, note, textString
     PROPERTIES (ag) openFile DRAW ag TOOLBAR 
     ORDER date(ag)
     FILTERS contract(ag) == o
     
     OBJECTS ac = Act LAST 
-    PROPERTIES (ac) READONLY id, numberContract, numberAgreement, number, date, name, nameType, sum, paid, balance, dateSending, dateReceiving, dateClosing, note, textString
+    PROPERTIES (ac) READONLY id, numberAgreement, number, date, name, nameType, sum, paid, balance, dateSending, dateReceiving, dateClosing, note, textString
     PROPERTIES (ac) openFile DRAW ac TOOLBAR 
     ORDER date(ac)
     FILTERS contract(ac) == o
     
     OBJECTS p = Payment LAST 
-    PROPERTIES(p) READONLY id, nameLegalEntity, nameCustomer, numberContract, nameTypeContract, numberAct, number, date, 
-                           year, monthNumber, sum, shortNameCurrency, sumCurrency, note
+    PROPERTIES(p) READONLY id, numberAgreement, numberAct, number, date, year, monthNumber, sum, shortNameCurrency, sumCurrency, note
+    PROPERTIES(p) NEWSESSION EDIT 
     ORDER date(p)
     FILTERS contract(p) == o
 

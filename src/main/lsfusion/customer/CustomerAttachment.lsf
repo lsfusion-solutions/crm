@@ -135,6 +135,7 @@ EXTEND FORM dashboardCustomer
     PROPERTIES (at) READONLY id, nameCustomer, number, date, nameType, note, nameCreatedUser, createdDate
     PROPERTIES DRAW at TOOLBAR openFile(at), addAttachment(c)
     PROPERTIES(at) NEWSESSION EDIT, DELETE
+    ORDER date(at) DESC 
     FILTERS customer(at) == c 
 ;
 

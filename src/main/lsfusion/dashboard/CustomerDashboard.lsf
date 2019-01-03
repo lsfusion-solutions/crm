@@ -71,12 +71,12 @@ FORM dashboardCustomer 'Работа с клиентами'
     ORDER date(ppm) DESC
     
     OBJECTS pm = Payment
-    PROPERTIES (pm) READONLY id, nameLegalEntity, numberContract, nameTypeContract, numberAct, number, date, year, monthNumber, sum, nameCurrency, shortNameCurrency, sumCurrency, note 
+    PROPERTIES (pm) READONLY id, nameLegalEntity, numberContract, nameTypeContract, numberAgreement, numberAct, number, date, year, monthNumber, sum, nameCurrency, shortNameCurrency, sumCurrency, note 
     FILTERS customer(legalEntity(pm)) == c
     ORDER date(pm) DESC
     
     OBJECTS ev = Event
-    PROPERTIES (ev) READONLY id, name, nameType, nameLegalEntity, nameEmployee, nameContact, date, time, dateNext, descriptionString
+    PROPERTIES (ev) READONLY id, name, nameType, nameLegalEntity, nameEmployee, nameContact, date, time, dateNext, descriptionString, description PANEL, addition PANEL 
     PROPERTIES addEvent(c) DRAW ev TOOLBAR 
     PROPERTIES (ev) NEWSESSION EDIT, DELETE 
     FILTERS customer(ev) == c
@@ -135,7 +135,25 @@ DESIGN dashboardCustomer {
                 }
             }
             MOVE BOX (pm) { caption = 'Платежи'; }
-            MOVE BOX (ev) { caption = 'События'; }
+            NEW events {
+                caption = 'События';
+                fill = 1;
+                MOVE BOX (ev);
+                NEW add {
+                    type = CONTAINERH;
+                    fill = 1;
+                    NEW description {
+                        fill = 1;
+                        caption = 'Содержание';
+                        MOVE PROPERTY (description(ev)) { caption = ''; fill = 1; }
+                    }
+                    NEW addition {
+                        fill = 1;
+                        caption = 'Дополнение';
+                        MOVE PROPERTY (addition(ev)) { caption = ''; fill = 1; }
+                    }
+                }
+            }
             NEW projects {
                 caption = 'Проекты';
                 type = TABBED;
