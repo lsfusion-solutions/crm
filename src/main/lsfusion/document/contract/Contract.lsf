@@ -63,7 +63,7 @@ nameCurrnecy 'Валюта' (Contract d) = name(currency(d));
 shortNameCurrency 'Валюта (сокр.)' (Contract p) = shortName(currency(p));
 
 inCurrency 'В валюте' = DATA BOOLEAN (Contract);
-sumCurrency 'Стоимость в валюте' (Contract p) = DATA NUMERIC[16,5](Contract);
+sumCurrency 'Стоимость в валюте' = DATA NUMERIC[16,5](Contract);
 
 currency(Contract c) <- defaultCurrency() WHEN SET(c IS Contract);
 

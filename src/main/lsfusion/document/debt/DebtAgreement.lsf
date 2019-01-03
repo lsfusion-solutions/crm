@@ -1,0 +1,60 @@
+MODULE DebtAgreement;
+
+REQUIRE Debt, Agreement;
+
+NAMESPACE Contract;
+
+agreement = DATA Agreement(Debt);
+numberAgreement 'Соглашение' (Debt d) = number(agreement(d));
+
+EXTEND FORM contract PROPERTIES numberAgreement(d);
+
+currency (Agreement a) = currency(contract(a));
+nameCurrnecy 'Валюта' (Agreement d) = name(currency(d));
+shortNameCurrency 'Валюта (сокр.)' (Agreement p) = shortName(currency(p));
+
+inCurrency 'В валюте' (Agreement a) = inCurrency(contract(a));
+sumCurrency 'Стоимость в валюте' = DATA NUMERIC[16,5](Agreement);
+
+WHEN LOCAL SETCHANGED (sumCurrency(Agreement c)) AND inCurrency(c) AND NOT CHANGED (sum(c)) DO {
+    sum(c) <- round2(sumCurrency(c) / OVERRIDE (rateOn(defaultTypeExchange(), currency(c), date(c))), 1);
+}
+
+addDebt 'Добавить' (Agreement a) {
+    NEW d = Debt {
+        agreement(d) <- a;
+        contract(d) <- contract(a);
+        currency(d) <- currency(a);
+    }
+} IMAGE 'add.png';
+
+WHEN SETCHANGED (agreement(Debt d)) AND NOT CHANGED (contract(d)) DO {
+    contract(d) <- contract(agreement(d));
+}
+
+CONSTRAINT agreement(Debt d) AND NOT contract(d) == contract(agreement(d)) CHECKED BY agreement[Debt] MESSAGE 'Договор соглашения не совпадает с договором';
+
+EXTEND FORM agreement
+    PROPERTIES shortNameCurrency(o) READONLY, sumCurrency(o) SHOWIF inCurrency(o)
+    OBJECTS d = Debt
+    PROPERTIES (d) date, sum, shortNameCurrency, sumCurrency SHOWIF inCurrency(contract(o)), paid
+    PROPERTIES addDebt(o) DRAW d TOOLBAR 
+    PROPERTIES (d) DELETE 
+    ORDER date(d)
+    FILTERS agreement(d) == o
+;
+
+DESIGN agreement {
+    details {
+        NEW debt {
+            caption = 'Задолженность';
+            NEW sum {
+                type = CONTAINERH;
+                MOVE PROPERTY (sum(o));
+                MOVE PROPERTY (shortNameCurrency(o));
+                MOVE PROPERTY (sumCurrency(o));
+            }
+            MOVE BOX (d);
+        }
+    }
+}

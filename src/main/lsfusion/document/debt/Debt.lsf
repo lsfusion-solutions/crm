@@ -85,12 +85,8 @@ createDebts 'Сгенерировать задолженность' (Contract c)
         LOCAL month = INTEGER ();
         LOCAL year = INTEGER ();
         LOCAL date = DATE ();
-        LOCAL rest = NUMERIC[16,5]();
         
         DELETE Debt d WHERE contract(d) == c AND date(d) > currentDate();
-        
-        rest() <- CASE WHEN NOT inCurrency(c) THEN (sum(c) (-) [GROUP SUM sum(Debt d) BY contract(d)](c))
-                                              ELSE (sumCurrency(c) (-) [GROUP SUM sumCurrency(Debt d) BY contract(d)](c));
         
         IF extractDay(currentDate()) > paymentDay(c) THEN {
             month() <- extractMonthNumber(currentDate());
@@ -102,9 +98,7 @@ createDebts 'Сгенерировать задолженность' (Contract c)
         year() <- extractYear(currentDate());
         
         FOR iterate(INTEGER i, 1, countMonthsDebt()) DO {
-            
-            IF NOT rest() THEN BREAK;
-            
+                        
             month() <- month() (+) 1;
             
             IF month() > 12 THEN {
@@ -128,14 +122,10 @@ createDebts 'Сгенерировать задолженность' (Contract c)
                 currency(d) <- currency(c);
                 
                 IF inCurrency(c) THEN {
-                    rest() <-rest() (+) sumCurrency(d);
-                    sumCurrency(d) <- CASE WHEN rest() >= sumMonth(c) THEN sumMonth(c) ELSE rest();
-                    rest() <- rest() (-) sumCurrency(d);
+                    sumCurrency(d) <- sumMonth(c);
                 }
                 ELSE {
-                    rest() <-rest() (+) sum(d);
-                    sum(d) <- CASE WHEN rest() >= sumMonth(c) THEN sumMonth(c) ELSE rest();
-                    rest() <- rest() (-) sum(d);
+                    sum(d) <- sumMonth(c);
                 }
             }
         }
