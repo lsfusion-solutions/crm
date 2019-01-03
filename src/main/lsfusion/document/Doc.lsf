@@ -9,6 +9,7 @@ CLASS ABSTRACT Document 'Документ';
 id 'Код' = ABSTRACT VARSTRING[15] (Document) IN id CHARWIDTH 5;
 number 'Номер' = ABSTRACT VARSTRING[15](Document) IN id CHARWIDTH 10;
 date 'Дата' = ABSTRACT DATE (Document) IN id;
+name 'Название' = ABSTRACT VARISTRING[150](Document) IN id CHARWIDTH 20;
 nameType 'Тип' = ABSTRACT VARISTRING[100](Document) CHARWIDTH 15;
 dateSigningCompany 'Дата подписания компанией' = ABSTRACT DATE (Document);
 dateSending 'Дата отправки' = ABSTRACT DATE (Document);

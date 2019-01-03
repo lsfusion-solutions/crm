@@ -10,6 +10,7 @@ importContracts 'Импорт договоров' (FILE f) {
     LOCAL idCompany = VARSTRING[15](INTEGER);
     LOCAL number = VARSTRING[15](INTEGER);
     LOCAL date1 = DATE (INTEGER);
+    LOCAL name = VARSTRING[150](INTEGER);
     LOCAL sum = NUMERIC[16,5] (INTEGER);
     LOCAL type = VARSTRING[50](INTEGER);
     LOCAL sending = VARSTRING[50](INTEGER);
@@ -26,7 +27,7 @@ importContracts 'Импорт договоров' (FILE f) {
     message() <- '';
     count() <- 0;
     
-    IMPORT XLS NOHEADER FROM f TO idContract, idLegalEntity, idCompany, number, date1, sum, type, sending, date2, date3, date4, date5, date6, note, text;
+    IMPORT XLS NOHEADER FROM f TO idContract, idLegalEntity, idCompany, number, date1, name, sum, type, sending, date2, date3, date4, date5, date6, note, text;
     
     FOR imported(INTEGER i) AND i > 2 AND trim(idCompany(i)) AND NOT isCompany(legalEntity(trim(idCompany(i)))) DO {
     
@@ -59,6 +60,7 @@ importContracts 'Импорт договоров' (FILE f) {
         company(c) <- legalEntity(trim(idCompany(i)));
         number(c) <- trim(number(i));
         date(c) <- date1(i);
+        name(c) <- trim(name(i));
         sum(c) <- sum(i);
         type(c) <- GROUP MAX ContractType t IF upper(name(t)) == upper(trim(type(i)));
         sendingWay(c) <- GROUP MAX ContractSendingWay s IF upper(name(s)) == upper(trim(sending(i)));

@@ -11,6 +11,7 @@ TABLE act (Act);
 id 'Код' = DATA VARSTRING[15] (Act) INDEXED CHARWIDTH 5;
 act (id) = GROUP AGGR Act c BY id (c);
 
+name 'Название' = DATA VARISTRING[150](Act) CHARWIDTH 20;
 series 'Серия' = DATA VARSTRING[15](Act) IN id;
 number 'Номер' = DATA VARSTRING[15](Act) IN id;
 
@@ -100,6 +101,7 @@ textString 'Текст' (Act c) = VARSTRING[500](text(c)) CHARWIDTH 20;
 
 id(Act c) += id(c);
 number(Act c) += number(c);
+name(Act c) += name(c);
 date(Act c) += date(c);
 nameType(Act c) += nameType(c);
 dateSigningCompany(Act c) += dateSigningCompany(c);
@@ -120,7 +122,7 @@ docType(Act a) += DocType.act IF a IS Act;
 
 FORM act 'Акт выполненных работ'
     OBJECTS o = Act PANEL
-    PROPERTIES(o) id, number, date, nameType, numberContract, numberAgreement, nameCustomer READONLY, nameLegalEntity READONLY, sum, 
+    PROPERTIES(o) id, number, date, name, nameType, numberContract, numberAgreement, nameCustomer READONLY, nameLegalEntity READONLY, sum, 
                   dateSending, dateReceiving, dateClosing, note, text, nameCompany READONLY, nameNumerator, series, 
                   nameAuthorisedPersonLegalEntity, nameAuthorisedPersonCompany, authorisedDocumentLegalEntity, authorisedDocumentCompany
     
@@ -136,6 +138,7 @@ DESIGN act {
             NEW main {
                 caption = 'Основные параметры';
                 MOVE PROPERTY(id(o));
+                MOVE PROPERTY (name(o));
                 MOVE PROPERTY (nameNumerator(o));
                 NEW number {
                     type = CONTAINERH;
@@ -203,14 +206,14 @@ DESIGN act {
 
 FORM acts 'Акты выполненных работ'
     OBJECTS o = Act LAST 
-    PROPERTIES(o) READONLY id, numberContract, numberAgreement, number, date, nameType, sum, dateSending, dateReceiving, dateClosing, note, textString
+    PROPERTIES(o) READONLY id, numberContract, numberAgreement, number, date, name, nameType, sum, dateSending, dateReceiving, dateClosing, note, textString
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
     ORDER date(o)
 ;
 
 FORM dialogActs 'Акты выполненных работ'
     OBJECTS o = Act LAST 
-    PROPERTIES(o) READONLY id, numberContract, numberAgreement, number, date, nameType, sum, dateSending, dateReceiving, dateClosing, note, textString
+    PROPERTIES(o) READONLY id, numberContract, numberAgreement, number, date, name, nameType, sum, dateSending, dateReceiving, dateClosing, note, textString
     ORDER date(o)
 
     FILTERGROUP active
@@ -235,7 +238,7 @@ addAct 'Добавить' (Contract c) {
 
 EXTEND FORM contract 
     OBJECTS ac = Act LAST 
-    PROPERTIES (ac) READONLY id, numberContract, numberAgreement, number, date, nameType, sum, dateSending, dateReceiving, dateClosing, note, textString
+    PROPERTIES (ac) READONLY id, numberContract, numberAgreement, number, date, name, nameType, sum, dateSending, dateReceiving, dateClosing, note, textString
     PROPERTIES DRAW ac TOOLBAR addAct(o)
     PROPERTIES(ac) NESTEDSESSION EDIT, DELETE
     ORDER date(ac)

@@ -45,7 +45,7 @@ FORM dashboardCustomer 'Работа с клиентами'
     ORDER name(ct)
     
     OBJECTS cr = Contract
-    PROPERTIES (cr) READONLY id, nameLegalEntity, nameCompany, number, date, sum, paid, nameType, nameSendingWay, dateSigningCompany, dateSending, dateSigningCustomer, dateReceiving, dateTo, dateClosing, note, textString
+    PROPERTIES (cr) READONLY id, nameLegalEntity, nameCompany, number, date, name, sum, paid, nameType, nameSendingWay, dateSigningCompany, dateSending, dateSigningCustomer, dateReceiving, dateTo, dateClosing, note, textString
     PROPERTIES (cr) NEWSESSION EDIT 
     FILTERS customer(legalEntity(cr)) == c OR customer(company(cr)) == c
     ORDER date(cr) DESC
@@ -54,13 +54,13 @@ FORM dashboardCustomer 'Работа с клиентами'
         FILTER 'Активные' NOT dateClosing(cr) < currentDate() DEFAULT
     
     OBJECTS ag = Agreement
-    PROPERTIES (ag) READONLY id, number, date, nameType, sum, dateSending, dateReceiving, dateClosing, note, textString
+    PROPERTIES (ag) READONLY id, number, date, name, nameType, sum, dateSending, dateReceiving, dateClosing, note, textString
     PROPERTIES (ag) NEWSESSION EDIT 
     FILTERS contract(ag) == cr
     ORDER date(ag) DESC
     
     OBJECTS ac = Act
-    PROPERTIES (ac) READONLY id, numberAgreement, number, date, paid, nameType, sum, dateSending, dateReceiving, dateClosing, note, textString
+    PROPERTIES (ac) READONLY id, numberAgreement, number, date, name, paid, nameType, sum, dateSending, dateReceiving, dateClosing, note, textString
     PROPERTIES (ac) NEWSESSION EDIT 
     FILTERS contract(ac) == cr
     ORDER date(ac) DESC

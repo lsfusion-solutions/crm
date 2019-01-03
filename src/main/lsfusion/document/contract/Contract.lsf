@@ -10,6 +10,7 @@ TABLE contract (Contract);
 id 'Код' = DATA VARSTRING[15] (Contract) CHARWIDTH 5 IN id;
 contract (id) = GROUP AGGR Contract c BY id (c);
 
+name 'Название' = DATA VARISTRING[150](Contract) CHARWIDTH 20;
 series 'Серия' = DATA STRING[2](Contract);
 number 'Номер' = DATA VARSTRING[15](Contract) IN id;
 
@@ -155,6 +156,7 @@ nameTypeContract 'Тип договора' (Document d) = nameType(contract(d));
 
 id(Contract c) += id(c);
 number(Contract c) += number(c);
+name(Contract c) += name(c);
 date(Contract c) += date(c);
 nameType(Contract c) += nameType(c);
 dateSigningCompany(Contract c) += dateSigningCompany(c);
@@ -175,7 +177,7 @@ docType(Contract c) += DocType.contract IF c IS Contract;
 
 FORM contract 'Договор'
     OBJECTS o = Contract PANEL
-    PROPERTIES(o) id, nameCustomer READONLY, nameLegalEntity, nameCompany, number, date, sum, nameType, nameGroup, nameSendingWay, 
+    PROPERTIES(o) id, nameCustomer READONLY, nameLegalEntity, nameCompany, number, date, name, sum, nameType, nameGroup, nameSendingWay, 
                   dateSigningCompany, dateSending, dateSigningCustomer, dateReceiving, dateTo, dateClosing, note, text,
                   inCurrency, shortNameCurrency, sumCurrency SHOWIF inCurrency(o), 
                   nameNumerator, series, nameAuthorisedPersonLegalEntity, nameAuthorisedPersonCompany,
@@ -195,6 +197,7 @@ DESIGN contract {
                     NEW main {
                         caption = 'Основные параметры';
                         MOVE PROPERTY (id(o));
+                        MOVE PROPERTY (name(o));
                         MOVE PROPERTY (nameNumerator(o));
                         NEW number {
                             type = CONTAINERH;
@@ -273,7 +276,7 @@ DESIGN contract {
 
 FORM contracts 'Договоры'
     OBJECTS o = Contract LAST 
-    PROPERTIES(o) READONLY id, nameCustomer, nameLegalEntity, nameCompany, number, date, sum, shortNameCurrency, sumCurrency, nameType, nameGroup, nameSendingWay, 
+    PROPERTIES(o) READONLY id, nameCustomer, nameLegalEntity, nameCompany, number, date, name, sum, shortNameCurrency, sumCurrency, nameType, nameGroup, nameSendingWay, 
                            dateSending, dateReceiving, dateTo, dateClosing, note, textString
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
     ORDER date(o)
@@ -281,7 +284,7 @@ FORM contracts 'Договоры'
 
 FORM dialogContracts 'Договоры'
     OBJECTS o = Contract LAST 
-    PROPERTIES(o) READONLY id, nameCustomer, nameLegalEntity, nameCompany, number, date, sum, shortNameCurrency, sumCurrency, nameType, nameGroup, nameSendingWay, 
+    PROPERTIES(o) READONLY id, nameCustomer, nameLegalEntity, nameCompany, number, date, name, sum, shortNameCurrency, sumCurrency, nameType, nameGroup, nameSendingWay, 
                            dateSending, dateReceiving, dateTo, dateClosing, note, textString
     ORDER date(o)
     

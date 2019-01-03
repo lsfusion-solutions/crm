@@ -10,6 +10,7 @@ importActs 'Импорт актов выполненных работ' (FILE f) 
     LOCAL idAgreement = VARSTRING[15](INTEGER);
     LOCAL number = VARSTRING[15](INTEGER);
     LOCAL date1 = DATE (INTEGER);
+    LOCAL name = VARSTRING[150](INTEGER);
     LOCAL type = VARSTRING[50](INTEGER);
     LOCAL sum = NUMERIC[16,5] (INTEGER);
     LOCAL closed = DATE (INTEGER);
@@ -23,7 +24,7 @@ importActs 'Импорт актов выполненных работ' (FILE f) 
     message() <- '';
     count() <- 0;
         
-    IMPORT XLS NOHEADER FROM f TO idAct, idContract, idAgreement, number, date1, type, sum, date2, date3, note, text, closed;
+    IMPORT XLS NOHEADER FROM f TO idAct, idContract, idAgreement, number, date1, name, type, sum, date2, date3, note, text, closed;
     
     FOR imported(INTEGER i) AND i > 2 AND trim(idContract(i)) AND NOT contract(trim(idContract(i))) DO {
     
@@ -50,6 +51,7 @@ importActs 'Импорт актов выполненных работ' (FILE f) 
         agreement(a) <- agreement(idAgreement(i));
         number(a) <- number(i);
         date(a) <- date1(i);
+        name(a) <- trim(name(i));
         sum(a) <- sum(i);
         type(a) <- GROUP MAX ActType t IF upper(name(t)) == upper(trim(type(i)));
         dateClosing(a) <- closed(i);

@@ -10,6 +10,7 @@ TABLE agreement (Agreement);
 id 'Код' = DATA VARSTRING[15] (Agreement) INDEXED CHARWIDTH 5 IN id;
 agreement (id) = GROUP AGGR Agreement c BY id (c);
 
+name 'Название' = DATA VARISTRING[150](Agreement) CHARWIDTH 20;
 series 'Серия' = DATA VARSTRING[15](Agreement) IN id;
 number 'Номер' = DATA VARSTRING[15](Agreement) IN id;
 
@@ -92,6 +93,7 @@ textString 'Текст' (Agreement c) = VARSTRING[500](text(c)) CHARWIDTH 20;
 id(Agreement c) += id(c);
 number(Agreement c) += number(c);
 date(Agreement c) += date(c);
+name(Agreement c) += name(c);
 nameType(Agreement c) += nameType(c);
 dateSigningCompany(Agreement c) += dateSigningCompany(c);
 dateSending(Agreement c) += dateSending(c);
@@ -111,7 +113,7 @@ docType(Agreement a) += DocType.agreement IF a IS Agreement;
 
 FORM agreement 'Соглашение'
     OBJECTS o = Agreement PANEL
-    PROPERTIES(o) id, nameNumerator, series, number, date, nameType, numberContract, nameCustomer READONLY, nameLegalEntity READONLY, sum, 
+    PROPERTIES(o) id, nameNumerator, series, number, date, name, nameType, numberContract, nameCustomer READONLY, nameLegalEntity READONLY, sum, 
                   dateSending, dateReceiving, dateClosing, note, text, nameCompany READONLY, nameAuthorisedPersonLegalEntity, nameAuthorisedPersonCompany, 
                   authorisedDocumentLegalEntity, authorisedDocumentCompany
     
@@ -126,6 +128,7 @@ DESIGN agreement {
             NEW main {
                 caption = 'Основные параметры';
                 MOVE PROPERTY(id(o));
+                MOVE PROPERTY (name(o));
                 MOVE PROPERTY (nameNumerator(o));
                 NEW number {
                     type = CONTAINERH;
@@ -192,14 +195,14 @@ DESIGN agreement {
 
 FORM agreements 'Соглашения'
     OBJECTS o = Agreement LAST 
-    PROPERTIES(o) READONLY id, numberContract, number, date, nameType, sum, dateClosing, dateSending, dateReceiving, note, textString
+    PROPERTIES(o) READONLY id, numberContract, number, date, name, nameType, sum, dateClosing, dateSending, dateReceiving, note, textString
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
     ORDER date(o)
 ;
 
 FORM dialogAgreements 'Соглашения'
     OBJECTS o = Agreement LAST 
-    PROPERTIES(o) READONLY id, numberContract, number, date, nameType, sum, dateClosing, dateSending, dateReceiving, note, textString
+    PROPERTIES(o) READONLY id, numberContract, number, date, name, nameType, sum, dateClosing, dateSending, dateReceiving, note, textString
     ORDER date(o)
 
     FILTERGROUP active
@@ -224,7 +227,7 @@ addAgreement 'Добавить' (Contract c) {
 
 EXTEND FORM contract 
     OBJECTS ag = Agreement LAST 
-    PROPERTIES (ag) READONLY id, numberContract, number, date, nameType, sum, dateClosing, dateSending, dateReceiving, note, textString
+    PROPERTIES (ag) READONLY id, numberContract, number, date, name, nameType, sum, dateClosing, dateSending, dateReceiving, note, textString
     PROPERTIES DRAW ag TOOLBAR addAgreement(o)
     PROPERTIES(ag) NESTEDSESSION EDIT, DELETE
     ORDER date(ag)

@@ -49,7 +49,7 @@ generateEVAT 'Сформировать ЭСЧФ' ()  {
 FORM ActEVATs 'Формирование электронных счет-фактур'
     OBJECTS a = Act
     PROPERTIES(a) in
-    PROPERTIES(a) READONLY number, date, nameType, numberContract, numberAgreement, nameCustomer, nameLegalEntity, sum SELECTOR
+    PROPERTIES(a) READONLY number, date, name, nameType, numberContract, numberAgreement, nameCustomer, nameLegalEntity, sum SELECTOR
     PROPERTIES() generateEVAT DRAW a TOOLBAR
     FILTERS NOT lastEVATAct(a)
     
