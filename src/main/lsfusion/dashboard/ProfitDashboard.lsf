@@ -4,8 +4,8 @@ REQUIRE Dashboard, PaymentAct, TimeEntryExpense;
 
 NAMESPACE Dashboard;
 
-receipt 'Доход' (Customer c, DATE df, DATE dt) = GROUP SUM sum(Payment p) IF date(p) >= df AND date(p) <= dt BY customer(p);
-receipt 'Доход' (Customer c, Month m, INTEGER y, DATE df, DATE dt) = GROUP SUM sum(Payment p) IF date(p) >= df AND date(p) <= dt BY customer(p), extractMonth(date(p)), extractYear(date(p));
+receipt 'Доход' (Customer c, DATE df, DATE dt) = GROUP SUM sum(Payment p) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(legalEntity(p)) BY customer(p);
+receipt 'Доход' (Customer c, Month m, INTEGER y, DATE df, DATE dt) = GROUP SUM sum(Payment p) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(legalEntity(p)) BY customer(p), extractMonth(date(p)), extractYear(date(p));
 receiptCurrency 'Доход, USD' (Customer c, DATE df, DATE dt) = round2(receipt(c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
 receiptCurrency 'Доход, USD' (Customer c, Month m, INTEGER y, DATE df, DATE dt) = round2(receipt(c, m, y, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
 shipmentCurrency 'Расход, USD' (Customer c, DATE df, DATE dt) = round2(costSum(c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));

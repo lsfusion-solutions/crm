@@ -4,15 +4,6 @@ REQUIRE PaymentAct, Expense, Dashboard;
 
 NAMESPACE Dashboard;
 
-skipReceipt 'Не учитывать в доходах' = DATA BOOLEAN (LegalEntity);
-
-EXTEND FORM legalEntity PROPERTIES skipReceipt(o);
-DESIGN legalEntity {
-    main {
-        MOVE PROPERTY (skipReceipt(o));
-    }   
-}
-
 receipt 'Доход' (Month m, INTEGER y) = GROUP SUM sumCurrency(Payment p) IF NOT skipReceipt(legalEntity(p)) BY extractMonth(date(p)), extractYear(date(p));
 shipment 'Расход' (Month m, INTEGER y) = GROUP SUM sumCurrency(Expense p) IF NOT skipExpense(type(p)) BY extractMonth(date(p)), extractYear(date(p));
 profit 'Прибыль' (Month m, INTEGER y) = receipt(m, y) (-) shipment(m, y);
