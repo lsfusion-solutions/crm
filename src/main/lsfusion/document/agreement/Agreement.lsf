@@ -81,11 +81,13 @@ type = DATA AgreementType(Agreement);
 nameType 'Тип соглашения' (Agreement c) = name(type(c)) CHARWIDTH 15;
 
 sum 'Стоимость' = DATA NUMERIC[16,5](Agreement);
-dateClosing 'Дата закрытия' = DATA DATE (Agreement);
+
 dateSigningCompany 'Дата подписания компанией' = DATA DATE (Agreement);
 dateSending 'Дата отправки' = DATA DATE (Agreement);
 dateSigningCustomer 'Дата подписания клиентом' = DATA DATE (Agreement);
 dateReceiving 'Дата получения' = DATA DATE (Agreement);
+dateClosing 'Дата закрытия' = DATA DATE (Agreement);
+
 note 'Примечание' = DATA VARISTRING[100](Agreement) CHARWIDTH 20;
 text 'Текст' = DATA TEXT (Agreement);
 textString 'Текст' (Agreement c) = VARSTRING[500](text(c)) CHARWIDTH 20;
@@ -195,14 +197,14 @@ DESIGN agreement {
 
 FORM agreements 'Соглашения'
     OBJECTS o = Agreement LAST 
-    PROPERTIES(o) READONLY id, numberContract, number, date, name, nameType, sum, dateClosing, dateSending, dateReceiving, note, textString
+    PROPERTIES(o) READONLY id, numberContract, number, date, name, nameType, sum, dateSending, dateReceiving, dateClosing, note, textString
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
     ORDER date(o)
 ;
 
 FORM dialogAgreements 'Соглашения'
     OBJECTS o = Agreement LAST 
-    PROPERTIES(o) READONLY id, numberContract, number, date, name, nameType, sum, dateClosing, dateSending, dateReceiving, note, textString
+    PROPERTIES(o) READONLY id, numberContract, number, date, name, nameType, sum, dateSending, dateReceiving, dateClosing, note, textString
     ORDER date(o)
 
     FILTERGROUP active
@@ -227,7 +229,7 @@ addAgreement 'Добавить' (Contract c) {
 
 EXTEND FORM contract 
     OBJECTS ag = Agreement LAST 
-    PROPERTIES (ag) READONLY id, numberContract, number, date, name, nameType, sum, dateClosing, dateSending, dateReceiving, note, textString
+    PROPERTIES (ag) READONLY id, numberContract, number, date, name, nameType, sum, dateSending, dateReceiving, dateClosing, note, textString
     PROPERTIES DRAW ag TOOLBAR addAgreement(o)
     PROPERTIES(ag) NESTEDSESSION EDIT, DELETE
     ORDER date(ag)
