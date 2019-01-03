@@ -1,6 +1,6 @@
 MODULE ContractDashboard;
 
-REQUIRE PaymentAct, Dashboard, ContractFile, AgreementFile, ActFile, Debt;
+REQUIRE PaymentAct, Dashboard, ContractFile, AgreementFile, ActFile, Debt, DocEvent;
 
 NAMESPACE Contract;
 
@@ -47,7 +47,14 @@ FORM contractDashboard 'Работа с договорами'
     PROPERTIES(p) NEWSESSION EDIT 
     ORDER date(p)
     FILTERS contract(p) == o
-
+    
+    OBJECTS e = Event
+    PROPERTIES(e) id, name, nameType, nameCustomer, nameLegalEntity, nameEmployee, nameContact, date, time, dateNext, descriptionString, additionString
+    ORDER date(e) DESC 
+    FILTERGROUP f FILTER 'По договору' contract(e) == o DEFAULT 
+                  FILTER 'По организации' legalEntity(e) == legalEntity(o)
+                  FILTER 'По клиенту' customer(e) == customer(o)
+    
     OBJECTS d = Debt
     PROPERTIES (d) READONLY date, sum, shortNameCurrency, sumCurrency, paid
     ORDER date(o)
@@ -86,6 +93,7 @@ DESIGN contractDashboard {
                 MOVE BOX (p) {
                     caption = 'Платежи';
                 }
+                MOVE BOX (e) { caption = 'События'; }
                 NEW debt {
                     caption = 'Задолженность';
                     MOVE BOX (d);
