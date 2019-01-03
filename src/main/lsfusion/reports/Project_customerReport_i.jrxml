@@ -94,7 +94,7 @@
 					<textElement textAlignment="Left">
 						<font size="10" isBold="false" isItalic="false"/>
 					</textElement>
-					<textFieldExpression><![CDATA["Автор: " + $F{nameAuthor(i)}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$F{nameAuthor(i)}!=null?("Автор: " + $F{nameAuthor(i)}):""]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 					<reportElement style="GroupCellStyle1" positionType="Float" stretchType="RelativeToBandHeight" x="610" y="0" width="192" height="15" backcolor="#D9D4D4" uuid="1a5963fc-6c53-47aa-9c18-c2341163464e"/>
