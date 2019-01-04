@@ -31,15 +31,19 @@ FORM timesheetDashboard 'Табель рабочего времени'
     PROPERTIES addTimeEntry(d) DRAW t TOOLBAR 
     PROPERTIES (t) SHOWIF NOT disableEditing(t) NEWSESSION EDIT, DELETE 
     ORDER date(t)
-    FILTERS employee(t) == e, extractMonth(date(t)) == m, extractYear(date(t)) == y
+    FILTERS employee(t) == e
     FILTERGROUP tday FILTER 'За день' date(t) == d DEFAULT 
+                     FILTER 'За месяц' extractMonth(date(t)) == m AND extractYear(date(t)) == y
+                     FILTER 'За год' extractYear(date(t)) == y
     
     OBJECTS a = Absence
     PROPERTIES (a) READONLY id, nameEmployee, nameReason, dateFrom, dateTo, hours, workingHours, date, note
     PROPERTIES (a) NEWSESSION NEW, EDIT SHOWIF isEditable(a), DELETE SHOWIF isEditable(a)
     ORDER date(a)
-    FILTERS employee(a) == e, extractMonth(date(a)) == m, extractYear(date(a)) == y
+    FILTERS employee(a) == e
     FILTERGROUP aday FILTER 'За день' date(a) == d 
+                     FILTER 'За месяц' extractMonth(date(a)) == m AND extractYear(date(a)) == y
+                     FILTER 'За год' extractYear(date(a)) == y
     
     OBJECTS r = AbsenceReason
     PROPERTIES READONLY name(r), hours(e, r, y)
