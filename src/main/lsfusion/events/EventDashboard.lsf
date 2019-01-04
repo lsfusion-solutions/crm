@@ -9,23 +9,59 @@ lastEvent (Customer c) = GROUP LAST Event e ORDER date(e), time(e), e BY custome
 isLastCustomerEmployee (Event e) = e = lastEvent(customer(e), employee(e));
 isLastCustomer (Event e) = e = lastEvent(customer(e));
 
+dateFromEvent 'с' = DATA LOCAL DATE ();
+dateToEvent 'по' = DATA LOCAL DATE ();
+dateFromNext 'с' = DATA LOCAL DATE ();
+dateToNext 'по' = DATA LOCAL DATE ();
+
+FORM eventsXls 'События'
+    
+    PROPERTIES () dateFromEvent, dateToEvent, dateFromNext, dateToNext
+    
+    OBJECTS o = Event 
+    PROPERTIES (o) nameCustomer, nameContact, description
+    FILTERS NOT date(o) < dateFromEvent() AND NOT date(o) > dateToEvent() AND NOT dateNext(o) < dateFromNext() AND NOT dateNext(o) > dateToNext()
+;
+
+printEventsXls 'Выгрузить в Excel' () {
+    PRINT eventsXls XLS;
+}
+
 FORM eventDashboard 'Обработка событий'
+    PROPERTIES () dateFromEvent, dateToEvent, dateFromNext, dateToNext, printEventsXls
+    
     OBJECTS o = Event 
     PROPERTIES(o) READONLY id, name, nameType, nameCustomer, nameLegalEntity, nameEmployee, nameContact, date, time, dateNext, descriptionString, additionString
     PROPERTIES(o) PANEL READONLY description, addition
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
     ORDER date(o), time(o)
-    
+    FILTERS NOT date(o) < dateFromEvent() AND NOT date(o) > dateToEvent() AND NOT dateNext(o) < dateFromNext() AND NOT dateNext(o) > dateToNext()
     FILTERGROUP last FILTER 'Последние по клиенту (мои)' isLastCustomerEmployee(o) AND employee(o) = currentUser() AND dateNext(o) >= subtract(currentDate(), 360) 
                      FILTER 'Последние по клиенту' isLastCustomer(o) AND dateNext(o) >= subtract(currentDate(), 360)
 ;
 
 DESIGN eventDashboard {
     OBJECTS {
+        NEW dates FIRST {
+            type = CONTAINERH;
+            NEW dates1 {
+                type = CONTAINERH;
+                caption = 'Даты события';
+                MOVE PROPERTY (dateFromEvent());
+                MOVE PROPERTY (dateToEvent());
+            }
+            NEW dates2 {
+                type = CONTAINERH;
+                caption = 'Даты следующих переговоров';
+                MOVE PROPERTY (dateFromNext());
+                MOVE PROPERTY (dateToNext());
+            }
+            MOVE PROPERTY (printEventsXls()) { fill = 1; }
+        }
         BOX (o) {
             fill = 5;
         }
-        type = SPLITV;
+        type = CONTAINERV;
         NEW bottom AFTER BOX (o){
             type = CONTAINERH;
             fill = 1;
