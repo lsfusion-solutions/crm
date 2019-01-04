@@ -15,6 +15,8 @@ extId 'Код для экспорта' = DATA VARSTRING[15](LegalEntity) IN id;
 legalEntityEx (id) = GROUP AGGR LegalEntity le BY extId (le);
 
 name 'Наименование' = DATA VARISTRING[250] (LegalEntity) CHARWIDTH 20 IN id;
+fullName 'Полное наименование' = DATA VARISTRING[250] (LegalEntity) CHARWIDTH 20;
+overName 'Наименование' (LegalEntity l) = OVERRIDE fullName(l), name(l);
 
 legalEntity = DATA LegalEntity(Address);
 nameLegalEntity 'Организация' (Address a) = name(legalEntity(a));
