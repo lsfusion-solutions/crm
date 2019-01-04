@@ -26,6 +26,8 @@ paid(Act c) += paid(c);
 
 CONSTRAINT contract(act(Payment p)) != contract(p) CHECKED BY act[Payment] MESSAGE 'Договор акта должен совпадать с договором платежа';
 
+EXTEND FORM dialogActs PROPERTIES paid(o) AFTER sum(o);
+
 split 'Разбить платеж' (Payment p) {
     DIALOG dialogInputSum OBJECTS n INPUT DO {
         IF n < sum(p) THEN NEW pp = Payment {

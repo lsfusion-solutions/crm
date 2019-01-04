@@ -31,14 +31,17 @@ addExpense 'Добавить' (DATE d) {
     }
 } IMAGE 'add.png';
 
+backgroundAgreement(Payment p) = RGB (222, 255, 222) IF [GROUP SUM 1 BY contract(Agreement a)](contract(p)) AND NOT agreement(p);
+
 FORM paymentProcessDasboard 'Обработка платежей'
     OBJECTS dates = (df = DATE, dt = DATE) PANEL 
     PROPERTIES 'Дата с' = VALUE (df), 'Дата по' = VALUE (dt), post(df, dt)
     
     OBJECTS p = Payment
     PROPERTIES addPayment(dt) DRAW p TOOLBAR 
-    PROPERTIES (p) isPosted, id, nameLegalEntity, nameCustomer, nameCompany, numberContract, nameTypeContract READONLY, numberAgreement, numberAct, number, date, 
-                                          year READONLY, monthNumber READONLY, sum, shortNameCurrency, sumCurrency, note, DELETE 
+    PROPERTIES (p) isPosted, id, nameLegalEntity, nameCustomer, nameCompany, numberContract, nameTypeContract READONLY, 
+                   numberAgreement BACKGROUND backgroundAgreement(p), numberAct, number, date, year READONLY, 
+                   monthNumber READONLY, sum, shortNameCurrency, sumCurrency, note, DELETE 
     PROPERTIES(p) split TOOLBAR
     ORDER date(p), nameLegalEntity(p), nameCompany(p), numberContract(p)
     FILTERS date(p) >= df AND date(p) <= dt 

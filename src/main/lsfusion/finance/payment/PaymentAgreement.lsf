@@ -20,6 +20,7 @@ paid(Agreement c) += paid(c);
 
 CONSTRAINT contract(agreement(Payment p)) != contract(p) CHECKED BY agreement[Payment] MESSAGE 'Договор соглашения должен совпадать с договором платежа';
 
+EXTEND FORM dialogAgreements PROPERTIES paid(o) AFTER sum(o);
 EXTEND FORM payment PROPERTIES (o) numberAgreement;
 
 DESIGN payment {
