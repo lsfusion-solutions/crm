@@ -15,6 +15,7 @@ CONSTRAINT contract(Payment p) AND legalEntity(p) AND NOT legalEntity(p) = legal
 CONSTRAINT contract(Payment p) AND company(p) AND NOT company(p) = company(contract(p)) CHECKED BY contract[Payment] MESSAGE 'Компания платежа должна совпадать с компанией договора';
 
 paid 'Оплачено' (Contract c) = GROUP SUM sum(Payment p) BY contract(p);
+paidCurrency 'Оплачено в валюте' (Contract c) = GROUP SUM sumCurrency(Payment p) BY contract(p);
 
 paid(Contract c) += paid(c);
 
