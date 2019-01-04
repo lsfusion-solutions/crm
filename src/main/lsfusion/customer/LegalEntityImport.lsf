@@ -9,6 +9,7 @@ overLegalEntityImport ABSTRACT LIST (FILE);
 importLegalEntities 'Импорт организаций' (FILE f) {
     LOCAL idCustomer = VARSTRING[15](INTEGER);
     LOCAL nameCustomer = VARSTRING[250](INTEGER);
+    LOCAL customerGroup = VARSTRING[100](INTEGER);
     LOCAL status = VARSTRING[100](INTEGER);
     LOCAL emailCustomer = VARSTRING[200](INTEGER);
     LOCAL phoneCustomer = VARSTRING[50](INTEGER);
@@ -40,7 +41,7 @@ importLegalEntities 'Импорт организаций' (FILE f) {
     LOCAL account = VARSTRING[50](INTEGER);
     LOCAL info = VARISTRING[1000](INTEGER);
     
-    IMPORT XLS NOHEADER FROM f TO idCustomer, nameCustomer, status, emailCustomer, phoneCustomer, siteCustomer, noteCustomer, dateCustomer, 
+    IMPORT XLS NOHEADER FROM f TO idCustomer, nameCustomer, customerGroup, status, emailCustomer, phoneCustomer, siteCustomer, noteCustomer, dateCustomer, 
                          idLegalEntity, extIdLegalEntity, nameLegalEntity, postcodeL, regionL, districtL, localityL, streetL, houseL, officeL, 
                          postcodeP, regionP, districtP, localityP, streetP, houseP, officeP, account = AB, idBank, numberBank, nameBank, addressBank, mfoBank, info;
                          
@@ -57,10 +58,14 @@ importLegalEntities 'Импорт организаций' (FILE f) {
     FOR INTEGER i = [GROUP MIN INTEGER ii IF ii > 0 BY trim(status(ii))](VARSTRING[15] name) AND name AND NOT [GROUP SUM 1 BY name(StatusCustomer c)](name) DO NEW s = StatusCustomer {
         name(s) <- name;
     }
+    FOR INTEGER i = [GROUP MIN INTEGER ii IF ii > 0 BY trim(customerGroup(ii))](VARSTRING[15] name) AND name AND NOT [GROUP SUM 1 BY name(CustomerGroup c)](name) DO NEW g = CustomerGroup {
+        name(g) <- name;
+    }
     
     FOR Customer c = customer(idCustomer(INTEGER i)) AND trim(idCustomer(i)) != '' DO {
         name(c) <- trim(nameCustomer(i));
         status(c) <- GROUP MAX StatusCustomer s IF name(s) == trim(status(i));
+        group(c) <- GROUP MAX CustomerGroup s IF name(s) == trim(customerGroup(i));
         email(c) <- trim(emailCustomer(i));
         phone(c) <- trim(phoneCustomer(i));
         site(c) <- trim(siteCustomer(i));

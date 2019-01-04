@@ -215,18 +215,20 @@ DESIGN customer {
             type = CONTAINERH;
             caption = 'Основные параметры';
             MOVE PROPERTY (id(o));
-            MOVE PROPERTY (name(o));
+            MOVE PROPERTY (name(o)) { charWidth = 50; }
             MOVE PROPERTY (inactive(o));
         }
         NEW contacts AFTER main {
             type = CONTAINERH;
             caption = 'Контакты';
             MOVE PROPERTY (phone(o));
-            MOVE PROPERTY (email(o));
+            MOVE PROPERTY (email(o)) { charWidth = 30; }
         }
         NEW add AFTER contacts {
-            type = CONTAINERH;
+            type = COLUMNS;
+            columns = 3;
             caption = 'Дополнительные параметры';
+            MOVE PROPERTY (nameGroup(o));
             MOVE PROPERTY (nameStatus(o));
             MOVE PROPERTY (dateFrom(o));
             MOVE PROPERTY (site(o));
