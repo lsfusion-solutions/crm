@@ -10,7 +10,7 @@ file(Agreement c) += file(c);
 EXTEND FORM agreement 
     OBJECTS f = DocumentFile
     PROPERTIES(f) READONLY date, time, nameUser, loginUser, nameFileType
-    PROPERTIES(f) GRID open, DELETE 
+    PROPERTIES(f) GRID note, open, DELETE 
     ORDER date(f), time(f)
     FILTERS document(f) == o
     

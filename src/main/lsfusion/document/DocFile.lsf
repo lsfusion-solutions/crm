@@ -7,6 +7,8 @@ NAMESPACE Doc;
 CLASS DocumentFile 'Версия файла документа';
 TABLE contractFile (DocumentFile);
 
+document = DATA Document(DocumentFile) NONULL DELETE;
+
 file = DATA FILE (DocumentFile);
 dateTime 'Дата/время' = DATA DATETIME (DocumentFile);
 date 'Дата' (DocumentFile f) = DATE (dateTime(f));
@@ -14,8 +16,7 @@ time 'Время' (DocumentFile f) = TIME (dateTime(f));
 user = DATA User(DocumentFile);
 nameUser 'Имя пользователя' (DocumentFile f) = name(user(f));
 loginUser 'Логин пользователя' (DocumentFile f) = login(user(f));
-
-document = DATA Document(DocumentFile);
+note 'Примечание' = DATA VARISTRING[1000](DocumentFile) CHARWIDTH 20;
 
 open 'Открыть' (DocumentFile c) {
     open(file(c));
