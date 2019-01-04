@@ -103,9 +103,21 @@ DESIGN attachment {
     }
 }
 
+copy 'Копировать' (Attachment a) {
+    NEWSESSION NEW na = Attachment {
+        customer(na) <- customer(a);
+        number(na) <- number(a);
+        date(na) <- date(a);
+        type(na) <- type(a);
+        note(na) <- note(a);
+        SHOW attachment OBJECTS o = na DOCKED;
+    } 
+}
+
 FORM attachments 'Документы клиента'
     OBJECTS o = Attachment
     PROPERTIES(o) READONLY id, nameCustomer, number, date, nameType, note, nameCreatedUser, createdDate
+    PROPERTIES copy(o) DRAW o TOOLBAR 
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
 ;
 
