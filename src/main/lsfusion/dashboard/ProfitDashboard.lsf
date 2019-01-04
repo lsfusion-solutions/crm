@@ -5,13 +5,13 @@ REQUIRE Dashboard, PaymentAct, TimeEntryExpense;
 NAMESPACE Dashboard;
 
 receipt 'Доход' (Customer c, DATE df, DATE dt) = GROUP SUM sum(Payment p) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(legalEntity(p)) BY customer(p);
-receipt 'Доход' (Customer c, ContractGroup g, DATE df, DATE dt) = GROUP SUM sum(Payment p) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(legalEntity(p)) BY customer(p), group(contract(p));
-receiptOther 'Доход (без группы)' (Customer c, DATE df, DATE dt) = GROUP SUM sum(Payment p) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(legalEntity(p)) AND NOT group(contract(p)) BY customer(p);
+receipt 'Доход' (Customer c, ContractType g, DATE df, DATE dt) = GROUP SUM sum(Payment p) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(legalEntity(p)) BY customer(p), type(contract(p));
+receiptOther 'Доход (без типа)' (Customer c, DATE df, DATE dt) = GROUP SUM sum(Payment p) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(legalEntity(p)) AND NOT type(contract(p)) BY customer(p);
 receipt 'Доход' (Customer c, Month m, INTEGER y, DATE df, DATE dt) = GROUP SUM sum(Payment p) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(legalEntity(p)) BY customer(p), extractMonth(date(p)), extractYear(date(p));
 receiptCurrency 'Доход в валюте' (Customer c, DATE df, DATE dt) = round2(receipt(c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
 receiptCurrency 'Доход в валюте' (Customer c, Month m, INTEGER y, DATE df, DATE dt) = round2(receipt(c, m, y, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
-receiptCurrency 'Доход в валюте' (Customer c, ContractGroup g, DATE df, DATE dt) = round2(receipt(c, g, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
-receiptCurrencyOther 'Доход в валюте (без группы)' (Customer c, DATE df, DATE dt) = round2(receiptOther(c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
+receiptCurrency 'Доход в валюте' (Customer c, ContractType g, DATE df, DATE dt) = round2(receipt(c, g, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
+receiptCurrencyOther 'Доход в валюте (без типа)' (Customer c, DATE df, DATE dt) = round2(receiptOther(c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
 shipmentCurrency 'Расход в валюте' (Customer c, DATE df, DATE dt) = round2(costSum(c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
 shipmentCurrency 'Расход в валюте' (Customer c, Month m, INTEGER y, DATE df, DATE dt) = round2(costSum(c, m, y, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
 diff 'Прибыль в валюте' (Customer c, DATE df, DATE dt) = receiptCurrency(c, df, dt) (-) shipmentCurrency(c, df, dt);
@@ -30,11 +30,11 @@ FORM profit 'Прибыль по клиентам'
     OBJECTS period = (df = DATE, dt = DATE) PANEL
     PROPERTIES 'Дата с' = VALUE (df), 'Дата по' = VALUE (dt)
     
-    OBJECTS g = ContractGroup
+    OBJECTS g = ContractType
     OBJECTS c = Customer
     PROPERTIES READONLY name(c)
     PROPERTIES (c, df, dt) READONLY receiptCurrency BACKGROUND backgroundReceipt(), shipmentCurrency BACKGROUND backgroundShipment(), diff, diffPercent
-    PROPERTIES READONLY BACKGROUND backgroundGroup() receiptCurrency(c, g, df, dt) COLUMNS (g) HEADER name(g), 'Без группы' = receiptCurrencyOther(c, df, dt)
+    PROPERTIES READONLY BACKGROUND backgroundGroup() receiptCurrency(c, g, df, dt) COLUMNS (g) HEADER name(g), 'Прочее' = receiptCurrencyOther(c, df, dt)
     FILTERS costSum(c, df, dt) OR receipt(c, df, dt)
     
     OBJECTS p = Payment
