@@ -32,15 +32,17 @@ FORM contractDashboard 'Работа с договорами'
     
     OBJECTS ag = Agreement LAST 
     PROPERTIES (ag) READONLY id, number, date, name, nameType, sum, paid, balance, dateSending, dateReceiving, dateClosing, note, textString
-    PROPERTIES (ag) openFile DRAW ag TOOLBAR 
+    PROPERTIES (ag) openFile DRAW ag TOOLBAR SHOWIF TRUE IF file(o)
     ORDER date(ag)
     FILTERS contract(ag) == o
+    FILTERGROUP activeAg FILTER 'Активные' active(ag) DEFAULT 
     
     OBJECTS ac = Act LAST 
     PROPERTIES (ac) READONLY id, numberAgreement, number, date, name, nameType, sum, paid, balance, dateSending, dateReceiving, dateClosing, note, textString
-    PROPERTIES (ac) openFile DRAW ac TOOLBAR 
+    PROPERTIES (ac) openFile DRAW ac TOOLBAR SHOWIF TRUE IF file(o)
     ORDER date(ac)
     FILTERS contract(ac) == o
+    FILTERGROUP activeAc FILTER 'Активные' active(ac) DEFAULT 
     
     OBJECTS p = Payment LAST 
     PROPERTIES(p) READONLY id, numberAgreement, numberAct, number, date, year, monthNumber, sum, shortNameCurrency, sumCurrency, note

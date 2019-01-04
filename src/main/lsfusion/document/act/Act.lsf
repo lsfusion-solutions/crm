@@ -95,6 +95,8 @@ dateSigningCustomer 'Дата подписания клиентом' = DATA DATE
 dateReceiving 'Дата получения' = DATA DATE (Act);
 dateClosing 'Дата закрытия' = DATA DATE (Act);
 
+active (Act c) = NOT dateClosing(c) <= currentDate();
+
 note 'Примечание' = DATA VARISTRING[100](Act) CHARWIDTH 20;
 text 'Текст' = DATA TEXT (Act);
 textString 'Текст' (Act c) = VARSTRING[500](text(c)) CHARWIDTH 20;
@@ -243,6 +245,7 @@ EXTEND FORM contract
     PROPERTIES(ac) NESTEDSESSION EDIT, DELETE
     ORDER date(ac)
     FILTERS contract(ac) == o
+    FILTERGROUP activeAc FILTER 'Активные' active(ac) DEFAULT 
 ;
 
 DESIGN contract {
