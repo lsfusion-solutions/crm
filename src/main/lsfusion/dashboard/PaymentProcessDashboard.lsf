@@ -92,7 +92,7 @@ importPaymentsDbf 'Импорт платежей (dbf)' (DATE df, DATE dt) {
         }
         
         IF count() > 0 THEN {
-            MESSAGE CONCAT ' ', 'Неимпортированные платежи, для которых не найдена компания: ', count(), message();
+            MESSAGE CONCAT ' ', 'Платежи, для которых не найдена организация: ', count(), message();
         }
         
         FOR [GROUP SUM 1 IF sum(INTEGER i) < 0 BY type(i)](VARSTRING[15] type) AND type != '' AND NOT (GROUP MAX ExpenseType t IF name(t) == type) DO NEW t = ExpenseType {
@@ -113,6 +113,8 @@ importPaymentsDbf 'Импорт платежей (dbf)' (DATE df, DATE dt) {
             date(p) <- date(i);
             legalEntity(p) <- legalEntityEx(idLegalEntity(i));
             company(p) <- OVERRIDE legalEntity(idCompany(i)), defaultCompany();
+            contract(p) <- GROUP MAX Contract c IF legalEntity(c) == legalEntity(p) AND company(c) == company(p) AND date(c) >= date(p) AND NOT dateClosing(c) <= date(p)
+                                 AND [GROUP SUM 1 IF NOT dateClosing(Contract cc) <= date(p) AND date(cc) >= date(p) BY legalEntity(cc), company(cc)](legalEntity(c), company(c)) == 1;
             currency(p) <- defaultCurrency();
             note(p) <- text(i);
             sum(p) <- round2(sum(i)/extractDay(date(i)));

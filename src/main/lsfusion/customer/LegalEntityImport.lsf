@@ -80,7 +80,7 @@ importLegalEntities 'Импорт организаций' (FILE f) {
     
     DELETE Address a WHERE GROUP SUM 1 IF LegalEntity l = legalEntity(idLegalEntity(INTEGER i)) AND trim(idLegalEntity(i)) != '' AND legalEntity(a) = l;
     FOR LegalEntity l = legalEntity(idLegalEntity(INTEGER i)) AND trim(idLegalEntity(i)) != '' DO {
-        extId(l) <- trim(extIdLegalEntity(i)) IF (trim(extIdLegalEntity(i)) != '' AND NOT legalEntityEx(trim(extIdLegalEntity(i))));
+        extId(l) <- trim(extIdLegalEntity(i)) WHERE (trim(extIdLegalEntity(i)) != '' AND NOT legalEntityEx(trim(extIdLegalEntity(i))));
         name(l) <- trim(nameLegalEntity(i));
     }
         

@@ -282,6 +282,8 @@ FORM contracts 'Договоры'
     ORDER date(o)
 ;
 
+active (Contract c) = NOT dateClosing(c) <= currentDate();
+
 FORM dialogContracts 'Договоры'
     OBJECTS o = Contract LAST 
     PROPERTIES(o) READONLY id, nameCustomer, nameLegalEntity, nameCompany, number, date, name, sum, shortNameCurrency, sumCurrency, nameType, nameGroup, nameSendingWay, 
@@ -289,7 +291,7 @@ FORM dialogContracts 'Договоры'
     ORDER date(o)
     
     FILTERGROUP active
-        FILTER 'Активные' NOT dateClosing(o) <= currentDate() DEFAULT
+        FILTER 'Активные' active(o) DEFAULT
     
     LIST Contract OBJECT o
 ;
