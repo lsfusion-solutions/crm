@@ -11,7 +11,7 @@ TABLE act (Act);
 id 'Код' = DATA VARSTRING[15] (Act) INDEXED CHARWIDTH 5;
 act (id) = GROUP AGGR Act c BY id (c);
 
-name 'Название' = DATA VARISTRING[150](Act) CHARWIDTH 20;
+name 'Наименование' = DATA VARISTRING[150](Act) CHARWIDTH 20;
 series 'Серия' = DATA VARSTRING[15](Act) IN id;
 number 'Номер' = DATA VARSTRING[15](Act) IN id;
 
@@ -106,6 +106,7 @@ number(Act c) += number(c);
 name(Act c) += name(c);
 date(Act c) += date(c);
 nameType(Act c) += nameType(c);
+note(Act c) += note(c);
 dateSigningCompany(Act c) += dateSigningCompany(c);
 dateSending(Act c) += dateSending(c);
 dateSigningCustomer(Act c) += dateSigningCustomer(c);

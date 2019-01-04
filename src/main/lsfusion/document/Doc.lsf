@@ -9,13 +9,14 @@ CLASS ABSTRACT Document 'Документ';
 id 'Код' = ABSTRACT VARSTRING[15] (Document) IN id CHARWIDTH 5;
 number 'Номер' = ABSTRACT VARSTRING[15](Document) IN id CHARWIDTH 10;
 date 'Дата' = ABSTRACT DATE (Document) IN id;
-name 'Название' = ABSTRACT VARISTRING[150](Document) IN id CHARWIDTH 20;
+name 'Наименование' = ABSTRACT VARISTRING[150](Document) IN id CHARWIDTH 20;
 nameType 'Тип' = ABSTRACT VARISTRING[100](Document) CHARWIDTH 15;
 dateSigningCompany 'Дата подписания компанией' = ABSTRACT DATE (Document);
 dateSending 'Дата отправки' = ABSTRACT DATE (Document);
 dateSigningCustomer 'Дата подписания клиентом' = ABSTRACT DATE (Document);
 dateReceiving 'Дата получения' = ABSTRACT DATE (Document);
 dateClosing 'Дата закрытия' = ABSTRACT DATE (Document);
+note 'Примечание' = ABSTRACT VARISTRING[250](Document);
 file 'Файл' = ABSTRACT FILE (Document);
 sum 'Сумма' = ABSTRACT NUMERIC[16,5](Document);
 paid 'Оплачено' = ABSTRACT NUMERIC[16,5](Document);
@@ -25,10 +26,10 @@ customer = ABSTRACT Customer (Document);
 nameCustomer 'Клиент' (Document d) = name(customer(d));
 
 legalEntity = ABSTRACT LegalEntity(Document);
-nameLegalEntityContract 'Организация' (Document d) = name(legalEntity(d)); 
+nameLegalEntity 'Организация' (Document d) = name(legalEntity(d)); 
 
 company = ABSTRACT LegalEntity(Document);
-nameCompanyContract 'Компания' (Document d) = name(company(d)); 
+nameCompany 'Компания' (Document d) = name(company(d)); 
 
 CLASS DocType 'Вид договора';
 name 'Наименование' (DocType d) = staticCaption(d) IF d IS DocType CHARWIDTH 20;

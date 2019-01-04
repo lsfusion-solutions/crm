@@ -10,7 +10,7 @@ TABLE contract (Contract);
 id 'Код' = DATA VARSTRING[15] (Contract) CHARWIDTH 5 IN id;
 contract (id) = GROUP AGGR Contract c BY id (c);
 
-name 'Название' = DATA VARISTRING[150](Contract) CHARWIDTH 20;
+name 'Наименование' = DATA VARISTRING[150](Contract) CHARWIDTH 20;
 series 'Серия' = DATA STRING[2](Contract);
 number 'Номер' = DATA VARSTRING[15](Contract) IN id;
 
@@ -159,6 +159,7 @@ number(Contract c) += number(c);
 name(Contract c) += name(c);
 date(Contract c) += date(c);
 nameType(Contract c) += nameType(c);
+note(Contract c) += note(c);
 dateSigningCompany(Contract c) += dateSigningCompany(c);
 dateSending(Contract c) += dateSending(c);
 dateSigningCustomer(Contract c) += dateSigningCustomer(c);

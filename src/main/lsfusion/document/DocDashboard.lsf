@@ -49,15 +49,39 @@ edit 'Редактировать' (Document d) {
 filterDocType = DATA LOCAL DocType();
 nameFilterDocClass 'Вид документа' () = name(filterDocType());
 
-FORM docDashboard 'Обработка документов'
+filterLegalEntity = DATA LOCAL LegalEntity();
+nameFilterLegalEntity 'Компания' () = name(filterLegalEntity());
+nameCustomerFilterLegalEntity 'Клиент' () = name(customer(filterLegalEntity()));
 
-    PROPERTIES nameFilterDocClass()
+CONSTRAINT filterLegalEntity() AND NOT isCompany(filterLegalEntity()) CHECKED BY filterLegalEntity[] MESSAGE 'Компания не является компанией';  
+
+FORM documentReport 'Реестр отправленной корреспонденции'
+    
+    OBJECTS dates = (df = DATE, dt = DATE) PANEL
+    PROPERTIES 'Дата с' = VALUE (df), 'Дата по' = VALUE (dt)
+    PROPERTIES () nameCustomerFilterLegalEntity
+    
+    OBJECTS d = Document
+    PROPERTIES (d) nameLegalEntity, name, number, note
+    FILTERS company(d) == filterLegalEntity(), date(d) >= df AND date(d) <= dt
+;
+
+printDocumentReport 'Реестр отправленной корреспонденции' (DATE df, DATE dt) {
+    PRINT documentReport OBJECTS df = df, dt = dt XLS;
+} IMAGE 'print.png';
+
+FORM docDashboard 'Обработка документов'
+    
+    OBJECTS dates = (df = DATE, dt = DATE) PANEL
+    PROPERTIES dfrom 'Дата с' = VALUE (df), dto 'Дата по' = VALUE (dt), printDocumentReport(df, dt)
+    PROPERTIES () nameFilterDocClass, nameFilterLegalEntity
+    
     OBJECTS d = Document
     PROPERTIES (d) in, sign SHOWIF notSign(d), send SHOWIF notSend(d), receive SHOWIF notReceive(d), open SHOWIF TRUE IF file(d), edit, close SHOWIF NOT dateClosing(d)
-    PROPERTIES (d) READONLY nameDocType, id, number, date, name, nameCustomer, nameType, numberContract, nameLegalEntityContract, 
-                            nameCompanyContract, sum, paid, balance, dateSigningCompany, dateSending, dateSigningCustomer, dateReceiving, dateClosing
+    PROPERTIES (d) READONLY nameDocType, id, number, date, name, nameCustomer, nameType, numberContract, nameLegalEntity, 
+                            nameCompany, sum, paid, balance, dateSigningCompany, dateSending, dateSigningCustomer, dateReceiving, dateClosing
     ORDER date(d)
-    FILTERS docType(d) = filterDocType() OR NOT filterDocType()
+    FILTERS docType(d) = filterDocType() OR NOT filterDocType(), company(d) == filterLegalEntity() OR NOT filterLegalEntity(), date(d) >= df AND date(d) <= dt
     FILTERGROUP open FILTER 'Открыт' NOT dateClosing(d) DEFAULT 
     
     FILTERGROUP d FILTER 'Требуется подписание' notSign(d)
@@ -69,7 +93,12 @@ DESIGN docDashboard {
     OBJECTS {
         NEW filter FIRST {
             caption = 'Фильтры';
+            type = CONTAINERH;
             MOVE PROPERTY (nameFilterDocClass());
+            MOVE PROPERTY (nameFilterLegalEntity());
+            MOVE PROPERTY (dfrom);
+            MOVE PROPERTY (dto);
+            MOVE PROPERTY (printDocumentReport(df, dt));
         }
     }
 }

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.6.0.final using JasperReports Library version 6.4.3  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Реестр отправленной корреспонденции" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="30" bottomMargin="30" uuid="f6cbbd66-8644-49e3-9ffb-b43a731a6d64">
+	<style name="DefaultStyle" isDefault="true" vTextAlign="Middle" vImageAlign="Middle" fontName="lsf.TimesNewRoman" fontSize="10">
+		<box>
+			<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+		</box>
+		<paragraph leftIndent="2" rightIndent="2"/>
+	</style>
+	<style name="GroupCellStyle2" vTextAlign="Middle" vImageAlign="Middle" fontName="lsf.TimesNewRoman" fontSize="10">
+		<box>
+			<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+		</box>
+		<paragraph leftIndent="2" rightIndent="2"/>
+	</style>
+	<style name="GroupCellStyle1" mode="Opaque" backcolor="#DFDFDF" vTextAlign="Middle" vImageAlign="Middle" fontName="lsf.TimesNewRoman" fontSize="10">
+		<box>
+			<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+		</box>
+		<paragraph leftIndent="2" rightIndent="2"/>
+	</style>
+	<style name="GroupCellStyle0" vTextAlign="Middle" vImageAlign="Middle" fontName="lsf.TimesNewRoman" fontSize="10">
+		<box>
+			<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+		</box>
+		<paragraph leftIndent="2" rightIndent="2"/>
+	</style>
+	<field name="nameCustomerFilterLegalEntity()" class="java.lang.String"/>
+	<field name="df.object" class="java.util.Date"/>
+	<field name="dt.object" class="java.util.Date"/>
+	<field name="_OBJVALUE_Doc_documentReport_df(df)" class="java.util.Date"/>
+	<field name="_OBJVALUE_Doc_documentReport_dt(dt)" class="java.util.Date"/>
+	<field name="d.object" class="java.lang.Long"/>
+	<field name="nameLegalEntity(d)" class="java.lang.String"/>
+	<field name="name(d)" class="java.lang.String"/>
+	<field name="number(d)" class="java.lang.String"/>
+	<field name="note(d)" class="java.lang.String"/>
+	<group name="designGroup7263">
+		<groupExpression><![CDATA[String.valueOf($F{df.object})+" "+String.valueOf($F{dt.object})]]></groupExpression>
+	</group>
+	<title>
+		<band height="18" splitType="Prevent">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="GroupCellStyle0" stretchType="RelativeToBandHeight" x="0" y="0" width="802" height="18" uuid="072220c4-fbf4-4e4a-aef6-76aa45121847"/>
+				<textElement textAlignment="Center">
+					<font fontName="lsf.Arial" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nameCustomerFilterLegalEntity()} + ".  Реестр отправленной корреспонденции за период :   c " + lsfusion.base.BaseUtils.dateToString("dd.MM.yyyy",$F{df.object}) + " по " + lsfusion.base.BaseUtils.dateToString("dd.MM.yyyy",$F{dt.object})]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="30">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="GroupCellStyle0" stretchType="RelativeToBandHeight" mode="Opaque" x="40" y="0" width="302" height="30" backcolor="#FFFF00" uuid="3d46502a-b6ec-472a-b860-c8f8879eb667"/>
+				<textElement textAlignment="Center">
+					<font fontName="lsf.Arial" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Наименование организации"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="GroupCellStyle0" stretchType="RelativeToBandHeight" mode="Opaque" x="342" y="0" width="138" height="30" backcolor="#FFFF00" uuid="bc874be8-05e7-4aa6-bc5d-7b23614daa20"/>
+				<textElement textAlignment="Center">
+					<font fontName="lsf.Arial" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Наименование документа"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="GroupCellStyle0" stretchType="RelativeToBandHeight" mode="Opaque" x="480" y="0" width="160" height="30" backcolor="#FFFF00" uuid="8e7eaca2-ca77-441b-a6a4-152f44e128c7"/>
+				<textElement textAlignment="Center">
+					<font fontName="lsf.Arial" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Номер документа\n(Номер договора)"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="GroupCellStyle0" stretchType="RelativeToBandHeight" mode="Opaque" x="640" y="0" width="162" height="30" backcolor="#FFFF00" uuid="466c3f8a-edb9-4f36-b01d-59a314cd8852"/>
+				<textElement textAlignment="Center">
+					<font fontName="lsf.Arial" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Примечание"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="GroupCellStyle0" stretchType="RelativeToBandHeight" mode="Opaque" x="0" y="0" width="40" height="30" backcolor="#FFFF00" uuid="2e0119b6-13a6-43d5-b2c7-bd8882688130"/>
+				<textElement textAlignment="Center">
+					<font fontName="lsf.Arial" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["№ п/п"]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="15">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="GroupCellStyle0" positionType="Float" stretchType="RelativeToBandHeight" x="40" y="0" width="302" height="15" uuid="f1110b94-6e23-4356-bd06-e0a5726e9e22"/>
+				<textElement textAlignment="Left">
+					<font fontName="lsf.Arial" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nameLegalEntity(d)}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="GroupCellStyle0" positionType="Float" stretchType="RelativeToBandHeight" x="342" y="0" width="138" height="15" uuid="60ecadf1-afc3-41af-87f4-55d6ac3c262d"/>
+				<textElement textAlignment="Center">
+					<font fontName="lsf.Arial" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{name(d)}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="GroupCellStyle0" positionType="Float" stretchType="RelativeToBandHeight" x="480" y="0" width="160" height="15" uuid="bac33c11-d1e9-44d7-80f3-612c3121a307"/>
+				<textElement textAlignment="Center">
+					<font fontName="lsf.Arial" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{number(d)}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="GroupCellStyle0" positionType="Float" stretchType="RelativeToBandHeight" x="640" y="0" width="162" height="15" uuid="6cf91311-c4e5-4d44-bde4-6c3b7f7f29c8"/>
+				<textElement textAlignment="Left">
+					<font fontName="lsf.Arial" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{note(d)}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="GroupCellStyle0" positionType="Float" stretchType="RelativeToBandHeight" x="0" y="0" width="40" height="15" uuid="21267663-3e72-44cb-9f9b-1de6f2fbccd5"/>
+				<textElement textAlignment="Left">
+					<font fontName="lsf.Arial" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{COLUMN_COUNT}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

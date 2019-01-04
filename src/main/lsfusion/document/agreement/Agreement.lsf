@@ -10,7 +10,7 @@ TABLE agreement (Agreement);
 id 'Код' = DATA VARSTRING[15] (Agreement) INDEXED CHARWIDTH 5 IN id;
 agreement (id) = GROUP AGGR Agreement c BY id (c);
 
-name 'Название' = DATA VARISTRING[150](Agreement) CHARWIDTH 20;
+name 'Наименование' = DATA VARISTRING[150](Agreement) CHARWIDTH 20;
 series 'Серия' = DATA VARSTRING[15](Agreement) IN id;
 number 'Номер' = DATA VARSTRING[15](Agreement) IN id;
 
@@ -99,6 +99,7 @@ number(Agreement c) += number(c);
 date(Agreement c) += date(c);
 name(Agreement c) += name(c);
 nameType(Agreement c) += nameType(c);
+note(Agreement c) += note(c);
 dateSigningCompany(Agreement c) += dateSigningCompany(c);
 dateSending(Agreement c) += dateSending(c);
 dateSigningCustomer(Agreement c) += dateSigningCustomer(c);
