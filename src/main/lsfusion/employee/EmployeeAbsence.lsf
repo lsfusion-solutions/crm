@@ -51,7 +51,7 @@ hours 'Кол-во часов' = DATA NUMERIC[7,2](Absence);
 date 'Дата ввода' = DATA DATE (Absence);
 note 'Примечание' = DATA VARISTRING[100] (Absence) CHARWIDTH 30;
 
-CONSTRAINT dateTo(Absence a) <= dateFrom(a) MESSAGE 'Дата по должна быть не раньше даты с';
+CONSTRAINT dateTo(Absence a) < dateFrom(a) MESSAGE 'Дата по должна быть не раньше даты с';
 
 @addRoleApplicationSetting(editDays, 'Дней для редактирования отсутствия', INTEGER);
 
