@@ -5,31 +5,41 @@ REQUIRE Dashboard, PaymentAct, TimeEntryExpense;
 NAMESPACE Dashboard;
 
 receipt 'Доход' (Customer c, DATE df, DATE dt) = GROUP SUM sum(Payment p) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(legalEntity(p)) BY customer(p);
+receipt 'Доход' (Customer c, ContractGroup g, DATE df, DATE dt) = GROUP SUM sum(Payment p) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(legalEntity(p)) BY customer(p), group(contract(p));
+receiptOther 'Доход (без группы)' (Customer c, DATE df, DATE dt) = GROUP SUM sum(Payment p) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(legalEntity(p)) AND NOT group(contract(p)) BY customer(p);
 receipt 'Доход' (Customer c, Month m, INTEGER y, DATE df, DATE dt) = GROUP SUM sum(Payment p) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(legalEntity(p)) BY customer(p), extractMonth(date(p)), extractYear(date(p));
-receiptCurrency 'Доход, USD' (Customer c, DATE df, DATE dt) = round2(receipt(c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
-receiptCurrency 'Доход, USD' (Customer c, Month m, INTEGER y, DATE df, DATE dt) = round2(receipt(c, m, y, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
-shipmentCurrency 'Расход, USD' (Customer c, DATE df, DATE dt) = round2(costSum(c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
-shipmentCurrency 'Расход, USD' (Customer c, Month m, INTEGER y, DATE df, DATE dt) = round2(costSum(c, m, y, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
-diff 'Прибыль, USD' (Customer c, DATE df, DATE dt) = receiptCurrency(c, df, dt) (-) shipmentCurrency(c, df, dt);
+receiptCurrency 'Доход в валюте' (Customer c, DATE df, DATE dt) = round2(receipt(c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
+receiptCurrency 'Доход в валюте' (Customer c, Month m, INTEGER y, DATE df, DATE dt) = round2(receipt(c, m, y, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
+receiptCurrency 'Доход в валюте' (Customer c, ContractGroup g, DATE df, DATE dt) = round2(receipt(c, g, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
+receiptCurrencyOther 'Доход в валюте (без группы)' (Customer c, DATE df, DATE dt) = round2(receiptOther(c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
+shipmentCurrency 'Расход в валюте' (Customer c, DATE df, DATE dt) = round2(costSum(c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
+shipmentCurrency 'Расход в валюте' (Customer c, Month m, INTEGER y, DATE df, DATE dt) = round2(costSum(c, m, y, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
+diff 'Прибыль в валюте' (Customer c, DATE df, DATE dt) = receiptCurrency(c, df, dt) (-) shipmentCurrency(c, df, dt);
 diffPercent 'Прибыль, %' (Customer c, DATE df, DATE dt) = round2(diff(c, df, dt) / receiptCurrency(c, df, dt) * 100);
-diff 'Прибыль, USD' (Customer c, Month m, INTEGER y, DATE df, DATE dt) = receiptCurrency(c, m, y, df, dt) (-) shipmentCurrency(c, m, y, df, dt);
+diff 'Прибыль в валюте' (Customer c, Month m, INTEGER y, DATE df, DATE dt) = receiptCurrency(c, m, y, df, dt) (-) shipmentCurrency(c, m, y, df, dt);
 diffPercent 'Прибыль, %' (Customer c, Month m, INTEGER y, DATE df, DATE dt) = round2(diff(c, m, y, df, dt) / receiptCurrency(c, m, y, df, dt) * 100);
-shipmentCurrency 'Расход, USD' (Employee e, Customer c, DATE df, DATE dt) = round2(costSum(e, c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
-shipmentCurrency 'Расход, USD' (Project p, Customer c, DATE df, DATE dt) = round2(costSum(p, c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
-shipmentCurrency 'Расход, USD' (Project p, Employee e, Customer c, DATE df, DATE dt) = round2(costSum(p, e, c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
+shipmentCurrency 'Расход в валюте' (Employee e, Customer c, DATE df, DATE dt) = round2(costSum(e, c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
+shipmentCurrency 'Расход в валюте' (Project p, Customer c, DATE df, DATE dt) = round2(costSum(p, c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
+shipmentCurrency 'Расход в валюте' (Project p, Employee e, Customer c, DATE df, DATE dt) = round2(costSum(p, e, c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
+
+backgroundReceipt() = RGB (222, 255, 222);
+backgroundGroup() = RGB (222, 222, 255);
+backgroundShipment() = RGB (255, 222, 222);
 
 FORM profit 'Прибыль по клиентам'
     OBJECTS period = (df = DATE, dt = DATE) PANEL
     PROPERTIES 'Дата с' = VALUE (df), 'Дата по' = VALUE (dt)
     
+    OBJECTS g = ContractGroup
     OBJECTS c = Customer
     PROPERTIES READONLY name(c)
-    PROPERTIES (c, df, dt) READONLY receiptCurrency, shipmentCurrency, diff, diffPercent
+    PROPERTIES (c, df, dt) READONLY receiptCurrency BACKGROUND backgroundReceipt(), shipmentCurrency BACKGROUND backgroundShipment(), diff, diffPercent
+    PROPERTIES READONLY BACKGROUND backgroundGroup() receiptCurrency(c, g, df, dt) COLUMNS (g) HEADER name(g), 'Без группы' = receiptCurrencyOther(c, df, dt)
     FILTERS costSum(c, df, dt) OR receipt(c, df, dt)
     
     OBJECTS p = Payment
     PROPERTIES (p) READONLY id, nameLegalEntity, nameCustomer, numberContract, nameTypeContract, numberAct, number, date, 
-                                                       year, monthNumber, sum, nameCurrency, shortNameCurrency, sumCurrency, note
+                                                       year, monthNumber, sum, shortNameCurrency, sumCurrency, note
     
     FILTERS customer(p) == c
     FILTERGROUP paymentInterval

@@ -1,6 +1,8 @@
 MODULE ProfitMonthDashboard;
 
-REQUIRE PaymentAct, Expense, Dashboard;
+REQUIRE PaymentAct, Expense, ProfitDashboard;
+
+PRIORITY Expense;
 
 NAMESPACE Dashboard;
 
@@ -18,10 +20,6 @@ receipt 'Доход' (INTEGER yf, INTEGER yt, ContractType t) = GROUP SUM sumCur
 shipment 'Расход' (INTEGER yf, INTEGER yt, ExpenseType t) = GROUP SUM sumCurrency(Expense p) IF extractYear(date(p)) >= yf AND extractYear(date(p)) <= yt AND NOT skipExpense(type(p)) BY type(p);
 receipt 'Доход' (DATE df, DATE dt, ContractType t) = GROUP SUM sumCurrency(Payment p) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(legalEntity(p)) BY type(contract(p));
 shipment 'Расход' (DATE df, DATE dt, ExpenseType t) = GROUP SUM sumCurrency(Expense p) IF date(p) >= df AND date(p) <= dt AND NOT skipExpense(type(p)) BY type(p);
-
-backgroundReceipt() = RGB (222, 255, 222);
-backgroundGroup() = RGB (222, 222, 255);
-backgroundShipment() = RGB (255, 222, 222);
 
 FORM profitMonthDashboard 'Прибыль по месяцам'
 //    OBJECTS dates = (df = DATE, dt = DATE) PANEL 
