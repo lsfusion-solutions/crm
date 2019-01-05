@@ -28,6 +28,23 @@ addDebt 'Добавить' (Agreement a) {
     }
 } IMAGE 'add.png';
 
+createFullDebt 'Сгенерировать задолженность' (Agreement a) {
+    NEW d = Debt {
+    
+        contract(d) <- contract(a);
+        agreement(d) <- a;
+        date(d) <- date(a);
+        currency(d) <- currency(a);
+        
+        IF inCurrency(a) THEN {
+            sumCurrency(d) <- sumCurrency(a);
+        }
+        ELSE {
+            sum(d) <- sum(a);
+        }
+    }
+}
+
 WHEN SETCHANGED (agreement(Debt d)) AND NOT CHANGED (contract(d)) DO {
     contract(d) <- contract(agreement(d));
 }
@@ -35,7 +52,7 @@ WHEN SETCHANGED (agreement(Debt d)) AND NOT CHANGED (contract(d)) DO {
 CONSTRAINT agreement(Debt d) AND NOT contract(d) == contract(agreement(d)) CHECKED BY agreement[Debt] MESSAGE 'Договор соглашения не совпадает с договором';
 
 EXTEND FORM agreement
-    PROPERTIES shortNameCurrency(o) READONLY, sumCurrency(o) SHOWIF inCurrency(o)
+    PROPERTIES shortNameCurrency(o) READONLY, sumCurrency(o) SHOWIF inCurrency(o), createFullDebt(o)
     OBJECTS d = Debt
     PROPERTIES (d) date, sum, shortNameCurrency, sumCurrency SHOWIF inCurrency(contract(o)), paid
     PROPERTIES addDebt(o) DRAW d TOOLBAR 
@@ -49,10 +66,12 @@ DESIGN agreement {
         NEW debt {
             caption = 'Задолженность';
             NEW sum {
+                caption = 'Стоимость';
                 type = CONTAINERH;
                 MOVE PROPERTY (sum(o));
                 MOVE PROPERTY (shortNameCurrency(o));
                 MOVE PROPERTY (sumCurrency(o));
+                MOVE PROPERTY (createFullDebt(o));
             }
             MOVE BOX (d);
         }

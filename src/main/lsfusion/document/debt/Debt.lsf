@@ -76,7 +76,7 @@ DESIGN options {
 text(INTEGER i) = lpad(TEXT (i), 2, '0');
 debt (DATE d, Contract c) = GROUP MAX Debt t BY date(t), contract(t);
 
-createDebts 'Сгенерировать задолженность' (Contract c) {
+createDebts 'Сгенерировать задолженности' (Contract c) {
     
     IF NOT countMonthsDebt() THEN {
         MESSAGE 'Не задано кол-во месяцев для формирования задолженности';
@@ -132,8 +132,24 @@ createDebts 'Сгенерировать задолженность' (Contract c)
     }
 }
 
+createFullDebt 'Сгенерировать задолженность' (Contract c) {
+    NEW d = Debt {
+    
+        contract(d) <- c;
+        date(d) <- date(c);
+        currency(d) <- currency(c);
+        
+        IF inCurrency(c) THEN {
+            sumCurrency(d) <- sumCurrency(c);
+        }
+        ELSE {
+            sum(d) <- sum(c);
+        }
+    }
+}
+
 EXTEND FORM contract 
-    PROPERTIES (o) sumMonth, paymentDay, createDebts SHOWIF (sumMonth(o) AND paymentDay(o))
+    PROPERTIES (o) sumMonth, paymentDay, createDebts SHOWIF (sumMonth(o) AND paymentDay(o)), createFullDebt
     OBJECTS d = Debt
     PROPERTIES (d) date, sum, shortNameCurrency, sumCurrency SHOWIF inCurrency(o), paid, NEW, DELETE
     ORDER date(d)
@@ -145,7 +161,7 @@ DESIGN contract {
         NEW debt {
             caption = 'Задолженность';
             NEW sums {
-                type = CONTAINERH;
+                type = CONTAINERV;
                 NEW firstRow {
                     type = CONTAINERH;
                     caption = 'Стоимость';
@@ -153,6 +169,7 @@ DESIGN contract {
                     MOVE PROPERTY (shortNameCurrency(o));
                     MOVE PROPERTY (inCurrency(o));
                     MOVE PROPERTY (sumCurrency(o));
+                    MOVE PROPERTY (createFullDebt(o));
                 }
                 NEW secondRow {
                     caption = 'Задолженность';
