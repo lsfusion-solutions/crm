@@ -1,6 +1,6 @@
 MODULE Debt;
 
-REQUIRE Dashboard, Contract, Act;
+REQUIRE Dashboard, Contract, Act, Payment;
 
 NAMESPACE Contract;
 
@@ -189,6 +189,8 @@ sumDebt 'Сумма задолженности' (Month m, INTEGER y, ContractTyp
 sumDebt 'Сумма задолженности' (Month m, INTEGER y) = GROUP SUM sum(Debt d) BY extractMonth(date(d)), extractYear(date(d));
 sumDebt 'Сумма задолженности' (INTEGER y, ContractType t) = GROUP SUM sum(Debt d) BY extractYear(date(d)), type(contract(d));
 
+paid 'Оплачено' (Month m, INTEGER y) = GROUP SUM sum(Payment p) IF NOT skipReceipt(legalEntity(p)) BY extractMonth(date(p)), extractYear(date(p));
+
 FORM debtsPlan 'План платежей'
     
     OBJECTS y = INTEGER PANEL 
@@ -196,18 +198,35 @@ FORM debtsPlan 'План платежей'
     
     OBJECTS t = ContractType
     OBJECTS m = Month
-    PROPERTIES READONLY number(m), 'Месяц' = staticCaption(m), sumDebt(m, y), sumDebt(m, y, t) COLUMNS (t) HEADER name(t)
+    PROPERTIES READONLY number(m), 'Месяц' = staticCaption(m), sumDebt(m, y), sumDebt(m, y, t) COLUMNS (t) HEADER name(t), paid(m, y)
     ORDER number(m)
     FILTERS sumDebt(y, t)
     
     OBJECTS d = Debt
     PROPERTIES (d) READONLY date, numberContract, nameContractType, nameCustomer, nameLegalEntity, sum, shortNameCurrency, sumCurrency,  paid
+    ORDER date(d)
     FILTERS extractMonth(date(d)) == m, extractYear(date(d)) == y
+    
+    OBJECTS p = Payment
+    PROPERTIES (p) READONLY id, nameLegalEntity, nameCustomer, nameCompany, number, date, monthNumber, sum, shortNameCurrency, sumCurrency, note
+    ORDER date(p)
+    FILTERS extractYear(date(p)) == y, extractMonth(date(p)) == m
     
     EVENTS ON INIT {
         SEEK debtsPlan.y = extractYear(currentDate());
     }
 ;
+
+DESIGN debtsPlan {
+    OBJECTS {
+        NEW tab AFTER BOX (m) {
+            type = TABBED;
+            fill = 1;
+            MOVE BOX (d);
+            MOVE BOX (p) { caption = 'Платежи'; }
+        }
+    }
+}
 
 NAVIGATOR {
     dashboard {
