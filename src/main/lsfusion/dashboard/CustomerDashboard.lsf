@@ -113,12 +113,8 @@ DESIGN dashboardCustomer {
         NEW tabPane AFTER BOX (c) {
             type = TABBED;
             fill = 1;
-            NEW contactTab {
-                caption = 'Контакты';
-                type = TABBED;
-                MOVE BOX (le) { caption = 'Организации'; }
-                MOVE BOX (ct) { caption = 'Контакты'; }
-            }
+            MOVE BOX (le) { caption = 'Организации'; }
+            MOVE BOX (ct) { caption = 'Контакты'; }
             NEW contracts {
                 caption = 'Договоры';
                 type = SPLITV;
@@ -200,9 +196,17 @@ NAVIGATOR {
     }
 }
 
+addLegalEntityCustomer 'Добавить' (Customer c) {
+    NESTEDSESSION NEW l = LegalEntity {
+        customer(l) <- c;
+        SHOW legalEntity OBJECTS o = l DOCKED;
+    }
+} IMAGE 'add.png';
+
 EXTEND FORM customer
     OBJECTS le = LegalEntity
-    PROPERTIES (le) id, extId, name, nameLegalAddress, numberBank, nameBank, addressBank, mfoBank, isCompany, NEW, DELETE 
+    PROPERTIES (le) id, extId, name, nameLegalAddress, numberBank, nameBank, addressBank, mfoBank, isCompany 
+    PROPERTIES DRAW le TOOLBAR addLegalEntityCustomer(o), DELETE(le)
     FILTERS customer(le) = o
     
     OBJECTS c = Contact.Contact
