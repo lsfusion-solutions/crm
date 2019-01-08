@@ -1,6 +1,6 @@
 MODULE TimeEntryTotalDashboard;
 
-REQUIRE TimeEntryExpense, Dashboard, WorkingHours, EmployeeAbsence;
+REQUIRE TimeEntryExpense, Dashboard, WorkingHours, TimeEntryAbsense;
 
 NAMESPACE Project;
 
@@ -16,7 +16,8 @@ totalHours 'Часов за год' (Employee e, INTEGER y) = hours(e, y) (+) ab
 backgroundHours (Employee e, INTEGER y, Month m) = IF totalHours(e, y, m) < monthHours(y, m) THEN RGB (255, 200, 200);
 backgroundTotalHours (Employee e, DATE d) = IF absenceHours(e, d) THEN RGB (255, 255, 200);
 
-totalHours 'Всего часов у сотрудника' (Employee e, DATE d) = hours(e, d) (+) absenceHours(e, d) CHARWIDTH 2;
+workedHours 'Трудозатраты' (Employee e, DATE d) = GROUP SUM hours(TimeEntry t) IF absense(t) BY employee(t), date(t) CHARWIDTH 2;
+totalHours 'Всего часов у сотрудника' (Employee e, DATE d) = hours(e, d) (+) absenceHours(e, d) (-) workedHours(e, d) CHARWIDTH 2;
 
 FORM timeEntryDashboard 'Контроль отмеченного времени'
     

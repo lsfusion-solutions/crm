@@ -1,0 +1,16 @@
+MODULE TimeEntryAbsense;
+
+REQUIRE TimeEntry, EmployeeAbsence;
+
+absense = DATA Absence(TimeEntry);
+idAbsense 'Остутствие' (TimeEntry t) = id(absense(t));
+
+EXTEND FORM timeEntry PROPERTIES idAbsense(o);
+
+DESIGN timeEntry {
+    data {
+        MOVE PROPERTY (idAbsense(o));
+    }
+}
+
+workedHours 'Отработано часов' (Absence a) = GROUP SUM hours(TimeEntry t) BY absense(t);

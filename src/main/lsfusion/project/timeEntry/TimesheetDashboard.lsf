@@ -1,6 +1,6 @@
 MODULE TimesheetDashboard;
 
-REQUIRE TimeEntryTotalDashboard;
+REQUIRE TimeEntryTotalDashboard, TimeEntryAbsense;
 
 NAMESPACE Project;
 
@@ -17,7 +17,7 @@ FORM timesheetDashboard 'Табель рабочего времени'
     
     OBJECTS m = Month PANEL, y = INTEGER PANEL, e = Employee PANEL
     PROPERTIES month 'Месяц' = staticCaption(m) SELECTOR, year 'Год' = VALUE (y), name(e) SELECTOR
-    FILTERS e == currentUser()
+//    FILTERS e == currentUser()
     
     OBJECTS d = DATE 
     PROPERTIES READONLY VALUE (d), extractDOWName(d), workingHours(d), totalHours(e, d)
@@ -27,7 +27,7 @@ FORM timesheetDashboard 'Табель рабочего времени'
                                     
     
     OBJECTS t = TimeEntry
-    PROPERTIES (t) READONLY id, hours, commentsString, date, nameActivity, nameProject, nameCustomer, numberIssue, nameIssue
+    PROPERTIES (t) READONLY id, hours, commentsString, date, nameActivity, nameProject, nameCustomer, numberIssue, nameIssue, idAbsense
     PROPERTIES addTimeEntry(d) DRAW t TOOLBAR 
     PROPERTIES (t) SHOWIF NOT disableEditing(t) NEWSESSION EDIT, DELETE 
     ORDER date(t)
@@ -37,11 +37,11 @@ FORM timesheetDashboard 'Табель рабочего времени'
                      FILTER 'За год' extractYear(date(t)) == y
     
     OBJECTS a = Absence
-    PROPERTIES (a) READONLY id, nameEmployee, nameReason, dateFrom, dateTo, hours, workingHours, date, note
+    PROPERTIES (a) READONLY id, nameEmployee, nameReason, dateFrom, dateTo, hours, workedHours, workingHours, date, note
     PROPERTIES (a) NEWSESSION NEW, EDIT SHOWIF isEditable(a), DELETE SHOWIF isEditable(a)
     ORDER date(a)
     FILTERS employee(a) == e
-    FILTERGROUP aday FILTER 'За день' date(a) == d 
+    FILTERGROUP aday FILTER 'За день' date(a) == d DEFAULT
                      FILTER 'За месяц' extractMonth(date(a)) == m AND extractYear(date(a)) == y
                      FILTER 'За год' extractYear(date(a)) == y
     
