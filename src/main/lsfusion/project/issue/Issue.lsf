@@ -77,11 +77,11 @@ idProject 'Код проекта' (Issue i) = id(project(i));
 nameProject 'Проект' (Issue i) = name(project(i));
 
 author = DATA CustomUser(Issue);
-nameAuthor 'Автор' (Issue i) = name(author(i));
+nameAuthor 'Автор' (Issue i) = name(author(i)) CHARWIDTH 20;
 loginAuthor 'Логин автора' (Issue i) = login(author(i));
 
 assignedTo = DATA Employee(Issue);
-nameAssignedTo 'Назначена' (Issue i) = name(assignedTo(i));
+nameAssignedTo 'Назначена' (Issue i) = name(assignedTo(i)) CHARWIDTH 20;
 loginAssignedTo'Логин, кому назначена' (Issue i) = login(assignedTo(i));
 
 tracker = DATA Tracker(Issue);
@@ -101,10 +101,47 @@ FORM issue 'Задача'
     EDIT Issue OBJECT o
 ;
 DESIGN issue {
-    GROUP (,o) {
-        type = CONTAINERV;
-        fill = 1;
-        PROPERTY (description(o)) { valueHeight = 500; }
+    OBJECTS {
+        NEW main { 
+            caption = 'Основные параметры';
+            alignment = STRETCH;
+            NEW top {
+                type = CONTAINERH;
+                MOVE PROPERTY (id(o));
+                MOVE PROPERTY (nameProject(o));
+            }
+            MOVE PROPERTY (name(o));
+        }
+        NEW author {
+            type = CONTAINERH;
+            caption = 'Автор';
+            MOVE PROPERTY (nameAuthor(o));
+            MOVE PROPERTY (dateTimeCreated(o));
+            MOVE PROPERTY (dateTimeUpdated(o));
+        }
+        NEW params {
+            type = CONTAINERH;
+            NEW status {
+                caption = 'Статус';
+                MOVE PROPERTY (nameStatus(o));
+                MOVE PROPERTY (nameAssignedTo(o));
+                MOVE PROPERTY (nameTracker(o));
+            }
+            NEW dates {
+                alignment = END;
+                caption = 'Трудозатраты';
+                MOVE PROPERTY (dateFrom(o)) { alignment = END; }
+                MOVE PROPERTY (dateTo(o)) { alignment = END; }
+                MOVE PROPERTY (doneRatio(o));
+                MOVE PROPERTY (estimatedHours(o));
+                MOVE PROPERTY (doneRatio(o));
+            }
+        }
+        NEW description {
+            caption = 'Описание';
+            fill = 1;
+            MOVE PROPERTY (description(o)) { fill = 1; caption = ''; }
+        }
     }
 }
 FORM issues 'Задачи'
