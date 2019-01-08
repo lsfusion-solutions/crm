@@ -17,7 +17,7 @@ nameFilterContractType 'Тип договора' () = name(filterContractType())
 FORM contractDashboard 'Работа с договорами'
     PROPERTIES nameFilterContractType()
     OBJECTS o = Contract LAST 
-    PROPERTIES(o) READONLY id, nameCustomer, nameLegalEntity, nameCompany, number, date, name, 
+    PROPERTIES(o) READONLY id, nameCustomer, nameLegalEntity, nameCompany, number, date, name, dateLastPaid,
                            sum, shortNameCurrency, sumCurrency, paid, paidCurrency, nameType, nameGroup, nameSendingWay, 
                            dateSigningCompany, dateSending, dateSigningCustomer, dateReceiving, dateTo, dateClosing, note, textString, text PANEL
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE

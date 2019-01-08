@@ -16,8 +16,10 @@ CONSTRAINT contract(Payment p) AND company(p) AND NOT company(p) = company(contr
 
 paid 'Оплачено' (Contract c) = GROUP SUM sum(Payment p) BY contract(p);
 paidCurrency 'Оплачено в валюте' (Contract c) = GROUP SUM sumCurrency(Payment p) BY contract(p);
+dateLastPaid 'Дата последней оплаты' (Contract c) = GROUP LAST date(Payment p) ORDER date(p), p BY contract(p);
 
 paid(Contract c) += paid(c);
+dateLastPaid(Contract c) += dateLastPaid(c);
 
 EXTEND FORM payment PROPERTIES (o) numberContract;
 
