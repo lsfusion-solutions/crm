@@ -43,7 +43,7 @@ importLegalEntities 'Импорт организаций' (FILE f) {
     
     IMPORT XLS NOHEADER FROM f TO idCustomer, nameCustomer, customerGroup, status, emailCustomer, phoneCustomer, siteCustomer, noteCustomer, dateCustomer, 
                          idLegalEntity, extIdLegalEntity, nameLegalEntity, postcodeL, regionL, districtL, localityL, streetL, houseL, officeL, 
-                         postcodeP, regionP, districtP, localityP, streetP, houseP, officeP, account = AB, idBank, numberBank, nameBank, addressBank, mfoBank, info;
+                         postcodeP, regionP, districtP, localityP, streetP, houseP, officeP, account, idBank, numberBank, nameBank, addressBank, mfoBank, info;
                          
     FOR [GROUP SUM 1 IF INTEGER i > 0 BY trim(idCustomer(i))](VARSTRING[15] id) AND id AND NOT customer(id) DO NEW c = Customer {
         id(c) <- id;

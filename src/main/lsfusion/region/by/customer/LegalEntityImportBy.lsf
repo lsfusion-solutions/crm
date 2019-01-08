@@ -8,7 +8,7 @@ overLegalEntityImport(FILE f) + {
     LOCAL unp = VARSTRING[9](INTEGER);
     LOCAL okpo = VARSTRING[20](INTEGER);
 
-    IMPORT XLS NOHEADER FROM f AS FILE TO idLegalEntity = I, unp = Z, okpo = AA;
+    IMPORT XLS NOHEADER FROM f AS FILE TO idLegalEntity = I, unp = AH, okpo = AI;
 
     FOR LegalEntity l = legalEntity(idLegalEntity(INTEGER i)) AND trim(idLegalEntity(i)) != '' DO {
         UNP(l) <- trim(unp(i));
