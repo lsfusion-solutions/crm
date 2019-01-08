@@ -4,7 +4,7 @@ REQUIRE TimeEntryTotalDashboard, TimeEntryAbsense;
 
 NAMESPACE Project;
 
-hours 'Часы' (Employee e, AbsenceReason r, INTEGER y) = GROUP SUM hours(Absence a) BY employee(a), reason(a), extractYear(date(a));
+absenseHours 'Часы' (Employee e, AbsenceReason r, INTEGER y) = GROUP SUM hours(Absence a) (-) workedHours(a) BY employee(a), reason(a), extractYear(date(a));
 
 addTimeEntry 'Добавить' (DATE d) {
     NEWSESSION NEW t = TimeEntry {
@@ -27,8 +27,8 @@ FORM timesheetDashboard 'Табель рабочего времени'
                                     
     
     OBJECTS t = TimeEntry
-    PROPERTIES (t) READONLY id, hours, commentsString, date, nameActivity, nameProject, nameCustomer, numberIssue, nameIssue, idAbsense
-    PROPERTIES addTimeEntry(d) DRAW t TOOLBAR 
+    PROPERTIES (t) READONLY id, hours, commentsString, date, nameActivity, nameProject, nameCustomer, numberIssue, nameIssue, descriptionAbsense
+    PROPERTIES DRAW t TOOLBAR changeAbsense(t), addTimeEntry(d)
     PROPERTIES (t) SHOWIF NOT disableEditing(t) NEWSESSION EDIT, DELETE 
     ORDER date(t)
     FILTERS employee(t) == e
@@ -46,8 +46,8 @@ FORM timesheetDashboard 'Табель рабочего времени'
                      FILTER 'За год' extractYear(date(a)) == y
     
     OBJECTS r = AbsenceReason
-    PROPERTIES READONLY name(r), hours(e, r, y)
-    FILTERS hours(e, r, y)
+    PROPERTIES READONLY name(r), absenseHours(e, r, y)
+    FILTERS absenseHours(e, r, y)
     
     EVENTS ON INIT {
         SEEK timesheetDashboard.m = extractMonth(currentDate());

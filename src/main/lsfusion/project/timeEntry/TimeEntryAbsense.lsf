@@ -3,14 +3,32 @@ MODULE TimeEntryAbsense;
 REQUIRE TimeEntry, EmployeeAbsence;
 
 absense = DATA Absence(TimeEntry);
-idAbsense 'Остутствие' (TimeEntry t) = id(absense(t));
+descriptionAbsense 'Остутствие' (TimeEntry t) = CONCAT '-', toDateDDMMYY(dateFrom(absense(t))), toDateDDMMYY(dateTo(absense(t)));
 
-EXTEND FORM timeEntry PROPERTIES idAbsense(o);
+EXTEND FORM timeEntry PROPERTIES descriptionAbsense(o);
 
 DESIGN timeEntry {
     data {
-        MOVE PROPERTY (idAbsense(o));
+        MOVE PROPERTY (descriptionAbsense(o));
     }
 }
 
 workedHours 'Отработано часов' (Absence a) = GROUP SUM hours(TimeEntry t) BY absense(t);
+
+CONSTRAINT workedHours(Absence a) > hours(a) MESSAGE 'Отработано часов не может быть больше часов остутствия';
+CONSTRAINT absense(TimeEntry t) AND employee(t) AND NOT employee(t) == employee(absense(t)) CHECKED BY absense[TimeEntry] MESSAGE 'Сотрудник не совпадает с сотрудником отстутствия';
+
+FORM dialogAbsense 'Отсутствия'
+    OBJECTS t = TimeEntry PANEL 
+    OBJECTS a = Absence LAST 
+    PROPERTIES (a) READONLY id, nameEmployee, nameReason, dateFrom, dateTo, hours, workedHours, workingHours, date, note
+    ORDER date(a)
+    
+    FILTERS employee(t) == employee(a)
+;
+
+changeAbsense 'Редактировать отсутствие' (TimeEntry t) {
+    DIALOG dialogAbsense OBJECTS t = t, a INPUT NULL DO {
+        absense(t) <- a;
+    }
+}

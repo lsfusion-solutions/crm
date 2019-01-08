@@ -5,7 +5,8 @@ REQUIRE TimeEntryExpense, Dashboard, WorkingHours, TimeEntryAbsense;
 NAMESPACE Project;
 
 absenceHours 'Кол-во часов' (Employee e, AbsenceReason r, INTEGER y) =  GROUP SUM hours(Absence a, DATE d) BY employee(a), reason(a), extractYear(d) CHARWIDTH 5;
-absenceDays 'Кол-во дней' (Employee e, AbsenceReason r, INTEGER y) = round1(absenceHours(e, r, y) / 8);
+workedHours (Employee e, AbsenceReason r, INTEGER y) = GROUP SUM workedHours(Absence a) BY employee(a), reason(a), extractYear(date(a));
+absenceDays 'Кол-во дней' (Employee e, AbsenceReason r, INTEGER y) = round1((absenceHours(e, r, y) (-) workedHours(e, r, y)) / 8);
 absenceHours 'Кол-во часов' (AbsenceReason r, INTEGER y) =  GROUP SUM hours(Absence a, DATE d) BY reason(a), extractYear(d);
 absenceHours 'Кол-во часов' (Employee e, INTEGER y) =  GROUP SUM hours(Absence a, DATE d) BY employee(a), extractYear(d);
 absenceDays 'Кол-во дней отсутствия' (Employee e, INTEGER y) = round1(absenceHours(e, y) / 8);
@@ -65,7 +66,7 @@ FORM timeEntryDashboard 'Контроль отмеченного времени'
     FILTERS absenceHours(r, yy)
     
     OBJECTS ab = Absence
-    PROPERTIES (ab) READONLY id, nameEmployee, nameReason, dateFrom, dateTo, hours, workingHours, date, note
+    PROPERTIES (ab) READONLY id, nameEmployee, nameReason, dateFrom, dateTo, hours, workedHours, workingHours, date, note
     ORDER date(ab)
     FILTERS employee(ab) == ee, extractYear(dateFrom(ab)) == yy OR extractYear(dateTo(ab)) == yy
     
