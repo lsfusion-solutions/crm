@@ -34,7 +34,7 @@ FORM eventDashboard 'Обработка событий'
     PROPERTIES(o) READONLY id, name, nameType, nameCustomer, nameLegalEntity, nameEmployee, nameContact, date, time, dateNext, descriptionString, additionString
     PROPERTIES(o) PANEL READONLY description, addition
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
-    ORDER date(o), time(o)
+    ORDER date(o) DESC, time(o) DESC
     FILTERS NOT date(o) < dateFromEvent() AND NOT date(o) > dateToEvent() AND NOT dateNext(o) < dateFromNext() AND NOT dateNext(o) > dateToNext()
     FILTERGROUP last FILTER 'Последние по клиенту (мои)' isLastCustomerEmployee(o) AND employee(o) = currentUser() AND dateNext(o) >= subtract(currentDate(), 360) 
                      FILTER 'Последние по клиенту' isLastCustomer(o) AND dateNext(o) >= subtract(currentDate(), 360)
