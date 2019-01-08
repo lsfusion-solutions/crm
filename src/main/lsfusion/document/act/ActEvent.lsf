@@ -1,6 +1,6 @@
 MODULE ActEvent;
 
-REQUIRE Act, Event;
+REQUIRE Act, AgreementEvent, DocEvent;
 
 NAMESPACE Act;
 
@@ -15,3 +15,20 @@ DESIGN event {
         MOVE PROPERTY (numberAct(o));
     }
 }
+
+addEvent (Event e, Act a) + {
+    act(e) <- a;
+}
+
+WHEN LOCAL SETCHANGED (act(Event e)) AND NOT CHANGED (contract(e)) DO {
+    contract(e) <- contract(act(e));
+    agreement(e) <- agreement(act(e));
+}
+
+CONSTRAINT contract(Event e) AND act(e) AND NOT contract(act(e)) == contract(e) CHECKED BY act[Event] MESSAGE 'Акт не соответствует договору';
+CONSTRAINT agreement(Event e) AND act(e) AND NOT agreement(act(e)) == agreement(e) CHECKED BY act[Event] MESSAGE 'Акт не соответствует соглашению';
+CONSTRAINT act(Event e) AND legalEntity(e) AND NOT legalEntity(e) == legalEntity(act(e)) MESSAGE 'Акт не соответствует организации';
+
+EXTEND FORM docDashboard
+    EXTEND FILTERGROUP event FILTER 'По документу' contract(e) == d OR agreement(e) == d OR act(e) == d DEFAULT
+; 

@@ -1,6 +1,6 @@
 MODULE ContractEvent;
 
-REQUIRE Contract, Event;
+REQUIRE Contract, DocEvent;
 
 NAMESPACE Contract;
 
@@ -15,3 +15,13 @@ DESIGN event {
         MOVE PROPERTY (numberContract(o));
     }
 }
+
+addEvent (Event e, Contract c) + {
+    contract(e) <- c;
+}
+WHEN LOCAL SETCHANGED (contract(Event e)) AND NOT CHANGED (customer(e)) AND NOT CHANGED (legalEntity(e)) DO {
+    customer(e) <- customer(contract(e));
+    legalEntity(e) <- legalEntity(contract(e));
+}
+
+CONSTRAINT contract(Event e) AND legalEntity(e) AND NOT legalEntity(e) == legalEntity(contract(e)) MESSAGE 'Договор не соответствует организации';

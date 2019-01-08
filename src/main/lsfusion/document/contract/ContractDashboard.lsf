@@ -1,6 +1,6 @@
 MODULE ContractDashboard;
 
-REQUIRE PaymentAct, Dashboard, ContractFile, AgreementFile, ActFile, DebtAgreement, DocEvent;
+REQUIRE PaymentAct, Dashboard, ContractFile, AgreementFile, ActFile, DebtAgreement, ActEvent;
 
 NAMESPACE Contract;
 
