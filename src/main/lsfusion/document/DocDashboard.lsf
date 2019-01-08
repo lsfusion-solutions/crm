@@ -81,7 +81,7 @@ FORM docDashboard 'Обработка документов'
     PROPERTIES (d) READONLY nameDocType, id, number, date, name, nameCustomer, nameType, numberContract, nameLegalEntity, 
                             nameCompany, sum, paid, balance, dateSigningCompany, dateSending, dateSigningCustomer, dateReceiving, dateClosing
     ORDER date(d)
-    FILTERS docType(d) = filterDocType() OR NOT filterDocType(), company(d) == filterLegalEntity() OR NOT filterLegalEntity(), date(d) >= df AND date(d) <= dt
+    FILTERS docType(d) = filterDocType() OR NOT filterDocType(), company(d) == filterLegalEntity() OR NOT filterLegalEntity()
     FILTERGROUP open FILTER 'Открыт' NOT dateClosing(d) DEFAULT 
     
     FILTERGROUP d FILTER 'Требуется подписание' notSign(d)
