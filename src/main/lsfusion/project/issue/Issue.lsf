@@ -72,7 +72,7 @@ dateFrom 'Дата начала' = DATA DATE (Issue);
 doneRatio 'Готовность' = DATA INTEGER (Issue);
 estimatedHours 'Оценка трудозатрат' = DATA NUMERIC[7,2](Issue);
 
-project = DATA Project(Issue) NONULL DELETE;
+project = DATA Project(Issue);
 idProject 'Код проекта' (Issue i) = id(project(i));
 nameProject 'Проект' (Issue i) = name(project(i));
 
