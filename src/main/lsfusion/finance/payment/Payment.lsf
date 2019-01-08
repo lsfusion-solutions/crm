@@ -13,7 +13,7 @@ payment (id) = GROUP AGGR Payment c BY id (c);
 legalEntity 'Организация' = DATA LegalEntity(Payment) NONULL;
 idLegalEntity 'Код организации' (Payment p) = id(legalEntity(p));
 nameLegalEntity 'Организация' (Payment p) = name(legalEntity(p)) IN id;
-customer (Payment p) = customer(legalEntity(p));
+customer (Payment p) = customer(legalEntity(p)) MATERIALIZED INDEXED;
 nameCustomer 'Клиент' (Payment p) = name(customer(p));
 
 company = DATA LegalEntity(Payment);
@@ -33,6 +33,8 @@ nameCurrency 'Валюта платежа' (Payment p) = name(currency(p));
 shortNameCurrency 'Валюта (сокр.)' (Payment p) = shortName(currency(p));
 
 sumCurrency 'Сумма в валюте' (Payment p) = round2(sum(p) * OVERRIDE rateOn(defaultTypeExchange(), currency(p), date(p)), 1);
+
+sumPayment 'Сумма платежей' (Customer c) = GROUP SUM sum(Payment p) BY customer(p) MATERIALIZED;
 
 FORM dialogInputSum 'Сумма нового платежа'
     OBJECTS n = NUMERIC[16,5] PANEL

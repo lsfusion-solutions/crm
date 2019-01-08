@@ -25,7 +25,7 @@ namePhysicalAddress 'Физ. адрес' (LegalEntity l) = name(physicalAddress(
 legalAddress (LegalEntity l) = GROUP LAST Address a ORDER a IF in(a, AddressType.legal) BY legalEntity(a);
 nameLegalAddress 'Юр. адрес' (LegalEntity l) = name(legalAddress(l));
 
-customer = DATA Customer(LegalEntity);
+customer = DATA Customer(LegalEntity) INDEXED;
 idCustomer 'Код клиента' (LegalEntity l) = id(customer(l));
 nameCustomer 'Клиент' (LegalEntity l) = name(customer(l)) IN id;
 
