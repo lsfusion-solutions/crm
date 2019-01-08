@@ -25,6 +25,11 @@ addLegalEntity 'Добавить' (Customer c) {
     }
 } IMAGE 'add.png';
 
+filterLegalEntity = DATA LOCAL LegalEntity(Customer);
+nameFilterLegalEntity 'Организация' (Customer c) = name(filterLegalEntity(c));
+
+CONSTRAINT filterLegalEntity(Customer c) AND NOT customer(filterLegalEntity(c)) == c CHECKED BY filterLegalEntity[Customer] MESSAGE 'Клиент организации не соответствует клиенту';
+
 FORM dashboardCustomer 'Работа с клиентами'
     
     OBJECTS c = Customer PANEL 
@@ -70,9 +75,11 @@ FORM dashboardCustomer 'Работа с клиентами'
     FILTERS contract(ppm) == cr
     ORDER date(ppm) DESC
     
+    PROPERTIES nameFilterLegalEntity(c)
+    
     OBJECTS pm = Payment
     PROPERTIES (pm) READONLY id, nameLegalEntity, numberContract, nameTypeContract, numberAgreement, numberAct, number, date, year, monthNumber, sum, nameCurrency, shortNameCurrency, sumCurrency, note 
-    FILTERS customer(legalEntity(pm)) == c
+    FILTERS customer(legalEntity(pm)) == c, legalEntity(pm) == filterLegalEntity(c) OR NOT filterLegalEntity(c)
     ORDER date(pm) DESC
     
     OBJECTS ev = Event
@@ -133,7 +140,11 @@ DESIGN dashboardCustomer {
                     }
                 }
             }
-            MOVE BOX (pm) { caption = 'Платежи'; }
+            NEW payments {
+                caption = 'Платежи';
+                MOVE PROPERTY (nameFilterLegalEntity(c));
+                MOVE BOX (pm) { caption = 'Платежи'; }
+            }
             NEW events {
                 caption = 'События';
                 fill = 1;
