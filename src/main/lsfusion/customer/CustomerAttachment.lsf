@@ -60,6 +60,12 @@ deleteFile 'Удалить' (Attachment c) {
         file(c) <- NULL; 
 } CONFIRM;
 
+merge (Customer from, Customer to) + {
+    FOR customer(Attachment a) == from DO {
+        customer(a) <- to;
+    }   
+}
+
 FORM attachment 'Документ'
     OBJECTS o = Attachment PANEL
     PROPERTIES(o) id, nameCustomer, number, date, nameType, note, nameCreatedUser, createdDate, loadFile, openFile SHOWIF TRUE IF file(o), deleteFile SHOWIF TRUE IF file(o)
