@@ -35,23 +35,24 @@ TABLE issueStatus (IssueStatus);
 
 name 'Наименование' = DATA VARISTRING[100] (IssueStatus) CHARWIDTH 15 IN id;
 issueStatus = GROUP AGGR IssueStatus p BY name (p);
+isClosed 'Закрыта' = DATA BOOLEAN (IssueStatus);
 
 FORM issueStatus 'Статус задачи'
     OBJECTS o = IssueStatus PANEL
-    PROPERTIES(o) name
+    PROPERTIES(o) name, isClosed
     
     EDIT IssueStatus OBJECT o
 ;
 
 FORM issueStatuses 'Статусы задачи'
     OBJECTS o = IssueStatus
-    PROPERTIES(o) READONLY name
+    PROPERTIES(o) READONLY name, isClosed
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
 ;
 
 FORM dialogIssueStatuses 'Статусы задачи'
     OBJECTS o = IssueStatus
-    PROPERTIES(o) READONLY name
+    PROPERTIES(o) READONLY name, isClosed
     
     LIST IssueStatus OBJECT o
 ;

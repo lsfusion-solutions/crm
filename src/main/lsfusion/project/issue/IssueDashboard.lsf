@@ -1,0 +1,30 @@
+MODULE IssueDashboard;
+
+REQUIRE Issue, ProjectExternal;
+
+NAMESPACE Project;
+
+WHEN LOCAL SET (Issue i IS Issue) DO {
+    dateTimeCreated(i) <- currentDateTime();
+    author(i) <- currentUser();
+    dateFrom(i) <- currentDate();
+    status(i) <- GROUP MAX IssueStatus s IF name(s) == 'Новая';
+}
+
+FORM issueDashboard 'Мои задачи'
+
+    OBJECTS o = Issue LAST 
+    PROPERTIES(o) READONLY number, name, descriptionString, dateTimeCreated, dateTimeUpdated, dateFrom, dateTo, doneRatio, estimatedHours, nameProject, 
+                           nameAuthor, nameAssignedTo, nameTracker, nameStatus
+    PROPERTIES(o) NEWSESSION NEW
+    PROPERTIES(o) SHOWIF NOT external(project(o)) NEWSESSION EDIT, DELETE
+    FILTERGROUP open FILTER 'Открытые' NOT isClosed(status(o)) DEFAULT 
+    FILTERGROUP my FILTER 'Мои задачи' assignedTo(o) == currentUser() DEFAULT
+    ORDER number(o)
+;
+
+NAVIGATOR {
+    project {
+        NEW issueDashboard;
+    }
+}
