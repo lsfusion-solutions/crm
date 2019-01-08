@@ -30,7 +30,14 @@ DESIGN contract {
 in 'Отм.' = DATA LOCAL BOOLEAN (Debt);
 
 createActs 'Создать акты' () {
+
+    LOCAL copy = BOOLEAN ();
+    
     NEWSESSION NESTED (in[Debt]) {
+        
+        ASK 'Скопировать текст и название?' DO {
+            copy() <- TRUE;
+        }
         FOR in(Debt d) AND NOT act(d) DO NEW a = Act {
             act(d) <- a;
             contract(a) <- contract(d);
@@ -45,6 +52,10 @@ createActs 'Создать акты' () {
                     dateTime(df) <- currentDateTime();
                     user(df) <- currentUser();
                 }
+            }
+            IF copy() THEN {
+                name(a) <- OVERRIDE name(agreement(d)), name(contract(d));
+                text(a) <- OVERRIDE text(agreement(d)), text(contract(d));
             }
         }
         in(Debt t) <- NULL;
