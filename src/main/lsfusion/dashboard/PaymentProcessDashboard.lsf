@@ -88,7 +88,7 @@ importPaymentsDbf 'Импорт платежей (dbf)' (DATE df, DATE dt) {
         IMPORT DBF CHARSET 'cp866' FROM f TO idLegalEntity, date, text, sum, type, idCompany;
         
         payment(INTEGER i) <- GROUP MAX Payment p IF date(p) == date(i) AND round2(sum(p)) == round2(sum(i)/extractDay(date(i))) AND legalEntity(p) == legalEntityEx(idLegalEntity(i));
-        expense(INTEGER i) <- GROUP MAX Expense p IF date(p) == date(i) AND round2(sum(p)) == round2(sum(i)/extractDay(date(i))) AND legalEntity(p) == legalEntityEx(idLegalEntity(i));
+        expense(INTEGER i) <- GROUP MAX Expense p IF date(p) == date(i) AND round2(sum(p)) == round2(-sum(i)/extractDay(date(i))) AND legalEntity(p) == legalEntityEx(idLegalEntity(i));
 
         FOR imported(INTEGER i) AND NOT legalEntityEx(idLegalEntity(i)) AND sum(i) > 0 AND date(i) >= df AND date(i) <= dt DO {
         
