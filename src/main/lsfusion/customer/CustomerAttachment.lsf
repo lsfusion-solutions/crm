@@ -21,7 +21,7 @@ createdUser (Attachment o) <- currentUser() WHEN SET(o IS Attachment);
 createdDate 'Дата создания' = DATA DATE (Attachment);
 createdDate (Attachment o) <- currentDate() WHEN SET(o IS Attachment);
 
-customer = DATA Customer(Attachment) NONULL DELETE;
+customer = DATA Customer(Attachment) NONULL;
 nameCustomer 'Клиент' (Attachment a) = name(customer(a));
 
 CLASS AttachmentType 'Тип предложения';
