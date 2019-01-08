@@ -19,7 +19,7 @@ number 'Номер' = DATA VARSTRING[15](Contract) IN id;
 legalEntity = DATA LegalEntity(Contract);
 idLegalEntity 'Код организации' (Contract c) = id(legalEntity(c));
 nameLegalEntity 'Организация' (Contract c) = name(legalEntity(c)) IN id;
-customer (Contract c) = customer(legalEntity(c));
+customer (Contract c) = customer(legalEntity(c)) MATERIALIZED INDEXED;
 nameCustomer 'Клиент' (Contract c) = name(customer(legalEntity(c)));
 
 company = DATA LegalEntity(Contract);

@@ -14,16 +14,21 @@ close 'Закрыть' (Contract c) {
 filterContractType = DATA LOCAL ContractType();
 nameFilterContractType 'Тип договора' () = name(filterContractType());
 
+filterCustomer = DATA LOCAL Customer();
+nameFilterCustomer 'Клиент' () = name(filterCustomer());
+
+CONSTRAINT filterCustomer() AND NOT [GROUP SUM 1 BY customer(Contract c)](filterCustomer()) CHECKED BY filterCustomer[] MESSAGE 'По клиенту нет договоров';
+
 FORM contractDashboard 'Работа с договорами'
-    PROPERTIES nameFilterContractType()
+    PROPERTIES () nameFilterContractType, nameFilterCustomer
     OBJECTS o = Contract LAST 
     PROPERTIES(o) READONLY id, nameCustomer, nameLegalEntity, nameCompany, number, date, name, dateLastPaid,
-                           sum, shortNameCurrency, sumCurrency, paid, paidCurrency, nameType, nameGroup, nameSendingWay, 
+                           sum, shortNameCurrency, sumCurrency, sumMonth, paid, paidCurrency, nameType, nameGroup, nameSendingWay, 
                            dateSigningCompany, dateSending, dateSigningCustomer, dateReceiving, dateTo, dateClosing, note, textString, text PANEL
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
     PROPERTIES(o) loadFileApply, openFile SHOWIF TRUE IF file(o), close SHOWIF NOT dateClosing(o)
     ORDER date(o)
-    FILTERS type(o) == filterContractType() OR NOT filterContractType()
+    FILTERS type(o) == filterContractType() OR NOT filterContractType(), customer(o) == filterCustomer() OR NOT filterCustomer()
     
     FILTERGROUP paid FILTER 'Не оплачен' paid(o) < sum(o)
                      FILTER 'Оплачен' paid(o) >= sum(o)
@@ -68,7 +73,9 @@ DESIGN contractDashboard {
     OBJECTS {
         NEW filter FIRST {
             caption = 'Фильтры';
+            type = CONTAINERH;
             MOVE PROPERTY (nameFilterContractType());
+            MOVE PROPERTY (nameFilterCustomer());
         }
         NEW contract AFTER filter {
             MOVE BOX (o);
