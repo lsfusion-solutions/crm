@@ -39,7 +39,7 @@ importLegalEntities 'Импорт организаций' (FILE f) {
     LOCAL addressBank = VARSTRING[250](INTEGER);
     LOCAL mfoBank = VARSTRING[11](INTEGER);
     LOCAL account = VARSTRING[50](INTEGER);
-    LOCAL info = VARISTRING[1000](INTEGER);
+    LOCAL info = TEXT(INTEGER);
     
     IMPORT XLS NOHEADER FROM f TO idCustomer, nameCustomer, customerGroup, status, emailCustomer, phoneCustomer, siteCustomer, noteCustomer, dateCustomer, 
                          idLegalEntity, extIdLegalEntity, nameLegalEntity, postcodeL, regionL, districtL, localityL, streetL, houseL, officeL, 
