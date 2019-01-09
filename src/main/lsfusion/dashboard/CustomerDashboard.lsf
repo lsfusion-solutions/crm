@@ -1,6 +1,6 @@
 MODULE CustomerDashboard;
 
-REQUIRE Project, PaymentAct, Event, Issue, TimeEntry, Dashboard, LegalEntity, DocFile, TimeEntryCustomer;
+REQUIRE Project, PaymentAct, Event, Issue, TimeEntry, Dashboard, LegalEntity, DocFile, TimeEntryCustomer, ProjectExternal;
 
 NAMESPACE Dashboard;
 
@@ -29,6 +29,13 @@ filterLegalEntity = DATA LOCAL LegalEntity(Customer);
 nameFilterLegalEntity 'Организация' (Customer c) = name(filterLegalEntity(c));
 
 CONSTRAINT filterLegalEntity(Customer c) AND NOT customer(filterLegalEntity(c)) == c CHECKED BY filterLegalEntity[Customer] MESSAGE 'Клиент организации не соответствует клиенту';
+
+addIssue 'Добавить' (Customer c) {
+    NEWSESSION NEW i = Issue {
+        customer(i) <- c;
+        SHOW issue OBJECTS o = i DOCKED;
+    }
+} IMAGE 'add.png';
 
 FORM dashboardCustomer 'Работа с клиентами'
     
@@ -103,13 +110,24 @@ FORM dashboardCustomer 'Работа с клиентами'
     PROPERTIES(is) in
     PROPERTIES(is) READONLY number, name, descriptionString, dateTo, dateTimeCreated, dateTimeUpdated, dateFrom, doneRatio, estimatedHours, nameProject, nameAuthor, nameAssignedTo, nameTracker
     PROPERTIES(is) changeStatus TOOLBAR, open TOOLBAR
-    FILTERS customer(project(is)) == c, status(is) == st
+    FILTERS customer(is) == c OR customer(project(is)) == c, status(is) == st
     ORDER number(is) DESC
     
     OBJECTS te = TimeEntry
     PROPERTIES (te) READONLY id, hours, commentsString, date, nameActivity, nameProject, nameEmployee, numberIssue, nameIssue
     FILTERS customer(te) == c
     ORDER date(te) DESC
+    
+    OBJECTS ss = Issue
+    PROPERTIES(ss) in
+    PROPERTIES(ss) READONLY number, name, descriptionString, dateTo, dateTimeCreated, dateTimeUpdated, dateFrom, doneRatio, 
+                            estimatedHours, nameProject, nameAuthor, nameAssignedTo, nameTracker
+    PROPERTIES DRAW ss TOOLBAR open(ss), addIssue(c)
+    PROPERTIES (ss) SHOWIF NOT external(ss) NEWSESSION EDIT, DELETE 
+    FILTERS customer(ss) == c OR customer(project(ss)) == c
+    FILTERGROUP open FILTER 'Открытые' NOT isClosed(status(ss)) DEFAULT 
+    FILTERGROUP inner FILTER 'Внтренние' NOT external(ss) DEFAULT 
+    ORDER number(ss) DESC
     
     OBJECTS cd = (df = DATE, dt = DATE) PANEL 
     PROPERTIES dFrom 'Дата с' = VALUE (df), dTo 'Дата по' =  VALUE (dt), printCustomerReport(c, df, dt)
@@ -192,6 +210,7 @@ DESIGN dashboardCustomer {
                     MOVE BOX (te) { caption = 'Отметки времени'; }
                 }
             }
+            MOVE BOX (ss) { caption = 'Задачи'; }
             NEW info {
                 caption = 'Информация';
                 fill = 1;

@@ -48,7 +48,7 @@ DESIGN issue {
 }
 
 WHEN (CHANGED (name(Issue i)) OR CHANGED (status(i)) OR CHANGED (description(i)) OR CHANGED (assignedTo(i)) OR CHANGED (tracker(i)) 
-    OR CHANGED (dateFrom(i)) OR CHANGED (dateTo(i)) OR CHANGED (doneRatio(i)) OR CHANGED (estimatedHours(i)) OR CHANGED (note(i))) AND NOT external(project(i)) DO {
+    OR CHANGED (dateFrom(i)) OR CHANGED (dateTo(i)) OR CHANGED (doneRatio(i)) OR CHANGED (estimatedHours(i)) OR CHANGED (note(i))) AND NOT external(i) DO {
     
     dateTimeUpdated(i) <- currentDateTime();
     

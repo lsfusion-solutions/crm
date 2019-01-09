@@ -21,10 +21,10 @@ FORM issueDashboard 'Мои задачи'
     PROPERTIES(o) READONLY number, name, descriptionString, dateTimeCreated, dateTimeUpdated, dateFrom, dateTo, doneRatio, estimatedHours, nameProject, 
                            nameCustomer, nameAuthor, nameAssignedTo, nameTracker, nameStatus
     PROPERTIES(o) NEWSESSION NEW
-    PROPERTIES(o) SHOWIF NOT external(project(o)) NEWSESSION EDIT, DELETE
+    PROPERTIES(o) SHOWIF NOT external(o) NEWSESSION EDIT, DELETE
     
     FILTERGROUP open FILTER 'Открытые' NOT isClosed(status(o)) DEFAULT 
-    FILTERGROUP inner FILTER 'Внтренние' NOT external(project(o)) DEFAULT 
+    FILTERGROUP inner FILTER 'Внтренние' NOT external(o) DEFAULT 
     FILTERGROUP my FILTER 'Мои задачи' assignedTo(o) = currentUser() DEFAULT
                    FILTER 'Созданные мною' author(o) = currentUser()
     ORDER number(o)

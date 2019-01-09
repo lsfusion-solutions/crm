@@ -38,11 +38,12 @@ importIssue 'Импорт задач' (External e) {
 
         FOR INTEGER ii = [GROUP MIN INTEGER i BY VARSTRING[15](id(i))](VARSTRING[15] id) AND id != '' AND NOT issue(id, e) DO NEW s = Issue {
             id(s) <- id;
-            project(s) <- project(VARSTRING[15](project_id(ii)), e);
+            external(s) <- e;
         }
         
         FOR Issue s = issue(VARSTRING[15](id(INTEGER i)), e) AND id(i) DO {
             
+            project(s) <- project(VARSTRING[15](project_id(i)), e);
             name(s) <- subject(i);
             description(s) <- description(i);
             dateTo(s) <- due_date(i);
@@ -58,7 +59,7 @@ importIssue 'Импорт задач' (External e) {
             status(s) <- issueStatus(e, status_id(i));
         }
         
-        FOR external(project(Issue s)) == e AND NOT [GROUP SUM 1 IF imported(INTEGER i) BY VARSTRING[15](id(i))](id(s)) DO {
+        FOR external(Issue s) == e AND NOT [GROUP SUM 1 IF imported(INTEGER i) BY VARSTRING[15](id(i))](id(s)) DO {
             DELETE s;
         }
         APPLY;
@@ -106,7 +107,7 @@ importIssueStatus 'Импорт статусов задачи' (External e) {
 
 open (Issue i) + {
     IF i IS Issue THEN {
-        FOR External e = external(project(i)) AND url(e) DO {
+        FOR External e = external(i) AND url(e) DO {
             open(LINK(url(e) + '/issues/' + id(i)));
         }
     } 
@@ -123,7 +124,7 @@ EXTEND FORM external
 ;
 
 changeStatus (Issue i, IssueStatus s) + {
-    FOR External e = external(project(i)) AND url(e) DO 
+    FOR External e = external(i) AND url(e) DO 
         IF apiKey(e, currentUser()) THEN {
             stringToFile('\{ "issue": \{ "status_id" : "' + id(e, s) + '" \} \}', 'UTF-8', 'json');
             LOCAL result = FILE();

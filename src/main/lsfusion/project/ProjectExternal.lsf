@@ -40,10 +40,13 @@ EXTEND FORM project PROPERTIES nameExternal(o);
 EXTEND FORM projects PROPERTIES nameExternal(o);
 EXTEND FORM dialogProjects PROPERTIES nameExternal(o);
 
-idExternal 'Код внешней системы' (Issue p) = id(external(project(p)));
-nameExternal 'Внешняя система' (Issue p) = name(external(project(p)));
+external = DATA External(Issue);
+idExternal 'Код внешней системы' (Issue p) = id(external(p));
+nameExternal 'Внешняя система' (Issue p) = name(external(p));
 
-issue = GROUP AGGR Issue p BY id (p), external(project(p));
+issue = GROUP AGGR Issue p BY id (p), external(p);
+
+CONSTRAINT project(Issue i) AND NOT external(project(i)) == external(i) CHECKED BY project[Issue] MESSAGE 'Внешняя система задачи не совпадает с внешней системой проекта';
 
 EXTEND FORM issues PROPERTIES nameExternal(o);
 EXTEND FORM dialogIssues PROPERTIES nameExternal(o);
