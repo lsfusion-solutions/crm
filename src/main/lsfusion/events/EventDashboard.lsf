@@ -14,23 +14,10 @@ dateToEvent 'по' = DATA LOCAL DATE ();
 dateFromNext 'с' = DATA LOCAL DATE ();
 dateToNext 'по' = DATA LOCAL DATE ();
 
-FORM eventsXls 'События'
-    
-    PROPERTIES () dateFromEvent, dateToEvent, dateFromNext, dateToNext
-    
-    OBJECTS o = Event 
-    PROPERTIES (o) nameCustomer, nameContact, description
-    FILTERS NOT date(o) < dateFromEvent() AND NOT date(o) > dateToEvent() AND NOT dateNext(o) < dateFromNext() AND NOT dateNext(o) > dateToNext()
-;
-
-printEventsXls 'Выгрузить в Excel' () {
-    PRINT eventsXls XLS;
-}
-
 phoneContact 'Телефон контактного лица' (Event e) = OVERRIDE phone(contact(e)), (GROUP LAST number(Phone p) ORDER DESC p IF contact(p) == contact(e)) CHARWIDTH 15;
 
 FORM eventDashboard 'Обработка событий'
-    PROPERTIES () dateFromEvent, dateToEvent, dateFromNext, dateToNext, printEventsXls
+    PROPERTIES () dateFromEvent, dateToEvent, dateFromNext, dateToNext
     
     OBJECTS o = Event 
     PROPERTIES(o) READONLY id, name, nameType, nameCustomer, nameLegalEntity, nameEmployee, nameContact, phoneContact, date, time, dateNext, descriptionString, additionString
@@ -41,6 +28,24 @@ FORM eventDashboard 'Обработка событий'
     FILTERGROUP last FILTER 'Последние по клиенту (мои)' isLastCustomerEmployee(o) AND employee(o) = currentUser() AND dateNext(o) >= subtract(currentDate(), 360) 
                      FILTER 'Последние по клиенту' isLastCustomer(o) AND dateNext(o) >= subtract(currentDate(), 360)
 ;
+
+dashboardFilter = DATA LOCAL BOOLEAN (Event);
+
+FORM eventsXls 'События'
+    
+    PROPERTIES () dateFromEvent, dateToEvent, dateFromNext, dateToNext
+    
+    OBJECTS o = Event 
+    PROPERTIES (o) nameCustomer, nameContact, description
+    FILTERS dashboardFilter(o)
+;
+
+printEventsXls 'Выгрузить в Excel' () {
+    dashboardFilter(Event e) <- [FILTER eventDashboard.o](e);
+    PRINT eventsXls XLS;
+}
+
+EXTEND FORM eventDashboard PROPERTIES printEventsXls();
 
 DESIGN eventDashboard {
     OBJECTS {
