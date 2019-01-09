@@ -27,11 +27,13 @@ printEventsXls 'Выгрузить в Excel' () {
     PRINT eventsXls XLS;
 }
 
+phoneContact 'Телефон контактного лица' (Event e) = OVERRIDE phone(contact(e)), (GROUP LAST number(Phone p) ORDER DESC p IF contact(p) == contact(e)) CHARWIDTH 15;
+
 FORM eventDashboard 'Обработка событий'
     PROPERTIES () dateFromEvent, dateToEvent, dateFromNext, dateToNext, printEventsXls
     
     OBJECTS o = Event 
-    PROPERTIES(o) READONLY id, name, nameType, nameCustomer, nameLegalEntity, nameEmployee, nameContact, date, time, dateNext, descriptionString, additionString
+    PROPERTIES(o) READONLY id, name, nameType, nameCustomer, nameLegalEntity, nameEmployee, nameContact, phoneContact, date, time, dateNext, descriptionString, additionString
     PROPERTIES(o) PANEL READONLY description, addition
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
     ORDER date(o) DESC, time(o) DESC
