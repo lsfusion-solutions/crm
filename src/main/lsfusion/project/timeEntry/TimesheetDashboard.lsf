@@ -17,7 +17,7 @@ FORM timesheetDashboard 'Табель рабочего времени'
     
     OBJECTS m = Month PANEL, y = INTEGER PANEL, e = Employee PANEL
     PROPERTIES month 'Месяц' = staticCaption(m) SELECTOR, year 'Год' = VALUE (y), name(e) SELECTOR
-//    FILTERS e == currentUser()
+    FILTERS e == currentUser()
     
     OBJECTS d = DATE 
     PROPERTIES READONLY VALUE (d), extractDOWName(d), workingHours(d), totalHours(e, d)
