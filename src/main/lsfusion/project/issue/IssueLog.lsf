@@ -1,0 +1,100 @@
+MODULE IssueLog;
+
+REQUIRE Issue, ProjectExternal;
+
+NAMESPACE Project;
+
+CLASS IssueLog 'Лог задачи';
+TABLE issueLog(IssueLog);
+
+issue = DATA Issue(IssueLog) NONULL DELETE;
+
+dateTime 'Дата/время' = DATA DATETIME (IssueLog);
+property 'Параметр' = DATA VARISTRING[100](IssueLog) CHARWIDTH 20;
+value 'Значение' = DATA VARISTRING[500](IssueLog) CHARWIDTH 20;
+
+user = DATA User(IssueLog);
+nameUser 'Пользователь' (IssueLog l) = name(user(l));
+
+EXTEND FORM issue 
+    OBJECTS l = IssueLog
+    PROPERTIES (l) READONLY dateTime, nameUser, property, value
+    FILTERS issue(l) == o
+;
+
+DESIGN issue {
+    OBJECTS {
+        NEW bottom AFTER params {
+            type = CONTAINERH;
+            fill = 1;
+            MOVE description;
+            MOVE BOX (l) {
+                caption = 'История изменений';
+            }
+        }
+    }
+}
+
+WHEN CHANGED (name(Issue i)) AND NOT external(project(i)) DO NEW l = IssueLog {
+    issue(l) <- i;
+    dateTime(l) <- currentDateTime();
+    user(l) <- currentUser();
+    property(l) <- 'Тема';
+    value(l) <- name(i);
+}
+WHEN CHANGED (status(Issue i)) AND NOT external(project(i)) DO NEW l = IssueLog {
+    issue(l) <- i;
+    dateTime(l) <- currentDateTime();
+    user(l) <- currentUser();
+    property(l) <- 'Статус';
+    value(l) <- nameStatus(i);
+}
+WHEN CHANGED (description(Issue i)) AND NOT external(project(i)) DO NEW l = IssueLog {
+    issue(l) <- i;
+    dateTime(l) <- currentDateTime();
+    user(l) <- currentUser();
+    property(l) <- 'Описание';
+    value(l) <- description(i);
+}
+WHEN CHANGED (assignedTo(Issue i)) AND NOT external(project(i)) DO NEW l = IssueLog {
+    issue(l) <- i;
+    dateTime(l) <- currentDateTime();
+    user(l) <- currentUser();
+    property(l) <- 'Назначена';
+    value(l) <- nameAssignedTo(i);
+}
+WHEN CHANGED (tracker(Issue i)) AND NOT external(project(i)) DO NEW l = IssueLog {
+    issue(l) <- i;
+    dateTime(l) <- currentDateTime();
+    user(l) <- currentUser();
+    property(l) <- 'Трекер';
+    value(l) <- nameTracker(i);
+}
+WHEN CHANGED (estimatedHours(Issue i)) AND NOT external(project(i)) DO NEW l = IssueLog {
+    issue(l) <- i;
+    dateTime(l) <- currentDateTime();
+    user(l) <- currentUser();
+    property(l) <- 'Оценка трудозатрат';
+    value(l) <- VARISTRING[500] (estimatedHours(i));
+}
+WHEN CHANGED (doneRatio(Issue i)) AND NOT external(project(i)) DO NEW l = IssueLog {
+    issue(l) <- i;
+    dateTime(l) <- currentDateTime();
+    user(l) <- currentUser();
+    property(l) <- 'Готовность';
+    value(l) <- VARISTRING[500] (doneRatio(i));
+}
+WHEN CHANGED (dateFrom(Issue i)) AND NOT external(project(i)) DO NEW l = IssueLog {
+    issue(l) <- i;
+    dateTime(l) <- currentDateTime();
+    user(l) <- currentUser();
+    property(l) <- 'Дата начала';
+    value(l) <- toDateDDMMYY(dateFrom(i));
+}
+WHEN CHANGED (dateTo(Issue i)) AND NOT external(project(i)) DO NEW l = IssueLog {
+    issue(l) <- i;
+    dateTime(l) <- currentDateTime();
+    user(l) <- currentUser();
+    property(l) <- 'Дата завершения';
+    value(l) <- toDateDDMMYY(dateTo(i));
+}

@@ -1,6 +1,6 @@
 MODULE IssueDashboard;
 
-REQUIRE Issue, ProjectExternal;
+REQUIRE IssueLog, ProjectExternal, Dashboard;
 
 NAMESPACE Project;
 
@@ -9,6 +9,11 @@ WHEN LOCAL SET (Issue i IS Issue) DO {
     author(i) <- currentUser();
     dateFrom(i) <- currentDate();
     status(i) <- GROUP MAX IssueStatus s IF name(s) == 'Новая';
+}
+
+WHEN (CHANGED (name(Issue i)) OR CHANGED (status(i)) OR CHANGED (description(i)) OR CHANGED (assignedTo(i)) OR CHANGED (tracker(i)) 
+    OR CHANGED (dateFrom(i)) OR CHANGED (dateTo(i)) OR CHANGED (doneRatio(i)) OR CHANGED (estimatedHours(i))) AND NOT external(project(i)) DO {
+    dateTimeUpdated(i) <- currentDateTime();
 }
 
 FORM issueDashboard 'Мои задачи'
@@ -21,10 +26,22 @@ FORM issueDashboard 'Мои задачи'
     FILTERGROUP open FILTER 'Открытые' NOT isClosed(status(o)) DEFAULT 
     FILTERGROUP my FILTER 'Мои задачи' assignedTo(o) == currentUser() DEFAULT
     ORDER number(o)
+    
+    OBJECTS l = IssueLog
+    PROPERTIES (l) READONLY dateTime, nameUser, property, value
+    FILTERS issue(l) == o
 ;
 
+DESIGN issueDashboard {
+    OBJECTS {
+        type = SPLITV;
+        BOX (o) { fill = 3; }
+        BOX (l) { fill = 1; }
+    }
+}
+
 NAVIGATOR {
-    project {
+    dashboard {
         NEW issueDashboard;
     }
 }
