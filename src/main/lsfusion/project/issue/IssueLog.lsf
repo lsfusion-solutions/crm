@@ -10,8 +10,8 @@ TABLE issueLog(IssueLog);
 issue = DATA Issue(IssueLog) NONULL DELETE;
 
 dateTime 'Дата/время' = DATA DATETIME (IssueLog);
-property 'Параметр' = DATA VARISTRING[100](IssueLog) CHARWIDTH 20;
-value 'Значение' = DATA VARISTRING[500](IssueLog) CHARWIDTH 20;
+property 'Параметр' = DATA VARISTRING[100](IssueLog) CHARWIDTH 15;
+value 'Значение' = DATA TEXT(IssueLog) CHARWIDTH 100;
 
 user = DATA User(IssueLog);
 nameUser 'Пользователь' (IssueLog l) = name(user(l));

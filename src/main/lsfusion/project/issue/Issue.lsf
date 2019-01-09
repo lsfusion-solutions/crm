@@ -118,7 +118,6 @@ DESIGN issue {
             caption = 'Автор';
             MOVE PROPERTY (nameAuthor(o));
             MOVE PROPERTY (dateTimeCreated(o));
-            MOVE PROPERTY (dateTimeUpdated(o));
         }
         NEW params {
             type = CONTAINERH;
@@ -129,13 +128,11 @@ DESIGN issue {
                 MOVE PROPERTY (nameTracker(o));
             }
             NEW dates {
-                alignment = END;
                 caption = 'Трудозатраты';
-                MOVE PROPERTY (dateFrom(o)) { alignment = END; }
-                MOVE PROPERTY (dateTo(o)) { alignment = END; }
+                MOVE PROPERTY (dateFrom(o));
+                MOVE PROPERTY (dateTo(o));
                 MOVE PROPERTY (doneRatio(o));
                 MOVE PROPERTY (estimatedHours(o));
-                MOVE PROPERTY (doneRatio(o));
             }
         }
         NEW description {
