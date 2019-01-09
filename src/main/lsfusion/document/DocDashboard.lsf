@@ -4,25 +4,41 @@ REQUIRE Doc, Time, Dashboard, Contract;
 
 NAMESPACE Doc;
 
-in 'Отм.' = DATA LOCAL BOOLEAN (Document);
+in 'Отм.' = DATA LOCAL NESTED BOOLEAN (Document);
+
+notSign (Document d) = NOT dateSigningCompany(d) AND NOT dateSending(d) AND NOT dateReceiving(d);
+notSend (Document d) = dateSigningCompany(d) AND NOT dateSending(d) AND NOT dateReceiving(d);
+notReceive (Document d) = dateSending(d) AND NOT dateReceiving(d);
 
 sign 'Подписать' (Document d) {
     NEWSESSION {
-        dateSigningCompany(d) <- currentDate();
+        IF NOT (GROUP SUM 1 IF in(Document t)) THEN in(d) <- TRUE;
+        FOR in(Document dd) AND notSign(dd) DO {
+            dateSigningCompany(dd) <- currentDate();
+        }
+        in(Document dd) <- NULL;
         APPLY;
     }
 } TOOLBAR CONFIRM;
 
 send 'Отправить' (Document d) {
     NEWSESSION {
-        dateSending(d) <- currentDate();
+        IF NOT (GROUP SUM 1 IF in(Document t)) THEN in(d) <- TRUE;
+        FOR in(Document dd) AND notSend(dd) DO {
+            dateSending(dd) <- currentDate();
+        }
+        in(Document dd) <- NULL;
         APPLY;
     }
 } TOOLBAR CONFIRM;
 
 receive 'Получить' (Document d) {
     NEWSESSION {
-        dateReceiving(d) <- currentDate();
+        IF NOT (GROUP SUM 1 IF in(Document t)) THEN in(d) <- TRUE;
+        FOR in(Document dd) AND notReceive(dd) DO {
+            dateReceiving(dd) <- currentDate();
+        }
+        in(Document dd) <- NULL;
         APPLY;
     }
 } TOOLBAR CONFIRM;
@@ -31,13 +47,13 @@ open 'Открыть' (Document d) {
     open(file(d));
 } TOOLBAR;
 
-notSign (Document d) = NOT dateSigningCompany(d) AND NOT dateSending(d) AND NOT dateReceiving(d);
-notSend (Document d) = dateSigningCompany(d) AND NOT dateSending(d) AND NOT dateReceiving(d);
-notReceive (Document d) = dateSending(d) AND NOT dateReceiving(d);
-
 close 'Закрыть' (Document d) {
     NEWSESSION {
-        dateClosing(d) <- currentDate();
+        IF NOT (GROUP SUM 1 IF in(Document t)) THEN in(d) <- TRUE;
+        FOR in(Document dd) AND NOT dateClosing(dd) DO {
+            dateClosing(dd) <- currentDate();
+        }
+        in(Document dd) <- NULL;
         APPLY;
     }
 } TOOLBAR CONFIRM;
@@ -79,7 +95,8 @@ FORM docDashboard 'Обработка документов'
     OBJECTS d = Document
     PROPERTIES (d) in, sign SHOWIF notSign(d), send SHOWIF notSend(d), receive SHOWIF notReceive(d), open SHOWIF TRUE IF file(d), edit, close SHOWIF NOT dateClosing(d)
     PROPERTIES (d) READONLY nameDocType, id, number, date, name, nameCustomer, nameType, numberContract, nameLegalEntity, 
-                            nameCompany, sum, paid, balance, dateLastPaid, dateSigningCompany, dateSending, dateSigningCustomer, dateReceiving, dateClosing
+                            nameCompany, sum, paid, balance, dateLastPaid
+    PROPERTIES (d) READONLYIF isReadonly() dateSigningCompany, dateSending, dateSigningCustomer, dateReceiving, dateClosing
     ORDER date(d)
     FILTERS docType(d) = filterDocType() OR NOT filterDocType(), company(d) == filterLegalEntity() OR NOT filterLegalEntity()
     FILTERGROUP open FILTER 'Открыт' NOT dateClosing(d) DEFAULT 
@@ -88,6 +105,8 @@ FORM docDashboard 'Обработка документов'
                   FILTER 'Требуется отправка' notSend(d)
                   FILTER 'Ожидается получение' notReceive(d)
 ;
+
+@extendFormEditable(docDashboard);
 
 DESIGN docDashboard {
     OBJECTS {
