@@ -4,12 +4,16 @@ REQUIRE IssueLog, ProjectExternal, Dashboard;
 
 NAMESPACE Project;
 
-WHEN LOCAL SET (Issue i IS Issue) DO {
-    dateTimeCreated(i) <- currentDateTime();
-    author(i) <- currentUser();
-    dateFrom(i) <- currentDate();
-    status(i) <- GROUP MAX IssueStatus s IF name(s) == 'Новая';
-}
+newStatus = DATA IssueStatus ();
+nameNewStatus 'Новый статус' () = name(newStatus());
+
+EXTEND FORM options PROPERTIES() nameNewStatus;
+DESIGN options { commons { MOVE PROPERTY(nameNewStatus()); } }
+
+dateTimeCreated(i) <- currentDateTime() WHEN SET(i IS Issue); 
+author(i) <- currentUser() WHEN SET(i IS Issue); 
+dateFrom(i) <- currentDate() WHEN SET(i IS Issue); 
+status(i) <- newStatus() WHEN SET(i IS Issue);
 
 WHEN (CHANGED (name(Issue i)) OR CHANGED (status(i)) OR CHANGED (description(i)) OR CHANGED (assignedTo(i)) OR CHANGED (tracker(i)) 
     OR CHANGED (dateFrom(i)) OR CHANGED (dateTo(i)) OR CHANGED (doneRatio(i)) OR CHANGED (estimatedHours(i))) AND NOT external(project(i)) DO {
@@ -23,8 +27,10 @@ FORM issueDashboard 'Мои задачи'
                            nameAuthor, nameAssignedTo, nameTracker, nameStatus
     PROPERTIES(o) NEWSESSION NEW
     PROPERTIES(o) SHOWIF NOT external(project(o)) NEWSESSION EDIT, DELETE
+    
     FILTERGROUP open FILTER 'Открытые' NOT isClosed(status(o)) DEFAULT 
-    FILTERGROUP my FILTER 'Мои задачи' assignedTo(o) == currentUser() DEFAULT
+    FILTERGROUP my FILTER 'Мои задачи' assignedTo(o) = currentUser() DEFAULT
+                   FILTER 'Созданные мною' author(o) = currentUser()
     ORDER number(o)
     
     OBJECTS l = IssueLog
