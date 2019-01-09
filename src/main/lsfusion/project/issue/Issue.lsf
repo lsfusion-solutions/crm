@@ -77,6 +77,15 @@ project = DATA Project(Issue);
 idProject 'Код проекта' (Issue i) = id(project(i));
 nameProject 'Проект' (Issue i) = name(project(i));
 
+customer = DATA Customer(Issue);
+nameCustomer 'Клиент' (Issue i) = name(customer(i));
+
+CONSTRAINT project(Issue i) AND NOT customer(i) == customer(project(i)) CHECKED BY customer[Issue] MESSAGE 'Клиент задачи не совпадает с клиентом проекта';
+
+WHEN LOCAL CHANGED (project(Issue i)) AND NOT CHANGED (customer(i)) DO {
+    customer(i) <- customer(project(i));
+}
+
 author = DATA CustomUser(Issue);
 nameAuthor 'Автор' (Issue i) = name(author(i)) CHARWIDTH 20;
 loginAuthor 'Логин автора' (Issue i) = login(author(i));
@@ -97,7 +106,7 @@ count 'Кол-во' (Customer c, IssueStatus s) = GROUP SUM count(Project p, s) 
 FORM issue 'Задача'
     OBJECTS o = Issue PANEL
     PROPERTIES(o) id, name, dateTo, dateTimeCreated, dateTimeUpdated, dateFrom, doneRatio, estimatedHours, nameProject, 
-                  nameAuthor, nameAssignedTo, nameTracker, nameStatus, description
+                  nameCustomer, nameAuthor, nameAssignedTo, nameTracker, nameStatus, description
     
     EDIT Issue OBJECT o
 ;
@@ -110,6 +119,7 @@ DESIGN issue {
                 type = CONTAINERH;
                 MOVE PROPERTY (id(o));
                 MOVE PROPERTY (nameProject(o));
+                MOVE PROPERTY (nameCustomer(o));
             }
             MOVE PROPERTY (name(o));
         }
@@ -118,6 +128,7 @@ DESIGN issue {
             caption = 'Автор';
             MOVE PROPERTY (nameAuthor(o));
             MOVE PROPERTY (dateTimeCreated(o));
+            MOVE PROPERTY (dateTimeUpdated(o));
         }
         NEW params {
             type = CONTAINERH;
@@ -145,7 +156,7 @@ DESIGN issue {
 FORM issues 'Задачи'
     OBJECTS o = Issue LAST 
     PROPERTIES(o) READONLY number, name, descriptionString, dateTo, dateTimeCreated, dateTimeUpdated, dateFrom, doneRatio, estimatedHours, nameProject, 
-                           nameAuthor, nameAssignedTo, nameTracker, nameStatus
+                           nameCustomer, nameAuthor, nameAssignedTo, nameTracker, nameStatus
     ORDER number(o)
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
 ;
