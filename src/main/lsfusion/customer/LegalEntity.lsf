@@ -190,6 +190,7 @@ FORM legalEntities 'Организации'
 FORM dialogLegalEntities 'Организации'
     OBJECTS o = LegalEntity
     PROPERTIES(o) READONLY id, extId, name, nameCustomer, nameLegalAddress, numberBank, nameBank, addressBank, mfoBank, numberAccount, isCompany
+    PROPERTIES(o) NEWSESSION EDIT
     ORDER name(o)
     
     LIST LegalEntity OBJECT o
