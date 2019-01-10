@@ -23,13 +23,13 @@ addPayment 'Добавить' (DATE d) {
     NEW p = Payment {
         date(p) <- d;
     }
-} IMAGE 'add.png';
+} IMAGE 'add.png'  CHANGEKEY 'INSERT' HIDE;
 
 addExpense 'Добавить' (DATE d) {
     NEW e = Expense {
         date(e) <- d;
     }
-} IMAGE 'add.png';
+} IMAGE 'add.png'  CHANGEKEY 'INSERT' HIDE;
 
 backgroundAgreement(Payment p) = RGB (222, 255, 222) IF [GROUP SUM 1 BY contract(Agreement a)](contract(p)) AND NOT agreement(p);
 

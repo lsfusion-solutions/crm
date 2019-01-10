@@ -11,7 +11,7 @@ addTimeEntry 'Добавить' (DATE d) {
         date(t) <- d;
         SHOW timeEntry OBJECTS o = t DOCKED;
     }
-} IMAGE 'add.png';
+} IMAGE 'add.png' CHANGEKEY 'INSERT' HIDE;
 
 FORM timesheetDashboard 'Табель рабочего времени'
     

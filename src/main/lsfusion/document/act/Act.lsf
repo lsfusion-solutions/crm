@@ -237,7 +237,7 @@ addAct 'Добавить' (Contract c) {
         date(a) <- currentDate();
         SHOW act OBJECTS o = a DOCKED;
     }
-} IMAGE 'add.png';
+} IMAGE 'add.png'  CHANGEKEY 'INSERT' HIDE;
 
 EXTEND FORM contract 
     OBJECTS ac = Act LAST 

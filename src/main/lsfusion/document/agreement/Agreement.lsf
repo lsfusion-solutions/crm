@@ -228,7 +228,7 @@ addAgreement 'Добавить' (Contract c) {
         date(a) <- currentDate();
         SHOW agreement OBJECTS o = a DOCKED;
     }
-} IMAGE 'add.png';
+} IMAGE 'add.png'  CHANGEKEY 'INSERT' HIDE;
 
 EXTEND FORM contract 
     OBJECTS ag = Agreement LAST 

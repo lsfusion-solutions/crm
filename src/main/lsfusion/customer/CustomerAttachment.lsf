@@ -146,7 +146,7 @@ addAttachment 'Добавить' (Customer c) {
         date(a) <- currentDate();
         SHOW attachment OBJECTS o = a DOCKED;
     }
-} IMAGE 'add.png';
+} IMAGE 'add.png'  CHANGEKEY 'INSERT' HIDE;
 
 EXTEND FORM dashboardCustomer
     OBJECTS at = Attachment

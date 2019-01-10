@@ -9,21 +9,21 @@ addEvent 'Добавить' (Customer c) {
         customer(e) <- c;
         SHOW event OBJECTS o = e DOCKED;
     }
-} IMAGE 'add.png';
+} IMAGE 'add.png'  CHANGEKEY 'INSERT' HIDE;
 
 addContact 'Добавить' (Customer c) {
     NEWSESSION NEW e = Contact.Contact {
         customer(e) <- c;
         SHOW contact OBJECTS o = e DOCKED;
     }
-} IMAGE 'add.png';
+} IMAGE 'add.png'  CHANGEKEY 'INSERT' HIDE;
 
 addLegalEntity 'Добавить' (Customer c) {
     NEWSESSION NEW e = LegalEntity {
         customer(e) <- c;
         SHOW legalEntity OBJECTS o = e DOCKED;
     }
-} IMAGE 'add.png';
+} IMAGE 'add.png'  CHANGEKEY 'INSERT' HIDE;
 
 filterLegalEntity = DATA LOCAL LegalEntity(Customer);
 nameFilterLegalEntity 'Организация' (Customer c) = name(filterLegalEntity(c));
@@ -35,7 +35,7 @@ addIssue 'Добавить' (Customer c) {
         customer(i) <- c;
         SHOW issue OBJECTS o = i DOCKED;
     }
-} IMAGE 'add.png';
+} IMAGE 'add.png'  CHANGEKEY 'INSERT' HIDE;
 
 FORM dashboardCustomer 'Работа с клиентами'
     
@@ -234,7 +234,7 @@ addLegalEntityCustomer 'Добавить' (Customer c) {
         }
         SHOW legalEntity OBJECTS o = l DOCKED;
     }
-} IMAGE 'add.png';
+} IMAGE 'add.png'  CHANGEKEY 'INSERT' HIDE;
 
 EXTEND FORM customer
     OBJECTS le = LegalEntity
