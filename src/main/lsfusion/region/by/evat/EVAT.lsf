@@ -371,7 +371,7 @@ exportToXml 'Экспорт ЭСЧФ' () {
         seriesDoc(e) <- '';
         
         EXPORT issuance OBJECTS e = e XML TO System.exportFile;
-        WRITE 'file://' + exportPathEVAT() + exportNumber(e) FROM System.exportFile();
+        WRITE System.exportFile() TO 'file://' + exportPathEVAT() + exportNumber(e);
         
         APPLY ;
     }
