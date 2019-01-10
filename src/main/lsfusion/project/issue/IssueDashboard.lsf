@@ -24,9 +24,11 @@ FORM issueDashboard 'Мои задачи'
     PROPERTIES(o) SHOWIF NOT external(o) NEWSESSION EDIT, DELETE
     
     FILTERGROUP open FILTER 'Открытые' NOT isClosed(status(o)) DEFAULT 
-    FILTERGROUP inner FILTER 'Внтренние' NOT external(o) DEFAULT 
-    FILTERGROUP my FILTER 'Мои задачи' assignedTo(o) = currentUser() DEFAULT
+    FILTERGROUP inner FILTER 'Внутренние' NOT external(o) DEFAULT 
+    FILTERGROUP my FILTER 'Мои задачи' assignedTo(o) = currentUser() OR author(o) = currentUser() DEFAULT 
+                   FILTER 'Назначенные мне' assignedTo(o) = currentUser()
                    FILTER 'Созданные мною' author(o) = currentUser()
+                   
     ORDER number(o)
     
     OBJECTS l = IssueLog

@@ -126,7 +126,7 @@ FORM dashboardCustomer 'Работа с клиентами'
     PROPERTIES (ss) SHOWIF NOT external(ss) NEWSESSION EDIT, DELETE 
     FILTERS customer(ss) == c OR customer(project(ss)) == c
     FILTERGROUP open FILTER 'Открытые' NOT isClosed(status(ss)) DEFAULT 
-    FILTERGROUP inner FILTER 'Внтренние' NOT external(ss) DEFAULT 
+    FILTERGROUP inner FILTER 'Внутренние' NOT external(ss) DEFAULT 
     ORDER number(ss) DESC
     
     OBJECTS cd = (df = DATE, dt = DATE) PANEL 

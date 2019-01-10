@@ -39,6 +39,7 @@ FORM contractDashboard 'Работа с договорами'
     OBJECTS ag = Agreement LAST 
     PROPERTIES (ag) READONLY id, number, date, name, nameType, sum, sumCurrency, paid, balance, dateSending, dateReceiving, dateClosing, note, textString
     PROPERTIES (ag) openFile DRAW ag TOOLBAR SHOWIF TRUE IF file(o)
+    PROPERTIES (ag) NEWSESSION edit
     ORDER date(ag)
     FILTERS contract(ag) == o
     FILTERGROUP activeAg FILTER 'Активные' active(ag) DEFAULT 
@@ -46,6 +47,7 @@ FORM contractDashboard 'Работа с договорами'
     OBJECTS ac = Act LAST 
     PROPERTIES (ac) READONLY id, numberAgreement, number, date, name, nameType, sum, paid, balance, dateSending, dateReceiving, dateClosing, note, textString
     PROPERTIES (ac) openFile DRAW ac TOOLBAR SHOWIF TRUE IF file(o)
+    PROPERTIES (ac) NEWSESSION edit
     ORDER date(ac)
     FILTERS contract(ac) == o
     FILTERGROUP activeAc FILTER 'Активные' active(ac) DEFAULT 
@@ -57,7 +59,7 @@ FORM contractDashboard 'Работа с договорами'
     FILTERS contract(p) == o
     
     OBJECTS e = Event
-    PROPERTIES(e) id, name, nameType, nameCustomer, nameLegalEntity, nameEmployee, nameContact, date, time, dateNext, descriptionString, additionString
+    PROPERTIES(e) READONLY id, name, nameType, nameCustomer, nameLegalEntity, nameEmployee, nameContact, date, time, dateNext, descriptionString, additionString
     ORDER date(e) DESC 
     FILTERGROUP f FILTER 'По договору' contract(e) == o DEFAULT 
                   FILTER 'По организации' legalEntity(e) == legalEntity(o)

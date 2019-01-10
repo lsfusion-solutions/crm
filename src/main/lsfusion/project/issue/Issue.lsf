@@ -105,8 +105,11 @@ count 'Кол-во' (Customer c, IssueStatus s) = GROUP SUM count(Project p, s) 
 
 FORM issue 'Задача'
     OBJECTS o = Issue PANEL
-    PROPERTIES(o) id, name, dateTo, dateTimeCreated, dateTimeUpdated, dateFrom, doneRatio, estimatedHours, nameProject, 
-                  nameCustomer, nameAuthor, nameAssignedTo, nameTracker, nameStatus, description
+    PROPERTIES(o) id, nameTracker, nameProject, nameCustomer, name,
+                  nameStatus, nameAssignedTo, doneRatio, 
+                  dateTo, dateFrom, estimatedHours, 
+                  nameAuthor, dateTimeCreated, 
+                  description
     
     EDIT Issue OBJECT o
 ;
@@ -117,33 +120,36 @@ DESIGN issue {
             alignment = STRETCH;
             NEW top {
                 type = CONTAINERH;
+                alignment = STRETCH;
                 MOVE PROPERTY (id(o));
+                MOVE PROPERTY (nameTracker(o));
                 MOVE PROPERTY (nameProject(o));
                 MOVE PROPERTY (nameCustomer(o));
             }
             MOVE PROPERTY (name(o));
         }
-        NEW author {
-            type = CONTAINERH;
-            caption = 'Автор';
-            MOVE PROPERTY (nameAuthor(o));
-            MOVE PROPERTY (dateTimeCreated(o));
-            MOVE PROPERTY (dateTimeUpdated(o));
-        }
         NEW params {
             type = CONTAINERH;
+            alignment = STRETCH;
             NEW status {
+                fill = 1;
                 caption = 'Статус';
                 MOVE PROPERTY (nameStatus(o));
                 MOVE PROPERTY (nameAssignedTo(o));
-                MOVE PROPERTY (nameTracker(o));
+                MOVE PROPERTY (doneRatio(o));
             }
             NEW dates {
-                caption = 'Трудозатраты';
+                fill = 1;
+                caption = 'Сроки';
                 MOVE PROPERTY (dateFrom(o));
                 MOVE PROPERTY (dateTo(o));
-                MOVE PROPERTY (doneRatio(o));
                 MOVE PROPERTY (estimatedHours(o));
+            }
+            NEW author {
+                fill = 1;
+                caption = 'Автор';
+                MOVE PROPERTY (nameAuthor(o)) { focusable = FALSE; }
+                MOVE PROPERTY (dateTimeCreated(o)) { focusable = FALSE; }
             }
         }
         NEW description {
