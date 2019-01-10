@@ -126,8 +126,8 @@ DESIGN issue {
                 alignment = STRETCH;
                 MOVE PROPERTY (id(o));
                 MOVE PROPERTY (nameTracker(o));
-                MOVE PROPERTY (nameProject(o));
                 MOVE PROPERTY (nameCustomer(o));
+                MOVE PROPERTY (nameProject(o));
             }
             MOVE PROPERTY (name(o));
         }

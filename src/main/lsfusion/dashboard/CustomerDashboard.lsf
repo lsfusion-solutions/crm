@@ -43,7 +43,7 @@ FORM dashboardCustomer 'Работа с клиентами'
     PROPERTIES (c) name SELECTOR, info
     
     OBJECTS le = LegalEntity
-    PROPERTIES (le) READONLY id, name, nameLegalAddress, numberBank, nameBank, addressBank, mfoBank, isCompany
+    PROPERTIES (le) READONLY id, name, fullName, nameLegalAddress, numberBank, nameBank, addressBank, mfoBank, isCompany
     PROPERTIES addLegalEntity(c) DRAW le TOOLBAR
     PROPERTIES (le) NEWSESSION EDIT, DELETE 
     FILTERS customer(le) == c
@@ -238,7 +238,7 @@ addLegalEntityCustomer 'Добавить' (Customer c) {
 
 EXTEND FORM customer
     OBJECTS le = LegalEntity
-    PROPERTIES (le) id, extId, name, nameLegalAddress, numberBank, nameBank, addressBank, mfoBank, isCompany 
+    PROPERTIES (le) id, extId, name, fullName, nameLegalAddress, numberBank, nameBank, addressBank, mfoBank, isCompany 
     PROPERTIES DRAW le TOOLBAR addLegalEntityCustomer(o), EDIT(le), DELETE(le)
     FILTERS customer(le) = o
     

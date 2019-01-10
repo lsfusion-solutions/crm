@@ -127,7 +127,7 @@ CONSTRAINT legalEntity(Address a) AND customer(a) AND NOT customer(legalEntity(a
 
 FORM legalEntity 'Организация'
     OBJECTS o = LegalEntity PANEL
-    PROPERTIES(o) id, extId, name, nameCustomer, nameBank, numberAccount, isCompany
+    PROPERTIES(o) id, extId, name, fullName, nameCustomer, nameBank, numberAccount, isCompany
     ORDER name(o)
     
     OBJECTS a=Account
@@ -179,7 +179,7 @@ DESIGN legalEntity {
 
 FORM legalEntities 'Организации'
     OBJECTS o = LegalEntity
-    PROPERTIES(o) READONLYIF isReadonly() id, extId, name, nameCustomer, nameLegalAddress, numberBank, 
+    PROPERTIES(o) READONLYIF isReadonly() id, extId, name, fullName, nameCustomer, nameLegalAddress, numberBank, 
                              nameBank, addressBank, mfoBank, numberAccount, isCompany
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
     ORDER name(o)
@@ -189,7 +189,7 @@ FORM legalEntities 'Организации'
 
 FORM dialogLegalEntities 'Организации'
     OBJECTS o = LegalEntity
-    PROPERTIES(o) READONLY id, extId, name, nameCustomer, nameLegalAddress, numberBank, nameBank, addressBank, mfoBank, numberAccount, isCompany
+    PROPERTIES(o) READONLY id, extId, name, fullName, nameCustomer, nameLegalAddress, numberBank, nameBank, addressBank, mfoBank, numberAccount, isCompany
     PROPERTIES(o) NEWSESSION EDIT
     ORDER name(o)
     
