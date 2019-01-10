@@ -11,17 +11,18 @@ issue = DATA Issue(IssueLog) NONULL DELETE;
 
 dateTime 'Дата/время' = DATA DATETIME (IssueLog);
 changes 'Изменения' = DATA TEXT (IssueLog) CHARWIDTH 50;
-note 'Примечание' = DATA TEXT(IssueLog) CHARWIDTH 100;
+note 'Примечание' = DATA TEXT(IssueLog) CHARWIDTH 80;
 
 user = DATA User(IssueLog);
 nameUser 'Пользователь' (IssueLog l) = name(user(l));
 
-note 'Примечание' = DATA TEXT (Issue);
+note 'Примечание' = DATA LOCAL NESTED TEXT (Issue);
 
 EXTEND FORM issue 
     PROPERTIES note(o)
     OBJECTS l = IssueLog
     PROPERTIES (l) READONLY dateTime, nameUser, changes, note
+    ORDER dateTime(l)
     FILTERS issue(l) == o
 ;
 
@@ -85,6 +86,15 @@ WHEN (CHANGED (name(Issue i)) OR CHANGED (status(i)) OR CHANGED (description(i))
         }
         IF CHANGED (estimatedHours(i)) THEN { 
             changes(l) <- CONCAT '', changes(l), 'Оценка трудозатрат изменена', ' с ' + PREV (estimatedHours(i)), ' на ' + estimatedHours(i), '\n';
+        }
+        
+        TRY {
+            FOR VARISTRING[100] to == email(author(i)) OR to == email(assignedTo(i)) DO {
+                EMAIL
+                    SUBJECT CONCAT ', ', nameCustomer(i), nameProject(i), name(i), nameStatus(i) 
+                    TO to
+                    BODY replace((CONCAT '<br><br>', 'Пользователь: ' + nameUser(l), 'Примечание:<br>' + note(l), 'Изменения:<br>' + changes(l)), '\n', '<br>');  
+            }
         }
     }
     note(i) <- NULL;
