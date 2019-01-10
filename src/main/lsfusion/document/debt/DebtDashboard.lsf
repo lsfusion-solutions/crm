@@ -86,7 +86,8 @@ FORM debtDashboard 'Контроль задолженности'
     OBJECTS d = Debt
     PROPERTIES in(d), createActs() DRAW d TOOLBAR
     PROPERTIES (d) TOOLBAR SHOWIF act(d) editAct, deleteAct 
-    PROPERTIES (d) READONLY date, numberContract, nameContractType, nameCustomer, nameLegalEntity, numberAgreement, numberAct, dateAct, sum, paid
+    PROPERTIES (d) READONLY date, numberContract, nameContractType, nameCustomer, nameLegalEntity, numberAgreement, numberAct, dateAct, 
+                            shortNameCurrency, sumCurrency, sum, paid
     PROPERTIES (d) TOOLBAR editContract
     ORDER date(d)
     FILTERS  contractType(d) == filterDebtContractType() OR NOT filterDebtContractType()

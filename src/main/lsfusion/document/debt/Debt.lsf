@@ -38,20 +38,20 @@ dateAct 'Дата акта' (Debt d) = date(act(d));
 
 FORM debt 'Задолженность'
     OBJECTS o = Debt PANEL
-    PROPERTIES(o) numberContract, date, sum, shortNameCurrency, sumCurrency, paid
+    PROPERTIES(o) numberContract, date, shortNameCurrency, sumCurrency, sum, paid
     
     EDIT Debt OBJECT o
 ;
 
 FORM debts 'Задолженность'
     OBJECTS o = Debt
-    PROPERTIES(o) READONLY numberContract, date, sum, shortNameCurrency, sumCurrency, paid
+    PROPERTIES(o) READONLY numberContract, date, shortNameCurrency, sumCurrency, sum, paid
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
 ;
 
 FORM dialogDebts 'Задолженность'
     OBJECTS o = Debt
-    PROPERTIES(o) READONLY numberContract, date, sum, shortNameCurrency, sumCurrency, paid
+    PROPERTIES(o) READONLY numberContract, date, shortNameCurrency, sumCurrency, sum, paid
     
     LIST Debt OBJECT o
 ;
@@ -145,7 +145,7 @@ createFullDebt 'Сгенерировать задолженность' (Contract
 EXTEND FORM contract 
     PROPERTIES (o) sumMonth, paymentDay, createDebts SHOWIF (sumMonth(o) AND paymentDay(o)), createFullDebt
     OBJECTS d = Debt
-    PROPERTIES (d) date, sum, shortNameCurrency, sumCurrency SHOWIF inCurrency(o), paid, NEW, DELETE
+    PROPERTIES (d) date, shortNameCurrency, sumCurrency SHOWIF inCurrency(o), sum, paid, NEW, DELETE
     ORDER date(d)
     FILTERS contract(d) == o
 ;
@@ -196,7 +196,7 @@ FORM debtsPlan 'План платежей'
     FILTERS sumDebt(y, t)
     
     OBJECTS d = Debt
-    PROPERTIES (d) READONLY date, numberContract, nameContractType, nameCustomer, nameLegalEntity, sum, shortNameCurrency, sumCurrency,  paid
+    PROPERTIES (d) READONLY date, numberContract, nameContractType, nameCustomer, nameLegalEntity, shortNameCurrency, sumCurrency, sum, paid
     ORDER date(d)
     FILTERS extractMonth(date(d)) == m, extractYear(date(d)) == y
     

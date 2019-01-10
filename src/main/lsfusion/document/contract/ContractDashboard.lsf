@@ -23,7 +23,11 @@ FORM contractDashboard 'Работа с договорами'
     PROPERTIES () nameFilterContractType, nameFilterCustomer
     OBJECTS o = Contract LAST 
     PROPERTIES(o) READONLY id, nameCustomer, nameLegalEntity, nameCompany, number, date, name, dateLastPaid,
-                           sum, shortNameCurrency, sumCurrency, sumMonth, paid, paidCurrency, nameType, nameGroup, nameSendingWay, 
+                           shortNameCurrency, 
+                           sumCurrency BACKGROUND RGB(232,232,255) IF inCurrency(o), paidCurrency BACKGROUND RGB(232,232,255) IF inCurrency(o), 
+                           sum, paid, 
+                           sumMonth, 
+                           nameType, nameGroup, nameSendingWay, 
                            dateSigningCompany, dateSending, dateSigningCustomer, dateReceiving, dateTo, dateClosing, note, textString, text PANEL
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
     PROPERTIES(o) loadFileApply, openFile SHOWIF TRUE IF file(o), close SHOWIF NOT dateClosing(o)
