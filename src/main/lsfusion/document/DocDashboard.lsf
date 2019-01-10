@@ -1,6 +1,6 @@
 MODULE DocDashboard;
 
-REQUIRE Doc, Time, Dashboard, Contract;
+REQUIRE Doc, Time, Dashboard, Contract, DocIssue, DocEvent;
 
 NAMESPACE Doc;
 
@@ -86,6 +86,13 @@ printDocumentReport 'Реестр отправленной корреспонд�
     PRINT documentReport OBJECTS df = df, dt = dt XLS;
 } IMAGE 'print.png';
 
+addIssue 'Добавить' (Document d) {
+    NEWSESSION NEW i = Issue {
+        document(i) <- d;
+        SHOW issue OBJECTS o = i DOCKED;
+    }
+} IMAGE 'add.png' CHANGEKEY 'INSERT' HIDE;
+
 FORM docDashboard 'Обработка документов'
     
     OBJECTS dates = (df = DATE, dt = DATE) PANEL
@@ -104,6 +111,21 @@ FORM docDashboard 'Обработка документов'
     FILTERGROUP d FILTER 'Требуется подписание' notSign(d)
                   FILTER 'Требуется отправка' notSend(d)
                   FILTER 'Ожидается получение' notReceive(d)
+                  
+    OBJECTS e = Event
+    PROPERTIES (e) READONLY id, name, nameType, nameCustomer, nameLegalEntity, nameEmployee, nameContact, date, time, dateNext, descriptionString, additionString
+    PROPERTIES  addEventDoc(d) DRAW e TOOLBAR 
+    PROPERTIES (e) NEWSESSION EDIT, DELETE 
+    FILTERGROUP event FILTER 'По организации' legalEntity(e) == legalEntity(d)
+                      FILTER 'По клиенту' customer(e) == customer(d)
+                      
+    OBJECTS i = Issue
+    PROPERTIES (i) READONLY number, name, descriptionString, dateTo, dateTimeCreated, dateTimeUpdated, dateFrom, doneRatio, 
+                            estimatedHours, nameProject, nameCustomer, nameAuthor, nameAssignedTo, nameTracker, nameStatus
+    PROPERTIES DRAW i TOOLBAR addIssue(d)
+    PROPERTIES (i) NEWSESSION EDIT, DELETE 
+    FILTERS document(i) == d
+    
 ;
 
 @extendFormEditable(docDashboard);
@@ -118,6 +140,12 @@ DESIGN docDashboard {
             MOVE PROPERTY (dfrom);
             MOVE PROPERTY (dto);
             MOVE PROPERTY (printDocumentReport(df, dt));
+        }
+        NEW tab AFTER BOX (d) {
+            type = TABBED;
+            fill = 1;
+            MOVE BOX (e) { caption = 'События'; }
+            MOVE BOX (i) { caption = 'Задачи'; }
         }
     }
 }

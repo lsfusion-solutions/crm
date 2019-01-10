@@ -1,6 +1,6 @@
 MODULE ActEvent;
 
-REQUIRE Act, AgreementEvent, DocEvent;
+REQUIRE Act, AgreementEvent, DocDashboard;
 
 NAMESPACE Act;
 

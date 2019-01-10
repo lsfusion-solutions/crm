@@ -1,6 +1,6 @@
 MODULE IssueDashboard;
 
-REQUIRE IssueLog, ProjectExternal, Dashboard;
+REQUIRE IssueLog, ProjectExternal, Dashboard, DocIssue;
 
 NAMESPACE Project;
 
@@ -19,7 +19,7 @@ FORM issueDashboard 'Мои задачи'
 
     OBJECTS o = Issue LAST 
     PROPERTIES(o) READONLY number, name, descriptionString, dateTimeCreated, dateTimeUpdated, dateFrom, dateTo, doneRatio, estimatedHours, nameProject, 
-                           nameCustomer, nameAuthor, nameAssignedTo, nameTracker, nameStatus
+                           nameCustomer, numberDocument, nameAuthor, nameAssignedTo, nameTracker, nameStatus
     PROPERTIES(o) NEWSESSION NEW
     PROPERTIES(o) SHOWIF NOT external(o) NEWSESSION EDIT, DELETE
     

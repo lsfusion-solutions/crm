@@ -1,0 +1,23 @@
+MODULE DocIssue;
+
+REQUIRE Doc, Issue;
+
+NAMESPACE Doc;
+
+document = DATA Document(Issue);
+numberDocument 'Документ' (Issue i) = number(document(i));
+
+CONSTRAINT customer(Issue i) AND NOT customer(document(i)) == customer(i) CHECKED BY document[Issue] MESSAGE 'Клиент задачи не соответствует клиенту документа';
+
+WHEN LOCAL CHANGED (document(Issue i)) AND NOT CHANGED (customer(i)) DO {
+    customer(i) <- customer(document(i));
+}
+
+EXTEND FORM issues PROPERTIES numberDocument(o);
+EXTEND FORM issue PROPERTIES numberDocument(o);
+
+DESIGN issue {
+    top {
+        MOVE PROPERTY (numberDocument(o));
+    }
+}

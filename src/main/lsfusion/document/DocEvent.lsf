@@ -1,6 +1,6 @@
 MODULE DocEvent;
 
-REQUIRE Event, DocDashboard;
+REQUIRE Event, Doc;
 
 NAMESPACE Doc;
 
@@ -14,12 +14,3 @@ addEventDoc 'Добавить' (Document d) {
 } IMAGE 'add.png'  CHANGEKEY 'INSERT' HIDE;
 
 CONSTRAINT contact(Event e) AND legalEntity(e) AND NOT legalEntity(e) == legalEntity(contact(e)) CHECKED BY contact[Event] MESSAGE 'Контактное лицо не соответствует организации';
-
-EXTEND FORM docDashboard 
-    OBJECTS e = Event
-    PROPERTIES (e) READONLY id, name, nameType, nameCustomer, nameLegalEntity, nameEmployee, nameContact, date, time, dateNext, descriptionString, additionString
-    PROPERTIES  addEventDoc(d) DRAW e TOOLBAR 
-    PROPERTIES (e) NEWSESSION EDIT, DELETE 
-    FILTERGROUP event FILTER 'По организации' legalEntity(e) == legalEntity(d)
-                      FILTER 'По клиенту' customer(e) == customer(d)
-;
