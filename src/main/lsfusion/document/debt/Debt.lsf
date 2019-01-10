@@ -88,13 +88,7 @@ createDebts 'Сгенерировать задолженности' (Contract c)
         
         DELETE Debt d WHERE contract(d) == c AND date(d) > currentDate();
         
-        IF extractDay(currentDate()) > paymentDay(c) THEN {
-            month() <- extractMonthNumber(currentDate());
-        }
-        ELSE {
-            month() <- extractMonthNumber(currentDate()) - 1;
-        }
-        
+        month() <- extractMonthNumber(currentDate());
         year() <- extractYear(currentDate());
         
         FOR iterate(INTEGER i, 1, countMonthsDebt()) DO {
@@ -184,7 +178,6 @@ DESIGN contract {
     }
 }
 
-
 sumDebt 'Сумма задолженности' (Month m, INTEGER y, ContractType t) = GROUP SUM sum(Debt d) BY extractMonth(date(d)), extractYear(date(d)), type(contract(d));
 sumDebt 'Сумма задолженности' (Month m, INTEGER y) = GROUP SUM sum(Debt d) BY extractMonth(date(d)), extractYear(date(d));
 sumDebt 'Сумма задолженности' (INTEGER y, ContractType t) = GROUP SUM sum(Debt d) BY extractYear(date(d)), type(contract(d));
@@ -233,3 +226,12 @@ NAVIGATOR {
         NEW debtsPlan;
     }
 }
+
+recalcCurrencyDebts 'Пересчитать валютные задолженности' () {
+    NEWSESSION {
+        FOR inCurrency(contract(Debt d)) AND date(d) >= currentDate() DO {
+            sum(d) <- round2(sumCurrency(d) / OVERRIDE (rateOn(defaultTypeExchange(), currency(d), date(d))), 1);
+        }
+        APPLY;
+    }
+} CONFIRM;

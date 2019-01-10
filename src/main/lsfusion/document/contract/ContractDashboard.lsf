@@ -67,6 +67,7 @@ FORM contractDashboard 'Работа с договорами'
     
     OBJECTS d = Debt
     PROPERTIES (d) READONLY date, sum, shortNameCurrency, sumCurrency, paid
+    PROPERTIES DRAW o TOOLBAR recalcCurrencyDebts()
     ORDER date(o)
     FILTERS contract(d) == o
 ;
