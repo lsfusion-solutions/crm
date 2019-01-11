@@ -10,8 +10,7 @@ TABLE debt (Debt);
 date 'Дата' = DATA DATE(Debt);
 sum 'Сумма' = DATA NUMERIC[16,5](Debt);
 
-currency = DATA Currency(Debt);
-nameCurrency 'Валюта платежа' (Debt p) = name(currency(p));
+currency (Debt d)= currency(contract(d));
 shortNameCurrency 'Валюта (сокр.)' (Debt p) = shortName(currency(p));
 
 sumCurrency 'Сумма в валюте' (Debt p) = DATA NUMERIC[16,5](Debt);
@@ -113,8 +112,6 @@ createDebts 'Сгенерировать задолженности' (Contract c)
             
             FOR Debt d = debt(date(), c) DO {
             
-                currency(d) <- currency(c);
-                
                 IF inCurrency(c) THEN {
                     sumCurrency(d) <- sumMonth(c);
                 }
@@ -131,7 +128,6 @@ createFullDebt 'Сгенерировать задолженность' (Contract
     
         contract(d) <- c;
         date(d) <- date(c);
-        currency(d) <- currency(c);
         
         IF inCurrency(c) THEN {
             sumCurrency(d) <- sumCurrency(c);
@@ -145,7 +141,7 @@ createFullDebt 'Сгенерировать задолженность' (Contract
 EXTEND FORM contract 
     PROPERTIES (o) sumMonth, paymentDay, createDebts SHOWIF (sumMonth(o) AND paymentDay(o)), createFullDebt
     OBJECTS d = Debt
-    PROPERTIES (d) date, shortNameCurrency, sumCurrency SHOWIF inCurrency(o), sum, paid, NEW, DELETE
+    PROPERTIES (d) date, sumCurrency SHOWIF inCurrency(o), sum, paid, NEW, DELETE
     ORDER date(d)
     FILTERS contract(d) == o
 ;

@@ -22,10 +22,10 @@ CONSTRAINT filterCustomer() AND NOT [GROUP SUM 1 BY customer(Contract c)](filter
 FORM contractDashboard 'Работа с договорами'
     PROPERTIES () nameFilterContractType, nameFilterCustomer
     OBJECTS o = Contract LAST 
-    PROPERTIES(o) READONLY id, nameCustomer, nameLegalEntity, nameCompany, number, date, name, dateLastPaid,
+    PROPERTIES(o) READONLY id, nameCustomer, nameLegalEntity, nameCompany, number, date, name,
                            shortNameCurrency, 
                            sumCurrency BACKGROUND RGB(232,232,255) IF inCurrency(o), paidCurrency BACKGROUND RGB(232,232,255) IF inCurrency(o), 
-                           sum, paid, 
+                           sum, paid, dateLastPaid,
                            sumMonth, 
                            nameType, nameGroup, nameSendingWay, 
                            dateSigningCompany, dateSending, dateSigningCustomer, dateReceiving, dateTo, dateClosing, note, textString, text PANEL
@@ -70,7 +70,7 @@ FORM contractDashboard 'Работа с договорами'
                   FILTER 'По клиенту' customer(e) == customer(o)
     
     OBJECTS d = Debt
-    PROPERTIES (d) READONLY date, sum, shortNameCurrency, sumCurrency, paid
+    PROPERTIES (d) READONLY date, sum, sumCurrency, paid
     PROPERTIES DRAW o TOOLBAR recalcCurrencyDebts()
     ORDER date(o)
     FILTERS contract(d) == o
