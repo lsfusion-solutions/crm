@@ -232,13 +232,8 @@ EXTEND FORM dialogLegalEntities PROPERTIES nameAuthorisedPerson(o), authorisedDo
 EXTEND FORM legalEntity PROPERTIES nameAuthorisedPerson(o), authorisedDocument(o);
 
 DESIGN legalEntity {
-    row {
-        type = CONTAINERV;
-        client {
-            type = CONTAINERH;
-            caption = 'Контакты';
-            MOVE PROPERTY (nameAuthorisedPerson(o)) { charWidth = 30; }
-            MOVE PROPERTY (authorisedDocument(o)) { charWidth = 30; }
-        }
+    client {
+        MOVE PROPERTY (nameAuthorisedPerson(o)) { charWidth = 30; }
+        MOVE PROPERTY (authorisedDocument(o)) { charWidth = 30; }
     }
 }

@@ -15,7 +15,7 @@ extId 'Код для экспорта' = DATA VARSTRING[15](LegalEntity) IN id;
 legalEntityEx (id) = GROUP AGGR LegalEntity le BY extId (le);
 
 name 'Наименование' = DATA VARISTRING[250] (LegalEntity) CHARWIDTH 20 IN id;
-fullName 'Полное наименование' = DATA VARISTRING[250] (LegalEntity) CHARWIDTH 20;
+fullName 'Полное наименование' = DATA VARISTRING[250] (LegalEntity) CHARWIDTH 50;
 overName 'Наименование' (LegalEntity l) = OVERRIDE fullName(l), name(l);
 
 legalEntity = DATA LegalEntity(Address);
@@ -148,6 +148,7 @@ FORM legalEntity 'Организация'
 DESIGN legalEntity {
     OBJECTS {
         NEW main FIRST {
+            alignment = STRETCH;
             type = CONTAINERH;
             caption = 'Основные параметры';
             MOVE PROPERTY (id(o));
@@ -156,16 +157,25 @@ DESIGN legalEntity {
             MOVE PROPERTY (extId(o));
         }
         NEW row AFTER main {
-            type = CONTAINERH;
+            alignment = STRETCH;
             NEW client {
+                alignment = STRETCH;
                 caption = 'Клиент';
+                type = CONTAINERH;
                 MOVE PROPERTY (nameCustomer(o)) {charWidth = 30; }
             }
             NEW bank {
+                alignment = STRETCH;
                 caption = 'Реквизиты';
                 type = CONTAINERH;
                 MOVE PROPERTY (numberAccount(o));
                 MOVE PROPERTY (nameBank(o)) { charWidth = 30; }
+            }
+            NEW documents {
+                alignment = STRETCH;
+                caption = 'Документы';
+                type = CONTAINERH;
+                MOVE PROPERTY(fullName(o));
             }
         }
         NEW tab {
