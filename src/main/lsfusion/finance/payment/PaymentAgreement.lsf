@@ -6,6 +6,7 @@ NAMESPACE Payment;
 
 agreement = DATA Agreement(Payment);
 numberAgreement 'Номер соглашения' (Payment p) = number(agreement(p));
+nameAgreement 'Наименование соглашения' (Payment p) = name(agreement(p));
 
 paidPayment 'Оплачено' (Agreement a) = GROUP SUM sum(Payment p) BY agreement(p);
 

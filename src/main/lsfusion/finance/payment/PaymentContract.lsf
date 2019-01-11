@@ -7,6 +7,7 @@ NAMESPACE Payment;
 contract = DATA Contract(Payment);
 idContract 'Код договора' (Payment a) = id(contract(a));
 numberContract 'Номер договора' (Payment a) = number(contract(a)) IN id;
+nameContract 'Наименование договора' (Payment a) = name(contract(a)) IN id;
 typeContract (Payment p) = type(contract(p));
 nameTypeContract 'Тип договора' (Payment p) = nameType(contract(p));
 nameGroupContract 'Группа договора' (Payment p) = nameGroup(contract(p));

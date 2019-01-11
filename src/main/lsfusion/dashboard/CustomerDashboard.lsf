@@ -85,7 +85,8 @@ FORM dashboardCustomer 'Работа с клиентами'
     PROPERTIES nameFilterLegalEntity(c)
     
     OBJECTS pm = Payment
-    PROPERTIES (pm) READONLY id, nameLegalEntity, numberContract, nameTypeContract, numberAgreement, numberAct, number, date, year, monthNumber, sum, nameCurrency, shortNameCurrency, sumCurrency, note 
+    PROPERTIES (pm) READONLY id, nameLegalEntity, numberContract, nameContract, nameTypeContract, numberAgreement, nameAgreement, 
+                             numberAct, number, date, year, monthNumber, sum, nameCurrency, shortNameCurrency, sumCurrency, note 
     FILTERS customer(legalEntity(pm)) == c, legalEntity(pm) == filterLegalEntity(c) OR NOT filterLegalEntity(c)
     ORDER date(pm) DESC
     
