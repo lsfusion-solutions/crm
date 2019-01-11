@@ -41,3 +41,14 @@ EXTEND FORM dialogPayments
 EXTEND FORM dialogContracts
     PROPERTIES(o) READONLY paid AFTER sum(o)
 ;
+
+EXTEND FORM contract
+    OBJECTS p = Payment
+    PROPERTIES (p) READONLY id, number, date, year, monthNumber, sum, shortNameCurrency, sumCurrency, note
+;
+
+DESIGN contract {
+    details {
+        MOVE BOX (p) { caption = 'Платежи'; }
+    }
+}

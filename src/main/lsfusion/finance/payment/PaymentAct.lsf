@@ -61,4 +61,4 @@ EXTEND FORM dialogPayments
     PROPERTIES (o) READONLY numberAct
 ;
 
-EXTEND FORM contract PROPERTIES READONLY paid(ac);
+EXTEND FORM contract PROPERTIES READONLY paid(ac), numberAct(p);
