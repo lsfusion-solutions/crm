@@ -10,7 +10,14 @@ TABLE debt (Debt);
 date 'Дата' = DATA DATE(Debt);
 sum 'Сумма' = DATA NUMERIC[16,5](Debt);
 
-currency (Debt d)= currency(contract(d));
+contract = DATA Contract(Debt) NONULL DELETE;
+numberContract 'Номер договора' (Debt d) = number(contract(d));
+contractType (Debt d) = type(contract(d));
+nameContractType 'Тип договора' (Debt d) = nameType(contract(d));
+nameCustomer 'Клиент' (Debt d) = nameCustomer(contract(d));
+nameLegalEntity 'Организация' (Debt d) = nameLegalEntity(contract(d));
+
+currency (Debt d) = currency(contract(d));
 shortNameCurrency 'Валюта (сокр.)' (Debt p) = shortName(currency(p));
 
 sumCurrency 'Сумма в валюте' (Debt p) = DATA NUMERIC[16,5](Debt);
@@ -18,13 +25,6 @@ sumCurrency 'Сумма в валюте' (Debt p) = DATA NUMERIC[16,5](Debt);
 WHEN LOCAL (SETCHANGED (sumCurrency(Debt d)) OR CHANGED (currency(d))) AND NOT CHANGED (sum(d)) DO {
     sum(d) <- round2(sumCurrency(d) / OVERRIDE (rateOn(defaultTypeExchange(), currency(d), date(d))), 1);
 }
-
-contract = DATA Contract(Debt) NONULL DELETE;
-numberContract 'Номер договора' (Debt d) = number(contract(d));
-contractType (Debt d) = type(contract(d));
-nameContractType 'Тип договора' (Debt d) = nameType(contract(d));
-nameCustomer 'Клиент' (Debt d) = nameCustomer(contract(d));
-nameLegalEntity 'Организация' (Debt d) = nameLegalEntity(contract(d));
 
 paid 'Оплачено' (Debt d) = PARTITION UNGROUP paid
                                                       LIMIT sum(d)
