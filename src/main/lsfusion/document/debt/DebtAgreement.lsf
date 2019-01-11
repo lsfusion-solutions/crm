@@ -52,7 +52,7 @@ CONSTRAINT agreement(Debt d) AND NOT contract(d) == contract(agreement(d)) CHECK
 EXTEND FORM agreement
     PROPERTIES shortNameCurrency(o) READONLY, sumCurrency(o) SHOWIF inCurrency(o), createFullDebt(o)
     OBJECTS d = Debt
-    PROPERTIES (d) date, sumCurrency SHOWIF inCurrency(contract(o)), sum, paid
+    PROPERTIES (d) date, sumCurrency SHOWIF inCurrency(contract(o)), sum, paid, note
     PROPERTIES addDebt(o) DRAW d TOOLBAR 
     PROPERTIES (d) DELETE 
     ORDER date(d)

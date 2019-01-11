@@ -1,6 +1,6 @@
 MODULE CustomerDashboard;
 
-REQUIRE Project, PaymentAct, Event, Issue, TimeEntry, Dashboard, LegalEntity, DocFile, TimeEntryCustomer, ProjectExternal;
+REQUIRE Project, PaymentAct, Event, Issue, TimeEntry, Dashboard, LegalEntity, DocFile, TimeEntryCustomer, ProjectExternal, DebtAgreement;
 
 NAMESPACE Dashboard;
 
@@ -131,6 +131,9 @@ FORM dashboardCustomer 'Работа с клиентами'
     
     OBJECTS cd = (df = DATE, dt = DATE) PANEL 
     PROPERTIES dFrom 'Дата с' = VALUE (df), dTo 'Дата по' =  VALUE (dt), printCustomerReport(c, df, dt)
+    
+    OBJECTS d = Debt
+    PROPERTIES (d) READONLY date, numberContract, nameContractType, nameLegalEntity, shortNameCurrency, sumCurrency, sum, paid, note, numberAgreement
 ;
 
 DESIGN dashboardCustomer {
@@ -163,6 +166,7 @@ DESIGN dashboardCustomer {
                 MOVE PROPERTY (nameFilterLegalEntity(c));
                 MOVE BOX (pm) { caption = 'Платежи'; }
             }
+            MOVE BOX (d) { caption = 'Задолженности'; }
             NEW events {
                 caption = 'События';
                 fill = 1;

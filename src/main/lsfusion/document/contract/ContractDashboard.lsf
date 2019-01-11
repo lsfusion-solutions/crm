@@ -70,7 +70,7 @@ FORM contractDashboard 'Работа с договорами'
                   FILTER 'По клиенту' customer(e) == customer(o)
     
     OBJECTS d = Debt
-    PROPERTIES (d) READONLY date, sum, sumCurrency, paid
+    PROPERTIES (d) READONLY date, sum, sumCurrency, paid, note
     PROPERTIES DRAW o TOOLBAR recalcCurrencyDebts()
     ORDER date(o)
     FILTERS contract(d) == o
