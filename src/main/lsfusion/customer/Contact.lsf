@@ -10,13 +10,21 @@ TABLE contact (Contact);
 id 'Код' = DATA VARSTRING[15] (Contact) INDEXED CHARWIDTH 5 IN id;
 contact (id) = GROUP AGGR Contact c BY id (c);
 
+customer = DATA Customer(Contact);
+idCustomer 'Код клиента' (Contact c) = id(customer(c));
+nameCustomer 'Клиент' (Contact c) = name(customer(c)) IN id;
+
+skipCustomer 'Клиент не обязателен' = ABSTRACT BOOLEAN (Contact);
+CONSTRAINT Contact c IS Contact AND NOT customer(c) AND NOT skipCustomer(c) MESSAGE 'Для контакта должен быть задан клиент';
+
 legalEntity = DATA LegalEntity(Contact);
 idLegalEntity 'Код организации' (Contact c) = id(legalEntity(c));
 nameLegalEntity 'Организация' (Contact c) = name(legalEntity(c)) IN id;
 
-customer = DATA Customer(Contact);
-idCustomer 'Код клиента' (Contact c) = id(customer(c));
-nameCustomer 'Клиент' (Contact c) = name(customer(c)) IN id;
+WHEN LOCAL SETCHANGED(customer(legalEntity(Contact c))) DO
+    customer(c) <- customer(legalEntity(c));
+
+CONSTRAINT legalEntity(Contact c) AND customer(c) AND NOT customer(c) = customer(legalEntity(c)) CHECKED BY legalEntity[Contact] MESSAGE 'Клиент не совпадает с организацией';
 
 merge (Customer from, Customer to) + { customer(Contact c) <- to WHERE customer(c) = from; }
 
@@ -124,15 +132,6 @@ FORM phoneTypes 'Типы телефона'
 contact (Phone p) = DATA Contact(Phone) NONULL DELETE;
 
 addPhones 'Доп. телефоны' (Contact c) = GROUP CONCAT number(Phone p), ', ' BY contact(p) CHARWIDTH 15;
-
-skipCustomer 'Клиент не обязателен' = ABSTRACT BOOLEAN (Contact);
-
-CONSTRAINT Contact c IS Contact AND NOT customer(c) AND NOT skipCustomer(c) MESSAGE 'Для контакта должен быть задан клиент';
-CONSTRAINT legalEntity(Contact c) AND customer(c) AND NOT customer(c) = customer(legalEntity(c)) CHECKED BY legalEntity[Contact] MESSAGE 'Клиент не совпадает с организацией';
-
-WHEN LOCAL SETCHANGED (customer(legalEntity(Contact c))) DO {
-    customer(c) <- customer(legalEntity(c));
-}
 
 authorisedDocument 'На основании' = DATA VARISTRING[1000](Contact) CHARWIDTH 15;
 

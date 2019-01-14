@@ -21,13 +21,17 @@ additionString 'Дополнение' (Event e) = VARISTRING[1000](addition(e)) 
 
 customer = DATA Customer(Event);
 idCustomer 'Код клиента' (Event e) = id(customer(e));
-nameCustomer 'Клиент' (Event e) = name(customer(e));
+nameCustomer 'Клиент' (Event e) = name(customer(e)) IN id;
 
 merge (Customer from, Customer to) + { customer(Event e) <- to WHERE customer(e) = from; }
 
 legalEntity = DATA LegalEntity(Event);
 idLegalEntity 'Код организации' (Event e) = id(legalEntity(e));
-nameLegalEntity 'Организация' (Event e) = name(legalEntity(e));
+nameLegalEntity 'Организация' (Event e) = name(legalEntity(e)) IN id;
+
+WHEN LOCAL SETCHANGED(customer(legalEntity(Event e))) DO
+    customer(e) <- customer(legalEntity(e));
+CONSTRAINT customer(Event e) AND legalEntity(e) AND NOT customer(e) = customer(legalEntity(e)) CHECKED BY legalEntity[Event] MESSAGE 'Клиент не совпадает с организацией';
 
 employee = DATA Employee(Event);
 idEmployee 'Код сотрудника' (Event e) = id(employee(e));
@@ -35,7 +39,10 @@ nameEmployee 'Сотрудник' (Event e) = name(employee(e));
 
 contact = DATA Contact.Contact(Event);
 idContact 'Код контактного лица' (Event e) = id(contact(e));
-nameContact 'Контактное лицо' (Event e) = name(contact(e));
+nameContact 'Контактное лицо' (Event e) = name(contact(e)) IN id;
+
+CONSTRAINT customer(Event e) AND contact(e) AND NOT customer(contact(e)) == customer(e) CHECKED BY contact[Event] MESSAGE 'Клиент контакта не совпадает с клиентом';
+CONSTRAINT legalEntity(Event e) AND contact(e) AND NOT legalEntity(contact(e)) == legalEntity(e) CHECKED BY contact[Event] MESSAGE 'Клиент организации не совпадает с организацией';
 
 CLASS EventType 'Тип события';
 TABLE eventType (EventType);
@@ -125,13 +132,6 @@ employee(e) <- currentUser() WHEN SET(e IS Event);
 date(e) <- currentDate() WHEN SET(e IS Event);
 time(e) <- currentTime() WHEN SET(e IS Event);
 
-CONSTRAINT customer(Event e) AND legalEntity(e) AND NOT customer(e) = customer(legalEntity(e)) CHECKED BY legalEntity[Event] MESSAGE 'Клиент не совпадает с организацией';
-CONSTRAINT customer(Event e) AND contact(e) AND NOT customer(contact(e)) == customer(e) CHECKED BY contact[Event] MESSAGE 'Клиент контакта не совпадает с клиентом';
-CONSTRAINT legalEntity(Event e) AND contact(e) AND NOT legalEntity(contact(e)) == legalEntity(e) CHECKED BY contact[Event] MESSAGE 'Клиент организации не совпадает с организацией';
-
-WHEN LOCAL SETCHANGED (customer(legalEntity(Event e))) DO {
-    customer(e) <- customer(legalEntity(e));
-}
 WHEN LOCAL FORMS event SETCHANGED (customer(Event e)) AND NOT CHANGED (legalEntity(e)) AND [GROUP SUM 1 BY customer(LegalEntity l)](customer(e)) == 1 DO {
     legalEntity(e) <- GROUP MAX LegalEntity l IF customer(l) == customer(e);
 }

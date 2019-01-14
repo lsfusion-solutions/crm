@@ -118,7 +118,7 @@ note 'Примечание'  = DATA VARISTRING[50] (Account);
 
 EXTEND FORM customer PROPERTIES nameLegalEntity(a) AFTER types(a);
 
-WHEN CHANGED (legalEntity(Address a)) AND NOT customer(a) DO {
+WHEN LOCAL SETCHANGED(customer(legalEntity(Address a))) DO {
     customer(a) <- customer(legalEntity(a));
 }
 
