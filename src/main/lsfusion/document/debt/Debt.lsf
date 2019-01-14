@@ -12,6 +12,7 @@ sum 'Сумма' = DATA NUMERIC[16,5](Debt);
 
 contract = DATA Contract(Debt) NONULL DELETE;
 numberContract 'Номер договора' (Debt d) = number(contract(d));
+nameContract 'Наименование договора' (Debt d) = name(contract(d));
 contractType (Debt d) = type(contract(d));
 nameContractType 'Тип договора' (Debt d) = nameType(contract(d));
 nameCustomer 'Клиент' (Debt d) = nameCustomer(contract(d));
@@ -46,13 +47,13 @@ FORM debt 'Задолженность'
 
 FORM debts 'Задолженность'
     OBJECTS o = Debt
-    PROPERTIES(o) READONLY numberContract, date, shortNameCurrency, sumCurrency, sum, paid, note
+    PROPERTIES(o) READONLY numberContract, nameContract, date, shortNameCurrency, sumCurrency, sum, paid, note
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
 ;
 
 FORM dialogDebts 'Задолженность'
     OBJECTS o = Debt
-    PROPERTIES(o) READONLY numberContract, date, shortNameCurrency, sumCurrency, sum, paid, note
+    PROPERTIES(o) READONLY numberContract, nameContract, date, shortNameCurrency, sumCurrency, sum, paid, note
     
     LIST Debt OBJECT o
 ;
@@ -195,7 +196,7 @@ FORM debtsPlan 'План платежей'
     FILTERS sumDebt(y, t)
     
     OBJECTS d = Debt
-    PROPERTIES (d) READONLY date, numberContract, nameContractType, nameCustomer, nameLegalEntity, shortNameCurrency, sumCurrency, sum, paid, note
+    PROPERTIES (d) READONLY date, numberContract, nameContract, nameContractType, nameCustomer, nameLegalEntity, shortNameCurrency, sumCurrency, sum, paid, note
     ORDER date(d)
     FILTERS extractMonth(date(d)) == m, extractYear(date(d)) == y
     

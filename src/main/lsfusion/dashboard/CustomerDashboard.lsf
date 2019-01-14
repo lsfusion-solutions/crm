@@ -134,7 +134,8 @@ FORM dashboardCustomer 'Работа с клиентами'
     PROPERTIES dFrom 'Дата с' = VALUE (df), dTo 'Дата по' =  VALUE (dt), printCustomerReport(c, df, dt)
     
     OBJECTS d = Debt
-    PROPERTIES (d) READONLY date, numberContract, nameContractType, nameLegalEntity, shortNameCurrency, sumCurrency, sum, paid, note, numberAgreement
+    PROPERTIES (d) READONLY date, numberContract, nameContract, nameContractType, nameLegalEntity, shortNameCurrency, sumCurrency, sum, paid, note, numberAgreement
+    FILTERS customer(legalEntity(contract(d))) == c 
 ;
 
 DESIGN dashboardCustomer {
