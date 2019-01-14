@@ -147,8 +147,8 @@ FORM reviseSum 'Расхождение сумм платежей'
     OBJECTS df = DATE PANEL, dt = DATE PANEL
     OBJECTS d = DATE 
     PROPERTIES (d) READONLY VALUE, receipt, receiptImport, shipment, shipmentImport
-    FILTERS (receipt(d) OR receiptImport(d) AND NOT receipt(d) == receiptImport(d)) OR 
-            (shipment(d) OR shipmentImport(d) AND NOT shipment(d) == shipmentImport(d)),
+    FILTERS ((receipt(d) OR receiptImport(d)) AND NOT receipt(d) == receiptImport(d)) OR 
+            ((shipment(d) OR shipmentImport(d)) AND NOT shipment(d) == shipmentImport(d)),
             iterate(d, df, dt)
     
     OBJECTS p = Payment
@@ -182,8 +182,8 @@ reviseSum 'Сверка' (DATE df, DATE dt) {
         legalEntity(INTEGER i) <- legalEntityEx(idLegalEntity(i));
         company(INTEGER i) <- legalEntity(idCompany(i));
         
-        receiptImport(DATE d) <- GROUP SUM sum(INTEGER i) IF sum(i) > 0 AND d == date(i);
-        shipmentImport(DATE d) <- GROUP SUM -sum(INTEGER i) IF sum(i) < 0 AND d = date(i);
+        receiptImport(DATE d) <- GROUP SUM sum(INTEGER i)/extractDay(d) IF sum(i) > 0 AND d == date(i);
+        shipmentImport(DATE d) <- GROUP SUM -sum(INTEGER i)/extractDay(d) IF sum(i) < 0 AND d = date(i);
     }
     SHOW reviseSum OBJECTS df = df, dt = dt DOCKED NOWAIT;
 }
