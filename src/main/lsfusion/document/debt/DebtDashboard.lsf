@@ -38,12 +38,14 @@ createActs 'Создать акты' () {
         ASK 'Скопировать текст и название?' DO {
             copy() <- TRUE;
         }
-        FOR in(Debt d) AND NOT act(d) DO NEW a = Act {
-            act(d) <- a;
-            contract(a) <- contract(d);
+        //по соглашениям
+        FOR [GROUP SUM 1 IF in(Debt d) AND NOT act(d) BY contract(d), agreement(d)](Contract c, Agreement ag) DO NEW a = Act {
+            act(Debt d) <- a WHERE in(d) AND NOT act(d) AND contract(d) == c AND agreement(d) == ag;
+            contract(a) <- c;
+            agreement(a) <- ag;
             date(a) <- currentDate();
-            sum(a) <- sum(d);
-            FOR Template t = actTemplate(contract(d)) DO {
+            sum(a) <- GROUP SUM sum(Debt d) IF in(d) AND act(d) == a;
+            FOR Template t = actTemplate(c) DO {
                 createActTemplate(a, t);
                 process(t);
                 NEW df = DocumentFile {
@@ -54,10 +56,32 @@ createActs 'Создать акты' () {
                 }
             }
             IF copy() THEN {
-                name(a) <- OVERRIDE name(agreement(d)), name(contract(d));
-                text(a) <- OVERRIDE text(agreement(d)), text(contract(d));
+                name(a) <- OVERRIDE name(ag), name(c);
+                text(a) <- OVERRIDE text(ag), text(c);
             }
         }
+        //без соглашения
+        FOR [GROUP SUM 1 IF in(Debt d) AND NOT act(d) AND NOT agreement(d) BY contract(d)](Contract c) DO NEW a = Act {
+            act(Debt d) <- a WHERE in(d) AND NOT act(d) AND contract(d) == c AND NOT agreement(d);
+            contract(a) <- c;
+            date(a) <- currentDate();
+            sum(a) <- GROUP SUM sum(Debt d) IF in(d) AND act(d) == a;
+            FOR Template t = actTemplate(c) DO {
+                createActTemplate(a, t);
+                process(t);
+                NEW df = DocumentFile {
+                    document(df) <- a;
+                    file(df) <- FILE (resultTemplate());
+                    dateTime(df) <- currentDateTime();
+                    user(df) <- currentUser();
+                }
+            }
+            IF copy() THEN {
+                name(a) <- name(c);
+                text(a) <- text(c);
+            }
+        }
+        
         in(Debt t) <- NULL;
         APPLY;
     }
