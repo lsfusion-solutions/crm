@@ -224,7 +224,7 @@ DESIGN dashboardCustomer {
                 }
             }
             MOVE BOX (ss) { caption = 'Задачи'; }
-            MOVE BOX (at) BEFORE info { caption = 'Документы'; }
+            MOVE BOX (at) { caption = 'Документы'; }
             NEW info {
                 caption = 'Информация';
                 fill = 1;
