@@ -1,6 +1,6 @@
 MODULE CustomerAttachment;
 
-REQUIRE CustomerDashboard;
+REQUIRE Customer, Employee, Authentication;
 
 NAMESPACE Customer;
 
@@ -135,7 +135,7 @@ FORM dialogAttachments 'Документы клиента'
 ;
 
 NAVIGATOR {
-    contractFolder {
+    customerFolder {
         NEW attachments;
     }
 }
@@ -147,18 +147,3 @@ addAttachment 'Добавить' (Customer c) {
         SHOW attachment OBJECTS o = a DOCKED;
     }
 } IMAGE 'add.png'  CHANGEKEY 'INSERT' HIDE;
-
-EXTEND FORM dashboardCustomer
-    OBJECTS at = Attachment
-    PROPERTIES (at) READONLY id, nameCustomer, number, date, nameType, note, nameCreatedUser, createdDate
-    PROPERTIES DRAW at TOOLBAR openFile(at), addAttachment(c)
-    PROPERTIES(at) NEWSESSION EDIT, DELETE
-    ORDER date(at) DESC 
-    FILTERS customer(at) == c 
-;
-
-DESIGN dashboardCustomer {
-    tabPane {
-        MOVE BOX (at) BEFORE info { caption = 'Документы'; }
-    }
-}

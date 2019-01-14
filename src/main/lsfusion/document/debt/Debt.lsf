@@ -18,6 +18,8 @@ nameContractType 'Тип договора' (Debt d) = nameType(contract(d));
 nameCustomer 'Клиент' (Debt d) = nameCustomer(contract(d));
 nameLegalEntity 'Организация' (Debt d) = nameLegalEntity(contract(d));
 
+customer (Debt d) = customer(contract(d));
+
 note 'Примечание' = DATA VARISTRING[250](Debt) CHARWIDTH 20;
 
 currency (Debt d) = currency(contract(d));

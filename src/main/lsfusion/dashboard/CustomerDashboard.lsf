@@ -1,6 +1,6 @@
 MODULE CustomerDashboard;
 
-REQUIRE Project, PaymentAct, Event, Issue, TimeEntry, Dashboard, LegalEntity, DocFile, TimeEntryCustomer, ProjectExternal, DebtAgreement;
+REQUIRE Project, PaymentAct, Event, Issue, TimeEntry, Dashboard, LegalEntity, DocFile, TimeEntryCustomer, ProjectExternal, DebtAgreement, CustomerAttachment;
 
 NAMESPACE Dashboard;
 
@@ -133,9 +133,16 @@ FORM dashboardCustomer 'Работа с клиентами'
     OBJECTS cd = (df = DATE, dt = DATE) PANEL 
     PROPERTIES dFrom 'Дата с' = VALUE (df), dTo 'Дата по' =  VALUE (dt), printCustomerReport(c, df, dt)
     
+    OBJECTS at = Attachment
+    PROPERTIES (at) READONLY id, nameCustomer, number, date, nameType, note, nameCreatedUser, createdDate
+    PROPERTIES DRAW at TOOLBAR openFile(at), addAttachment(c)
+    PROPERTIES(at) NEWSESSION EDIT, DELETE
+    ORDER date(at) DESC 
+    FILTERS customer(at) == c 
+    
     OBJECTS d = Debt
-    PROPERTIES (d) READONLY date, numberContract, nameContract, nameContractType, nameLegalEntity, shortNameCurrency, sumCurrency, sum, paid, note, numberAgreement
-    FILTERS customer(legalEntity(contract(d))) == c 
+    PROPERTIES (d) READONLY date, numberContract, nameContractType, nameLegalEntity, shortNameCurrency, sumCurrency, sum, paid, note, numberAgreement
+    FILTERS customer(d) = c
 ;
 
 DESIGN dashboardCustomer {
@@ -217,6 +224,7 @@ DESIGN dashboardCustomer {
                 }
             }
             MOVE BOX (ss) { caption = 'Задачи'; }
+            MOVE BOX (at) BEFORE info { caption = 'Документы'; }
             NEW info {
                 caption = 'Информация';
                 fill = 1;
