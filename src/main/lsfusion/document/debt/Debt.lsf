@@ -94,12 +94,6 @@ createDebts 'Сгенерировать задолженности' (Contract c)
         
         FOR iterate(INTEGER i, 1, countMonthsDebt()) DO {
                         
-            month() <- month() (+) 1;
-            
-            IF month() > 12 THEN {
-                month() <- month() - 12;
-                year() <- year() + 1;
-            }
             TRY {
                 date() <- toDateFormat(text(paymentDay(c)) + text(month()) + year(), 'DDMMYYYY');
             }
@@ -120,6 +114,13 @@ createDebts 'Сгенерировать задолженности' (Contract c)
                 ELSE {
                     sum(d) <- sumMonth(c);
                 }
+            }
+
+            month() <- month() (+) 1;
+            
+            IF month() > 12 THEN {
+                month() <- month() - 12;
+                year() <- year() + 1;
             }
         }
     }
