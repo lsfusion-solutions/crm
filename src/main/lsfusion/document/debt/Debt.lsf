@@ -20,6 +20,8 @@ nameLegalEntity 'Организация' (Debt d) = nameLegalEntity(contract(d))
 
 customer (Debt d) = customer(contract(d));
 
+CONSTRAINT contract(Debt d) AND NOT dateSigningCustomer(contract(d)) MESSAGE 'Нельзя вводить задолженности для договора без даты подписания клиентом';
+
 note 'Примечание' = DATA VARISTRING[250](Debt) CHARWIDTH 20;
 
 currency (Debt d) = currency(contract(d));
