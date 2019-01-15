@@ -117,6 +117,7 @@ legalEntity(Act a) += legalEntity(a);
 company(Act a) += company(contract(a));
 contract(Act a) += contract(a);
 sum(Act c) += sum(c);
+description(Act c) += CONCAT ' ', 'Акт', '№' + number(c), name(c);
 
 EXTEND CLASS DocType {
     act 'Акт выполненных работ'

@@ -1,6 +1,6 @@
 MODULE EventDashboard;
 
-REQUIRE Event, Dashboard;
+REQUIRE Event, Dashboard, DocEvent;
 
 NAMESPACE Event;
 
@@ -22,7 +22,7 @@ FORM eventDashboard 'Обработка событий'
     
     OBJECTS o = Event 
     PROPERTIES(o) READONLY id, name, nameType, nameCustomer, nameLegalEntity, nameEmployee, nameContact, phoneContact, 
-                           namePositionContact, date, time, dateNext, descriptionString, additionString
+                           namePositionContact, date, time, dateNext, descriptionString, additionString, nameDocument
     PROPERTIES(o) PANEL READONLY description, addition
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
     ORDER date(o) DESC, time(o) DESC

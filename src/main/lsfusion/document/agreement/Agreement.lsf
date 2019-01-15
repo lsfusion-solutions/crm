@@ -110,6 +110,7 @@ legalEntity(Agreement a) += legalEntity(a);
 company(Agreement a) += company(contract(a));
 contract(Agreement a) += contract(a);
 sum(Agreement c) += sum(c);
+description(Agreement c) += CONCAT ' ', 'Согл.', '№' + number(c), name(c);
 
 EXTEND CLASS DocType {
     agreement 'Соглашение'

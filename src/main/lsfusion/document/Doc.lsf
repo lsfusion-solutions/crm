@@ -22,6 +22,7 @@ sum 'Сумма' = ABSTRACT NUMERIC[16,5](Document);
 paid 'Оплачено' = ABSTRACT NUMERIC[16,5](Document);
 balance 'Остаток' (Document d) = sum(d) (-) paid(d);
 dateLastPaid 'Дата последней оплаты' = ABSTRACT DATE (Document);
+description 'Описание' = ABSTRACT VARISTRING[250] (Document) CHARWIDTH 20;
 
 customer = ABSTRACT Customer (Document);
 nameCustomer 'Клиент' (Document d) = name(customer(d));

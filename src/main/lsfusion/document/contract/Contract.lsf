@@ -170,6 +170,7 @@ legalEntity(Contract c) += legalEntity(c);
 company(Contract c) += company(c);
 contract(Contract c) += c IF c IS Contract;
 sum(Contract c) += sum(c);
+description(Contract c) += CONCAT ' ', 'Дог.', '№' + number(c), name(c);
 
 EXTEND CLASS DocType {
     contract 'Договор'

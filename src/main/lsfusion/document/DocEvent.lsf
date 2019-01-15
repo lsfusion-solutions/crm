@@ -6,6 +6,9 @@ NAMESPACE Doc;
 
 addEvent ABSTRACT LIST (Event, Document);
 
+document = ABSTRACT Document(Event);
+nameDocument 'Документ' (Event e) = description(document(e));
+
 addEventDoc 'Добавить' (Document d) {
     NEWSESSION NEW e = Event {
         addEvent(e, d);

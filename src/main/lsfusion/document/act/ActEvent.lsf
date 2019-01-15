@@ -32,3 +32,5 @@ CONSTRAINT act(Event e) AND legalEntity(e) AND NOT legalEntity(e) == legalEntity
 EXTEND FORM docDashboard
     EXTEND FILTERGROUP event FILTER 'По документу' contract(e) == d OR agreement(e) == d OR act(e) == d DEFAULT
 ; 
+
+document (Event e) += OVERRIDE act(e), agreement(e), contract(e);
