@@ -8,17 +8,17 @@ act = DATA Act(Payment);
 idAct 'Код акта' (Payment a) = id(act(a));
 numberAct 'Номер акта' (Payment a) = number(act(a)) IN id;
 
-paidPayment 'Оплачено' (Act c) = GROUP SUM sum(Payment p) BY act(p);
+paidPayment 'Оплачено' (Act c) = GROUP SUM sum(Payment p) BY act(p) MATERIALIZED;
 
 paidAgreement 'Оплачено' (Act a) = PARTITION UNGROUP paid
                                                       LIMIT sum(a) (-) paidPayment(a)
                                                       ORDER date(a),a 
-                                                      BY agreement(a); 
+                                                      BY agreement(a) MATERIALIZED; 
 
 paidContract 'Оплачено' (Act a) = PARTITION UNGROUP paid
                                                         LIMIT sum(a) (-) paidPayment(a) (-) paidAgreement(a)
                                                         ORDER date(a),a 
-                                                        BY contract(a); 
+                                                        BY contract(a) MATERIALIZED; 
                                                       
 paid 'Оплачено' (Act a) = paidContract(a) (+) paidPayment(a) (+) paidAgreement(a);
 
