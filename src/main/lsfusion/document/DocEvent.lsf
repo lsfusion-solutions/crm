@@ -12,5 +12,3 @@ addEventDoc 'Добавить' (Document d) {
         SHOW event OBJECTS o = e DOCKED;
     }
 } IMAGE 'add.png'  CHANGEKEY 'INSERT' HIDE;
-
-CONSTRAINT contact(Event e) AND legalEntity(e) AND NOT legalEntity(e) == legalEntity(contact(e)) CHECKED BY contact[Event] MESSAGE 'Контактное лицо не соответствует организации';
