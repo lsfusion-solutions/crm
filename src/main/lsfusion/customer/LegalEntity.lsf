@@ -28,6 +28,7 @@ nameLegalAddress 'Юр. адрес' (LegalEntity l) = name(legalAddress(l));
 customer = DATA Customer(LegalEntity) INDEXED;
 idCustomer 'Код клиента' (LegalEntity l) = id(customer(l));
 nameCustomer 'Клиент' (LegalEntity l) = name(customer(l)) IN id;
+nameStatusCustomer 'Статус' (LegalEntity l) = nameStatus(customer(l));
 
 merge (Customer from, Customer to) + { customer(LegalEntity l) <- to WHERE customer(l) = from; }
 
@@ -189,7 +190,7 @@ DESIGN legalEntity {
 
 FORM legalEntities 'Организации'
     OBJECTS o = LegalEntity
-    PROPERTIES(o) READONLYIF isReadonly() id, extId, name, fullName, nameCustomer, nameLegalAddress, numberBank, 
+    PROPERTIES(o) READONLYIF isReadonly() id, extId, name, fullName, nameCustomer, nameStatusCustomer, nameLegalAddress, numberBank, 
                              nameBank, addressBank, mfoBank, numberAccount, isCompany
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
     ORDER name(o)
@@ -199,7 +200,7 @@ FORM legalEntities 'Организации'
 
 FORM dialogLegalEntities 'Организации'
     OBJECTS o = LegalEntity
-    PROPERTIES(o) READONLY id, extId, name, fullName, nameCustomer, nameLegalAddress, numberBank, nameBank, addressBank, mfoBank, numberAccount, isCompany
+    PROPERTIES(o) READONLY id, extId, name, fullName, nameCustomer, nameStatusCustomer, nameLegalAddress, numberBank, nameBank, addressBank, mfoBank, numberAccount, isCompany
     PROPERTIES(o) NEWSESSION EDIT
     ORDER name(o)
     

@@ -55,7 +55,7 @@ nameGroup 'Группа клиентов' (Customer c) = name(group(c)) CHARWIDT
 CLASS StatusCustomer 'Статус клиента';
 TABLE StatusCustomer (StatusCustomer);
 
-name 'Наименование' = DATA VARISTRING[100] (StatusCustomer) CHARWIDTH 15;
+name 'Наименование' = DATA VARISTRING[100] (StatusCustomer) CHARWIDTH 5;
 
 FORM StatusCustomer 'Статус клиента'
     OBJECTS o = StatusCustomer PANEL
