@@ -1,0 +1,27 @@
+MODULE DebtEvent;
+
+REQUIRE Debt, ContractEvent;
+
+NAMESPACE Contract;
+
+debt = DATA Debt(Event);
+nameDebt 'Задолженность' (Event e) = note(debt(e));
+
+EXTEND FORM event PROPERTIES nameDebt(o);
+
+DESIGN event {
+    OBJECTS {
+        NEW debt AFTER contact {
+            caption = 'Задолженность';
+            alignment = STRETCH;
+            MOVE PROPERTY (nameDebt(o));
+        }
+    }
+}
+
+CONSTRAINT debt(Event e) AND legalEntity(e) AND NOT legalEntity(contract(debt(e))) == legalEntity(e) CHECKED BY debt[Event] MESSAGE 'Задолженность не соответствует организации события';
+CONSTRAINT debt(Event e) AND contract(e) AND NOT contract(debt(e)) == contract(e) CHECKED BY debt[Event] MESSAGE 'Задолженность не соответствует договору события';
+
+WHEN LOCAL CHANGED (debt(Event e)) AND NOT CHANGED (contact(e)) DO {
+    contract(e) <- contract(debt(e));
+}

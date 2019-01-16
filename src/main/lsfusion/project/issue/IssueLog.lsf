@@ -1,6 +1,6 @@
 MODULE IssueLog;
 
-REQUIRE Issue, ProjectExternal;
+REQUIRE Issue, ProjectExternal, Email;
 
 NAMESPACE Project;
 

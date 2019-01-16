@@ -1,6 +1,6 @@
 MODULE DocContact;
 
-REQUIRE Doc, Contract;
+REQUIRE Doc, Contract, Email;
 
 PRIORITY Contact;
 

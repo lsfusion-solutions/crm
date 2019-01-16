@@ -1,6 +1,6 @@
 MODULE DebtDashboard;
 
-REQUIRE DebtAgreement, Act, ActWord;
+REQUIRE DebtAgreement, Act, ActWord, DebtEvent;
 
 NAMESPACE Contract;
 
@@ -105,6 +105,13 @@ editContract 'Редактировать договор' (Debt d) {
     NEWSESSION SHOW contract OBJECTS o = contract(d) DOCKED;
 }
 
+addEvent 'Добавить' (Debt d) {
+    NEWSESSION NEW e = Event {
+        debt(e) <- d;
+        SHOW event OBJECTS o = e DOCKED;
+    }
+} IMAGE 'add.png';
+
 FORM debtDashboard 'Контроль задолженности'
     PROPERTIES nameDebtFilterContractType()
     OBJECTS d = Debt
@@ -116,6 +123,12 @@ FORM debtDashboard 'Контроль задолженности'
     ORDER date(d)
     FILTERS  contractType(d) == filterDebtContractType() OR NOT filterDebtContractType()
     FILTERGROUP paid FILTER 'Не оплачено' NOT paid(d) >= sum(d) DEFAULT 
+    
+    OBJECTS e = Event
+    PROPERTIES (e) READONLY id, name, nameType, nameEmployee, nameContact, date, time, dateNext, descriptionString, additionString
+    PROPERTIES DRAW e TOOLBAR addEvent(d)
+    PROPERTIES (e) NEWSESSION EDIT 
+    FILTERS debt(e) == d
 ;
 
 DESIGN debtDashboard {
