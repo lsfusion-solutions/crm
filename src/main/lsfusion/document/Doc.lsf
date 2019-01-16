@@ -50,19 +50,19 @@ WHEN LOCAL SET (Document d IS Document) AND NOT date(d) DO {
     date(d) <- currentDate();    
 }
 
-CLASS SendingWay 'Способ отправки договора';
+CLASS SendingWay 'Способ отправки документа';
 TABLE sendingWay(SendingWay);
 
 name 'Наименование' = DATA VARSTRING[50](SendingWay) CHARWIDTH 15;
 
-FORM contractSendingWay 'Способ отправки договора'
+FORM contractSendingWay 'Способ отправки документа'
     OBJECTS o = SendingWay PANEL
     PROPERTIES(o) name
     
     EDIT SendingWay OBJECT o
 ;
 
-FORM contractSendingWays 'Способы отправки договора'
+FORM contractSendingWays 'Способы отправки документа'
     OBJECTS o = SendingWay
     PROPERTIES(o) READONLY name
     PROPERTIES (o) NEWSESSION NEW, EDIT, DELETE
@@ -71,4 +71,4 @@ FORM contractSendingWays 'Способы отправки договора'
 ;
 
 sendingWay = ABSTRACT SendingWay(Document);
-nameSendingWay 'Способ отправки договора' (Document d) = name(sendingWay(d));
+nameSendingWay 'Способ отправки документа' (Document d) = name(sendingWay(d));

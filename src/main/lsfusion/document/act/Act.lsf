@@ -102,7 +102,7 @@ text 'Текст' = DATA TEXT (Act);
 textString 'Текст' (Act c) = VARSTRING[500](text(c)) CHARWIDTH 20;
 
 sendingWay = DATA SendingWay(Act);
-nameSendingWay 'Способ отправки договора' (Act c) = name(sendingWay(c));
+nameSendingWay 'Способ отправки документа' (Act c) = name(sendingWay(c));
 
 id(Act c) += id(c);
 number(Act c) += number(c);
@@ -261,4 +261,8 @@ DESIGN contract {
             caption = 'Акты выполненных работ';
         }
     }
+}
+
+WHEN SET (Act a IS Act) AND NOT number(a) DO {  
+    number(a) <- VARISTRING[15] (INTEGER ([GROUP MAX number(Act ac) BY contract(ac)](contract(a))) (+) 1); 
 }
