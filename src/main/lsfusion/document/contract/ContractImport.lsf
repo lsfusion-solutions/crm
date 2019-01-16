@@ -14,12 +14,12 @@ importContracts 'Импорт договоров' (FILE f) {
     LOCAL sum = NUMERIC[16,5] (INTEGER);
     LOCAL type = VARSTRING[50](INTEGER);
     LOCAL sending = VARSTRING[50](INTEGER);
-    LOCAL date1 = DATE (INTEGER);
     LOCAL date2 = DATE (INTEGER);
     LOCAL date3 = DATE (INTEGER);
     LOCAL date4 = DATE (INTEGER);
     LOCAL date5 = DATE (INTEGER);
     LOCAL date6 = DATE (INTEGER);
+    LOCAL date7 = DATE (INTEGER);
     LOCAL note = VARSTRING[100](INTEGER);
     LOCAL text = TEXT(INTEGER);
     LOCAL message = VARSTRING[2000] ();
@@ -28,7 +28,7 @@ importContracts 'Импорт договоров' (FILE f) {
     message() <- '';
     count() <- 0;
     
-    IMPORT XLS NOHEADER FROM f TO idContract, idLegalEntity, idCompany, number, date1, name, sum, type, sending, date1, date2, date3, date4, date5, date6, note, text;
+    IMPORT XLS NOHEADER FROM f TO idContract, idLegalEntity, idCompany, number, date1, name, sum, type, sending, date2, date3, date4, date5, date6, date7, note, text;
     
     FOR imported(INTEGER i) AND i > 2 AND trim(idCompany(i)) AND NOT isCompany(legalEntity(trim(idCompany(i)))) DO {
     
@@ -65,12 +65,12 @@ importContracts 'Импорт договоров' (FILE f) {
         sum(c) <- sum(i);
         type(c) <- GROUP MAX ContractType t IF upper(name(t)) == upper(trim(type(i)));
         sendingWay(c) <- GROUP MAX ContractSendingWay s IF upper(name(s)) == upper(trim(sending(i)));
-        dateSigningCompany(c) <- date1(i);
-        dateSending(c) <- date2(i);
-        dateSigningCustomer(c) <- date3(i);
-        dateReceiving(c) <- date4(i);
-        dateTo(c) <- date5(i);
-        dateClosing(c) <- date6(i);
+        dateSigningCompany(c) <- date2(i);
+        dateSending(c) <- date3(i);
+        dateSigningCustomer(c) <- date4(i);
+        dateReceiving(c) <- date5(i);
+        dateTo(c) <- date6(i);
+        dateClosing(c) <- date7(i);
         note(c) <- trim(note(i));
         text(c) <- trim(text(i));
     }
