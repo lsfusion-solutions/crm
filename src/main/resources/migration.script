@@ -1,5 +1,5 @@
-V1.0.0 {
+V0.0.2 {
     CLASS Contract.ContractSendingWay -> Doc.SendingWay
     TABLE Contract.contractSendingWay -> Doc.sendingWay
-    STORED PROPERTY Contract.sendingWay[Contract.Contract] -> Doc.sendingWay[Doc.Document]
+    STORED PROPERTY Contract.name[Contract.ContractSendingWay] -> Doc.name[Doc.SendingWay]
 }
