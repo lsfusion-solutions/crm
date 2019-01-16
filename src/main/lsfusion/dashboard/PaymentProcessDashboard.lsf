@@ -184,8 +184,9 @@ reviseSum 'Сверка' (DATE df, DATE dt) {
         
         receiptImport(DATE d) <- GROUP SUM sum(INTEGER i)/extractDay(d) IF sum(i) > 0 AND d == date(i);
         shipmentImport(DATE d) <- GROUP SUM -sum(INTEGER i)/extractDay(d) IF sum(i) < 0 AND d = date(i);
+
+        SHOW reviseSum OBJECTS df = df, dt = dt DOCKED NOWAIT;
     }
-    SHOW reviseSum OBJECTS df = df, dt = dt DOCKED NOWAIT;
 }
 
 DESIGN reviseSum {
