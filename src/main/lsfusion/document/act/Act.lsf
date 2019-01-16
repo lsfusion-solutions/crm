@@ -101,6 +101,9 @@ note 'Примечание' = DATA VARISTRING[100](Act) CHARWIDTH 20;
 text 'Текст' = DATA TEXT (Act);
 textString 'Текст' (Act c) = VARSTRING[500](text(c)) CHARWIDTH 20;
 
+sendingWay = DATA SendingWay(Act);
+nameSendingWay 'Способ отправки договора' (Act c) = name(sendingWay(c));
+
 id(Act c) += id(c);
 number(Act c) += number(c);
 name(Act c) += name(c);
@@ -117,7 +120,8 @@ legalEntity(Act a) += legalEntity(a);
 company(Act a) += company(contract(a));
 contract(Act a) += contract(a);
 sum(Act c) += sum(c);
-description(Act c) += CONCAT ' ', 'Акт', '№' + number(c), name(c);
+description(Act c) += CONCAT ' ', 'Акт', '№' + number(c), 'от ' + toDateDDMMYY(date(c)), 'по дог.', '№' + number(contract(c)), 'от ' + toDateDDMMYY(date(contract(c)));
+sendingWay(Act c) += sendingWay(c);
 
 EXTEND CLASS DocType {
     act 'Акт выполненных работ'

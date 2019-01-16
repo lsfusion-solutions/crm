@@ -117,26 +117,7 @@ FORM contractGroups 'Группы договоров'
 group = DATA ContractGroup(Contract);
 nameGroup 'Группа договоров' (Contract c) = name(group(c)) CHARWIDTH 15;
 
-CLASS ContractSendingWay 'Способ отправки договора';
-TABLE contractSendingWay(ContractSendingWay);
-
-name 'Наименование' = DATA VARSTRING[50](ContractSendingWay) CHARWIDTH 15;
-
-FORM contractSendingWay 'Способ отправки договора'
-    OBJECTS o = ContractSendingWay PANEL
-    PROPERTIES(o) name
-    
-    EDIT ContractSendingWay OBJECT o
-;
-
-FORM contractSendingWays 'Способы отправки договора'
-    OBJECTS o = ContractSendingWay
-    PROPERTIES(o) READONLY name
-    PROPERTIES (o) NEWSESSION NEW, EDIT, DELETE
-    
-    LIST ContractSendingWay OBJECT o
-;
-sendingWay = DATA ContractSendingWay(Contract);
+sendingWay = DATA SendingWay(Contract);
 nameSendingWay 'Способ отправки договора' (Contract c) = name(sendingWay(c));
 
 dateSigningCompany 'Дата подписания компанией' = DATA DATE (Contract);
@@ -170,7 +151,8 @@ legalEntity(Contract c) += legalEntity(c);
 company(Contract c) += company(c);
 contract(Contract c) += c IF c IS Contract;
 sum(Contract c) += sum(c);
-description(Contract c) += CONCAT ' ', 'Дог.', '№' + number(c), name(c);
+description(Contract c) += CONCAT ' ', 'Дог.', '№' + number(c), 'от ' + toDateDDMMYY(date(c));
+sendingWay(Contract c) += sendingWay(c);
 
 EXTEND CLASS DocType {
     contract 'Договор'

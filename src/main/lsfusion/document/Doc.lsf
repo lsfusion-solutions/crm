@@ -22,7 +22,7 @@ sum 'Сумма' = ABSTRACT NUMERIC[16,5](Document);
 paid 'Оплачено' = ABSTRACT NUMERIC[16,5](Document);
 balance 'Остаток' (Document d) = sum(d) (-) paid(d);
 dateLastPaid 'Дата последней оплаты' = ABSTRACT DATE (Document);
-description 'Описание' = ABSTRACT VARISTRING[250] (Document) CHARWIDTH 20;
+description 'Описание' = ABSTRACT VARISTRING[250] (Document) CHARWIDTH 25;
 
 customer = ABSTRACT Customer (Document);
 nameCustomer 'Клиент' (Document d) = name(customer(d));
@@ -49,3 +49,26 @@ nameDocType 'Вид договора' (Document d) = name(docType(d));
 WHEN LOCAL SET (Document d IS Document) AND NOT date(d) DO {
     date(d) <- currentDate();    
 }
+
+CLASS SendingWay 'Способ отправки договора';
+TABLE contractSendingWay(SendingWay);
+
+name 'Наименование' = DATA VARSTRING[50](SendingWay) CHARWIDTH 15;
+
+FORM contractSendingWay 'Способ отправки договора'
+    OBJECTS o = SendingWay PANEL
+    PROPERTIES(o) name
+    
+    EDIT SendingWay OBJECT o
+;
+
+FORM contractSendingWays 'Способы отправки договора'
+    OBJECTS o = SendingWay
+    PROPERTIES(o) READONLY name
+    PROPERTIES (o) NEWSESSION NEW, EDIT, DELETE
+    
+    LIST SendingWay OBJECT o
+;
+
+sendingWay = ABSTRACT SendingWay(Document);
+nameSendingWay 'Способ отправки договора' (Document d) = name(sendingWay(d));

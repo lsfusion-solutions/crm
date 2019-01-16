@@ -102,7 +102,7 @@ FORM docDashboard 'Обработка документов'
     OBJECTS d = Document
     PROPERTIES (d) in, sign SHOWIF notSign(d), send SHOWIF notSend(d), receive SHOWIF notReceive(d), open SHOWIF TRUE IF file(d), edit, close SHOWIF NOT dateClosing(d)
     PROPERTIES (d) READONLY nameDocType, id, number, date, name, nameCustomer, nameType, numberContract, nameLegalEntity, 
-                            nameCompany, sum, paid, dateLastPaid, balance
+                            nameCompany, nameSendingWay, sum, paid, dateLastPaid, balance
     PROPERTIES (d) READONLYIF isReadonly() dateSigningCompany, dateSending, dateSigningCustomer, dateReceiving, dateClosing
     ORDER date(d)
     FILTERS docType(d) = filterDocType() OR NOT filterDocType(), company(d) == filterLegalEntity() OR NOT filterLegalEntity()
