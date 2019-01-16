@@ -279,7 +279,7 @@ DESIGN contract {
 FORM contracts 'Договоры'
     OBJECTS o = Contract LAST 
     PROPERTIES(o) READONLY id, nameCustomer, nameLegalEntity, nameCompany, number, date, name, sum, shortNameCurrency, sumCurrency, nameType, nameGroup, nameSendingWay, 
-                           dateSending, dateReceiving, dateTo, dateClosing, note, textString
+                           dateSigningCompany, dateSending, dateSigningCustomer, dateReceiving, dateTo, dateClosing, note, textString
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
     ORDER date(o)
 ;
@@ -289,7 +289,7 @@ active (Contract c) = NOT dateClosing(c) <= currentDate();
 FORM dialogContracts 'Договоры'
     OBJECTS o = Contract LAST 
     PROPERTIES(o) READONLY id, nameCustomer, nameLegalEntity, nameCompany, number, date, name, sum, shortNameCurrency, sumCurrency, nameType, nameGroup, nameSendingWay, 
-                           dateSending, dateReceiving, dateTo, dateClosing, note, textString
+                           dateSigningCompany, dateSending, dateSigningCustomer, dateReceiving, dateTo, dateClosing, note, textString
     ORDER date(o)
     
     FILTERGROUP active

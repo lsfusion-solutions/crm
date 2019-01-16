@@ -66,7 +66,7 @@ importContracts 'Импорт договоров' (FILE f) {
         sendingWay(c) <- GROUP MAX ContractSendingWay s IF upper(name(s)) == upper(trim(sending(i)));
         dateSending(c) <- date2(i);
         dateReceiving(c) <- date3(i);
-        dateSigningCompany(c) <- date4(i);
+        dateSigningCustomer(c) <- date4(i);
         dateTo(c) <- date5(i);
         dateClosing(c) <- date6(i);
         note(c) <- trim(note(i));
