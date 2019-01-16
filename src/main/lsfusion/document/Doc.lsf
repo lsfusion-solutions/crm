@@ -51,7 +51,7 @@ WHEN LOCAL SET (Document d IS Document) AND NOT date(d) DO {
 }
 
 CLASS SendingWay 'Способ отправки договора';
-TABLE contractSendingWay(SendingWay);
+TABLE sendingWay(SendingWay);
 
 name 'Наименование' = DATA VARSTRING[50](SendingWay) CHARWIDTH 15;
 

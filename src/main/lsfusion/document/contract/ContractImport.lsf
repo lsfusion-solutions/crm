@@ -51,7 +51,7 @@ importContracts 'Импорт договоров' (FILE f) {
     }
     
     FOR [GROUP SUM 1 IF INTEGER i > 2 BY trim(sending(i))](VARSTRING[50] sending) AND sending != '' 
-        AND NOT (GROUP MAX ContractSendingWay t IF upper(name(t)) == upper(sending)) DO NEW t = ContractSendingWay {
+        AND NOT (GROUP MAX SendingWay t IF upper(name(t)) == upper(sending)) DO NEW t = SendingWay {
         
         name(t) <- sending; 
     }
@@ -64,7 +64,7 @@ importContracts 'Импорт договоров' (FILE f) {
         name(c) <- trim(name(i));
         sum(c) <- sum(i);
         type(c) <- GROUP MAX ContractType t IF upper(name(t)) == upper(trim(type(i)));
-        sendingWay(c) <- GROUP MAX ContractSendingWay s IF upper(name(s)) == upper(trim(sending(i)));
+        sendingWay(c) <- GROUP MAX SendingWay s IF upper(name(s)) == upper(trim(sending(i)));
         dateSigningCompany(c) <- date2(i);
         dateSending(c) <- date3(i);
         dateSigningCustomer(c) <- date4(i);

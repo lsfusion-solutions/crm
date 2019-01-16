@@ -1,3 +1,5 @@
 V1.0.0 {
     CLASS Contract.ContractSendingWay -> Doc.SendingWay
+    TABLE Contract.contractSendingWay -> Doc.sendingWay
+    STORED PROPERTY Contract.sendingWay[Contract.Contract] -> Doc.sendingWay[Doc.Document]
 }
