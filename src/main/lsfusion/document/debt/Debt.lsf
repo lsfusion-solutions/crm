@@ -69,15 +69,7 @@ paymentDay 'День платежа' = DATA INTEGER (Contract) CHARWIDTH 2;
 countMonthsDebt 'Кол-во месяцев для формирования задолженности' = DATA INTEGER () CHARWIDTH 3;
 
 EXTEND FORM options PROPERTIES countMonthsDebt();
-
-DESIGN options {
-    pane {
-        NEW debt {
-            caption = 'Задолженность';
-            MOVE PROPERTY (countMonthsDebt());
-        }
-    }
-}
+DESIGN options { commons { MOVE PROPERTY (countMonthsDebt()); } }
 
 text(INTEGER i) = lpad(TEXT (i), 2, '0');
 debt (DATE d, Contract c) = GROUP MAX Debt t BY date(t), contract(t);

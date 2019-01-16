@@ -292,15 +292,7 @@ nameDefaultCompany 'Компания по умолчанию' () = name(defaultC
 CONSTRAINT defaultCompany() AND NOT isCompany(defaultCompany()) CHECKED BY defaultCompany[] MESSAGE 'Компания по умолчанию не является компанией';
 
 EXTEND FORM options PROPERTIES nameDefaultCompany();
-
-DESIGN options {
-    pane {
-        NEW contracts {
-            caption = 'Договор';
-            MOVE PROPERTY (nameDefaultCompany());
-        }
-    }
-}
+DESIGN options { commons { MOVE PROPERTY (nameDefaultCompany()); } }
 
 WHEN LOCAL SET (Contract c IS Contract) AND NOT CHANGED(company(c))DO {
     company(c) <- defaultCompany();

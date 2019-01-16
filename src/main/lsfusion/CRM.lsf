@@ -3,7 +3,7 @@ MODULE CRM;
 REQUIRE Scheduler, Service, SystemEvents, Backup, EvalScript, SQLUtils, ProcessUtils, Chat, NBRB,
         LegalEntity, LegalEntityImport, Contact, ContactImport,
         Employee, EmployeeImport, 
-        Contract, ContractImport, Agreement, AgreementImport, Act, ActImport, ContractSubject,
+        Contract, ContractImport, Agreement, AgreementImport, Act, ActImport, ContractSubject, DocContact,
         Project, ProjectRedmine, IssueDashboard, IssueLog, DocIssue,
         Payment, PaymentImport, PaymentAct,
         EmployeeExpenseImport, TimeEntryExpense,

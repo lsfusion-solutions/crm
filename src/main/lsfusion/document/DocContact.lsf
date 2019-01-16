@@ -1,0 +1,46 @@
+MODULE DocContact;
+
+REQUIRE Doc, Contract;
+
+PRIORITY Contact;
+
+NAMESPACE Doc;
+
+defaultSendingWay = DATA SendingWay();
+nameDefaultSendingWay 'Способ отправки по почте' () = name(defaultSendingWay());
+
+EXTEND FORM options PROPERTIES nameDefaultSendingWay();
+DESIGN options { commons { MOVE PROPERTY (nameDefaultSendingWay()); } }
+
+in 'Отм.' = DATA LOCAL BOOLEAN (Contact);
+
+FORM dialogContacts 'Контакты'
+    OBJECTS d = Document PANEL 
+    OBJECTS c = Contact
+    PROPERTIES (c) in
+    PROPERTIES (c) READONLY lastName, firstName, middleName, namePosition, email, phone, addPhones, skype, note, authorisedDocument
+    ORDER lastName(c)
+    FILTERS customer(c) == customer(d)
+    FILTERGROUP in FILTER 'Отмеченные' in(c)
+;
+
+sendToContacts 'Отправить по почте' (Document d) {
+    NEWSESSION {
+        DIALOG dialogContacts OBJECTS d = d, c INPUT DO {
+            
+            IF (GROUP SUM 1 IF in(Contact cc)) THEN {
+                dateSending(d) <- currentDate();
+                sendingWay(d) <- defaultSendingWay();
+            }
+            
+            FOR in(Contact cc) DO {
+                EMAIL 
+                    SUBJECT description(d)
+                    TO email(cc)
+                    BODY 'Высылаем вам документы.'
+                    ATTACH file(d);
+            }
+        }
+        APPLY;
+    }
+}

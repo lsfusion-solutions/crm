@@ -1,6 +1,6 @@
 MODULE DocDashboard;
 
-REQUIRE Doc, Time, Dashboard, Contract, DocIssue, DocEvent;
+REQUIRE Doc, Time, Dashboard, Contract, DocIssue, DocEvent, DocContact;
 
 NAMESPACE Doc;
 
@@ -100,6 +100,7 @@ FORM docDashboard 'Обработка документов'
     PROPERTIES () nameFilterDocClass, nameFilterLegalEntity
     
     OBJECTS d = Document
+    PROPERTIES sendToContacts(d) TOOLBAR 
     PROPERTIES (d) in, sign SHOWIF notSign(d), send SHOWIF notSend(d), receive SHOWIF notReceive(d), open SHOWIF TRUE IF file(d), edit, close SHOWIF NOT dateClosing(d)
     PROPERTIES (d) READONLY nameDocType, id, number, date, name, nameCustomer, nameType, numberContract, nameLegalEntity, 
                             nameCompany, nameSendingWay, sum, paid, dateLastPaid, balance
@@ -125,7 +126,6 @@ FORM docDashboard 'Обработка документов'
     PROPERTIES DRAW i TOOLBAR addIssue(d)
     PROPERTIES (i) NEWSESSION EDIT, DELETE 
     FILTERS document(i) == d
-    
 ;
 
 @extendFormEditable(docDashboard);
