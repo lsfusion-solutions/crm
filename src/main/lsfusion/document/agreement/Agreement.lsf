@@ -125,7 +125,7 @@ FORM agreement 'Соглашение'
     OBJECTS o = Agreement PANEL
     PROPERTIES(o) id, nameNumerator, series, number, date, name, nameType, numberContract, nameCustomer READONLY, nameLegalEntity READONLY, sum, 
                   dateSending, dateReceiving, dateClosing, note, text, nameCompany READONLY, nameAuthorisedPersonLegalEntity, nameAuthorisedPersonCompany, 
-                  authorisedDocumentLegalEntity, authorisedDocumentCompany
+                  authorisedDocumentLegalEntity, authorisedDocumentCompany, nameSendingWay
     
     EDIT Agreement OBJECT o
 ;
@@ -172,6 +172,7 @@ DESIGN agreement {
         NEW processing {
             type = CONTAINERH;
             caption = 'Обработка';
+            MOVE PROPERTY(nameSendingWay(o));
             MOVE PROPERTY(dateSending(o));
             MOVE PROPERTY(dateReceiving(o));
             MOVE PROPERTY(dateClosing(o));
@@ -205,14 +206,14 @@ DESIGN agreement {
 
 FORM agreements 'Соглашения'
     OBJECTS o = Agreement LAST 
-    PROPERTIES(o) READONLY id, numberContract, number, date, name, nameType, sum, dateSending, dateReceiving, dateClosing, note, textString
+    PROPERTIES(o) READONLY id, numberContract, number, date, name, nameType, sum, nameSendingWay, dateSending, dateReceiving, dateClosing, note, textString
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
     ORDER date(o)
 ;
 
 FORM dialogAgreements 'Соглашения'
     OBJECTS o = Agreement LAST 
-    PROPERTIES(o) READONLY id, numberContract, number, date, name, nameType, sum, dateSending, dateReceiving, dateClosing, note, textString
+    PROPERTIES(o) READONLY id, numberContract, number, date, name, nameType, sum, nameSendingWay, dateSending, dateReceiving, dateClosing, note, textString
     ORDER date(o)
 
     FILTERGROUP active
@@ -237,7 +238,7 @@ addAgreement 'Добавить' (Contract c) {
 
 EXTEND FORM contract 
     OBJECTS ag = Agreement LAST 
-    PROPERTIES (ag) READONLY id, numberContract, number, date, name, nameType, sum, dateSending, dateReceiving, dateClosing, note, textString
+    PROPERTIES (ag) READONLY id, numberContract, number, date, name, nameType, sum, nameSendingWay, dateSending, dateReceiving, dateClosing, note, textString
     PROPERTIES DRAW ag TOOLBAR addAgreement(o)
     PROPERTIES(ag) NESTEDSESSION EDIT, DELETE
     ORDER date(ag)

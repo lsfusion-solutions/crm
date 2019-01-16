@@ -131,7 +131,7 @@ docType(Act a) += DocType.act IF a IS Act;
 FORM act 'Акт выполненных работ'
     OBJECTS o = Act PANEL
     PROPERTIES(o) id, number, date, name, nameType, numberContract, numberAgreement, nameCustomer READONLY, nameLegalEntity READONLY, sum, 
-                  dateSending, dateReceiving, dateClosing, note, text, nameCompany READONLY, nameNumerator, series, 
+                  dateSending, dateReceiving, dateClosing, note, text, nameCompany READONLY, nameNumerator, series, nameSendingWay,
                   nameAuthorisedPersonLegalEntity, nameAuthorisedPersonCompany, authorisedDocumentLegalEntity, authorisedDocumentCompany
     
     EDIT Act OBJECT o
@@ -181,6 +181,7 @@ DESIGN act {
         NEW processing {
             type = CONTAINERH;
             caption = 'Обработка';
+            MOVE PROPERTY(nameSendingWay(o));
             MOVE PROPERTY(dateSending(o));
             MOVE PROPERTY(dateReceiving(o));
             MOVE PROPERTY(dateClosing(o));
@@ -214,14 +215,14 @@ DESIGN act {
 
 FORM acts 'Акты выполненных работ'
     OBJECTS o = Act LAST 
-    PROPERTIES(o) READONLY id, numberContract, numberAgreement, number, date, name, nameType, sum, dateSending, dateReceiving, dateClosing, note, textString
+    PROPERTIES(o) READONLY id, numberContract, numberAgreement, number, date, name, nameType, sum, nameSendingWay, dateSending, dateReceiving, dateClosing, note, textString
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
     ORDER date(o)
 ;
 
 FORM dialogActs 'Акты выполненных работ'
     OBJECTS o = Act LAST 
-    PROPERTIES(o) READONLY id, numberContract, numberAgreement, number, date, name, nameType, sum, dateSending, dateReceiving, dateClosing, note, textString
+    PROPERTIES(o) READONLY id, numberContract, numberAgreement, number, date, name, nameType, sum, nameSendingWay, dateSending, dateReceiving, dateClosing, note, textString
     ORDER date(o)
 
     FILTERGROUP active
@@ -246,7 +247,7 @@ addAct 'Добавить' (Contract c) {
 
 EXTEND FORM contract 
     OBJECTS ac = Act LAST 
-    PROPERTIES (ac) READONLY id, numberContract, numberAgreement, number, date, name, nameType, sum, dateSending, dateReceiving, dateClosing, note, textString
+    PROPERTIES (ac) READONLY id, numberContract, numberAgreement, number, date, name, nameType, sum, nameSendingWay, dateSending, dateReceiving, dateClosing, note, textString
     PROPERTIES DRAW ac TOOLBAR addAct(o)
     PROPERTIES(ac) NESTEDSESSION EDIT, DELETE
     ORDER date(ac)

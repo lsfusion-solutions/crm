@@ -41,7 +41,7 @@ FORM contractDashboard 'Работа с договорами'
         FILTER 'Активные' NOT dateClosing(o) <= currentDate() DEFAULT
     
     OBJECTS ag = Agreement LAST 
-    PROPERTIES (ag) READONLY id, number, date, name, nameType, sum, sumCurrency, paid, balance, dateSending, dateReceiving, dateClosing, note, textString
+    PROPERTIES (ag) READONLY id, number, date, name, nameType, sum, sumCurrency, paid, balance, nameSendingWay, dateSending, dateReceiving, dateClosing, note, textString
     PROPERTIES (ag) openFile DRAW ag TOOLBAR SHOWIF TRUE IF file(o)
     PROPERTIES (ag) NEWSESSION edit
     ORDER date(ag)
@@ -49,7 +49,7 @@ FORM contractDashboard 'Работа с договорами'
     FILTERGROUP activeAg FILTER 'Активные' active(ag) DEFAULT 
     
     OBJECTS ac = Act LAST 
-    PROPERTIES (ac) READONLY id, numberAgreement, number, date, name, nameType, sum, paid, balance, dateSending, dateReceiving, dateClosing, note, textString
+    PROPERTIES (ac) READONLY id, numberAgreement, number, date, name, nameType, sum, paid, balance, nameSendingWay, dateSending, dateReceiving, dateClosing, note, textString
     PROPERTIES (ac) openFile DRAW ac TOOLBAR SHOWIF TRUE IF file(o)
     PROPERTIES (ac) NEWSESSION edit
     ORDER date(ac)
