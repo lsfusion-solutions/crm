@@ -44,8 +44,8 @@ FORM paymentProcessDasboard 'Обработка платежей'
     
     OBJECTS p = Payment
     PROPERTIES addPayment(dt) DRAW p TOOLBAR 
-    PROPERTIES (p) isPosted, id, nameLegalEntity, nameCustomer, nameCompany, numberContract, nameTypeContract READONLY, 
-                   numberAgreement BACKGROUND backgroundAgreement(p), numberAct, number, date, year READONLY, 
+    PROPERTIES (p) isPosted, id, nameLegalEntity, nameCustomer, nameCompany, numberContract, nameContract, nameTypeContract READONLY, 
+                   numberAgreement BACKGROUND backgroundAgreement(p), nameAgreement BACKGROUND backgroundAgreement(p), numberAct, number, date, year READONLY, 
                    monthNumber READONLY, sum, shortNameCurrency, sumCurrency, note, DELETE 
     PROPERTIES(p) split TOOLBAR
     ORDER date(p), nameLegalEntity(p), nameCompany(p), numberContract(p)
