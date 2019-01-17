@@ -14,8 +14,6 @@ name 'Наименование' = DATA VARISTRING[150](Contract) CHARWIDTH 20;
 series 'Серия' = DATA STRING[2](Contract);
 number 'Номер' = DATA VARSTRING[15](Contract) IN id;
 
-@defineNumeratedDefault(Contract, 'Договоры', 'ДГ');
-
 legalEntity = DATA LegalEntity(Contract) NONULL;
 idLegalEntity 'Код организации' (Contract c) = id(legalEntity(c));
 nameLegalEntity 'Организация' (Contract c) = name(legalEntity(c)) IN id;
@@ -75,17 +73,18 @@ CLASS ContractType 'Тип договора';
 TABLE contractType(ContractType);
 
 name 'Наименование' = DATA VARISTRING[50](ContractType) CHARWIDTH 15;
+postfix 'Постфикс' = DATA VARISTRING[5](ContractType);
 
 FORM contractType 'Тип договора'
     OBJECTS o = ContractType PANEL
-    PROPERTIES(o) name
+    PROPERTIES(o) name, postfix
     
     EDIT ContractType OBJECT o
 ;
 
 FORM contractTypes 'Типы договора'
     OBJECTS o = ContractType
-    PROPERTIES(o) READONLY name
+    PROPERTIES(o) READONLY name, postfix
     PROPERTIES (o) NEWSESSION NEW, EDIT, DELETE
     
     LIST ContractType OBJECT o
@@ -93,6 +92,21 @@ FORM contractTypes 'Типы договора'
 
 type = DATA ContractType(Contract);
 nameType 'Тип договора' (Contract c) = name(type(c)) CHARWIDTH 15;
+
+numerator '{numerator.id.numerator}' = DATA Numerator (Contract);
+nameNumerator '{numerator.numerator}' (Contract o) = name(numerator(o)) IN numbered CHARWIDTH 7;
+
+generateSeriesNumber '{numerator.generate.number}'(Contract o)  { 
+    number(o) <- CONCAT '-', curValue(numerator(o)), postfix(type(o));
+    series(o) <- series(numerator(o));
+    incrementValueSession(numerator(o));
+}
+
+WHEN SETCHANGED(numerator(Contract o)) AND
+     NOT CHANGED(number(o)) AND
+     NOT CHANGED(series(o))
+     DO generateSeriesNumber(o) ;
+@defineNumeratedDefaultPrefix(Contract, 'Договоры', 'ДГ', );
 
 CLASS ContractGroup 'Группа договоров';
 TABLE contractGroup(ContractGroup);
