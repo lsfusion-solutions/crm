@@ -27,13 +27,56 @@ DESIGN contract {
     }
 }
 
+created = DATA LOCAL BOOLEAN (Act);
+text 'Значение' = DATA LOCAL TEXT (VARISTRING[100]);
+in (VARISTRING[100] key) = GROUP SUM 1 IF required(TemplateEntry te) AND [GROUP SUM 1 IF created(Act a) BY actTemplate(contract(a))](template(te)) BY key(te);
+
+createActFiles 'Сформировать' () {
+    IF NOT (GROUP SUM 1 IF in(VARISTRING[100] key) AND NOT text(key)) THEN {
+        FOR created(Act a) DO {
+            createActTemplate(a, actTemplate(contract(a)));
+            FOR in(VARISTRING[100] key) AND text(key) DO {
+                value(TemplateEntry d) <- text(key) WHERE key(d) = key AND template(d) == actTemplate(contract(a));
+            }
+            process(actTemplate(contract(a)));
+            NEW cf = DocumentFile {
+                document(cf) <- a;
+                file(cf) <- FILE (resultTemplate());
+                dateTime(cf) <- currentDateTime();
+                user(cf) <- currentUser();
+            } 
+        }
+        APPLY;
+        formOk();
+    }
+    ELSE MESSAGE 'Заполнены не все обязательные поля' NOWAIT;
+}
+
+FORM requiredTemplateEntries 'Обязательные поля'
+    OBJECTS t = VARISTRING[100]
+    PROPERTIES (t) 'Параметр' = VALUE READONLY, text
+    FILTERS in(t)
+    PROPERTIES createActFiles()
+;
+
+DESIGN requiredTemplateEntries {
+    MOVE TOOLBARBOX {
+        TOOLBARRIGHT {
+            MOVE PROPERTY (createActFiles()) AFTER PROPERTY (formOk()) { alignment = STRETCH; }
+            REMOVE PROPERTY (formOk());
+            REMOVE PROPERTY (formApply());
+            REMOVE PROPERTY (formCancel());
+        }
+    }
+}
+
 in 'Отм.' = DATA LOCAL BOOLEAN (Debt);
 
 createActs 'Создать акты' () {
 
     LOCAL copy = BOOLEAN ();
     
-    NEWSESSION NESTED (in[Debt]) {
+    IF (GROUP SUM 1 IF in(Debt d) AND NOT act(d)) THEN NEWSESSION NESTED (in[Debt]) {
         
         ASK 'Скопировать текст и название?' DO {
             copy() <- TRUE;
@@ -45,20 +88,11 @@ createActs 'Создать акты' () {
             agreement(a) <- ag;
             date(a) <- currentDate();
             sum(a) <- GROUP SUM sum(Debt d) IF in(d) AND act(d) == a;
-            FOR Template t = actTemplate(c) DO {
-                createActTemplate(a, t);
-                process(t);
-                NEW df = DocumentFile {
-                    document(df) <- a;
-                    file(df) <- FILE (resultTemplate());
-                    dateTime(df) <- currentDateTime();
-                    user(df) <- currentUser();
-                }
-            }
             IF copy() THEN {
                 name(a) <- OVERRIDE name(ag), name(c);
                 text(a) <- OVERRIDE text(ag), text(c);
             }
+            created(a) <- TRUE;
         }
         //без соглашения
         FOR [GROUP SUM 1 IF in(Debt d) AND NOT act(d) AND NOT agreement(d) BY contract(d)](Contract c) DO NEW a = Act {
@@ -66,24 +100,14 @@ createActs 'Создать акты' () {
             contract(a) <- c;
             date(a) <- currentDate();
             sum(a) <- GROUP SUM sum(Debt d) IF in(d) AND act(d) == a;
-            FOR Template t = actTemplate(c) DO {
-                createActTemplate(a, t);
-                process(t);
-                NEW df = DocumentFile {
-                    document(df) <- a;
-                    file(df) <- FILE (resultTemplate());
-                    dateTime(df) <- currentDateTime();
-                    user(df) <- currentUser();
-                }
-            }
             IF copy() THEN {
                 name(a) <- name(c);
                 text(a) <- text(c);
             }
+            created(a) <- TRUE;
         }
         
-        in(Debt t) <- NULL;
-        APPLY;
+        SHOW requiredTemplateEntries;
     }
 }
 
