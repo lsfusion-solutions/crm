@@ -138,6 +138,8 @@ createFullDebt 'Сгенерировать задолженность' (Contract
     }
 }
 
+EXTEND FORM dialogContracts PROPERTIES sumMonth(o) BEFORE nameType(o);
+
 EXTEND FORM contract 
     PROPERTIES (o) sumMonth, paymentDay, createDebts SHOWIF (sumMonth(o) AND paymentDay(o)), createFullDebt
     OBJECTS d = Debt

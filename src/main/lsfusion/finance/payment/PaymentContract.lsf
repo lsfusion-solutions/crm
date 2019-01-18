@@ -39,9 +39,9 @@ EXTEND FORM dialogPayments
     ORDER numberContract(o)
 ;
 
-EXTEND FORM dialogContracts
-    PROPERTIES(o) READONLY paid AFTER sum(o)
-;
+EXTEND FORM dialogContracts 
+    PROPERTIES (o) paidCurrency AFTER sumCurrency(o), paid AFTER sum(o)
+    PROPERTIES (o) dateLastPaid AFTER paid(o);
 
 EXTEND FORM contract
     OBJECTS p = Payment

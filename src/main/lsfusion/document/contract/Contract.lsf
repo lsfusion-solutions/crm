@@ -284,7 +284,7 @@ active (Contract c) = NOT dateClosing(c) <= currentDate();
 
 FORM dialogContracts 'Договоры'
     OBJECTS o = Contract LAST 
-    PROPERTIES(o) READONLY id, nameCustomer, nameLegalEntity, nameCompany, number, date, name, sum, shortNameCurrency, sumCurrency, nameType, nameGroup, nameSendingWay, 
+    PROPERTIES(o) READONLY id, nameCustomer, nameLegalEntity, nameCompany, number, date, name, shortNameCurrency, sumCurrency, sum, nameType, nameGroup, nameSendingWay, 
                            dateSigningCompany, dateSending, dateSigningCustomer, dateReceiving, dateTo, dateClosing, note, textString
     ORDER date(o)
     
