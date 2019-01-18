@@ -195,6 +195,8 @@ DESIGN contract {
                     NEW main {
                         caption = 'Основные параметры';
                         MOVE PROPERTY (id(o));
+                        MOVE PROPERTY (nameType(o));
+                        MOVE PROPERTY (nameGroup(o));
                         MOVE PROPERTY (name(o));
                         MOVE PROPERTY (nameNumerator(o));
                         NEW number {
@@ -203,8 +205,6 @@ DESIGN contract {
                             MOVE PROPERTY (number(o));
                         }
                         MOVE PROPERTY (date(o));
-                        MOVE PROPERTY (nameType(o));
-                        MOVE PROPERTY (nameGroup(o));
                     }
                     NEW legalEntities {
                         caption = 'Контрагенты';
