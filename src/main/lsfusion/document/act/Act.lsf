@@ -63,6 +63,7 @@ numberAgreement 'Номер соглашения' (Act a) = number(agreement(a))
 CONSTRAINT contract(Act a) != contract(agreement(a)) CHECKED BY agreement[Act] MESSAGE 'Договор акта не соответствует договору';
 
 date 'Дата' = DATA DATE (Act) IN id;
+year 'Год' = DATA YEAR (Act) IN id;
 
 CLASS ActType 'Тип акта выполненных работ';
 TABLE actType(ActType);
@@ -264,5 +265,5 @@ DESIGN contract {
 }
 
 WHEN SET (Act a IS Act) AND NOT number(a) DO {  
-    number(a) <- VARISTRING[15] (INTEGER ([GROUP MAX number(Act ac) BY contract(ac)](contract(a))) (+) 1); 
+    number(a) <- VARISTRING[15] (INTEGER ([GROUP MAX number(Act ac) BY contract(ac), year(ac)](contract(a), year(a))) (+) 1); 
 }
