@@ -34,6 +34,7 @@
 	<field name="hours(t)" class="java.math.BigDecimal"/>
 	<field name="nameActivity(t)" class="java.lang.String"/>
 	<field name="commentsString(t)" class="java.lang.String"/>
+	<field name="withoutAgreement()" class="java.lang.Boolean"/>
 	<variable name="hours_i" class="java.math.BigDecimal" resetType="Group" resetGroup="textGroup11482" calculation="Sum">
 		<variableExpression><![CDATA[$F{hours(t)}]]></variableExpression>
 	</variable>

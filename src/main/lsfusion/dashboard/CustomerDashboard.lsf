@@ -1,6 +1,6 @@
 MODULE CustomerDashboard;
 
-REQUIRE Project, PaymentAct, Event, Issue, TimeEntry, Dashboard, LegalEntity, DocFile, TimeEntryCustomer, ProjectExternal, DebtAgreement, CustomerAttachment;
+REQUIRE Project, PaymentAct, Event, Issue, TimeEntry, Dashboard, LegalEntity, DocFile, TimeEntryCustomer, ProjectExternal, DebtAgreement, CustomerAttachment, AgreementIssue;
 
 NAMESPACE Dashboard;
 
@@ -109,9 +109,10 @@ FORM dashboardCustomer 'Работа с клиентами'
     
     OBJECTS is = Issue
     PROPERTIES(is) in
-    PROPERTIES(is) READONLY number, name, descriptionString, dateTo, dateTimeCreated, dateTimeUpdated, dateFrom, doneRatio, estimatedHours, nameProject, nameAuthor, nameAssignedTo, nameTracker
-    PROPERTIES(is) changeStatus TOOLBAR, open TOOLBAR
-    FILTERS customer(is) == c OR customer(project(is)) == c, status(is) == st
+    PROPERTIES(is) READONLY number, name, descriptionString, dateTo, dateTimeCreated, dateTimeUpdated, dateFrom, doneRatio, 
+                            estimatedHours, nameProject, nameAuthor, nameAssignedTo, nameTracker, numberAgreement, nameAgreement
+    PROPERTIES DRAW is TOOLBAR changeStatus(is), setAgreement(c), open(is)
+    FILTERS customer(is) == c, status(is) == st
     ORDER number(is) DESC
     
     OBJECTS te = TimeEntry
@@ -122,7 +123,7 @@ FORM dashboardCustomer 'Работа с клиентами'
     OBJECTS ss = Issue
     PROPERTIES(ss) in
     PROPERTIES(ss) READONLY number, name, descriptionString, dateTo, dateTimeCreated, dateTimeUpdated, dateFrom, doneRatio, 
-                            estimatedHours, nameProject, nameAuthor, nameAssignedTo, nameTracker
+                            estimatedHours, nameProject, nameAuthor, nameAssignedTo, nameTracker, numberAgreement, nameAgreement
     PROPERTIES DRAW ss TOOLBAR open(ss), addIssue(c)
     PROPERTIES (ss) SHOWIF NOT external(ss) NEWSESSION EDIT, DELETE 
     FILTERS customer(ss) == c OR customer(project(ss)) == c
@@ -131,7 +132,7 @@ FORM dashboardCustomer 'Работа с клиентами'
     ORDER number(ss) DESC
     
     OBJECTS cd = (df = DATE, dt = DATE) PANEL 
-    PROPERTIES dFrom 'Дата с' = VALUE (df), dTo 'Дата по' =  VALUE (dt), printCustomerReport(c, df, dt)
+    PROPERTIES dFrom 'Дата с' = VALUE (df), dTo 'Дата по' =  VALUE (dt), printCustomerReport(c, df, dt), withoutAgreements()
     
     OBJECTS at = Attachment
     PROPERTIES (at) READONLY id, nameCustomer, number, date, nameType, note, nameCreatedUser, createdDate
@@ -204,6 +205,7 @@ DESIGN dashboardCustomer {
                     MOVE PROPERTY (dFrom);
                     MOVE PROPERTY (dTo);
                     MOVE PROPERTY (printCustomerReport(c, df, dt));
+                    MOVE PROPERTY (withoutAgreements());
                 }
                 NEW projectsTab {
                     type = TABBED;

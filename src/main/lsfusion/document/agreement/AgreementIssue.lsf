@@ -1,0 +1,44 @@
+MODULE AgreementIssue;
+
+REQUIRE Agreement, Issue;
+
+NAMESPACE Agreement;
+
+agreement = DATA Agreement(Issue);
+nameAgreement 'Соглашение' (Issue i) = name(agreement(i));
+numberAgreement 'Номер соглашения' (Issue i) = number(agreement(i));
+
+EXTEND FORM agreement
+    OBJECTS i = Issue
+    PROPERTIES (i) READONLY number, name, descriptionString, dateTo, dateTimeCreated, dateTimeUpdated, dateFrom, doneRatio, estimatedHours, nameProject, 
+                            nameCustomer, nameAuthor, nameAssignedTo, nameTracker, nameStatus
+    
+    FILTERS agreement(i) == o
+;
+
+DESIGN agreement {
+    details {
+        MOVE BOX (i) { caption = 'Задачи'; }
+    }
+}
+
+FORM dialogAgreementsIssue 'Соглашения'
+    OBJECTS c = Customer PANEL 
+    OBJECTS a = Agreement
+    PROPERTIES (a) READONLY id, numberContract, number, date, name, nameType, sum, nameSendingWay, dateSending, dateReceiving, dateClosing, note, textString
+    FILTERS customer(a) == c
+    
+;
+
+setAgreement 'Привязать соглашение' (Customer c) {
+    NEWSESSION DIALOG dialogAgreementsIssue OBJECTS c = c, a INPUT NULL DO {
+        FOR in(Issue i) DO {
+            agreement(i) <- a;
+        }
+        APPLY;
+    }
+}
+
+overCustomer(Issue i) = OVERRIDE customer(i), customer(project(i));
+
+CONSTRAINT agreement(Issue i) AND NOT customer(agreement(i)) == customer(i) CHECKED BY agreement[Issue] MESSAGE 'Клиент соглашения не соответствует клиенту задачи';
