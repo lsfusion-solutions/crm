@@ -35,4 +35,4 @@ importEmployeeExpense 'Импорт расходов по сотрудникам
     }
 }
 
-EXTEND FORM migrationData PROPERTIES importEmployeeExpense();
+EXTEND FORM expenses PROPERTIES importEmployeeExpense() DRAW e TOOLBAR;
