@@ -35,16 +35,16 @@ authorisedPersonCompany  (Act c) = DATA Contact.Contact(Act);
 nameAuthorisedPersonCompany 'Уп. лицо компании' (Act c) = name(authorisedPersonCompany(c));
 authorisedDocumentCompany 'На основании' = DATA VARISTRING[1000](Act) CHARWIDTH 20;
 
-WHEN LOCAL CHANGED (legalEntity(Act c)) DO {
-    authorisedPersonLegalEntity (c) <- authorisedPerson(legalEntity(c));
-    authorisedDocumentLegalEntity (c) <- OVERRIDE authorisedDocument(authorisedPersonLegalEntity(c)), authorisedDocument(legalEntity(c));
+WHEN LOCAL (CHANGED (legalEntity(Act c)) OR CHANGED (contract(c))) AND NOT CHANGED (authorisedPersonLegalEntity(c)) DO {
+    authorisedPersonLegalEntity (c) <- OVERRIDE authorisedPersonLegalEntity(contract(c)), authorisedPerson(legalEntity(c));
+    authorisedDocumentLegalEntity (c) <- OVERRIDE authorisedDocumentLegalEntity(contract(c)), authorisedDocument(authorisedPersonLegalEntity(c)), authorisedDocument(legalEntity(c));
 }
 WHEN LOCAL CHANGED (authorisedPersonLegalEntity(Act c)) AND NOT CHANGED (legalEntity(c)) DO {
     authorisedDocumentLegalEntity (c) <- authorisedDocument(authorisedPersonLegalEntity(c));
 }
-WHEN LOCAL CHANGED (company(Act c)) DO {
-    authorisedPersonCompany (c) <- authorisedPerson(company(c));
-    authorisedDocumentCompany (c) <- OVERRIDE authorisedDocument(authorisedPersonCompany(c)), authorisedDocument(company(c));
+WHEN LOCAL (CHANGED (company(Act c)) OR CHANGED (contract(c))) AND NOT CHANGED (authorisedPersonCompany(c)) DO {
+    authorisedPersonCompany (c) <- OVERRIDE authorisedPersonCompany(contract(c)), authorisedPerson(company(c));
+    authorisedDocumentCompany (c) <- OVERRIDE authorisedDocumentCompany(contract(c)), authorisedDocument(authorisedPersonCompany(c)), authorisedDocument(company(c));
 }
 WHEN LOCAL CHANGED (authorisedPersonCompany(Act c)) AND NOT CHANGED (company(c)) DO {
     authorisedDocumentCompany (c) <- authorisedDocument(authorisedPersonCompany(c));
