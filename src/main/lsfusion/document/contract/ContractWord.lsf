@@ -1,6 +1,6 @@
 MODULE ContractWord;
 
-REQUIRE ContractFile, DocWord, LegalEntity;
+REQUIRE ContractFile, DocWord, LegalEntity, ContractSubject;
 
 NAMESPACE Contract;
 
@@ -97,6 +97,29 @@ printContractWord 'Сформировать по шаблону' (Contract ct) {
         value(TemplateEntry d) <- OVERRIDE postcodeBank(legalEntity(ct)), '' WHERE key(d) = 'POSTCODE_BANK_LEGAL_ENTITY' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE addressBank(legalEntity(ct)), '' WHERE key(d) = 'ADDRESS_BANK_LEGAL_ENTITY' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE mfoBank(legalEntity(ct)), '' WHERE key(d) = 'MFO_BANK_LEGAL_ENTITY' AND template (d) == t;
+        
+        FOR [GROUP SUM 1 BY type(ContractSubject cs), contract(cs)](SubjectType cst, ct) DO {
+        
+            NEW te = TemplateEntry { 
+                template(te) <- t; 
+                key(te) <- id(cst) + '_QUANTITY';
+                description(te) <- 'Кол-во предмета договора типа ' + id(cst);
+                value(te) <- TEXT ([GROUP LAST quantity(ContractSubject cs) ORDER cs BY type(cs), contract(cs)](cst, ct));
+            }
+            NEW te = TemplateEntry { 
+                template(te) <- t; 
+                key(te) <- id(cst) + '_PRICE';
+                description(te) <- 'Цена предмета договора типа ' + id(cst);
+                value(te) <- TEXT (round2([GROUP LAST price(ContractSubject cs) ORDER cs BY type(cs), contract(cs)](cst, ct)));
+            }
+            NEW te = TemplateEntry { 
+                template(te) <- t; 
+                key(te) <- id(cst) + '_SUM';
+                description(te) <- 'Сумма предмета договора типа ' + id(cst);
+                value(te) <- TEXT (round2([GROUP LAST sum(ContractSubject cs) ORDER cs BY type(cs), contract(cs)](cst, ct)));
+            }
+        }
+        
         overPrintContractWord(ct, t);
         
         SHOW editTemplate OBJECTS t = t;
