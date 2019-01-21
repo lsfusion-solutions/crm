@@ -17,6 +17,7 @@ contractType (Debt d) = type(contract(d));
 nameContractType 'Тип договора' (Debt d) = nameType(contract(d));
 nameCustomer 'Клиент' (Debt d) = nameCustomer(contract(d));
 nameLegalEntity 'Организация' (Debt d) = nameLegalEntity(contract(d));
+nameCompany 'Компания' (Debt d) = nameCompany(contract(d));
 
 customer (Debt d) = customer(contract(d));
 
