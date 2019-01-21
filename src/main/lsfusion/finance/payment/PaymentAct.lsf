@@ -41,6 +41,7 @@ split 'Разбить платеж' (Payment p) {
             date(pp) <- date(p);
             note(pp) <- note(p);
             currency(pp) <- currency(p);
+            account(pp) <- account(p);
         }
         ELSE MESSAGE 'Сумма больше суммы платежа';
     }

@@ -1,6 +1,6 @@
 MODULE PaymentProcessDashboard;
 
-REQUIRE PaymentAct, Expense, Dashboard;
+REQUIRE PaymentAct, Expense, Dashboard, PaymentExpense;
 
 NAMESPACE Dashboard;
 
@@ -43,17 +43,17 @@ FORM paymentProcessDasboard 'Обработка платежей'
     PROPERTIES dfrom 'Дата с' = VALUE (df), dto 'Дата по' = VALUE (dt), post(df, dt), nameFilterCustomer()
     
     OBJECTS p = Payment
-    PROPERTIES addPayment(dt) DRAW p TOOLBAR 
+    PROPERTIES DRAW p TOOLBAR createExpense(p), addPayment(dt) 
     PROPERTIES (p) isPosted, id, nameLegalEntity, nameCustomer, nameCompany, numberContract, nameContract, nameTypeContract READONLY, 
                    numberAgreement BACKGROUND backgroundAgreement(p), nameAgreement BACKGROUND backgroundAgreement(p), numberAct, number, date, year READONLY, 
                    monthNumber READONLY, sum, shortNameCurrency, sumCurrency, numberAccount, note, DELETE 
-    PROPERTIES(p) split TOOLBAR
+    PROPERTIES(p) TOOLBAR split
     ORDER date(p), nameLegalEntity(p), nameCompany(p), numberContract(p)
     FILTERS date(p) >= df AND date(p) <= dt 
     FILTERGROUP postedP FILTER 'Не проведен' NOT isPosted(p) DEFAULT 
                                        
     OBJECTS e = Expense
-    PROPERTIES addExpense(dt) DRAW e TOOLBAR 
+    PROPERTIES DRAW e TOOLBAR createPayment(e), addExpense(dt)
     PROPERTIES (e) isPosted, nameCompany, nameLegalEntity, nameCustomer, date, datePayment, nameType, sum, shortNameCurrency, sumCurrency, numberAccount, noteString, DELETE 
     ORDER date(e)
     FILTERS date(e) >= df AND date(e) <= dt, customer(p) == filterCustomer() OR NOT filterCustomer()
@@ -154,7 +154,7 @@ FORM reviseSum 'Расхождение сумм платежей'
     OBJECTS p = Payment
     PROPERTIES (p) READONLY isPosted, id, nameLegalEntity, nameCustomer, nameCompany, numberContract, nameTypeContract, 
                    numberAgreement, numberAct, number, date, sum, shortNameCurrency, sumCurrency, note 
-    FILTERS date(p) == d
+    FILTERS date(p) == d, account(p) == account(legalEntity(p))
           
     OBJECTS i = INTEGER
     PROPERTIES (i) READONLY date, text, sum, type
@@ -163,7 +163,7 @@ FORM reviseSum 'Расхождение сумм платежей'
     
     OBJECTS e = Expense
     PROPERTIES (e) READONLY nameCompany, nameLegalEntity, nameCustomer, date, datePayment, nameType, sum, shortNameCurrency, sumCurrency, noteString
-    FILTERS date(e) == d
+    FILTERS date(e) == d, account(e) == account(legalEntity(e))
           
     OBJECTS ie = INTEGER
     PROPERTIES (ie) READONLY date, text, sum, type
