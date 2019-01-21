@@ -96,7 +96,7 @@ createTemplateEntries(Template t, DocType d) +{
 }
 
 printActWord 'Сформировать по шаблону' (Act ag) {
-    NEWSESSION DIALOG dialogActTypeTemplates OBJECTS c = type(ag), t INPUT DO {
+    DIALOG dialogActTypeTemplates OBJECTS c = type(ag), t INPUT DO {
         createActTemplate(ag, t);
         SHOW editTemplate OBJECTS t = t;
     }
