@@ -88,6 +88,12 @@ FORM actTypes 'Типы акта'
 type = DATA ActType(Act);
 nameType 'Тип акта' (Act c) = name(type(c)) CHARWIDTH 15;
 
+actType = DATA ActType(ContractType);
+nameActType 'Тип акта' (ContractType t) = name(actType(t));
+
+EXTEND FORM contractTypes PROPERTIES nameActType(o);
+EXTEND FORM contractType PROPERTIES nameActType(o);
+
 sum 'Сумма' = DATA NUMERIC[16,5](Act);
 
 dateSigningCompany 'Дата подписания компанией' = DATA DATE (Act);
@@ -236,6 +242,7 @@ FORM dialogActs 'Акты выполненных работ'
 NAVIGATOR {
     contractFolder {
         NEW acts;
+        NEW contractTypes;
     }
 }
 

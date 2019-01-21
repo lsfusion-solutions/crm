@@ -88,6 +88,8 @@ createActs 'Создать акты' () {
             agreement(a) <- ag;
             date(a) <- currentDate();
             sum(a) <- GROUP SUM sum(Debt d) IF in(d) AND act(d) == a;
+            number(a) <- VARISTRING[15] (INTEGER ([GROUP MAX number(Act ac) BY contract(ac), year(ac)](contract(a), year(a))) (+) 1); 
+            type(a) <- actType(type(c));
             IF copy() THEN {
                 name(a) <- OVERRIDE name(ag), name(c);
                 text(a) <- OVERRIDE text(ag), text(c);
@@ -100,6 +102,8 @@ createActs 'Создать акты' () {
             contract(a) <- c;
             date(a) <- currentDate();
             sum(a) <- GROUP SUM sum(Debt d) IF in(d) AND act(d) == a;
+            number(a) <- VARISTRING[15] (INTEGER ([GROUP MAX number(Act ac) BY contract(ac), year(ac)](contract(a), year(a))) (+) 1); 
+            type(a) <- actType(type(c));
             IF copy() THEN {
                 name(a) <- name(c);
                 text(a) <- text(c);
@@ -109,6 +113,15 @@ createActs 'Создать акты' () {
         
         SHOW requiredTemplateEntries;
     }
+}
+
+createActZip 'Выгрузить акты в zip' () {
+    zipping(VARSTRING[100] f) <- NULL;
+    FOR [GROUP SUM 1 IF in(Debt d) BY act(d)](Act a) DO {
+        zipping(VARSTRING[100] f) <- file(a) WHERE f == fileName(a) + '.doc';
+    }
+    makeZipFile();
+    WRITE CLIENT DIALOG zipped() TO 'archive';
 }
 
 editAct 'Редактировать акт' (Debt d) {
@@ -139,7 +152,7 @@ addEvent 'Добавить' (Debt d) {
 FORM debtDashboard 'Контроль задолженности'
     PROPERTIES nameDebtFilterContractType()
     OBJECTS d = Debt
-    PROPERTIES in(d), createActs() DRAW d TOOLBAR
+    PROPERTIES in(d), createActs() DRAW d TOOLBAR, createActZip() DRAW d TOOLBAR
     PROPERTIES (d) TOOLBAR SHOWIF act(d) editAct, deleteAct 
     PROPERTIES (d) READONLY date, numberContract, nameContract, nameContractType, nameCustomer, nameLegalEntity, nameCompany, numberAgreement, numberAct, dateAct, 
                             shortNameCurrency, sumCurrency, sum, paid, note
