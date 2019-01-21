@@ -1,10 +1,10 @@
 MODULE Expense;
 
-REQUIRE LegalEntity, Currency;
+REQUIRE LegalEntity, Currency, AccountLedger;
 
 NAMESPACE Expense;
 
-CLASS Expense 'Расход';
+CLASS Expense 'Расход' : AccountLedger;
 TABLE expense (Expense);
 
 company = DATA LegalEntity(Expense);
@@ -52,22 +52,41 @@ sumCurrency 'Сумма в валюте' (Expense e) = round2(sum(e) * OVERRIDE 
 note 'Примечание' = DATA TEXT (Expense);
 noteString 'Примечание' (Expense e) = VARISTRING[1000](note(e)) CHARWIDTH 20;
 
+account = DATA Account(Expense);
+numberAccount 'Р/с' (Expense p) = number(account(p)) CHARWIDTH 10;
+
+WHEN LOCAL CHANGED (legalEntity(Expense p)) AND NOT CHANGED (account(p)) DO {
+    account(p) <- account(legalEntity(p));
+    
+    FOR (Expense e IS Expense) DO {
+        account(e) <- account(legalEntity(e));
+    }
+}
+
+CONSTRAINT account(Expense p) AND NOT legalEntity(p) == legalEntity(account(p)) CHECKED BY account[Expense] MESSAGE 'Счёт расхода не соответствует организации';
+
+date(Expense p) += date(p);
+sum(Expense p) += -sum(p);
+note(Expense p) += VARISTRING[250] (note(p));
+currency(Expense p) += currency(p);
+account(Expense p) += account(p);
+
 FORM expense 'Расход'
     OBJECTS o = Expense PANEL
-    PROPERTIES(o) nameCompany, nameLegalEntity, nameCustomer, date, datePayment, nameType, sum, shortNameCurrency, sumCurrency, note
+    PROPERTIES(o) nameCompany, nameLegalEntity, nameCustomer, date, datePayment, nameType, sum, shortNameCurrency, sumCurrency, note, numberAccount
     
     EDIT Expense OBJECT o
 ;
 
 FORM expenses 'Расходы'
     OBJECTS o = Expense
-    PROPERTIES(o) READONLY nameCompany, nameLegalEntity, nameCustomer, date, datePayment, nameType, sum, shortNameCurrency, sumCurrency, noteString
+    PROPERTIES(o) READONLY nameCompany, nameLegalEntity, nameCustomer, date, datePayment, nameType, sum, shortNameCurrency, sumCurrency, numberAccount, noteString
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
 ;
 
 FORM dialogExpenses 'Расходы'
     OBJECTS o = Expense
-    PROPERTIES(o) READONLY nameCompany, nameLegalEntity, nameCustomer, date, datePayment, nameType, sum, shortNameCurrency, sumCurrency, noteString
+    PROPERTIES(o) READONLY nameCompany, nameLegalEntity, nameCustomer, date, datePayment, nameType, sum, shortNameCurrency, sumCurrency, numberAccount, noteString
     
     LIST Expense OBJECT o
 ;

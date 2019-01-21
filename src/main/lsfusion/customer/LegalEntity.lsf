@@ -91,6 +91,7 @@ MFOBank 'Код BIC банка' (Account account) = mfo(bank(account));
 
 legalEntity = DATA LegalEntity (Account) NONULL DELETE AUTOSET;
 nameLegalEntity 'Организация' (Account account) = name(legalEntity(account));
+nameCustomer 'Организация' (Account account) = name(customer(legalEntity(account)));
 
 account (number, legalEntity) = GROUP MAX Account account BY number(account), legalEntity(account);
 

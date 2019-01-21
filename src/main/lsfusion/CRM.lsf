@@ -5,7 +5,7 @@ REQUIRE Scheduler, Service, SystemEvents, Backup, EvalScript, SQLUtils, ProcessU
         Employee, EmployeeImport, 
         Contract, ContractImport, Agreement, AgreementImport, Act, ActImport, ContractSubject, DocContact,
         Project, ProjectRedmine, IssueDashboard, IssueLog, DocIssue, AgreementIssue,
-        Payment, PaymentImport, PaymentAct,
+        Payment, PaymentImport, PaymentAct, AccountLedger,
         EmployeeExpenseImport, TimeEntryExpense,
         EmployeeAbsence, EmployeeAbsenceImport, 
         Event, EventImport, DocEvent, DebtEvent,

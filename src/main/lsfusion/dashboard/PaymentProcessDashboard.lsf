@@ -46,7 +46,7 @@ FORM paymentProcessDasboard 'Обработка платежей'
     PROPERTIES addPayment(dt) DRAW p TOOLBAR 
     PROPERTIES (p) isPosted, id, nameLegalEntity, nameCustomer, nameCompany, numberContract, nameContract, nameTypeContract READONLY, 
                    numberAgreement BACKGROUND backgroundAgreement(p), nameAgreement BACKGROUND backgroundAgreement(p), numberAct, number, date, year READONLY, 
-                   monthNumber READONLY, sum, shortNameCurrency, sumCurrency, note, DELETE 
+                   monthNumber READONLY, sum, shortNameCurrency, sumCurrency, numberAccount, note, DELETE 
     PROPERTIES(p) split TOOLBAR
     ORDER date(p), nameLegalEntity(p), nameCompany(p), numberContract(p)
     FILTERS date(p) >= df AND date(p) <= dt 
@@ -54,7 +54,7 @@ FORM paymentProcessDasboard 'Обработка платежей'
                                        
     OBJECTS e = Expense
     PROPERTIES addExpense(dt) DRAW e TOOLBAR 
-    PROPERTIES (e) isPosted, nameCompany, nameLegalEntity, nameCustomer, date, datePayment, nameType, sum, shortNameCurrency, sumCurrency, noteString, DELETE 
+    PROPERTIES (e) isPosted, nameCompany, nameLegalEntity, nameCustomer, date, datePayment, nameType, sum, shortNameCurrency, sumCurrency, numberAccount, noteString, DELETE 
     ORDER date(e)
     FILTERS date(e) >= df AND date(e) <= dt, customer(p) == filterCustomer() OR NOT filterCustomer()
     FILTERGROUP postedE FILTER 'Не проведен' NOT isPosted(e) DEFAULT 

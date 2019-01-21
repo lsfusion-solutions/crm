@@ -1,0 +1,37 @@
+MODULE AccountLedger;
+
+REQUIRE LegalEntity;
+
+NAMESPACE Account;
+
+CLASS ABSTRACT AccountLedger 'Движение по счёту';
+TABLE accountLedger(AccountLedger);
+
+account = ABSTRACT Account(AccountLedger);
+date 'Дата' = ABSTRACT DATE (AccountLedger);
+note 'Примечание' = ABSTRACT VARISTRING[250](AccountLedger);
+sum 'Сумма' = ABSTRACT NUMERIC[16,5](AccountLedger);
+
+currency = ABSTRACT Currency(AccountLedger);
+shortNameCurrency 'Валюта' (AccountLedger l) = shortName(currency(l));
+
+sumCurrency 'Сумма в валюте' (AccountLedger e) = round2(sum(e) * OVERRIDE (rateOn(defaultTypeExchange(), currency(e), date(e))), 1);
+
+balance 'Остаток в валюте' (Account a) = GROUP SUM sumCurrency(AccountLedger l) BY account(l);
+
+FORM accountBalances 'Остатки по счетам'
+    OBJECTS a = Account
+    PROPERTIES (a) READONLY nameCustomer, nameLegalEntity, number, nameBank, balance
+    ORDER nameCustomer(a)
+    
+    OBJECTS l = AccountLedger
+    PROPERTIES (l) READONLY date, note, sum, shortNameCurrency, sumCurrency
+    ORDER date(l) DESC
+    FILTERS account(l) == a, balance(a)
+;
+
+NAVIGATOR {
+    finance {
+        NEW accountBalances;
+    }
+}
