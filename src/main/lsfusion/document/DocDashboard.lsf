@@ -44,7 +44,7 @@ receive 'Получить' (Document d) {
 } TOOLBAR CONFIRM;
 
 open 'Открыть' (Document d) {
-    open(file(d));
+    open(file(d), fileName(d));
 } TOOLBAR;
 
 close 'Закрыть' (Document d) {

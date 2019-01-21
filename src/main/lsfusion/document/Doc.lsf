@@ -23,6 +23,7 @@ paid 'Оплачено' = ABSTRACT NUMERIC[16,5](Document);
 balance 'Остаток' (Document d) = sum(d) (-) paid(d);
 dateLastPaid 'Дата последней оплаты' = ABSTRACT DATE (Document);
 description 'Описание' = ABSTRACT VARISTRING[250] (Document) CHARWIDTH 25;
+fileName 'Имя файла' = ABSTRACT VARISTRING[250](Document);
 
 customer = ABSTRACT Customer (Document);
 nameCustomer 'Клиент' (Document d) = name(customer(d));

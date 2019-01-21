@@ -167,6 +167,7 @@ contract(Contract c) += c IF c IS Contract;
 sum(Contract c) += sum(c);
 description(Contract c) += CONCAT ' ', 'Дог.', '№' + number(c), 'от ' + toDateDDMMYY(date(c));
 sendingWay(Contract c) += sendingWay(c);
+fileName(Contract c) += VARISTRING[250] (CONCAT '_', 'Договор', number(c), 'от_' + toDateDDMMYY(date(c)), nameLegalEntity(c));
 
 EXTEND CLASS DocType {
     contract 'Договор'
