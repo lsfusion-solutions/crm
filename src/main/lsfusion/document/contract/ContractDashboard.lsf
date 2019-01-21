@@ -1,6 +1,6 @@
 MODULE ContractDashboard;
 
-REQUIRE PaymentAct, Dashboard, ContractFile, AgreementFile, ActFile, DebtAgreement, ActEvent;
+REQUIRE PaymentAct, Dashboard, ContractFile, AgreementFile, ActFile, DebtAgreement, ActEvent, CustomerTag;
 
 NAMESPACE Contract;
 
@@ -19,10 +19,12 @@ nameFilterCustomer 'Клиент' () = name(filterCustomer());
 
 CONSTRAINT filterCustomer() AND NOT [GROUP SUM 1 BY customer(Contract c)](filterCustomer()) CHECKED BY filterCustomer[] MESSAGE 'По клиенту нет договоров';
 
+tags 'Тэги клиента' (Contract c) = tags(customer(c));
+
 FORM contractDashboard 'Работа с договорами'
     PROPERTIES () nameFilterContractType, nameFilterCustomer
     OBJECTS o = Contract LAST 
-    PROPERTIES(o) READONLY id, nameCustomer, nameLegalEntity, nameCompany, number, date, name,
+    PROPERTIES(o) READONLY id, nameCustomer, nameLegalEntity, nameCompany, number, date, name, tags,
                            shortNameCurrency, 
                            sumCurrency BACKGROUND RGB(232,232,255) IF inCurrency(o), paidCurrency BACKGROUND RGB(232,232,255) IF inCurrency(o), 
                            sum, paid, dateLastPaid,

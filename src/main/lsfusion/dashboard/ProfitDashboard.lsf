@@ -1,6 +1,6 @@
 MODULE ProfitDashboard;
 
-REQUIRE Dashboard, PaymentAct, TimeEntryExpense;
+REQUIRE Dashboard, PaymentAct, TimeEntryExpense, CustomerTag;
 
 NAMESPACE Dashboard;
 
@@ -32,7 +32,7 @@ FORM profit 'Прибыль по клиентам'
     
     OBJECTS g = ContractType
     OBJECTS c = Customer
-    PROPERTIES READONLY name(c)
+    PROPERTIES (c) READONLY name, tags
     PROPERTIES (c, df, dt) READONLY receiptCurrency BACKGROUND backgroundReceipt(), shipmentCurrency BACKGROUND backgroundShipment(), diff, diffPercent
     PROPERTIES READONLY BACKGROUND backgroundGroup() receiptCurrency(c, g, df, dt) COLUMNS (g) HEADER name(g), 'Прочее' = receiptCurrencyOther(c, df, dt)
     FILTERS costSum(c, df, dt) OR receipt(c, df, dt)

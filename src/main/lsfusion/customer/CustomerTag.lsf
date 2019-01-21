@@ -1,0 +1,45 @@
+MODULE CustomerTag;
+
+REQUIRE Customer, LegalEntity;
+
+NAMESPACE Customer;
+
+CLASS Tag 'Тэг';
+TABLE tag(Tag);
+
+name 'Наименование' = DATA VARISTRING[100](Tag);
+in 'Вкл.' = DATA BOOLEAN (Tag, Customer);
+
+customers 'Клиенты' (Tag t) = GROUP CONCAT name(Customer c) IF in(t, c), ', ' CHARWIDTH 50;
+tags 'Тэги' (Customer c) = GROUP CONCAT name(Tag t) IF in(t, c), ', ' CHARWIDTH 20;
+tags 'Тэги' (LegalEntity le) = tags(customer(le));
+
+FORM selectTagCustomer 'Клиенты'
+    OBJECTS t = Tag PANEL 
+    OBJECTS c = Customer
+    PROPERTIES in(t, c)
+    PROPERTIES (c) READONLY id, name, nameGroup, nameStatus, nameAddress, email, phone, site, note, dateFrom, infoString, inactive
+;
+
+FORM tag 'Тэг'
+    OBJECTS t = Tag PANEL 
+    PROPERTIES (t) name, customers ON CHANGE { SHOW selectTagCustomer OBJECTS t = t; }
+    
+    EDIT Tag OBJECT t
+;
+
+FORM tags 'Тэги'
+    OBJECTS t = Tag 
+    PROPERTIES (t) READONLYIF isReadonly() name, customers ON CHANGE { SHOW selectTagCustomer OBJECTS t = t; }
+    PROPERTIES (t) NEWSESSION NEW, EDIT, DELETE 
+;
+
+@extendFormEditable(tags);
+
+EXTEND FORM dialogCustomers PROPERTIES tags(o);
+
+NAVIGATOR {
+    customerFolder {
+        NEW tags;
+    }
+}
