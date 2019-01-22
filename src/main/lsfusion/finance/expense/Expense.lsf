@@ -55,15 +55,11 @@ noteString 'Примечание' (Expense e) = VARISTRING[1000](note(e)) CHARWI
 account = DATA Account(Expense);
 numberAccount 'Р/с' (Expense p) = number(account(p)) CHARWIDTH 10;
 
-WHEN LOCAL CHANGED (legalEntity(Expense p)) AND NOT CHANGED (account(p)) DO {
-    account(p) <- account(legalEntity(p));
-    
-    FOR (Expense e IS Expense) DO {
-        account(e) <- account(legalEntity(e));
-    }
+WHEN LOCAL CHANGED (company(Expense p)) AND NOT CHANGED (account(p)) DO {
+    account(p) <- account(company(p));
 }
 
-CONSTRAINT account(Expense p) AND NOT legalEntity(p) == legalEntity(account(p)) CHECKED BY account[Expense] MESSAGE 'Счёт расхода не соответствует организации';
+CONSTRAINT account(Expense p) AND NOT company(p) == legalEntity(account(p)) CHECKED BY account[Expense] MESSAGE 'Счёт расхода не соответствует компания';
 
 date(Expense p) += date(p);
 sum(Expense p) += -sum(p);

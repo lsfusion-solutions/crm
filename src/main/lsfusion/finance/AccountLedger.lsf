@@ -21,8 +21,8 @@ balance 'Остаток в валюте' (Account a) = GROUP SUM sumCurrency(Acc
 
 FORM accountBalances 'Остатки по счетам'
     OBJECTS a = Account
-    PROPERTIES (a) READONLY nameCustomer, nameLegalEntity, number, nameBank, balance
-    ORDER nameCustomer(a)
+    PROPERTIES (a) READONLY nameLegalEntity, number, nameBank, balance
+    ORDER nameLegalEntity(a)
     
     OBJECTS l = AccountLedger
     PROPERTIES (l) READONLY date, note, sum, shortNameCurrency, sumCurrency
