@@ -15,8 +15,14 @@ importEmployeeExpense 'Импорт расходов по сотрудникам
         LOCAL expense = Expense(INTEGER);
         
         INPUT f = FILE DO {
-            IMPORT XLS NOHEADER FROM f TO number, year, month, type, sum;
-            
+//            IMPORT XLS NOHEADER FROM f TO number, year, month, type, sum;
+  
+            LOCAL yearMonth = TEXT (INTEGER);
+            IMPORT DBF CHARSET 'CP866' FROM f TO yearMonth, number, type, sum;
+            type(INTEGER i) <- 'Зарплата' WHERE sum(i);
+            month(INTEGER i) <- INTEGER(getWord(yearMonth(i), ' ', 1));
+            year(INTEGER i) <- INTEGER(getWord(yearMonth(i), ' ', 2));
+          
             FOR [GROUP MIN INTEGER i IF employeeNumber(number(i)) BY type(i)](VARSTRING[15] name) 
                 AND NOT [GROUP MAX ExpenseType t BY name(t)](name) DO NEW t = ExpenseType {
                 
