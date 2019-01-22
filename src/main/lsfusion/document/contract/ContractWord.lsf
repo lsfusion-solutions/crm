@@ -102,7 +102,8 @@ printContractWord 'Сформировать по шаблону' (Contract ct) {
         
             value(TemplateEntry d) <- TEXT (quantity(cs)) WHERE key(d) = id(cst) + '_QUANTITY' AND template (d) == t;
             value(TemplateEntry d) <- TEXT (round2(price(cs))) WHERE key(d) = id(cst) + '_PRICE' AND template (d) == t;
-            value(TemplateEntry d) <- TEXT (round2(sum(cs))) WHERE key(d) = id(cst) + '_SUM' AND template (d) == t;
+            value(TemplateEntry d) <- TEXT (round2(sum(cs))) WHERE key(d) = id(cst) + '_SUM_NUMERIC' AND template (d) == t;
+            TRY { value(TemplateEntry d) <- numSpelledRouble(sum(cs), '00d') WHERE key(d) = id(cst) + '_SUM_WORDS' AND template (d) == t; }
         }
         
         overPrintContractWord(ct, t);

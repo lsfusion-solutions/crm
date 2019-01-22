@@ -77,9 +77,11 @@ DESIGN editTemplate {
     PROPERTY (value(te)) { charWidth = 80; }
 }
 
+upperFirstChar (TEXT t) = upper(left(t, 1)) + right(t, charLength(t)-1);
+
 toCharRus (NUMERIC[18,2] n) = replace(replace(TEXT (round2(n)), ',', ' '), '.', ',');
 numSpelled = FORMULA TEXT 'num_spelled($1,$2,string_to_array($3,\',\'),$4,string_to_array($5,\',\'),$6)';
-numSpelledRouble (NUMERIC[14,2] number, VARSTRING[10] decFormat) = numSpelled(number, 'M', 'рубль,рубля,рублей', 'F', 'копейка,копейки,копеек', decFormat);
+numSpelledRouble (NUMERIC[14,2] number, VARSTRING[10] decFormat) = upperFirstChar(numSpelled(number, 'M', 'рубль,рубля,рублей', 'F', 'копейка,копейки,копеек', decFormat));
 
 // Копирование шаблона
 
