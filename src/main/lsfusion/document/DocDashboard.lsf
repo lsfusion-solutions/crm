@@ -1,6 +1,6 @@
 MODULE DocDashboard;
 
-REQUIRE Doc, Time, Dashboard, Contract, DocIssue, DocEvent, DocContact;
+REQUIRE DocFile, Time, Dashboard, Contract, DocIssue, DocEvent, DocContact;
 
 NAMESPACE Doc;
 
@@ -44,7 +44,7 @@ receive 'Получить' (Document d) {
 } TOOLBAR CONFIRM;
 
 open 'Открыть' (Document d) {
-    open(file(d), fileName(d));
+    safeOpen(file(d), fileName(d));
 } TOOLBAR;
 
 close 'Закрыть' (Document d) {

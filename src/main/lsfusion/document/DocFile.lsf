@@ -18,8 +18,12 @@ nameUser 'Имя пользователя' (DocumentFile f) = name(user(f));
 loginUser 'Логин пользователя' (DocumentFile f) = login(user(f));
 note 'Примечание' = DATA VARISTRING[1000](DocumentFile) CHARWIDTH 20;
 
+safeOpen (FILE f, VARISTRING[255] fileName) {
+    open(f, replace(fileName, '"', '\''));
+}
+
 open 'Открыть' (DocumentFile c) {
-    open(file(c), fileName(document(c)));
+    safeOpen(file(c), fileName(document(c)));
 }
 
 CLASS DocumentFileType 'Тип файла документа';
@@ -114,8 +118,8 @@ loadFileApply 'Загрузить' (Document d) {
 openFile 'Открыть' (Document d) { 
     IF (GROUP SUM 1 IF file(d, DocumentFileType t)) > 1 THEN {
         DIALOG dialogOpenDocumentFileTypes OBJECTS d = d, o INPUT DO {
-            open(file(d, o), fileName(d)); 
+            safeOpen(file(d, o), fileName(d)); 
         }
     }
-    ELSE TRY { open(file(d), fileName(d)); }
+    ELSE TRY { safeOpen(file(d), fileName(d)); }
 }
