@@ -64,7 +64,6 @@ CONSTRAINT account(Expense p) AND NOT company(p) == legalEntity(account(p)) CHEC
 date(Expense p) += date(p);
 sum(Expense p) += -sum(p);
 note(Expense p) += VARISTRING[250] (note(p));
-currency(Expense p) += currency(p);
 account(Expense p) += account(p);
 
 FORM expense 'Расход'

@@ -48,7 +48,6 @@ CONSTRAINT account(Payment p) AND NOT company(p) == legalEntity(account(p)) CHEC
 date(Payment p) += date(p);
 sum(Payment p) += sum(p);
 note(Payment p) += note(p);
-currency(Payment p) += currency(p);
 account(Payment p) += account(p);
 
 FORM dialogInputSum 'Сумма нового платежа'

@@ -7,25 +7,22 @@ NAMESPACE Account;
 CLASS ABSTRACT AccountLedger 'Движение по счёту';
 TABLE accountLedger(AccountLedger);
 
-account = ABSTRACT Account(AccountLedger);
-date 'Дата' = ABSTRACT DATE (AccountLedger);
-note 'Примечание' = ABSTRACT VARISTRING[250](AccountLedger);
-sum 'Сумма' = ABSTRACT NUMERIC[16,5](AccountLedger);
+account = ABSTRACT Account(AccountLedger) MATERIALIZED INDEXED;
+date 'Дата' = ABSTRACT DATE (AccountLedger) MATERIALIZED;
+note 'Примечание' = ABSTRACT VARISTRING[250](AccountLedger) MATERIALIZED;
+sum 'Сумма' = ABSTRACT NUMERIC[16,5](AccountLedger) MATERIALIZED;
 
-currency = ABSTRACT Currency(AccountLedger);
-shortNameCurrency 'Валюта' (AccountLedger l) = shortName(currency(l));
+balance 'Остаток' (Account a) = GROUP SUM sum(AccountLedger l) BY account(l) MATERIALIZED;
 
-sumCurrency 'Сумма в валюте' (AccountLedger e) = round2(sum(e) * OVERRIDE (rateOn(defaultTypeExchange(), currency(e), date(e))), 1);
-
-balance 'Остаток в валюте' (Account a) = GROUP SUM sumCurrency(AccountLedger l) BY account(l);
+balanceCurrency 'Остаток в валюте' (Account a) = round2(balance(a) * OVERRIDE (rateOn(defaultTypeExchange(), currency(a), currentDate())), 1);
 
 FORM accountBalances 'Остатки по счетам'
     OBJECTS a = Account
-    PROPERTIES (a) READONLY nameLegalEntity, number, nameBank, balance
+    PROPERTIES (a) READONLY nameLegalEntity, number, nameBank, balance, balanceCurrency
     ORDER nameLegalEntity(a)
     
     OBJECTS l = AccountLedger
-    PROPERTIES (l) READONLY date, note, sum, shortNameCurrency, sumCurrency
+    PROPERTIES (l) READONLY date, note, sum
     ORDER date(l) DESC
     FILTERS account(l) == a, balance(a)
 ;
