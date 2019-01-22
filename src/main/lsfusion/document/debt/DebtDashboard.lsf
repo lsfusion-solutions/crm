@@ -31,9 +31,10 @@ created = DATA LOCAL BOOLEAN (Act);
 text 'Значение' = DATA LOCAL TEXT (VARISTRING[100]);
 in (VARISTRING[100] key) = GROUP SUM 1 IF required(TemplateEntry te) AND [GROUP SUM 1 IF created(Act a) BY actTemplate(contract(a))](template(te)) BY key(te);
 
-createActFiles 'Сформировать' () {
+createActFiles 'Сформировать' (DATE dd) {
     IF NOT (GROUP SUM 1 IF in(VARISTRING[100] key) AND NOT text(key)) THEN {
         FOR created(Act a) DO {
+            date(a) <- dd;
             createActTemplate(a, actTemplate(contract(a)));
             FOR in(VARISTRING[100] key) AND text(key) DO {
                 value(TemplateEntry d) <- text(key) WHERE key(d) = key AND template(d) == actTemplate(contract(a));
@@ -53,16 +54,19 @@ createActFiles 'Сформировать' () {
 }
 
 FORM requiredTemplateEntries 'Обязательные поля'
+    OBJECTS d = DATE PANEL 
+    PROPERTIES 'Дата акта' = VALUE (d)
     OBJECTS t = VARISTRING[100]
     PROPERTIES (t) 'Параметр' = VALUE READONLY, text
     FILTERS in(t)
-    PROPERTIES createActFiles()
+    PROPERTIES createActFiles(d)
 ;
 
 DESIGN requiredTemplateEntries {
+    BOX (t) { caption = 'Обязательные поля'; }
     MOVE TOOLBARBOX {
         TOOLBARRIGHT {
-            MOVE PROPERTY (createActFiles()) AFTER PROPERTY (formOk()) { alignment = STRETCH; }
+            MOVE PROPERTY (createActFiles(d)) AFTER PROPERTY (formOk()) { alignment = STRETCH; }
             REMOVE PROPERTY (formOk());
             REMOVE PROPERTY (formApply());
             REMOVE PROPERTY (formCancel());
@@ -111,7 +115,7 @@ createActs 'Создать акты' () {
             created(a) <- TRUE;
         }
         
-        SHOW requiredTemplateEntries;
+        SHOW requiredTemplateEntries OBJECTS d = currentDate();
     }
 }
 
