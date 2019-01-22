@@ -1,0 +1,98 @@
+MODULE TimeEntryDefault;
+
+REQUIRE TimeEntry, TimeEntryTotalDashboard;
+
+NAMESPACE Project;
+
+CLASS TimeEntryDefault 'Отметки времени по умолчанию';
+TABLE timeEntryDefault(TimeEntryDefault);
+
+date 'Дата' = DATA DATE (TimeEntryDefault) NONULL;
+
+employee = DATA Employee(TimeEntryDefault);
+nameEmployee 'Сотрудник' (TimeEntryDefault d) = name(employee(d));
+
+timePercent 'Процент времени' = DATA NUMERIC[6,2](TimeEntryDefault, Project);
+timePercent 'Процент времени' (TimeEntryDefault t) = GROUP SUM timePercent(t, Project p);
+
+CONSTRAINT timePercent(TimeEntryDefault t) AND NOT timePercent(t) == 100.0 MESSAGE 'Сумма процентов отметки времени по умолчанию не равна 100%';
+
+percents 'Проценты времени по проектам' (TimeEntryDefault t) = GROUP CONCAT name(Project p) + ':' + round0(timePercent(t, p)) + '%', ', ' ORDER DESC timePercent(t, p) CHARWIDTH 50;
+
+timeEntryDefault (Employee e) = GROUP LAST TimeEntryDefault t ORDER date(t), t BY employee(t);
+timePercent 'Процент времени' (Employee e, Project p) = timePercent(timeEntryDefault(e), p);
+
+FORM timePercent 'Процент времени'
+    OBJECTS t = TimeEntryDefault PANEL 
+    OBJECTS p = Project
+    PROPERTIES 'Проект' = name(p) READONLY, timePercent(t, p)
+;
+
+FORM timeEntryDefault 'Отметки времени по умолчанию'
+    OBJECTS e = Employee
+    PROPERTIES (e) READONLY name
+    ORDER name(e)
+    
+    OBJECTS t = TimeEntryDefault
+    PROPERTIES (t) date, percents ON CHANGE { SHOW timePercent OBJECTS t = t; }, NEW, DELETE
+    ORDER date(t)
+    FILTERS employee(t) == e
+;
+
+default = DATA BOOLEAN (TimeEntry);
+
+emptyHours (Employee e, DATE d) = workingHours(d) (-) totalHours(e, d);
+
+createTimeEntries 'Заполнить время' (Employee e, DATE df, DATE dt) {
+    NEWSESSION {
+        FOR iterate(DATE d, df, dt) AND workingHours(d) AND NOT totalHours(e, d) >= workingHours(d) DO {
+        
+            LOCAL hours = NUMERIC[7,2] (Project);
+            hours(Project p) <- PARTITION UNGROUP emptyHours
+                                          PROPORTION STRICT ROUND(2) timePercent(e, p)
+                                          ORDER p
+                                          BY e, d;
+                                          
+            FOR timePercent(e, Project p) DO NEW t = TimeEntry {
+            
+                default(t) <- TRUE;
+                date(t) <- d;
+                employee(t) <- e;
+                project(t) <- p;
+                hours(t) <- hours(p);
+            }
+        }
+    APPLY;
+    }
+}
+
+filterEmployee = DATA LOCAL Employee();
+nameFilterEmployee 'Сотрудник' () = name(filterEmployee()) CHARWIDTH 20;
+
+createTimeEntries (DATE df, DATE dt) {
+    FOR active(Employee e) AND (e == filterEmployee() OR (NOT filterEmployee() AND e IS Employee)) DO {
+        createTimeEntries(e, df, dt);
+    }
+}
+
+FORM createTimeEntries 'Заполнить время'
+    OBJECTS dates = (df = DATE, dt = DATE) PANEL 
+    PROPERTIES 'Дата с' = VALUE (df), 'Дата по' = VALUE (dt), nameFilterEmployee() DRAW dates
+    
+    EVENTS ON OK {
+        createTimeEntries(df, dt);
+    }
+;
+
+showCreateTimeEntries 'Заполнить время' (Employee e) {
+    filterEmployee() <- e;
+    SHOW createTimeEntries;
+}
+
+EXTEND FORM timeEntryDashboard PROPERTIES (e) TOOLBAR showCreateTimeEntries;
+
+NAVIGATOR {
+    project {
+        NEW timeEntryDefault;
+    }
+}
