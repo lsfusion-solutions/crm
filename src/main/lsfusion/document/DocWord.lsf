@@ -10,7 +10,6 @@ createWordOnOK 'Сформировать' (Template t) {
     IF NOT [GROUP SUM 1 IF required(TemplateEntry d) AND NOT value(d) BY template(d)](t) THEN {
         process(t);
         open(resultTemplate());
-        CANCEL;
         formOk();
     }
     ELSE {
