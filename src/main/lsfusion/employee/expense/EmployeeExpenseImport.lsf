@@ -12,6 +12,7 @@ importEmployeeExpense 'Импорт расходов по сотрудникам
         LOCAL month = INTEGER (INTEGER);
         LOCAL type = VARSTRING[100](INTEGER);
         LOCAL sum = NUMERIC[18,4](INTEGER);
+        LOCAL expense = Expense(INTEGER);
         
         INPUT f = FILE DO {
             IMPORT XLS NOHEADER FROM f TO number, year, month, type, sum;
@@ -22,12 +23,18 @@ importEmployeeExpense 'Импорт расходов по сотрудникам
                 name(t) <- name;
             }
             
-            FOR employeeNumber(number(INTEGER i)) AND number(i) DO NEW e = Expense {
+            expense(INTEGER i) <- expense(employeeNumber(number(i)), (GROUP MAX ExpenseType t IF name(t) == type(i)), year(i), (GROUP MAX Month m IF number(m) == month(i)));
+                        
+            FOR employeeNumber(number(INTEGER i)) AND number(i) AND NOT expense(i) DO NEW e = Expense {
             
                 employee(e) <- employeeNumber(number(i));
                 year(e) <- year(i);
                 month(e) <- GROUP MAX Month m IF number(m) == month(i);
                 type(e) <- GROUP MAX ExpenseType t IF name(t) == type(i);
+                expense(i) <- e;
+            }
+            
+            FOR Expense e = expense(INTEGER i) DO {
                 sum(e) <- sum(i);
             }
         }

@@ -40,6 +40,8 @@ FORM expenseTypes 'Типы расхода'
 type = DATA ExpenseType(Expense);
 nameType 'Тип расхода' (Expense e) = name(type(e));
 
+expense = GROUP AGGR Expense e BY employee(e), type(e), year(e), month(e);
+
 FORM expense 'Расход по сотруднику'
     OBJECTS o = Expense PANEL
     PROPERTIES(o) nameEmployee, year, nameMonth, numberMonth, nameType, sum
