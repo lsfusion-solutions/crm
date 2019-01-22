@@ -70,8 +70,7 @@ expenseAccountLedger = AGGR ExpenseAccountLedger WHERE accountTo(Expense expense
 
 date(ExpenseAccountLedger a) += date(expense(a)); 
 sum(ExpenseAccountLedger a) += -sum(expense(a)); 
-note(ExpenseAccountLedger a) += VARISTRING[250] (note(expense(a))); 
-currency(ExpenseAccountLedger a) += currency(expense(a)); 
+note(ExpenseAccountLedger a) += VARISTRING[250] (note(expense(a)));
 account(ExpenseAccountLedger a) += accountTo(expense(a)); 
 
 date(Expense p) += date(p);

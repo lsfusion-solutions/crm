@@ -55,7 +55,6 @@ paymentAccountLedger = AGGR PaymentAccountLedger WHERE accountFrom(Payment payme
 date(PaymentAccountLedger a) += date(payment(a)); 
 sum(PaymentAccountLedger a) += -sum(payment(a)); 
 note(PaymentAccountLedger a) += note(payment(a)); 
-currency(PaymentAccountLedger a) += currency(payment(a)); 
 account(PaymentAccountLedger a) += accountFrom(payment(a)); 
 
 date(Payment p) += date(p);
