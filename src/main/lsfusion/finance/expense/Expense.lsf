@@ -55,11 +55,24 @@ noteString 'Примечание' (Expense e) = VARISTRING[1000](note(e)) CHARWI
 account = DATA Account(Expense);
 numberAccount 'Р/с' (Expense p) = number(account(p)) CHARWIDTH 10;
 
+accountTo = DATA Account(Expense);
+numberAccountTo 'Р/с на' (Expense p) = number(accountTo(p)) CHARWIDTH 10;
+
 WHEN LOCAL CHANGED (company(Expense p)) AND NOT CHANGED (account(p)) DO {
     account(p) <- account(company(p));
 }
 
-CONSTRAINT account(Expense p) AND NOT company(p) == legalEntity(account(p)) CHECKED BY account[Expense] MESSAGE 'Счёт расхода не соответствует компания';
+CONSTRAINT account(Expense p) AND NOT company(p) == legalEntity(account(p)) CHECKED BY account[Expense] MESSAGE 'Счёт расхода не соответствует компании';
+CONSTRAINT accountTo(Expense p) AND NOT legalEntity(p) == legalEntity(accountTo(p)) CHECKED BY accountTo[Expense] MESSAGE 'Счёт на расхода не соответствует организации';
+
+CLASS ExpenseAccountLedger : AccountLedger;
+expenseAccountLedger = AGGR ExpenseAccountLedger WHERE accountTo(Expense expense);
+
+date(ExpenseAccountLedger a) += date(expense(a)); 
+sum(ExpenseAccountLedger a) += -sum(expense(a)); 
+note(ExpenseAccountLedger a) += VARISTRING[250] (note(expense(a))); 
+currency(ExpenseAccountLedger a) += currency(expense(a)); 
+account(ExpenseAccountLedger a) += accountTo(expense(a)); 
 
 date(Expense p) += date(p);
 sum(Expense p) += -sum(p);
@@ -68,20 +81,21 @@ account(Expense p) += account(p);
 
 FORM expense 'Расход'
     OBJECTS o = Expense PANEL
-    PROPERTIES(o) nameCompany, nameLegalEntity, nameCustomer, date, datePayment, nameType, sum, shortNameCurrency, sumCurrency, note, numberAccount
+    PROPERTIES(o) nameCompany, nameLegalEntity, nameCustomer, date, datePayment, nameType, sum, shortNameCurrency, sumCurrency, note, 
+                  numberAccount, numberAccountTo
     
     EDIT Expense OBJECT o
 ;
 
 FORM expenses 'Расходы'
     OBJECTS o = Expense
-    PROPERTIES(o) READONLY nameCompany, nameLegalEntity, nameCustomer, date, datePayment, nameType, sum, shortNameCurrency, sumCurrency, numberAccount, noteString
+    PROPERTIES(o) READONLY nameCompany, nameLegalEntity, nameCustomer, date, datePayment, nameType, sum, shortNameCurrency, sumCurrency, numberAccount, numberAccountTo, noteString
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
 ;
 
 FORM dialogExpenses 'Расходы'
     OBJECTS o = Expense
-    PROPERTIES(o) READONLY nameCompany, nameLegalEntity, nameCustomer, date, datePayment, nameType, sum, shortNameCurrency, sumCurrency, numberAccount, noteString
+    PROPERTIES(o) READONLY nameCompany, nameLegalEntity, nameCustomer, date, datePayment, nameType, sum, shortNameCurrency, sumCurrency, numberAccount, numberAccountTo, noteString
     
     LIST Expense OBJECT o
 ;

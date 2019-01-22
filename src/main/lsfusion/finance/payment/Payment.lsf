@@ -39,11 +39,24 @@ sumPayment 'Сумма платежей' (Customer c) = GROUP SUM sum(Payment p)
 account = DATA Account(Payment);
 numberAccount 'Р/с' (Payment p) = number(account(p)) CHARWIDTH 10;
 
+accountFrom = DATA Account(Payment);
+numberAccountFrom 'Р/с с' (Payment p) = number(accountFrom(p)) CHARWIDTH 10;
+
 WHEN LOCAL CHANGED (company(Payment p)) AND NOT CHANGED (account(p)) DO {
     account(p) <- account(company(p));
 }
 
 CONSTRAINT account(Payment p) AND NOT company(p) == legalEntity(account(p)) CHECKED BY account[Payment] MESSAGE 'Счёт платежа не соответствует компании';
+CONSTRAINT accountFrom(Payment p) AND NOT legalEntity(p) == legalEntity(accountFrom(p)) CHECKED BY accountFrom[Payment] MESSAGE 'Счёт с платежа не соответствует компании';
+
+CLASS PaymentAccountLedger : AccountLedger;
+paymentAccountLedger = AGGR PaymentAccountLedger WHERE accountFrom(Payment payment);
+
+date(PaymentAccountLedger a) += date(payment(a)); 
+sum(PaymentAccountLedger a) += -sum(payment(a)); 
+note(PaymentAccountLedger a) += note(payment(a)); 
+currency(PaymentAccountLedger a) += currency(payment(a)); 
+account(PaymentAccountLedger a) += accountFrom(payment(a)); 
 
 date(Payment p) += date(p);
 sum(Payment p) += sum(p);
@@ -68,7 +81,7 @@ DESIGN dialogInputSum {
 
 FORM payment 'Платёж'
     OBJECTS o = Payment PANEL
-    PROPERTIES(o) id, nameLegalEntity, nameCompany, number, date, sum, shortNameCurrency, sumCurrency, note, numberAccount
+    PROPERTIES(o) id, nameLegalEntity, nameCompany, number, date, sum, shortNameCurrency, sumCurrency, note, numberAccount, numberAccountFrom
         
     EDIT Payment OBJECT o
 ;
@@ -99,6 +112,7 @@ DESIGN payment {
             MOVE PROPERTY (shortNameCurrency(o));
             MOVE PROPERTY (sumCurrency(o));
             MOVE PROPERTY (numberAccount(o));
+            MOVE PROPERTY (numberAccountFrom(o));
         }
         NEW note AFTER sum {
             caption = 'Дополнительные параметры';
@@ -111,7 +125,7 @@ DESIGN payment {
 FORM payments 'Платежи'
     OBJECTS o = Payment LAST 
     PROPERTIES(o) READONLY id, nameLegalEntity,nameCustomer, nameCompany, number, date, 
-                           year, monthNumber, sum, shortNameCurrency, sumCurrency, note, numberAccount
+                           year, monthNumber, sum, shortNameCurrency, sumCurrency, note, numberAccount, numberAccountFrom
     ORDER date(o), nameLegalEntity(o), nameCompany(o)
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
     ORDER date(o)
@@ -120,7 +134,7 @@ FORM payments 'Платежи'
 FORM dialogPayments 'Платежи'
     OBJECTS o = Payment LAST 
     PROPERTIES(o) READONLY id, nameLegalEntity, nameCustomer, nameCompany, number, date, 
-                           year, monthNumber, sum, shortNameCurrency, sumCurrency, note, numberAccount 
+                           year, monthNumber, sum, shortNameCurrency, sumCurrency, note, numberAccount, numberAccountFrom
     ORDER date(o), nameLegalEntity(o), nameCompany(o)
     
     LIST Payment OBJECT o
