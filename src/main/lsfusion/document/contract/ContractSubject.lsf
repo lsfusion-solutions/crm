@@ -34,7 +34,7 @@ name 'Наименование' = DATA VARISTRING[100] (Subject) CHARWIDTH 15;
 
 type = DATA SubjectType(Subject);
 nameType 'Тип предмета договора' (Subject s) = name(type(s));
-quantity 'Кол-во' = DATA INTEGER (Subject);
+quantity 'Кол-во' = DATA NUMERIC[14,2] (Subject);
 price 'Цена' = DATA NUMERIC[16,5](Subject);
 note 'Примечание' = DATA TEXT (Subject);
 
