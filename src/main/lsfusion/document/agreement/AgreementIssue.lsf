@@ -39,6 +39,4 @@ setAgreement 'Привязать соглашение' (Customer c) {
     }
 }
 
-overCustomer(Issue i) = OVERRIDE customer(i), customer(project(i));
-
-CONSTRAINT agreement(Issue i) AND NOT customer(agreement(i)) == customer(i) CHECKED BY agreement[Issue] MESSAGE 'Клиент соглашения не соответствует клиенту задачи';
+CONSTRAINT agreement(Issue i) AND customer(i) AND NOT customer(agreement(i)) == customer(i) CHECKED BY agreement[Issue] MESSAGE 'Клиент соглашения не соответствует клиенту задачи';
