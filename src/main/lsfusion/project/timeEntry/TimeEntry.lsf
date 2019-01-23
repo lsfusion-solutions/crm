@@ -51,7 +51,7 @@ nameProject 'Проект' (TimeEntry t) = name(project(t));
 customer = DATA Customer(TimeEntry);
 nameCustomer 'Клиент' (TimeEntry e) = name(customer(e));
 
-WHEN LOCAL SETCHANGED (project(TimeEntry t)) AND NOT CHANGED (customer(t)) DO {
+WHEN LOCAL SETCHANGED (customer(project(TimeEntry t))) DO {
     customer(t) <- customer(project(t));
 }
 

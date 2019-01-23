@@ -85,7 +85,7 @@ nameCustomer 'Клиент' (Issue i) = name(customer(i));
 
 CONSTRAINT project(Issue i) AND customer(i) AND NOT customer(i) == customer(project(i)) CHECKED BY customer[Issue] MESSAGE 'Клиент задачи не совпадает с клиентом проекта';
 
-WHEN LOCAL CHANGED (project(Issue i)) AND NOT CHANGED (customer(i)) DO {
+WHEN LOCAL SETCHANGED (customer(project(Issue i))) DO {
     customer(i) <- customer(project(i));
 }
 
