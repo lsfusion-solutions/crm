@@ -115,7 +115,7 @@ contract(Agreement a) += contract(a);
 sum(Agreement c) += sum(c);
 description(Agreement c) += CONCAT ' ', 'Согл.', '№' + number(c), 'от ' + toDateDDMMYY(date(c)), 'по дог.', '№' + number(contract(c)), 'от ' + toDateDDMMYY(date(contract(c)));
 sendingWay(Agreement c) += sendingWay(c);
-fileName(Agreement c) += VARISTRING[250] (CONCAT '_', 'Соглашение', number(c), 'от_' + toDateDDMMYY(date(c)), nameLegalEntity(c));
+fileName(Agreement c) += VARISTRING[250] (CONCAT '_', nameLegalEntity(c), 'Соглашение', number(c), 'от_' + toDateDDMMYY(date(c)));
 
 EXTEND CLASS DocType {
     agreement 'Соглашение'

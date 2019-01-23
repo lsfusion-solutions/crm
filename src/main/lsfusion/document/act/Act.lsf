@@ -129,7 +129,7 @@ contract(Act a) += contract(a);
 sum(Act c) += sum(c);
 description(Act c) += CONCAT ' ', 'Акт', '№' + number(c), 'от ' + toDateDDMMYY(date(c)), 'по дог.', '№' + number(contract(c)), 'от ' + toDateDDMMYY(date(contract(c)));
 sendingWay(Act c) += sendingWay(c);
-fileName(Act c) += VARISTRING[250] (CONCAT '_', 'Акт', number(c), 'от_' + toDateDDMMYY(date(c)), nameLegalEntity(c));
+fileName(Act c) += VARISTRING[250] (CONCAT '_', nameLegalEntity(c), 'Акт', number(c), 'от_' + toDateDDMMYY(date(c)));
 
 EXTEND CLASS DocType {
     act 'Акт выполненных работ'
