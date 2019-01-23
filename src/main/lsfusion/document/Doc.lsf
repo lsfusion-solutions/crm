@@ -30,6 +30,7 @@ nameCustomer 'Клиент' (Document d) = name(customer(d));
 
 legalEntity = ABSTRACT LegalEntity(Document);
 nameLegalEntity 'Организация' (Document d) = name(legalEntity(d)); 
+fullNameLegalEntity 'Организация' (Document d) = overName(legalEntity(d)); 
 
 company = ABSTRACT LegalEntity(Document);
 nameCompany 'Компания' (Document d) = name(company(d)); 

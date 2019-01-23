@@ -31,9 +31,9 @@
 	<field name="_OBJVALUE_Doc_documentReport_df(df)" class="java.util.Date"/>
 	<field name="_OBJVALUE_Doc_documentReport_dt(dt)" class="java.util.Date"/>
 	<field name="d.object" class="java.lang.Long"/>
-	<field name="nameLegalEntity(d)" class="java.lang.String"/>
-	<field name="name(d)" class="java.lang.String"/>
-	<field name="number(d)" class="java.lang.String"/>
+	<field name="fullNameLegalEntity(d)" class="java.lang.String"/>
+	<field name="nameType(d)" class="java.lang.String"/>
+	<field name="description(d)" class="java.lang.String"/>
 	<field name="note(d)" class="java.lang.String"/>
 	<group name="designGroup7263">
 		<groupExpression><![CDATA[String.valueOf($F{df.object})+" "+String.valueOf($F{dt.object})]]></groupExpression>
@@ -66,14 +66,14 @@
 				<textFieldExpression><![CDATA["Наименование документа"]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement style="GroupCellStyle0" stretchType="RelativeToBandHeight" mode="Opaque" x="480" y="0" width="160" height="30" backcolor="#FFFF00" uuid="8e7eaca2-ca77-441b-a6a4-152f44e128c7"/>
+				<reportElement style="GroupCellStyle0" stretchType="RelativeToBandHeight" mode="Opaque" x="480" y="0" width="170" height="30" backcolor="#FFFF00" uuid="8e7eaca2-ca77-441b-a6a4-152f44e128c7"/>
 				<textElement textAlignment="Center">
 					<font fontName="lsf.Arial" size="11" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Номер документа\n(Номер договора)"]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement style="GroupCellStyle0" stretchType="RelativeToBandHeight" mode="Opaque" x="640" y="0" width="162" height="30" backcolor="#FFFF00" uuid="466c3f8a-edb9-4f36-b01d-59a314cd8852"/>
+				<reportElement style="GroupCellStyle0" stretchType="RelativeToBandHeight" mode="Opaque" x="650" y="0" width="152" height="30" backcolor="#FFFF00" uuid="466c3f8a-edb9-4f36-b01d-59a314cd8852"/>
 				<textElement textAlignment="Center">
 					<font fontName="lsf.Arial" size="11" isBold="true"/>
 				</textElement>
@@ -95,24 +95,24 @@
 				<textElement textAlignment="Left">
 					<font fontName="lsf.Arial" size="10" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{nameLegalEntity(d)}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{fullNameLegalEntity(d)}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement style="GroupCellStyle0" positionType="Float" stretchType="RelativeToBandHeight" x="342" y="0" width="138" height="15" uuid="60ecadf1-afc3-41af-87f4-55d6ac3c262d"/>
 				<textElement textAlignment="Center">
 					<font fontName="lsf.Arial" size="10" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{name(d)}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{nameType(d)}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement style="GroupCellStyle0" positionType="Float" stretchType="RelativeToBandHeight" x="480" y="0" width="160" height="15" uuid="bac33c11-d1e9-44d7-80f3-612c3121a307"/>
+				<reportElement style="GroupCellStyle0" positionType="Float" stretchType="RelativeToBandHeight" x="480" y="0" width="170" height="15" uuid="bac33c11-d1e9-44d7-80f3-612c3121a307"/>
 				<textElement textAlignment="Center">
 					<font fontName="lsf.Arial" size="10" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{number(d)}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{description(d)}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement style="GroupCellStyle0" positionType="Float" stretchType="RelativeToBandHeight" x="640" y="0" width="162" height="15" uuid="6cf91311-c4e5-4d44-bde4-6c3b7f7f29c8"/>
+				<reportElement style="GroupCellStyle0" positionType="Float" stretchType="RelativeToBandHeight" x="650" y="0" width="152" height="15" uuid="6cf91311-c4e5-4d44-bde4-6c3b7f7f29c8"/>
 				<textElement textAlignment="Left">
 					<font fontName="lsf.Arial" size="10" isBold="true"/>
 				</textElement>

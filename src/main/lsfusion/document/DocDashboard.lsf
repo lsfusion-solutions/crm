@@ -78,7 +78,7 @@ FORM documentReport 'Реестр отправленной корреспонд�
     PROPERTIES () nameCustomerFilterLegalEntity
     
     OBJECTS d = Document
-    PROPERTIES (d) nameLegalEntity, name, number, note
+    PROPERTIES (d) fullNameLegalEntity, nameType, description, note
     FILTERS company(d) == filterLegalEntity(), date(d) >= df AND date(d) <= dt
 ;
 
