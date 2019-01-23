@@ -33,12 +33,28 @@ FORM profitMonthDashboard 'Прибыль по месяцам'
     OBJECTS et = ExpenseType
     OBJECTS my = (m = Month, y = INTEGER)
     PROPERTIES READONLY number(m), 'Месяц' = staticCaption(m), year 'Год' = VALUE (y), receipt(m, y) BACKGROUND backgroundReceipt(), 
-                        shipment(m, y) BACKGROUND backgroundShipment(), profit(m, y),
-                        receipt(m, y, ct) COLUMNS (ct) HEADER name(ct) BACKGROUND backgroundReceipt(), receiptOther(m, y) BACKGROUND backgroundReceipt(),
-                        receipt(m, y, cg) COLUMNS (cg) HEADER name(cg) BACKGROUND backgroundGroup(), receiptOtherGroups(m, y) BACKGROUND backgroundGroup(),
-                        shipment(m, y, et) COLUMNS (et) HEADER name(et) BACKGROUND backgroundShipment(), shipmentOther(m, y) BACKGROUND backgroundShipment()
+                        shipment(m, y) BACKGROUND backgroundShipment(), profit(m, y)
     ORDER year, number(m)
     FILTERS y >= yf AND y <= yt, receipt(m, y) OR shipment(m, y), receipt(yf, yt, ct), shipment(yf, yt, et)
+                        
+    OBJECTS my1 = (m1 = Month, y1 = INTEGER)
+    PROPERTIES READONLY number(m1), 'Месяц' = staticCaption(m1), year1 'Год' = VALUE (y1), receipt(m1, y1),
+                        receipt(m1, y1, ct) COLUMNS (ct) HEADER name(ct) BACKGROUND backgroundReceipt(), receiptOther(m1, y1) BACKGROUND backgroundReceipt()
+    ORDER year1, number(m1)
+    FILTERS y1 >= yf AND y1 <= yt, receipt(m1, y1)
+    
+    OBJECTS my2 = (m2 = Month, y2 = INTEGER)
+    PROPERTIES READONLY number(m2), 'Месяц' = staticCaption(m2), year2 'Год' = VALUE (y2), receipt(m2, y2),
+                        receipt(m2, y2, cg) COLUMNS (cg) HEADER name(cg) BACKGROUND backgroundGroup(), receiptOtherGroups(m2, y2) BACKGROUND backgroundGroup()
+    ORDER year2, number(m2)
+    FILTERS y2 >= yf AND y2 <= yt, receipt(m2, y2)
+    
+    OBJECTS my3 = (m3 = Month, y3 = INTEGER)
+    PROPERTIES READONLY number(m3), 'Месяц' = staticCaption(m3), year3 'Год' = VALUE (y3), shipment(m3, y3),
+                        shipment(m3, y3, et) COLUMNS (et) HEADER name(et) BACKGROUND backgroundShipment(), shipmentOther(m3, y3) BACKGROUND backgroundShipment()
+    ORDER year3, number(m3)
+    FILTERS y3 >= yf AND y3 <= yt, shipment(m3, y3)
+    
     
     OBJECTS p = Payment
     PROPERTIES (p) READONLY id, nameLegalEntity, nameCustomer, numberContract, nameTypeContract, nameGroupContract, numberAct, number, date, 
@@ -58,7 +74,15 @@ FORM profitMonthDashboard 'Прибыль по месяцам'
 
 DESIGN profitMonthDashboard {
     OBJECTS {
-        NEW tab AFTER BOX (my) {
+        NEW month AFTER BOX (years) {
+            type = TABBED;
+            fill = 1;
+            MOVE BOX (my) { caption = 'Итого'; }
+            MOVE BOX (my1) { caption = 'Доход по типам договоров'; }
+            MOVE BOX (my2) { caption = 'Доход по группам договоров'; }
+            MOVE BOX (my3) { caption = 'Расход по видам оплат'; }
+        }
+        NEW tab AFTER month {
             type = TABBED;
             fill = 1;
             MOVE BOX (p);
