@@ -25,8 +25,20 @@ timePercent 'Процент времени' (Employee e, Project p) = timePercen
 FORM timePercent 'Процент времени'
     OBJECTS t = TimeEntryDefault PANEL 
     OBJECTS p = Project
-    PROPERTIES 'Проект' = name(p) READONLY, timePercent(t, p)
+    PROPERTIES READONLY id(p), 'Проект' = name(p), nameCustomer(p)
+    PROPERTIES timePercent(t, p)
+    
+    PROPERTIES sum 'Сумма, %' = GROUP SUM timePercent(t, Project pp)
+    
+    FILTERGROUP active FILTER 'Активные' NOT inactive(customer(p))
+    FILTERGROUP in FILTER 'Выбранные' timePercent(t, p)
 ;
+
+DESIGN timePercent {
+    FILTERGROUPS (p) {
+        MOVE PROPERTY (sum) FIRST;
+    }
+}
 
 FORM timeEntryDefault 'Отметки времени по умолчанию'
     OBJECTS e = Employee
@@ -39,7 +51,7 @@ FORM timeEntryDefault 'Отметки времени по умолчанию'
     FILTERS employee(t) == e
 ;
 
-default = DATA BOOLEAN (TimeEntry);
+default 'Авто' = DATA BOOLEAN (TimeEntry);
 
 emptyHours (Employee e, DATE d) = workingHours(d) (-) totalHours(e, d);
 
@@ -60,6 +72,7 @@ createTimeEntries 'Заполнить время' (Employee e, DATE df, DATE dt)
                 employee(t) <- e;
                 project(t) <- p;
                 hours(t) <- hours(p);
+                comments(t) <- 'Авто';
             }
         }
     APPLY;
@@ -89,7 +102,10 @@ showCreateTimeEntries 'Заполнить время' (Employee e) {
     SHOW createTimeEntries;
 }
 
-EXTEND FORM timeEntryDashboard PROPERTIES (e) TOOLBAR showCreateTimeEntries;
+EXTEND FORM timeEntryDashboard 
+    PROPERTIES (e) TOOLBAR showCreateTimeEntries
+    PROPERTIES READONLY default(t)
+;
 
 NAVIGATOR {
     project {
