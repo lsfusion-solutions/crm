@@ -56,6 +56,7 @@ WHEN LOCAL SETCHANGED (customer(project(TimeEntry t))) DO {
 }
 
 CONSTRAINT project(TimeEntry t) AND customer(t) AND NOT customer(project(t)) == customer(t) CHECKED BY customer[TimeEntry] MESSAGE 'Клиент отметки не является клиентом проекта';
+CONSTRAINT TimeEntry t IS TimeEntry AND NOT project(t) AND NOT customer(t) MESSAGE 'Для отметки времени должен быть задан проект или клиент';
 
 employee = DATA Employee(TimeEntry);
 nameEmployee 'Сотрудник' (TimeEntry t) = name(employee(t));
@@ -75,9 +76,13 @@ hours 'Трудозатраты' (Project p, Employee e, Customer c, DATE df, DA
 hours 'Трудозатраты' (Employee e, Project p, INTEGER y, Month m) = GROUP SUM hours(TimeEntry t) BY employee(t), project(t), year(t), month(t);
 hours 'Трудозатраты' (Employee e, Project p, INTEGER y) = GROUP SUM hours(TimeEntry t) BY employee(t), project(t), year(t);
 
-
 employee(TimeEntry e) <- currentUser() WHEN SET(e IS TimeEntry);
 date(TimeEntry e) <- currentDate() WHEN SET(e IS TimeEntry);
+
+forbidTimeEntries 'Запретить отметки времени' = DATA BOOLEAN (Customer);
+EXTEND FORM customer PROPERTIES forbidTimeEntries(o);
+
+CONSTRAINT forbidTimeEntries(customer(TimeEntry t)) CHECKED BY customer[TimeEntry] MESSAGE 'Запрещено добавлять отметки времени по данному клиенту';
 
 FORM timeEntry 'Отметка времени'
     OBJECTS o = TimeEntry PANEL
@@ -123,10 +128,12 @@ DESIGN timeEntry {
 
 FORM timeEntries 'Отметки времени'
     OBJECTS o = TimeEntry LAST 
-    PROPERTIES(o) READONLY id, hours, commentsString, date, nameActivity, nameProject, nameCustomer, nameEmployee, numberIssue, nameIssue
+    PROPERTIES(o) READONLYIF isReadonly() id, hours, commentsString, date, nameActivity, nameProject, nameCustomer, nameEmployee, numberIssue, nameIssue
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
     ORDER date(o), id(o)
 ;
+
+@extendFormEditable(timeEntries);
 
 FORM dialogTimeEntries 'Отметки времени'
     OBJECTS o = TimeEntry LAST 

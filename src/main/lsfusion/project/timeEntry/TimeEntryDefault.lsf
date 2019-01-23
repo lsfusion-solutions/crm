@@ -27,10 +27,11 @@ FORM timePercent 'Процент времени'
     OBJECTS p = Project
     PROPERTIES READONLY id(p), 'Проект' = name(p), nameCustomer(p)
     PROPERTIES timePercent(t, p)
+    ORDER name(p)
     
     PROPERTIES sum 'Сумма, %' = GROUP SUM timePercent(t, Project pp)
     
-    FILTERGROUP active FILTER 'Активные' NOT inactive(customer(p))
+    FILTERGROUP active FILTER 'Активные' NOT inactive(p) DEFAULT 
     FILTERGROUP in FILTER 'Выбранные' timePercent(t, p)
 ;
 

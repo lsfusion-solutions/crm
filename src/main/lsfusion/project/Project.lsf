@@ -15,24 +15,32 @@ identifier 'Идентификатор' = DATA VARISTRING[100] (Project) CHARWID
 customer = DATA Customer(Project);
 nameCustomer 'Клиент' (Project p) = name(customer(p));
 
+inactive 'Неактивный' = DATA BOOLEAN (Project);
+
 merge (Customer from, Customer to) + { customer(Project p) <- to WHERE customer(p) = from; }
 
 FORM project 'Проект'
     OBJECTS o = Project PANEL
-    PROPERTIES(o) id, name, identifier, nameCustomer
+    PROPERTIES(o) id, name, identifier, nameCustomer, inactive
     
     EDIT Project OBJECT o
 ;
 
 FORM projects 'Проекты'
     OBJECTS o = Project
-    PROPERTIES(o) READONLY id, name, identifier, nameCustomer
+    PROPERTIES(o) READONLYIF isReadonly() id, name, identifier, nameCustomer, inactive
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
+    ORDER name(o)
+    FILTERGROUP active FILTER 'Активные' NOT inactive(o) DEFAULT 
 ;
+
+@extendFormEditable(projects);
 
 FORM dialogProjects 'Проекты'
     OBJECTS o = Project
-    PROPERTIES(o) READONLY id, name, identifier, nameCustomer
+    PROPERTIES(o) READONLY id, name, identifier, nameCustomer, inactive
+    ORDER name(o)
+    FILTERGROUP active FILTER 'Активные' NOT inactive(o) DEFAULT 
     
     LIST Project OBJECT o
 ;

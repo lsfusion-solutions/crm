@@ -84,6 +84,7 @@ customer = DATA Customer(Issue);
 nameCustomer 'Клиент' (Issue i) = name(customer(i));
 
 CONSTRAINT project(Issue i) AND customer(i) AND NOT customer(i) == customer(project(i)) CHECKED BY customer[Issue] MESSAGE 'Клиент задачи не совпадает с клиентом проекта';
+CONSTRAINT Issue i IS Issue AND NOT project(i) AND NOT customer(i) MESSAGE 'Для задачи должен быть задан проект или клиент';
 
 WHEN LOCAL SETCHANGED (customer(project(Issue i))) DO {
     customer(i) <- customer(project(i));

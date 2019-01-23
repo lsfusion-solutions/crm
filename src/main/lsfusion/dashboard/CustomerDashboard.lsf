@@ -269,7 +269,6 @@ DESIGN customer {
             caption = 'Основные параметры';
             MOVE PROPERTY (id(o));
             MOVE PROPERTY (name(o)) { charWidth = 50; }
-            MOVE PROPERTY (inactive(o));
         }
         NEW contacts AFTER main {
             type = CONTAINERH;
@@ -278,14 +277,21 @@ DESIGN customer {
             MOVE PROPERTY (email(o)) { charWidth = 30; }
         }
         NEW add AFTER contacts {
-            type = COLUMNS;
-            columns = 3;
             caption = 'Дополнительные параметры';
-            MOVE PROPERTY (nameGroup(o));
-            MOVE PROPERTY (nameStatus(o));
-            MOVE PROPERTY (dateFrom(o));
-            MOVE PROPERTY (site(o));
-            MOVE PROPERTY (note(o));
+            NEW firstAdd {
+                type = COLUMNS;
+                columns = 3;
+                MOVE PROPERTY (nameGroup(o));
+                MOVE PROPERTY (nameStatus(o));
+                MOVE PROPERTY (dateFrom(o));
+                MOVE PROPERTY (site(o));
+                MOVE PROPERTY (note(o));
+            }
+            NEW secondAdd {
+                type = CONTAINERH;
+                MOVE PROPERTY (inactive(o));
+                MOVE PROPERTY (forbidTimeEntries(o));
+            }
         }
         NEW tab {
             type = TABBED;
