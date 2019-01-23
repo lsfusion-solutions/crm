@@ -13,11 +13,13 @@ addTimeEntry 'Добавить' (DATE d) {
     }
 } IMAGE 'add.png' CHANGEKEY 'INSERT' HIDE;
 
+@addRoleApplicationSetting(allowEditOtherTimesheets, 'Разрешить редактировать чужие табели рабочего времени', BOOLEAN);
+
 FORM timesheetDashboard 'Табель рабочего времени'
     
     OBJECTS m = Month PANEL, y = INTEGER PANEL, e = Employee PANEL
-    PROPERTIES month 'Месяц' = staticCaption(m) SELECTOR, year 'Год' = VALUE (y), name(e) SELECTOR
-    FILTERS e == currentUser()
+    PROPERTIES month 'Месяц' = staticCaption(m) SELECTOR, year 'Год' = VALUE (y), name(e) SELECTOR READONLYIF NOT allowEditOtherTimesheets(mainRole(currentUser()))
+    FILTERS e == currentUser() OR allowEditOtherTimesheets(mainRole(currentUser()))
     
     OBJECTS d = DATE 
     PROPERTIES READONLY VALUE (d), extractDOWName(d), workingHours(d), totalHours(e, d)
@@ -52,6 +54,7 @@ FORM timesheetDashboard 'Табель рабочего времени'
     EVENTS ON INIT {
         SEEK timesheetDashboard.m = extractMonth(currentDate());
         SEEK timesheetDashboard.y = extractYear(currentDate());
+        SEEK timesheetDashboard.e = currentUser();
     }
 ;
 
