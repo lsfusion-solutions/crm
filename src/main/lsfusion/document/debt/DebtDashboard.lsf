@@ -125,7 +125,7 @@ createActZip 'Выгрузить акты в zip' () {
         zipping(VARSTRING[100] f) <- file(a) WHERE f == fileName(a) + '.doc';
     }
     makeZipFile();
-    WRITE CLIENT DIALOG zipped() TO 'archive';
+    open(zipped(),'archive');
 }
 
 editAct 'Редактировать акт' (Debt d) {
