@@ -143,6 +143,7 @@ dateClosing 'Дата закрытия' = DATA DATE (Contract);
 note 'Примечание' = DATA VARISTRING[100](Contract) CHARWIDTH 20;
 text 'Текст' = DATA TEXT (Contract);
 textString 'Текст' (Contract c) = VARSTRING[500](text(c)) CHARWIDTH 20;
+terms 'Условия' = DATA TEXT (Contract) CHARWIDTH 20;
 
 contract = ABSTRACT Contract (Document);
 numberContract 'Номер договора' (Document d) = number(contract(d)) CHARWIDTH 10;
@@ -177,7 +178,7 @@ docType(Contract c) += DocType.contract IF c IS Contract;
 FORM contract 'Договор'
     OBJECTS o = Contract PANEL
     PROPERTIES(o) id, nameCustomer READONLY, nameLegalEntity, nameCompany, number, date, name, sum, nameType, nameGroup, nameSendingWay, 
-                  dateSigningCompany, dateSending, dateSigningCustomer, dateReceiving, dateTo, dateClosing, note, text,
+                  dateSigningCompany, dateSending, dateSigningCustomer, dateReceiving, dateTo, dateClosing, note, text, terms,
                   inCurrency, shortNameCurrency, sumCurrency SHOWIF inCurrency(o), 
                   nameNumerator, series, nameAuthorisedPersonLegalEntity, nameAuthorisedPersonCompany,
                   authorisedDocumentLegalEntity, authorisedDocumentCompany
@@ -263,10 +264,24 @@ DESIGN contract {
             type = TABBED;
             fill = 1;
             NEW text {
-                caption = 'Текст';
-                MOVE PROPERTY (text(o)) { 
-                    caption = '';
+                caption = 'Содержание';
+                fill = 1;
+                type = CONTAINERH;
+                NEW texts {
+                    caption = 'Текст';
                     fill = 1;
+                    MOVE PROPERTY (text(o)) { 
+                        caption = '';
+                        fill = 1;
+                    }
+                }
+                NEW terms {
+                    caption = 'Условия';
+                    fill = 1;
+                    MOVE PROPERTY (terms(o)) { 
+                        caption = '';
+                        fill = 1;
+                    }
                 }
             }
         }

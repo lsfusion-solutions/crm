@@ -30,7 +30,7 @@ FORM contractDashboard 'Работа с договорами'
                            sum, paid, dateLastPaid,
                            sumMonth, 
                            nameType, nameGroup, nameSendingWay, 
-                           dateSigningCompany, dateSending, dateSigningCustomer, dateReceiving, dateTo, dateClosing, note, textString, text PANEL
+                           dateSigningCompany, dateSending, dateSigningCustomer, dateReceiving, dateTo, dateClosing, note, textString, text PANEL, terms PANEL
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
     PROPERTIES(o) loadFileApply, openFile SHOWIF TRUE IF file(o), close SHOWIF NOT dateClosing(o)
     ORDER date(o)
@@ -105,6 +105,14 @@ DESIGN contractDashboard {
                         caption = 'Файл документа';
                         MOVE PROPERTY (loadFileApply(o));
                         MOVE PROPERTY (openFile(o));
+                    }
+                }
+                NEW terms {
+                    caption = 'Условия';
+                    fill = 1;
+                    MOVE PROPERTY (terms(o)) { 
+                        caption = '';
+                        fill = 1;
                     }
                 }
                 MOVE BOX (ag);
