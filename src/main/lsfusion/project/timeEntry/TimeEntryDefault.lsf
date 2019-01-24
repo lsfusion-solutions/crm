@@ -19,8 +19,8 @@ CONSTRAINT timePercent(TimeEntryDefault t) AND NOT timePercent(t) == 100.0 MESSA
 
 percents 'Проценты времени по проектам' (TimeEntryDefault t) = GROUP CONCAT name(Project p) + ':' + round0(timePercent(t, p)) + '%', ', ' ORDER DESC timePercent(t, p) CHARWIDTH 50;
 
-timeEntryDefault (Employee e) = GROUP LAST TimeEntryDefault t ORDER date(t), t BY employee(t);
-timePercent 'Процент времени' (Employee e, Project p) = timePercent(timeEntryDefault(e), p);
+timeEntryDefault (Employee e, DATE d) = GROUP LAST TimeEntryDefault t ORDER date(t), t IF date(t) <= d BY employee(t);
+timePercent 'Процент времени' (Employee e, Project p, DATE d) = timePercent(timeEntryDefault(e, d), p);
 
 FORM timePercent 'Процент времени'
     OBJECTS t = TimeEntryDefault PANEL 
@@ -62,11 +62,11 @@ createTimeEntries 'Заполнить время' (Employee e, DATE df, DATE dt)
         
             LOCAL hours = NUMERIC[7,2] (Project);
             hours(Project p) <- PARTITION UNGROUP emptyHours
-                                          PROPORTION STRICT ROUND(2) timePercent(e, p)
+                                          PROPORTION STRICT ROUND(2) timePercent(e, p, d)
                                           ORDER p
                                           BY e, d;
                                           
-            FOR timePercent(e, Project p) DO NEW t = TimeEntry {
+            FOR timePercent(e, Project p, d) AND hours(p) DO NEW t = TimeEntry {
             
                 default(t) <- TRUE;
                 date(t) <- d;
