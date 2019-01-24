@@ -69,7 +69,7 @@ CLASS ExpenseAccountLedger : AccountLedger;
 expenseAccountLedger = AGGR ExpenseAccountLedger WHERE accountTo(Expense expense);
 
 date(ExpenseAccountLedger a) += date(expense(a)); 
-sum(ExpenseAccountLedger a) += -sum(expense(a)); 
+sum(ExpenseAccountLedger a) += sum(expense(a)); 
 note(ExpenseAccountLedger a) += VARISTRING[250] (note(expense(a)));
 account(ExpenseAccountLedger a) += accountTo(expense(a)); 
 
