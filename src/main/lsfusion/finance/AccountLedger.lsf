@@ -13,8 +13,9 @@ note 'Примечание' = ABSTRACT VARISTRING[250](AccountLedger) MATERIALIZ
 sum 'Сумма' = ABSTRACT NUMERIC[16,5](AccountLedger) MATERIALIZED;
 
 balance 'Остаток' (Account a) = GROUP SUM sum(AccountLedger l) BY account(l) MATERIALIZED;
-
 balanceCurrency 'Остаток в валюте' (Account a) = round2(balance(a) * OVERRIDE (rateOn(defaultTypeExchange(), currency(a), currentDate())), 1);
+
+balance 'Остаток' (Account a, DATE d) = balance(a) (-) [GROUP SUM sum(AccountLedger l) IF iterate(date(l), sum(d, 1), currentDate()) BY account(l)](a);
 
 FORM accountBalances 'Остатки по счетам'
     OBJECTS a = Account
@@ -25,7 +26,35 @@ FORM accountBalances 'Остатки по счетам'
     PROPERTIES (l) READONLY date, note, sum
     ORDER date(l) DESC
     FILTERS account(l) == a, balance(a)
+    
+    OBJECTS dates = (df = DATE, dt = DATE) PANEL 
+    PROPERTIES 'Дата с' = VALUE (df), 'Дата по' = VALUE (dt)
+    
+    OBJECTS d = DATE 
+    PROPERTIES vd 'Дата' = VALUE(d), balance(a, d)
+    ORDER vd DESC 
+    FILTERS iterate(d, df, dt)
 ;
+
+DESIGN accountBalances {
+    OBJECTS {
+        NEW pane {
+            type = SPLITV;
+            fill = 1;
+            MOVE BOX (a);
+            NEW tab AFTER BOX (a) {
+                type = TABBED;
+                fill = 1;
+                MOVE BOX (l);
+                NEW balances {
+                    caption = 'Динамика остатка';
+                    MOVE BOX (dates);
+                    MOVE BOX (d);
+                }
+            }
+        }
+    }
+}
 
 NAVIGATOR {
     finance {
