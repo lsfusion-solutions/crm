@@ -1,6 +1,6 @@
 MODULE DebtAgreement;
 
-REQUIRE Debt, Agreement;
+REQUIRE Debt, PaymentAgreement;
 
 NAMESPACE Contract;
 
@@ -48,6 +48,22 @@ WHEN SETCHANGED (agreement(Debt d)) AND NOT CHANGED (contract(d)) DO {
 }
 
 CONSTRAINT agreement(Debt d) AND NOT contract(d) == contract(agreement(d)) CHECKED BY agreement[Debt] MESSAGE 'Договор соглашения не совпадает с договором';
+
+paidAgreement 'Оплачено' (Debt d) = GROUP SUM sum(Payment p) IF agreement(p) == agreement(d) MATERIALIZED;
+
+paidNotDebt (Contract c) = paid(c) (-) [GROUP SUM paidAgreement(Debt d) BY contract(d)](c);
+
+paidContract 'Оплачено' (Debt d) = PARTITION UNGROUP paidNotDebt
+                                                      LIMIT sum(d) (-) paidAgreement(d)
+                                                      ORDER date(d),d 
+                                                      BY contract(d) MATERIALIZED; 
+                                                      
+paid 'Оплачено' (Debt d) = paidAgreement(d) (+) paidContract(d);
+
+EXTEND FORM debts PROPERTIES READONLY paid(o) AFTER sum(o);
+EXTEND FORM dialogDebts PROPERTIES READONLY paid(o) AFTER sum(o);
+EXTEND FORM contract PROPERTIES READONLY paid(d) AFTER sum(d);
+EXTEND FORM debtsPlan PROPERTIES READONLY paid(d) AFTER sum(d);
 
 EXTEND FORM agreement
     PROPERTIES shortNameCurrency(o) READONLY, sumCurrency(o) SHOWIF inCurrency(o), createFullDebt(o)
