@@ -92,7 +92,7 @@ active (Agreement c) = NOT dateClosing(c) <= currentDate();
 
 note 'Примечание' = DATA VARISTRING[100](Agreement) CHARWIDTH 20;
 text 'Текст' = DATA TEXT (Agreement);
-textString 'Текст' (Agreement c) = VARSTRING[500](text(c)) CHARWIDTH 20;
+textString 'Текст' (Agreement c) = VARISTRING[500](text(c)) CHARWIDTH 20;
 
 sendingWay = DATA SendingWay(Agreement);
 nameSendingWay 'Способ отправки документа' (Agreement c) = name(sendingWay(c));

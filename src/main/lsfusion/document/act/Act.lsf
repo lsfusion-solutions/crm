@@ -106,7 +106,7 @@ active (Act c) = NOT dateClosing(c) <= currentDate();
 
 note 'Примечание' = DATA VARISTRING[100](Act) CHARWIDTH 20;
 text 'Текст' = DATA TEXT (Act);
-textString 'Текст' (Act c) = VARSTRING[500](text(c)) CHARWIDTH 20;
+textString 'Текст' (Act c) = VARISTRING[500](text(c)) CHARWIDTH 20;
 
 sendingWay = DATA SendingWay(Act);
 nameSendingWay 'Способ отправки документа' (Act c) = name(sendingWay(c));

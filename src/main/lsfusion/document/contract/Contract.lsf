@@ -142,7 +142,7 @@ dateTo 'Дата окончания' = DATA DATE (Contract);
 dateClosing 'Дата закрытия' = DATA DATE (Contract);
 note 'Примечание' = DATA VARISTRING[100](Contract) CHARWIDTH 20;
 text 'Текст' = DATA TEXT (Contract);
-textString 'Текст' (Contract c) = VARSTRING[500](text(c)) CHARWIDTH 20;
+textString 'Текст' (Contract c) = VARISTRING[500](text(c)) CHARWIDTH 20;
 terms 'Условия' = DATA TEXT (Contract) CHARWIDTH 20;
 
 contract = ABSTRACT Contract (Document);
