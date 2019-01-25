@@ -1,6 +1,6 @@
 MODULE CustomerDashboard;
 
-REQUIRE Project, PaymentAct, Event, Issue, TimeEntry, Dashboard, LegalEntity, DocFile, TimeEntryCustomer, ProjectExternal, DebtAgreement, CustomerAttachment, AgreementIssue;
+REQUIRE Project, PaymentAct, Event, Issue, TimeEntry, Dashboard, LegalEntity, DocFile, TimeEntryCustomer, ProjectExternal, DebtAgreement, CustomerAttachment, AgreementIssue, CustomerTag;
 
 NAMESPACE Dashboard;
 
@@ -299,6 +299,7 @@ DESIGN customer {
             MOVE BOX (le) { caption = 'Организации'; }
             MOVE BOX (a) { caption = 'Адреса'; }
             MOVE BOX (c) { caption = 'Контакты'; }
+            MOVE BOX (t) { caption = 'Тэги'; }
             NEW info {
                 caption = 'Информация';
                 fill = 1;

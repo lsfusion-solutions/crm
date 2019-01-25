@@ -43,3 +43,10 @@ NAVIGATOR {
         NEW tags;
     }
 }
+
+EXTEND FORM customers PROPERTIES READONLY tags(o);
+
+EXTEND FORM customer
+    OBJECTS t = Tag
+    PROPERTIES in(t, o), name(t) READONLY 
+;
