@@ -77,12 +77,13 @@ NAVIGATOR {
 CLASS Account 'Расчетный счет';
 TABLE account (Account);
 
-inactive 'Неактивная' = DATA BOOLEAN (Account);
-active 'Активная' (Account a) = a IS Account AND NOT inactive(a);
-
 number 'Номер расчетного счета'  = DATA VARSTRING[50] (Account) IN id CHARWIDTH 28 FIXED;
-
 account (number) = GROUP MAX Account account BY number(account);
+
+note 'Примечание'  = DATA VARISTRING[50] (Account);
+rate 'Процентная ставка' = DATA NUMERIC[6,2](Account);
+dateTo 'Дата по' = DATA DATE (Account);
+active 'Активный' (Account a) = dateTo(a) >= currentDate() OR NOT dateTo(a);
 
 bank = DATA Bank (Account);
 nameBank 'Наименование банка' (Account account) = name(bank(account)) IN id;
@@ -116,7 +117,13 @@ legalEntityAccount (VARSTRING[20] number) = legalEntity(account(number));
 currency = DATA Currency (Account);
 nameCurrency 'Валюта счета' = name(currency(Account account));
 
-note 'Примечание'  = DATA VARISTRING[50] (Account);
+FORM dialogAccounts 'Счета'
+    OBJECTS a = Account
+    PROPERTIES (a) READONLY number, nameCurrency, nameBank, addressBank, MFOBank, nameLegalEntity, nameCustomer, note, rate, dateTo
+    FILTERGROUP active FILTER 'Активные' active(a) 'ctrl F10' DEFAULT 
+    
+    LIST Account OBJECT a
+;
 
 EXTEND FORM customer PROPERTIES nameLegalEntity(a) AFTER types(a);
 
@@ -133,16 +140,15 @@ FORM legalEntity 'Организация'
     ORDER name(o)
     
     OBJECTS a=Account
-    PROPERTIES(a)  inactive, number, nameCurrency, nameBank, addressBank, MFOBank, note, NEW, DELETE GRID
+    PROPERTIES(a)  number, nameCurrency, nameBank, addressBank, MFOBank, note, rate, dateTo, NEW, DELETE GRID
     FILTERS legalEntity(a) == o
     PROPERTIES equals(o, a)
+    FILTERGROUP active FILTER 'Активные' active(a) 'ctrl F10' DEFAULT 
     
     OBJECTS d = Address
     PROPERTIES (d) types ON CHANGE changeAddressTypes(d), postcode, region, district, locality, street, houseNumber, officeNumber, NEW, DELETE 
     ORDER types(d) DESC 
     FILTERS legalEntity(d) == o
-    
-    FILTERGROUP inactive FILTER 'Активный' active(a) 'ctrl F10' DEFAULT 
     
     EDIT LegalEntity OBJECT o
 ;
