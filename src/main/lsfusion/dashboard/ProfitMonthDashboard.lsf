@@ -17,6 +17,7 @@ receiptOther 'Прочее' (Month m, INTEGER y) = GROUP SUM sumCurrency(Payment
 receiptOtherGroups 'Без группы' (Month m, INTEGER y) = GROUP SUM sumCurrency(Payment p) IF NOT group(contract(p)) AND NOT skipReceipt(legalEntity(p)) BY extractMonth(date(p)), extractYear(date(p));
 shipmentOther 'Прочее' (Month m, INTEGER y) = GROUP SUM sumCurrency(Expense p) IF NOT type(p) AND NOT skipExpense(type(p)) BY extractMonth(date(p)), extractYear(date(p));
 receipt 'Доход' (INTEGER yf, INTEGER yt, ContractType t) = GROUP SUM sumCurrency(Payment p) IF year(p) >= yf AND year(p) <= yt AND NOT skipReceipt(legalEntity(p)) BY type(contract(p));
+receipt 'Доход' (INTEGER yf, INTEGER yt, ContractGroup t) = GROUP SUM sumCurrency(Payment p) IF year(p) >= yf AND year(p) <= yt AND NOT skipReceipt(legalEntity(p)) BY group(contract(p));
 shipment 'Расход' (INTEGER yf, INTEGER yt, ExpenseType t) = GROUP SUM sumCurrency(Expense p) IF extractYear(date(p)) >= yf AND extractYear(date(p)) <= yt AND NOT skipExpense(type(p)) BY type(p);
 receipt 'Доход' (DATE df, DATE dt, ContractType t) = GROUP SUM sumCurrency(Payment p) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(legalEntity(p)) BY type(contract(p));
 shipment 'Расход' (DATE df, DATE dt, ExpenseType t) = GROUP SUM sumCurrency(Expense p) IF date(p) >= df AND date(p) <= dt AND NOT skipExpense(type(p)) BY type(p);
@@ -67,6 +68,18 @@ FORM profitMonthDashboard 'Прибыль по месяцам'
                             sumCurrency BACKGROUND backgroundShipment(), noteString
     FILTERS extractYear(date(e)) == y, extractMonth(date(e)) == m, NOT skipExpense(type(e))
     
+    OBJECTS ctt = ContractType
+    PROPERTIES READONLY name(ctt), receipt(yf, yt, ctt)
+    FILTERS receipt(yf, yt, ctt)
+    
+    OBJECTS cgt = ContractGroup
+    PROPERTIES READONLY name(cgt), receipt(yf, yt, cgt)
+    FILTERS receipt(yf, yt, cgt)
+    
+    OBJECTS ett = ExpenseType
+    PROPERTIES READONLY name(ett), shipment(yf, yt, ett)
+    FILTERS shipment(yf, yt, ett)
+        
     EVENTS ON INIT {
         SEEK profitMonthDashboard.years OBJECTS yf = extractYear(currentDate()), yt = extractYear(currentDate());
     }
@@ -87,6 +100,14 @@ DESIGN profitMonthDashboard {
             fill = 1;
             MOVE BOX (p);
             MOVE BOX (e);
+            NEW total {
+                caption = 'Итого';
+                type = TABBED;
+                fill = 1;
+                MOVE BOX (ctt) { caption = 'Доход по видам договоров'; }
+                MOVE BOX (cgt) { caption = 'Доход по группам договоров'; }
+                MOVE BOX (ett) { caption = 'Расход по видам оплат'; }
+            }
         }
     }
 }
