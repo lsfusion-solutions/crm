@@ -24,5 +24,8 @@ costSum 'Расход по клиенту' (Employee e, INTEGER y, Month m, Cust
 costSum 'Расход' (Customer c, DATE df, DATE dt) = GROUP SUM costSum(TimeEntry t) IF date(t) >= df AND date(t) <= dt BY customer(t);
 costSum 'Расход' (Customer c, Month m, INTEGER y, DATE df, DATE dt) = GROUP SUM costSum(TimeEntry t) IF date(t) >= df AND date(t) <= dt BY customer(t), extractMonth(date(t)), extractYear(date(t));
 costSum 'Расход' (Employee e, Customer c, DATE df, DATE dt) = GROUP SUM costSum(TimeEntry t) IF date(t) >= df AND date(t) <= dt BY  employee(t), customer(t);
+costSum 'Расход' (Project p, DATE df, DATE dt) = GROUP SUM costSum(TimeEntry t) IF date(t) >= df AND date(t) <= dt BY  project(t);
+costSum 'Расход' (Project p) = GROUP SUM costSum(TimeEntry t) BY project(t);
 costSum 'Расход' (Project p, Customer c, DATE df, DATE dt) = GROUP SUM costSum(TimeEntry t) IF date(t) >= df AND date(t) <= dt BY  project(t), customer(t);
 costSum 'Расход' (Project p, Employee e, Customer c, DATE df, DATE dt) = GROUP SUM costSum(TimeEntry t) IF date(t) >= df AND date(t) <= dt BY  project(t), employee(t), customer(t);
+costSum 'Расход' (Project p, Employee e, DATE df, DATE dt) = GROUP SUM costSum(TimeEntry t) IF date(t) >= df AND date(t) <= dt BY  project(t), employee(t);

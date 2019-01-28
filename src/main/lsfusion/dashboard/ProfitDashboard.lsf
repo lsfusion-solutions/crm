@@ -1,6 +1,6 @@
 MODULE ProfitDashboard;
 
-REQUIRE Dashboard, PaymentAct, TimeEntryExpense, CustomerTag;
+REQUIRE Dashboard, PaymentAct, TimeEntryExpense, CustomerTag, ContractProject;
 
 NAMESPACE Dashboard;
 
@@ -12,6 +12,8 @@ receiptCurrency 'Доход в валюте' (Customer c, DATE df, DATE dt) = ro
 receiptCurrency 'Доход в валюте' (Customer c, Month m, INTEGER y, DATE df, DATE dt) = round2(receipt(c, m, y, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
 receiptCurrency 'Доход в валюте' (Customer c, ContractType g, DATE df, DATE dt) = round2(receipt(c, g, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
 receiptCurrencyOther 'Доход в валюте (без типа)' (Customer c, DATE df, DATE dt) = round2(receiptOther(c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
+shipmentCurrency 'Расход в валюте' (Project p, DATE df, DATE dt) = round2(costSum(p, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
+shipmentCurrency 'Расход в валюте' (Project p) = round2(costSum(p) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
 shipmentCurrency 'Расход в валюте' (Customer c, DATE df, DATE dt) = round2(costSum(c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
 shipmentCurrency 'Расход в валюте' (Customer c, Month m, INTEGER y, DATE df, DATE dt) = round2(costSum(c, m, y, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
 diff 'Прибыль в валюте' (Customer c, DATE df, DATE dt) = receiptCurrency(c, df, dt) (-) shipmentCurrency(c, df, dt);
@@ -21,6 +23,23 @@ diffPercent 'Прибыль, %' (Customer c, Month m, INTEGER y, DATE df, DATE d
 shipmentCurrency 'Расход в валюте' (Employee e, Customer c, DATE df, DATE dt) = round2(costSum(e, c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
 shipmentCurrency 'Расход в валюте' (Project p, Customer c, DATE df, DATE dt) = round2(costSum(p, c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
 shipmentCurrency 'Расход в валюте' (Project p, Employee e, Customer c, DATE df, DATE dt) = round2(costSum(p, e, c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
+shipmentCurrency 'Расход в валюте' (Project p, Employee e, DATE df, DATE dt) = round2(costSum(p, e, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
+
+paid 'Оплачено' (Contract c, DATE df, DATE dt) = GROUP SUM sum(Payment p) IF date(p) >= df AND date(p) <= dt BY contract(p);
+paidCurrency 'Оплачено'  (Contract c, DATE df, DATE dt) = paid(c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate());
+
+shipmentCurrency 'Расход' = DATA LOCAL NUMERIC[16,5](Project, Contract);
+shipmentCurrencyProjects 'Расход в валюте (с проектами без клиента)' (Customer c, DATE df, DATE dt) = shipmentCurrency(c, df, dt) (+) [GROUP SUM shipmentCurrency(Project p, Contract t) BY customer(t)](c);
+diffProjects 'Прибыль в валюте (с проектами без клиента)' (Customer c, DATE df, DATE dt) =  receiptCurrency(c, df, dt) (-) shipmentCurrencyProjects(c, df, dt);
+diffPercentProjects 'Прибыль, %' (Customer c, DATE df, DATE dt) = round2(diffProjects(c, df, dt) / receiptCurrency(c, df, dt) * 100);
+
+fillProjects 'Заполнить' (DATE df, DATE dt) {
+
+    shipmentCurrency (Project p, Contract c) <- (PARTITION UNGROUP shipmentCurrency
+                                                            PROPORTION STRICT ROUND (2) paid(c, df, dt) IF (contractGroup(p) == group(c) OR (p IS Project AND c IS Contract AND NOT contractGroup(p)))
+                                                            ORDER c
+                                                            BY p, df, dt) WHERE p IS Project AND NOT customer(p);
+}
 
 backgroundReceipt() = RGB (222, 255, 222);
 backgroundGroup() = RGB (222, 222, 255);
@@ -28,14 +47,16 @@ backgroundShipment() = RGB (255, 222, 222);
 
 FORM profit 'Прибыль по клиентам'
     OBJECTS period = (df = DATE, dt = DATE) PANEL
-    PROPERTIES 'Дата с' = VALUE (df), 'Дата по' = VALUE (dt)
+    PROPERTIES 'Дата с' = VALUE (df), 'Дата по' = VALUE (dt), fillProjects(df, dt)
     
     OBJECTS g = ContractType
     OBJECTS c = Customer
     PROPERTIES (c) READONLY name, tags
-    PROPERTIES (c, df, dt) READONLY receiptCurrency BACKGROUND backgroundReceipt(), shipmentCurrency BACKGROUND backgroundShipment(), diff, diffPercent
+    PROPERTIES (c, df, dt) READONLY receiptCurrency BACKGROUND backgroundReceipt(), shipmentCurrency BACKGROUND backgroundShipment(), diff, diffPercent,
+                                    shipmentCurrencyProjects, diffProjects, diffPercentProjects
     PROPERTIES READONLY BACKGROUND backgroundGroup() receiptCurrency(c, g, df, dt) COLUMNS (g) HEADER name(g), 'Прочее' = receiptCurrencyOther(c, df, dt)
     FILTERS costSum(c, df, dt) OR receipt(c, df, dt)
+    FILTERGROUP active FILTER 'Активные' NOT inactive(c) DEFAULT 
     
     OBJECTS p = Payment
     PROPERTIES (p) READONLY id, nameLegalEntity, nameCustomer, numberContract, nameTypeContract, numberAct, number, date, 
@@ -67,42 +88,82 @@ FORM profit 'Прибыль по клиентам'
     OBJECTS tt = TimeEntry
     PROPERTIES (tt) READONLY id, hours, commentsString, date, nameActivity, numberIssue, nameIssue
     FILTERS employee(tt) == ee, date(tt) >= df AND date(tt) <= dt, customer(tt) == c, project(tt) == pp
-    FILTERGROUP active FILTER 'Активные' NOT inactive(c) DEFAULT 
     
     OBJECTS my = (m = Month, y = INTEGER)
     PROPERTIES READONLY number(m), 'Месяц' = staticCaption(m), year 'Год' = VALUE (y)
     PROPERTIES (c, m, y, df, dt) READONLY receiptCurrency, shipmentCurrency, diff, diffPercent
     FILTERS costSum(c, m, y, df, dt) OR receipt(c, m, y, df, dt)
     ORDER year, number(m)
+    
+    OBJECTS pc = (pro = Project, con = Contract)
+    PROPERTIES READONLY 'Проект' = name(pro), 'Договор' = number(con), shipmentCurrency(pro, con)
+    FILTERS shipmentCurrency(pro, con)
+    
+    OBJECTS pr = Project
+    PROPERTIES READONLY name(pr), shipmentCurrency(pr, df, dt)
+    FILTERS NOT customer(pr), shipmentCurrency(pr, df, dt)
+    
+    OBJECTS epr = Employee
+    PROPERTIES READONLY name(epr)
+    PROPERTIES (pr, epr, df, dt) READONLY hours, costSum, shipmentCurrency
+    FILTERS shipmentCurrency(pr, epr, df, dt)
+    
+    OBJECTS tpr = TimeEntry
+    PROPERTIES (tpr) READONLY id, hours, commentsString, date, nameActivity, numberIssue, nameIssue
+    FILTERS employee(tpr) == epr, date(tpr) >= df AND date(tpr) <= dt, project(tpr) == pr
 ;
 
 DESIGN profit {
     OBJECTS {
-        NEW tab AFTER BOX (c){
+        NEW mainTab AFTER BOX (period) {
             type = TABBED;
             fill = 1;
-            MOVE BOX (p) { caption = 'Платежи'; }
-            NEW hours {
-                type = TABBED;
+            NEW customers {
+                caption = 'Клиенты';
                 fill = 1;
-                caption = 'Трудозатраты';
-                NEW employee {
-                    caption = 'По сотрудникам';
-                    type = CONTAINERH;
-                    MOVE BOX (e) { fill = 1; }
-                    MOVE BOX (t) { fill = 5; }
-                }
-                NEW project {
-                    caption = 'По проектам';
-                    type = CONTAINERH;
-                    MOVE BOX (pp) { fill = 1; }
-                    MOVE BOX (ee) { fill = 1; }
-                    MOVE BOX (tt) { fill = 4; }
+                MOVE BOX (c);
+                NEW tab {
+                    type = TABBED;
+                    fill = 1;
+                    MOVE BOX (p) { caption = 'Платежи'; }
+                    NEW hours {
+                        type = TABBED;
+                        fill = 1;
+                        caption = 'Трудозатраты';
+                        NEW employee {
+                            caption = 'По сотрудникам';
+                            type = CONTAINERH;
+                            MOVE BOX (e) { fill = 1; }
+                            MOVE BOX (t) { fill = 5; }
+                        }
+                        NEW project {
+                            caption = 'По проектам';
+                            type = CONTAINERH;
+                            MOVE BOX (pp) { fill = 1; }
+                            MOVE BOX (ee) { fill = 1; }
+                            MOVE BOX (tt) { fill = 4; }
+                        }
+                    }
+                    NEW month {
+                        caption = 'По месяцам';
+                        MOVE BOX (my);
+                    }
+                    NEW projectContract {
+                        caption = 'По проектам';
+                        MOVE BOX (pc);
+                    }
                 }
             }
-            NEW month {
-                caption = 'По месяцам';
-                MOVE BOX (my);
+            NEW projects {
+                caption = 'Проекты без клиента';
+                fill = 1;
+                MOVE BOX (pr);
+                NEW projectEntry {
+                    type = CONTAINERH;
+                    fill = 1;
+                    MOVE BOX (epr);
+                    MOVE BOX (tpr);
+                }
             }
         }
     }

@@ -1,0 +1,9 @@
+MODULE ContractProject;
+
+REQUIRE Contract, Project;
+
+contractGroup = DATA ContractGroup(Project);
+nameContractGroup 'Группа договора' (Project p) = name(contractGroup(p));
+
+EXTEND FORM project PROPERTIES nameContractGroup(o);
+EXTEND FORM projects PROPERTIES READONLY nameContractGroup(o);
