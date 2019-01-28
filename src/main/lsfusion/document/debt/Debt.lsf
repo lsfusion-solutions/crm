@@ -28,10 +28,13 @@ note 'Примечание' = DATA VARISTRING[250](Debt) CHARWIDTH 20;
 currency (Debt d) = currency(contract(d));
 shortNameCurrency 'Валюта (сокр.)' (Debt p) = shortName(currency(p));
 
+dataDateCurrency 'Дата курса' = DATA DATE (Debt);
+dateCurrency 'Дата курса' (Debt d) = OVERRIDE dataDateCurrency(d), date(d);
+
 sumCurrency 'Сумма в валюте' (Debt p) = DATA NUMERIC[16,5](Debt);
 
 WHEN LOCAL (SETCHANGED (sumCurrency(Debt d)) OR CHANGED (currency(d))) AND NOT CHANGED (sum(d)) DO {
-    sum(d) <- round2(sumCurrency(d) / OVERRIDE (rateOn(defaultTypeExchange(), currency(d), date(d))), 1);
+    sum(d) <- round2(sumCurrency(d) / OVERRIDE (rateOn(defaultTypeExchange(), currency(d), dateCurrency(d))), 1);
 }
 
 act = DATA Act (Debt);
@@ -40,20 +43,20 @@ dateAct 'Дата акта' (Debt d) = date(act(d));
 
 FORM debt 'Задолженность'
     OBJECTS o = Debt PANEL
-    PROPERTIES(o) numberContract, date, shortNameCurrency, sumCurrency, sum, note
+    PROPERTIES(o) numberContract, date, shortNameCurrency, sumCurrency, sum, dateCurrency, note
     
     EDIT Debt OBJECT o
 ;
 
 FORM debts 'Задолженность'
     OBJECTS o = Debt
-    PROPERTIES(o) READONLY numberContract, nameContract, date, shortNameCurrency, sumCurrency, sum, note
+    PROPERTIES(o) READONLY numberContract, nameContract, date, shortNameCurrency, sumCurrency, sum, dateCurrency, note
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
 ;
 
 FORM dialogDebts 'Задолженность'
     OBJECTS o = Debt
-    PROPERTIES(o) READONLY numberContract, nameContract, date, shortNameCurrency, sumCurrency, sum, note
+    PROPERTIES(o) READONLY numberContract, nameContract, date, shortNameCurrency, sumCurrency, sum, dateCurrency, note
     
     LIST Debt OBJECT o
 ;
@@ -139,7 +142,7 @@ EXTEND FORM dialogContracts PROPERTIES sumMonth(o) BEFORE nameType(o);
 EXTEND FORM contract 
     PROPERTIES (o) sumMonth, paymentDay, createDebts SHOWIF (sumMonth(o) AND paymentDay(o)), createFullDebt
     OBJECTS d = Debt
-    PROPERTIES (d) date, sumCurrency SHOWIF inCurrency(o), sum, note, NEW, DELETE
+    PROPERTIES (d) date, sumCurrency SHOWIF inCurrency(o), sum, dateCurrency SHOWIF inCurrency(o), note, NEW, DELETE
     ORDER date(d)
     FILTERS contract(d) == o
 ;
@@ -190,7 +193,7 @@ FORM debtsPlan 'План платежей'
     FILTERS sumDebt(y, t)
     
     OBJECTS d = Debt
-    PROPERTIES (d) READONLY date, numberContract, nameContract, nameContractType, nameCustomer, nameLegalEntity, shortNameCurrency, sumCurrency, sum, note
+    PROPERTIES (d) READONLY date, numberContract, nameContract, nameContractType, nameCustomer, nameLegalEntity, shortNameCurrency, sumCurrency, sum, dateCurrency, note
     ORDER date(d)
     FILTERS extractMonth(date(d)) == m, extractYear(date(d)) == y
     
@@ -224,7 +227,7 @@ NAVIGATOR {
 recalcCurrencyDebts 'Пересчитать валютные задолженности' () {
     NEWSESSION {
         FOR inCurrency(contract(Debt d)) AND date(d) >= currentDate() DO {
-            sum(d) <- round2(sumCurrency(d) / OVERRIDE (rateOn(defaultTypeExchange(), currency(d), date(d))), 1);
+            sum(d) <- round2(sumCurrency(d) / OVERRIDE (rateOn(defaultTypeExchange(), currency(d), dateCurrency(d))), 1);
         }
         APPLY;
     }
