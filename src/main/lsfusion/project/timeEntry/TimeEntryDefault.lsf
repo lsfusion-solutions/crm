@@ -113,3 +113,9 @@ NAVIGATOR {
         NEW timeEntryDefault;
     }
 }
+
+currentTimeEntryDefault (Employee e) = GROUP LAST TimeEntryDefault t ORDER date(t),t BY employee(t);
+
+WHEN LOCAL CHANGED (employee(TimeEntry t)) AND NOT CHANGED (project(t)) AND (GROUP SUM 1 IF timePercent(currentTimeEntryDefault(employee(t)), Project p)) == 1 DO {
+    project(t) <- GROUP MAX Project p IF timePercent(currentTimeEntryDefault(employee(t)), p);
+}
