@@ -93,6 +93,8 @@ addIssue 'Добавить' (Document d) {
     }
 } IMAGE 'add.png' CHANGEKEY 'INSERT' HIDE;
 
+showCustomerDashboard 'Работа с клиентом' (Document d) { show(customer(d)); }
+
 FORM docDashboard 'Обработка документов'
     
     OBJECTS dates = (df = DATE, dt = DATE) PANEL
@@ -100,7 +102,7 @@ FORM docDashboard 'Обработка документов'
     PROPERTIES () nameFilterDocClass, nameFilterLegalEntity
     
     OBJECTS d = Document
-    PROPERTIES sendToContacts(d) TOOLBAR 
+    PROPERTIES (d) TOOLBAR showCustomerDashboard, sendToContacts SHOWIF customer(d)
     PROPERTIES (d) in, sign SHOWIF notSign(d), send SHOWIF notSend(d), receive SHOWIF notReceive(d), open SHOWIF TRUE IF file(d), edit, close SHOWIF NOT dateClosing(d)
     PROPERTIES (d) READONLY nameDocType, id, number, date, name, nameCustomer, nameType, numberContract, nameLegalEntity, 
                             nameCompany, sum, paid, dateLastPaid, balance

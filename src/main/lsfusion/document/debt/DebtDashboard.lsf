@@ -156,6 +156,8 @@ addEvent 'Добавить' (Debt d) {
 sumDebt 'Сумма неоплаченной задолженности' (Customer c, DATE d) = GROUP SUM sum(Debt dd) (-) paid(dd) IF date(dd) <= d BY customer(dd) CHARWIDTH 5;
 dateFirstDebt 'Дата первой задолженности' (Customer c, DATE d) = GROUP LAST date(Debt dd) ORDER DESC date(dd), dd IF date(dd) <= d BY customer(dd);
 
+showCustomerDashboard 'Работа с клиентом' (Debt d) { show(customer(d)); }
+
 filterDateFrom 'Дата с' = DATA LOCAL DATE ();
 filterDateTo 'Дата по' = DATA LOCAL DATE ();
 
@@ -166,7 +168,7 @@ FORM debtDashboard 'Контроль задолженности'
     PROPERTIES (d) TOOLBAR SHOWIF act(d) editAct, deleteAct 
     PROPERTIES (d) READONLY date, numberContract, nameContract, nameContractType, nameCustomer, nameLegalEntity, nameCompany, numberAgreement, numberAct, dateAct, 
                             shortNameCurrency, sumCurrency, sum, paid, note
-    PROPERTIES (d) TOOLBAR editContract
+    PROPERTIES (d) TOOLBAR editContract, showCustomerDashboard SHOWIF customer(d)
     ORDER date(d)
     FILTERS  contractType(d) == filterDebtContractType() OR NOT filterDebtContractType(),
              (date(d) >= filterDateFrom() OR NOT filterDateFrom()) AND (date(d) <= filterDateTo() OR NOT filterDateTo())

@@ -41,12 +41,15 @@ CONSTRAINT filterCustomer() AND NOT sumPayment(filterCustomer()) CHECKED BY filt
 backgroundNumberAccountFrom (Payment p) = IF isCompany(legalEntity(accountFrom(p))) THEN RGB (255, 255, 200);
 backgroundNumberAccountTo (Expense p) = IF isCompany(legalEntity(accountTo(p))) THEN RGB (255, 255, 200);
 
+showCustomerDashboard 'Работа с клиентом' (Payment d) { show(customer(d)); }
+showCustomerDashboard 'Работа с клиентом' (Expense d) { show(customer(d)); }
+
 FORM paymentProcessDasboard 'Обработка платежей'
     OBJECTS dates = (df = DATE, dt = DATE) PANEL 
     PROPERTIES dfrom 'Дата с' = VALUE (df), dto 'Дата по' = VALUE (dt), post(df, dt), nameFilterCustomer()
     
     OBJECTS p = Payment
-    PROPERTIES DRAW p TOOLBAR addPayment(dt) 
+    PROPERTIES DRAW p TOOLBAR showCustomerDashboard(p) SHOWIF customer(p), addPayment(dt) 
     PROPERTIES (p) isPosted, id, nameLegalEntity, nameCustomer, nameCompany, numberContract, nameContract, nameTypeContract READONLY, 
                    numberAgreement BACKGROUND backgroundAgreement(p), nameAgreement BACKGROUND backgroundAgreement(p), numberAct, number, date, year READONLY, 
                    monthNumber READONLY, sum, shortNameCurrency, sumCurrency, numberAccount, numberAccountFrom BACKGROUND backgroundNumberAccountFrom(p), note, DELETE 
@@ -56,7 +59,7 @@ FORM paymentProcessDasboard 'Обработка платежей'
     FILTERGROUP postedP FILTER 'Не проведен' NOT isPosted(p) DEFAULT 
                                        
     OBJECTS e = Expense
-    PROPERTIES DRAW e TOOLBAR addExpense(dt)
+    PROPERTIES DRAW e TOOLBAR showCustomerDashboard(e) SHOWIF customer(e), addExpense(dt)
     PROPERTIES (e) isPosted, nameCompany, nameLegalEntity, nameCustomer, date, datePayment, nameType, sum, shortNameCurrency, sumCurrency, 
                    numberAccount, numberAccountTo BACKGROUND backgroundNumberAccountTo(e), noteString, DELETE 
     ORDER date(e)

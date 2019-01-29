@@ -314,3 +314,7 @@ NAVIGATOR {
         NEW documentFileTypes;
     }
 }
+
+show(Customer c) + {
+    NEWSESSION SHOW dashboardCustomer OBJECTS c = c DOCKED NOWAIT;
+}

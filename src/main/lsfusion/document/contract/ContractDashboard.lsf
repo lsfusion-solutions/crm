@@ -9,7 +9,9 @@ close 'Закрыть' (Contract c) {
         dateClosing(c) <- currentDate();
         APPLY;
     }
-} TOOLBAR;
+} TOOLBAR CONFIRM;
+
+showCustomerDashboard 'Работа с клиентом' (Contract c) { show(customer(c)); }
 
 filterContractType = DATA LOCAL ContractType();
 nameFilterContractType 'Тип договора' () = name(filterContractType());
@@ -31,8 +33,8 @@ FORM contractDashboard 'Работа с договорами'
                            sumMonth, 
                            nameType, nameGroup, nameSendingWay, 
                            dateSigningCompany, dateSending, dateSigningCustomer, dateReceiving, dateTo, dateClosing, note, textString, text PANEL, terms PANEL
+    PROPERTIES(o) loadFileApply, openFile SHOWIF TRUE IF file(o), close SHOWIF NOT dateClosing(o), showCustomerDashboard TOOLBAR SHOWIF customer(o)
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
-    PROPERTIES(o) loadFileApply, openFile SHOWIF TRUE IF file(o), close SHOWIF NOT dateClosing(o)
     ORDER date(o)
     FILTERS type(o) == filterContractType() OR NOT filterContractType(), customer(o) == filterCustomer() OR NOT filterCustomer()
     

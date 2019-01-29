@@ -130,3 +130,5 @@ NAVIGATOR {
         }
     }
 }
+
+show 'Работа с клиентом' ABSTRACT LIST (Customer);
