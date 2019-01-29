@@ -5,14 +5,6 @@ REQUIRE TimeEntry, EmployeeAbsence;
 absense = DATA Absence(TimeEntry);
 descriptionAbsense 'Отсутствие' (TimeEntry t) = CONCAT '-', toDateDDMMYY(dateFrom(absense(t))), toDateDDMMYY(dateTo(absense(t)));
 
-EXTEND FORM timeEntry PROPERTIES descriptionAbsense(o);
-
-DESIGN timeEntry {
-    data {
-        MOVE PROPERTY (descriptionAbsense(o));
-    }
-}
-
 workedHours 'Отработано часов' (Absence a) = GROUP SUM hours(TimeEntry t) BY absense(t);
 
 CONSTRAINT workedHours(Absence a) > hours(a) MESSAGE 'Отработано часов не может быть больше часов остутствия';
@@ -30,5 +22,13 @@ FORM dialogAbsense 'Отсутствия'
 changeAbsense 'Редактировать отсутствие' (TimeEntry t) {
     DIALOG dialogAbsense OBJECTS t = t, a INPUT NULL DO {
         absense(t) <- a;
+    }
+}
+
+EXTEND FORM timeEntry PROPERTIES descriptionAbsense(o) ON CHANGE changeAbsense(o);
+
+DESIGN timeEntry {
+    data {
+        MOVE PROPERTY (descriptionAbsense(o));
     }
 }
