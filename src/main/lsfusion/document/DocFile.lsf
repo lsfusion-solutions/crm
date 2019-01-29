@@ -19,7 +19,7 @@ loginUser 'Логин пользователя' (DocumentFile f) = login(user(f)
 note 'Примечание' = DATA VARISTRING[1000](DocumentFile) CHARWIDTH 20;
 
 safeOpen (FILE f, VARISTRING[255] fileName) {
-    open(f, replace(fileName, '"', '\''));
+    open(f, replace(replace(fileName, '"', '\''), ',', '.'));
 }
 
 open 'Открыть' (DocumentFile c) {
