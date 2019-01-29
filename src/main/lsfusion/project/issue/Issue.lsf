@@ -105,7 +105,7 @@ status = DATA IssueStatus(Issue);
 nameStatus 'Статус' (Issue i) = name(status(i));
 
 count 'Кол-во' (Project p, IssueStatus s) = GROUP SUM 1 BY project(Issue i), status(i);
-count 'Кол-во' (Customer c, IssueStatus s) = GROUP SUM count(Project p, s) BY customer(p);
+count 'Кол-во' (Customer c, IssueStatus s) = GROUP SUM 1 BY customer(Issue i), status(i);
 
 FORM issue 'Задача'
     OBJECTS o = Issue PANEL

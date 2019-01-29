@@ -67,6 +67,7 @@ numberIssue 'Номер задачи' (TimeEntry t) = number(issue(t));
 
 disableEditing = ABSTRACT BOOLEAN (TimeEntry);
 
+hours 'Трудозатраты' (Issue i) = GROUP SUM hours(TimeEntry t) BY issue(t);
 hours 'Трудозатраты' (Employee e, DATE d) = GROUP SUM hours(TimeEntry t) BY employee(t), date(t) CHARWIDTH 2;
 hours 'Трудозатраты' (Employee e, INTEGER y, Month m) = GROUP SUM hours(TimeEntry t) BY employee(t), year(t), month(t);
 hours 'Трудозатраты' (Employee e, INTEGER y) = GROUP SUM hours(TimeEntry t) BY employee(t), year(t);
