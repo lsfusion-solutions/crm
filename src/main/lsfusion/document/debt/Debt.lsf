@@ -64,6 +64,7 @@ FORM dialogDebts 'Задолженность'
 
 sumMonth 'Сумма ежемесячного платежа' = DATA NUMERIC[16,5](Contract) CHARWIDTH 10;
 paymentDay 'День платежа' = DATA INTEGER (Contract) CHARWIDTH 2;
+currencyDay 'День курса' = DATA INTEGER (Contract) CHARWIDTH 2;
 
 countMonthsDebt 'Кол-во месяцев для формирования задолженности' = DATA INTEGER () CHARWIDTH 3;
 
@@ -82,6 +83,7 @@ createDebts 'Сгенерировать задолженности' (Contract c)
         LOCAL month = INTEGER ();
         LOCAL year = INTEGER ();
         LOCAL date = DATE ();
+        LOCAL dateCur = DATE ();
         
         DELETE Debt d WHERE contract(d) == c AND date(d) > currentDate();
         
@@ -92,9 +94,11 @@ createDebts 'Сгенерировать задолженности' (Contract c)
                         
             TRY {
                 date() <- toDateFormat(text(paymentDay(c)) + text(month()) + year(), 'DDMMYYYY');
+                dateCur() <- toDateFormat(text(currencyDay(c)) + text(month()) + year(), 'DDMMYYYY');
             }
             CATCH {
                 date() <- lastDayOfMonth(toDateFormat('01' + text(month()) + year(), 'DDMMYYYY'));
+                dateCur() <- lastDayOfMonth(toDateFormat('01' + text(month()) + year(), 'DDMMYYYY'));
             }
                 
             IF NOT debt(date(), c) THEN NEW d = Debt {
@@ -106,6 +110,7 @@ createDebts 'Сгенерировать задолженности' (Contract c)
             
                 IF inCurrency(c) THEN {
                     sumCurrency(d) <- sumMonth(c);
+                    dataDateCurrency(d) <- dateCur();
                 }
                 ELSE {
                     sum(d) <- sumMonth(c);
@@ -140,7 +145,7 @@ createFullDebt 'Сгенерировать задолженность' (Contract
 EXTEND FORM dialogContracts PROPERTIES sumMonth(o) BEFORE nameType(o);
 
 EXTEND FORM contract 
-    PROPERTIES (o) sumMonth, paymentDay, createDebts SHOWIF (sumMonth(o) AND paymentDay(o)), createFullDebt
+    PROPERTIES (o) sumMonth, paymentDay, currencyDay SHOWIF inCurrency(o), createDebts SHOWIF (sumMonth(o) AND paymentDay(o)), createFullDebt
     OBJECTS d = Debt
     PROPERTIES (d) date, sumCurrency SHOWIF inCurrency(o), sum, dateCurrency SHOWIF inCurrency(o), note, NEW, DELETE
     ORDER date(d)
@@ -167,6 +172,7 @@ DESIGN contract {
                     type = CONTAINERH;
                     MOVE PROPERTY (sumMonth(o));
                     MOVE PROPERTY (paymentDay(o));
+                    MOVE PROPERTY (currencyDay(o));
                     MOVE PROPERTY (createDebts(o));
                 }
             }
