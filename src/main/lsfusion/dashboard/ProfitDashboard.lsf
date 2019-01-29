@@ -57,6 +57,7 @@ FORM profit 'Прибыль по клиентам'
     PROPERTIES READONLY BACKGROUND backgroundGroup() receiptCurrency(c, g, df, dt) COLUMNS (g) HEADER name(g), 'Прочее' = receiptCurrencyOther(c, df, dt)
     FILTERS costSum(c, df, dt) OR receipt(c, df, dt)
     FILTERGROUP active FILTER 'Активные' NOT inactive(c) DEFAULT 
+    ORDER name(c)
     
     OBJECTS p = Payment
     PROPERTIES (p) READONLY id, nameLegalEntity, nameCustomer, numberContract, nameTypeContract, numberAct, number, date, 
@@ -96,8 +97,9 @@ FORM profit 'Прибыль по клиентам'
     ORDER year, number(m)
     
     OBJECTS pc = (pro = Project, con = Contract)
-    PROPERTIES READONLY 'Проект' = name(pro), 'Договор' = number(con), shipmentCurrency(pro, con)
-    FILTERS shipmentCurrency(pro, con)
+    PROPERTIES READONLY 'Проект' = name(pro), 'Договор' = description(con), 'Номер договора' = number(con), 'Наименование договора' = name(con), shipmentCurrency(pro, con)
+    FILTERS shipmentCurrency(pro, con), customer(con) == c
+    ORDER name(pro)
     
     OBJECTS pr = Project
     PROPERTIES READONLY name(pr), shipmentCurrency(pr, df, dt)
@@ -107,10 +109,18 @@ FORM profit 'Прибыль по клиентам'
     PROPERTIES READONLY name(epr)
     PROPERTIES (pr, epr, df, dt) READONLY hours, costSum, shipmentCurrency
     FILTERS shipmentCurrency(pr, epr, df, dt)
+    ORDER name(epr)
     
     OBJECTS tpr = TimeEntry
     PROPERTIES (tpr) READONLY id, hours, commentsString, date, nameActivity, numberIssue, nameIssue
     FILTERS employee(tpr) == epr, date(tpr) >= df AND date(tpr) <= dt, project(tpr) == pr
+    ORDER date(tpr)
+    
+    OBJECTS ct = Contract
+    PROPERTIES (ct) READONLY description, number, name, nameCustomer
+    PROPERTIES READONLY shipmentCurrency(pr, ct)
+    FILTERS shipmentCurrency(pr, ct) > 0.0
+    ORDER shipmentCurrency(pr, ct) DESC 
 ;
 
 DESIGN profit {
@@ -158,11 +168,17 @@ DESIGN profit {
                 caption = 'Проекты без клиента';
                 fill = 1;
                 MOVE BOX (pr);
-                NEW projectEntry {
-                    type = CONTAINERH;
+                NEW projTabs {
+                    type = TABBED;
                     fill = 1;
-                    MOVE BOX (epr);
-                    MOVE BOX (tpr);
+                    NEW projectEntry {
+                        type = CONTAINERH;
+                        fill = 1;
+                        caption = 'Трудозатраты';
+                        MOVE BOX (epr);
+                        MOVE BOX (tpr);
+                    }
+                    MOVE BOX (ct) { caption = 'По договорам'; }
                 }
             }
         }
