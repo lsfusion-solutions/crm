@@ -93,26 +93,31 @@ DESIGN contractDashboard {
             NEW tab AFTER BOX (o) {
                 type = TABBED;
                 fill = 1;
-                NEW text {
-                    caption = 'Текст';
-                    type = CONTAINERV;
-                    MOVE PROPERTY (text(o)) {
-                        fill = 1;
-                        caption = ''; 
-                    }
-                    NEW file {
-                        type = CONTAINERH;
-                        caption = 'Файл документа';
-                        MOVE PROPERTY (loadFileApply(o));
-                        MOVE PROPERTY (openFile(o));
-                    }
-                }
-                NEW terms {
-                    caption = 'Условия';
+                NEW content {
+                    caption = 'Содержание';
                     fill = 1;
-                    MOVE PROPERTY (terms(o)) { 
-                        caption = '';
+                    type = SPLITH;
+                    NEW text {
+                        caption = 'Текст';
                         fill = 1;
+                        MOVE PROPERTY (text(o)) {
+                            fill = 1;
+                            caption = ''; 
+                        }
+                        NEW file {
+                            type = CONTAINERH;
+                            caption = 'Файл документа';
+                            MOVE PROPERTY (loadFileApply(o));
+                            MOVE PROPERTY (openFile(o));
+                        }
+                    }
+                    NEW terms {
+                        caption = 'Условия';
+                        fill = 1;
+                        MOVE PROPERTY (terms(o)) { 
+                            caption = '';
+                            fill = 1;
+                        }
                     }
                 }
                 MOVE BOX (ag);
