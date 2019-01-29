@@ -3,7 +3,7 @@ MODULE TimeEntryAbsense;
 REQUIRE TimeEntry, EmployeeAbsence;
 
 absense = DATA Absence(TimeEntry);
-descriptionAbsense 'Остутствие' (TimeEntry t) = CONCAT '-', toDateDDMMYY(dateFrom(absense(t))), toDateDDMMYY(dateTo(absense(t)));
+descriptionAbsense 'Отсутствие' (TimeEntry t) = CONCAT '-', toDateDDMMYY(dateFrom(absense(t))), toDateDDMMYY(dateTo(absense(t)));
 
 EXTEND FORM timeEntry PROPERTIES descriptionAbsense(o);
 
