@@ -7,6 +7,7 @@ NAMESPACE Contact;
 CLASS Employee 'Сотрудник' : Contact.Contact, CustomUser;
 TABLE employee(Employee);
 
+name 'Имя' (Employee e) = Authentication.name(e) CHARWIDTH 15;
 number 'Номер' = DATA VARSTRING[15] (Employee);
 employeeNumber = GROUP MAX Employee e BY number(e);
 

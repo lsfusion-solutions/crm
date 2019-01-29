@@ -1,0 +1,28 @@
+MODULE CustomerRole;
+
+REQUIRE Customer, Role, Employee;
+
+in 'Вкл.' = DATA BOOLEAN (Customer, Employee, Role);
+
+CONSTRAINT in(Customer c, Employee e, Role r) AND NOT customer(e) == c MESSAGE 'Сотрудник не относится к клиенту';
+
+WHEN LOCAL SET (in(Customer c, Employee e, Role r)) AND NOT (customer(e) == c) DO {
+    customer(e) <- c;
+}
+
+roles 'Роли' (Customer c, Employee e) = GROUP CONCAT name(Role r) IF in(c, e, r), ', ' ORDER name(r) CHARWIDTH 20;
+
+FORM dialogCustomerRoles 'Роли'
+    OBJECTS c = Customer PANEL 
+    OBJECTS e = Employee PANEL 
+    OBJECTS r = Role
+    PROPERTIES in(c, e, r), name(r) READONLY 
+    FILTERGROUP in FILTER 'Отмеченные' in(c, e, r)
+;
+
+EXTEND FORM customer
+    OBJECTS e = Employee
+    PROPERTIES name(e) READONLY, roles(o, e) ON CHANGE { SHOW dialogCustomerRoles OBJECTS c = o, e = e; }
+    FILTERS customer(e) == o
+    ORDER name(e)
+;

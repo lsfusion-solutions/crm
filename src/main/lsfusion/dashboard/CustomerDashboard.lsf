@@ -1,6 +1,7 @@
 MODULE CustomerDashboard;
 
-REQUIRE Project, PaymentAct, Event, Issue, TimeEntry, Dashboard, LegalEntity, DocFile, TimeEntryCustomer, ProjectExternal, DebtAgreement, CustomerAttachment, AgreementIssue, CustomerTag;
+REQUIRE Project, PaymentAct, Event, Issue, TimeEntry, Dashboard, LegalEntity, DocFile, TimeEntryCustomer, ProjectExternal, 
+        DebtAgreement, CustomerAttachment, AgreementIssue, CustomerTag, CustomerRole;
 
 NAMESPACE Dashboard;
 
@@ -144,6 +145,11 @@ FORM dashboardCustomer 'Работа с клиентами'
     OBJECTS d = Debt
     PROPERTIES (d) READONLY date, numberContract, nameContractType, nameLegalEntity, shortNameCurrency, sumCurrency, sum, paid, note, numberAgreement
     FILTERS customer(d) = c
+    
+    OBJECTS e = Employee
+    PROPERTIES READONLY name(e), roles(c, e)
+    FILTERS customer(e) == c
+    ORDER name(e)
 ;
 
 DESIGN dashboardCustomer {
@@ -232,6 +238,7 @@ DESIGN dashboardCustomer {
                 fill = 1;
                 MOVE PROPERTY (info(c)) { caption = ''; fill = 1; }
             }
+            MOVE BOX (e) { caption = 'Сотрудники'; }
         }
     }
 }
@@ -300,6 +307,7 @@ DESIGN customer {
             MOVE BOX (a) { caption = 'Адреса'; }
             MOVE BOX (c) { caption = 'Контакты'; }
             MOVE BOX (t) { caption = 'Тэги'; }
+            MOVE BOX (e) { caption = 'Сотрудники'; }
             NEW info {
                 caption = 'Информация';
                 fill = 1;

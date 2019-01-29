@@ -1,0 +1,36 @@
+MODULE Role;
+
+REQUIRE MasterData;
+
+NAMESPACE Role;
+
+CLASS Role 'Роль';
+TABLE role(Role);
+
+name 'Наименование' = DATA VARISTRING[100](Role);
+
+FORM role 'Роль'
+    OBJECTS r = Role PANEL 
+    PROPERTIES (r) name
+    
+    EDIT Role OBJECT r
+;
+FORM roles 'Роли'
+    OBJECTS r = Role 
+    PROPERTIES (r) READONLY name
+    PROPERTIES (r) NEWSESSION NEW, EDIT, DELETE 
+    ORDER name(r)
+;
+FORM dialogRoles 'Роли'
+    OBJECTS r = Role 
+    PROPERTIES (r) READONLY name
+    ORDER name(r)
+    
+    LIST Role OBJECT r
+;
+
+NAVIGATOR {
+    masterData {
+        NEW roles;
+    }
+}
