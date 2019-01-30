@@ -20,6 +20,9 @@ backgroundTotalHours (Employee e, DATE d) = IF absenceHours(e, d) THEN RGB (255,
 workedHours 'Трудозатраты' (Employee e, DATE d) = GROUP SUM hours(TimeEntry t) IF absense(t) BY employee(t), date(t) CHARWIDTH 2;
 totalHours 'Всего часов у сотрудника' (Employee e, DATE d) = hours(e, d) (+) absenceHours(e, d) (-) workedHours(e, d) CHARWIDTH 2;
 
+hoursEmptyProjects 'Часов за год (по проектам без клиента)' (Employee e, INTEGER y) = GROUP SUM hours(TimeEntry t) IF NOT customer(project(t)) BY employee(t), year(t);
+percentEmptyProjects 'Процент отмеченного времени по проектам без клиента' (Employee e, INTEGER y) = round0(hoursEmptyProjects(e, y) / totalHours(e, y) * 100);
+
 FORM timeEntryDashboard 'Контроль отмеченного времени'
     
     OBJECTS m = Month PANEL, y = INTEGER PANEL
@@ -62,7 +65,7 @@ FORM timeEntryDashboard 'Контроль отмеченного времени'
     
     OBJECTS r = AbsenceReason
     OBJECTS ee = Employee
-    PROPERTIES READONLY name(ee), totalHours(ee, yy), absenceDays(ee, yy), absenceDays(ee, r, yy) COLUMNS (r) HEADER name(r)
+    PROPERTIES READONLY name(ee), totalHours(ee, yy), percentEmptyProjects(ee, yy), absenceDays(ee, yy), absenceDays(ee, r, yy) COLUMNS (r) HEADER name(r)
     FILTERS absenceHours(r, yy)
     
     OBJECTS ab = Absence
