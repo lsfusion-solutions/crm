@@ -51,6 +51,8 @@ nameProject 'Проект' (TimeEntry t) = name(project(t));
 customer = DATA Customer(TimeEntry);
 nameCustomer 'Клиент' (TimeEntry e) = name(customer(e));
 
+merge (Customer from, Customer to) + { customer(TimeEntry e) <- to WHERE customer(e) = from; }
+
 WHEN LOCAL SETCHANGED (customer(project(TimeEntry t))) DO {
     customer(t) <- customer(project(t));
 }
