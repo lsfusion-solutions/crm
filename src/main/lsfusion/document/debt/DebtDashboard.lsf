@@ -153,13 +153,19 @@ addEvent 'Добавить' (Debt d) {
     }
 } IMAGE 'add.png';
 
-sumDebt 'Сумма неоплаченной задолженности' (Customer c, DATE d) = GROUP SUM sum(Debt dd) (-) paid(dd) IF date(dd) <= d BY customer(dd) CHARWIDTH 5;
-dateFirstDebt 'Дата первой задолженности' (Customer c, DATE d) = GROUP LAST date(Debt dd) ORDER DESC date(dd), dd IF date(dd) <= d BY customer(dd);
+sumDebt 'Сумма неоплаченной задолженности' (Customer c, ContractType t, DATE d) = GROUP SUM sum(Debt dd) (-) paid(dd) IF date(dd) <= d BY customer(dd), type(contract(dd));
+sumDebt 'Сумма неоплаченной задолженности' (Customer c, DATE d) = GROUP SUM sum(Debt dd) (-) paid(dd) IF date(dd) <= d BY customer(dd);
+dateFirstDebt 'Дата ранней неоплаченной задолженности' (Customer c, ContractType t, DATE d) = 
+    GROUP LAST date(Debt dd) ORDER DESC date(dd), dd IF date(dd) <= d AND (sum(dd) (-) paid(dd) > 0) BY customer(dd), type(contract(dd));
+dateFirstDebt 'Дата ранней неоплаченной задолженности' (Customer c, DATE d) = 
+    GROUP LAST date(Debt dd) ORDER DESC date(dd), dd IF date(dd) <= d AND (sum(dd) (-) paid(dd) > 0) BY customer(dd);
 
 showCustomerDashboard 'Работа с клиентом' (Debt d) { show(customer(d)); }
 
 filterDateFrom 'Дата с' = DATA LOCAL DATE ();
 filterDateTo 'Дата по' = DATA LOCAL DATE ();
+filterCustomerContractType = DATA LOCAL ContractType();
+nameFilterCustomerContractType 'Тип договора' () = name(filterCustomerContractType());
 
 FORM debtDashboard 'Контроль задолженности'
     PROPERTIES () filterDateFrom, filterDateTo, nameDebtFilterContractType
@@ -183,15 +189,17 @@ FORM debtDashboard 'Контроль задолженности'
     OBJECTS dd = DATE PANEL
     PROPERTIES VALUE (dd)
     
-    OBJECTS c = Customer
-    PROPERTIES READONLY name(c), sumDebt(c, dd),dateFirstDebt(c, dd)
-    FILTERS sumDebt(c, dd)
-    ORDER name(c)
+    PROPERTIES nameFilterCustomerContractType()
+    
+    OBJECTS ct = (c = Customer, t = ContractType)
+    PROPERTIES READONLY name(c), name(t), sumDebt(c, t, dd),dateFirstDebt(c, t, dd)
+    FILTERS sumDebt(c, t, dd), t == filterCustomerContractType() OR NOT filterCustomerContractType()
+    ORDER name(c), name(t)
     
     OBJECTS db = Debt
-    PROPERTIES (db) READONLY date, numberContract, nameContract, nameContractType, nameLegalEntity, nameCompany, numberAgreement, 
+    PROPERTIES (db) READONLY date, numberContract, nameContract, nameLegalEntity, nameCompany, numberAgreement, 
                              numberAct, shortNameCurrency, sumCurrency, sum, paid, note
-    FILTERS customer(db) == c, date(db) <= dd, sum(db) (-) paid(db) > 0
+    FILTERS customer(db) == c, date(db) <= dd, sum(db) (-) paid(db) > 0, type(contract(db)) == t
     ORDER date(db)
 ;
 
@@ -216,12 +224,17 @@ DESIGN debtDashboard {
             NEW customers {
                 caption = 'Итоги по клиентам';
                 fill = 1;
-                MOVE BOX (dd);
+                MOVE BOX (dd) {
+                    caption = 'Параметры';
+                    type = CONTAINERH;
+                    MOVE PROPERTY (nameFilterCustomerContractType());
+                    alignment = START;
+                }
                 NEW bottom {
                     type = CONTAINERH;
                     fill = 1;
-                    MOVE BOX (c) { fill = 1; }
-                    MOVE BOX (db) { fill = 5; }
+                    MOVE BOX (ct) { fill = 1; }
+                    MOVE BOX (db) { fill = 4; }
                 }
             }
         }
