@@ -22,8 +22,8 @@ noexported 'Не выгружен' (EVAT e) = NOT exported(e);
 cancelled 'Отмененный' = DATA BOOLEAN (EVAT);
 nocancelled 'Не отмененный' (EVAT e) = NOT cancelled(e);
 
-CONSTRAINT DROPPED (EVAT e IS EVAT) AND PREV (exported(e)) MESSAGE 'Запрещено удалять Выгруженные счета-фактуры';
-CONSTRAINT SET (cancelled(EVAT e)) AND exported(e) MESSAGE 'Запрещено отменять Выгруженные счета-фактуры';
+//CONSTRAINT DROPPED (EVAT e IS EVAT) AND PREV (exported(e)) MESSAGE 'Запрещено удалять Выгруженные счета-фактуры';
+//CONSTRAINT SET (cancelled(EVAT e)) AND exported(e) MESSAGE 'Запрещено отменять Выгруженные счета-фактуры';
 
 unpSender 'Субъект хозяйствования, составляющий ЭСЧФ' = DATA VARSTRING[100](EVAT);
 exportYear 'Год для экспорта' = DATA INTEGER (EVAT);
@@ -35,6 +35,8 @@ padNumber (EVAT e) += VARSTRING[20](lpad(number(e), 10, '0'));
 exportNumber 'Номер для экспорта' (EVAT e) = unpSender(e) + '-' + (OVERRIDE exportYear(e), Time.extractYear(currentDate()) IF e IS EVAT ) + '-' + padNumber(e);
 exportDNumber 'Номер для экспорта' (EVAT e) = unpSender(e) + '-' + exportYear(e) + '-' + padNumber(e);
 EVATExportNumber 'ЭСЧФ по номеру для экспорта' = GROUP AGGR EVAT e BY exportDNumber(e); 
+
+exportFileXml 'Имя файла для экспорта' (EVAT e) = exportNumber(e) + '.xml';
 
 //WHEN SET(exported(EVAT e)) DO exportYear(e) <- Time.extractYear(currentDate());
 WHEN SET(EVAT e IS EVAT) DO exportYear(e) <- Time.extractYear(currentDate());
@@ -55,7 +57,6 @@ numberDoc 'Номер документа' = DATA VARSTRING[15] (EVAT);
 supplier 'Поставщик' = DATA LegalEntity(EVAT);
 nameSupplier 'Поставщик' (EVAT e) = name(supplier(e));
 branchCodeSupplier 'Код филиала поставщика' = DATA INTEGER (EVAT);
-// Клеить адрес из полей !!!
 addressSupplier 'Адрес поставщика' (EVAT e) = nameLegalAddress(supplier(e));
 dependentPersonSupplier 'Взаимозависимое лицо' = DATA BOOLEAN (EVAT);
 residentsOfOffshoreSupplier 'Сделка с резидентом оффшорной зоны ' = DATA BOOLEAN (EVAT);
@@ -69,7 +70,6 @@ legalEntityStatusSupplier 'Статус поставщика' = DATA VARISTRING[
 customer 'Получатель' = DATA LegalEntity(EVAT);
 nameCustomer 'Получатель' (EVAT e) = name(customer(e));
 branchCodeCustomer 'Код филиала получателя' = DATA INTEGER (EVAT);
-// Клеить адрес из полей !!!
 addressCustomer 'Адрес получателя' (EVAT e) = nameLegalAddress(customer(e));
 dependentPersonCustomer 'Взаимозависимое лицо' = DATA BOOLEAN (EVAT);
 residentsOfOffshoreCustomer 'Сделка с резидентом оффшорной зоны ' = DATA BOOLEAN (EVAT);
@@ -122,7 +122,8 @@ totalSumWithVAT 'Сумма с НДС (всего)' (EVAT e) = GROUP SUM sumWith
 
 FORM EVAT 'Электронная счёт-фактура'
     OBJECTS e=EVAT PANEL
-    PROPERTIES(e) unpSender, number, exportYear, exportNumber, exported, cancelled, documentType,
+    PROPERTIES(e) cancelled
+    PROPERTIES(e) READONLY unpSender, number, exportYear, exportNumber, exported, documentType,
                   numberContract, dateContract, numberDoc,
                   bigCompanySupplier, dependentPersonSupplier, residentsOfOffshoreSupplier, specialDealGoodsSupplier,
                   bigCompanyCustomer, dependentPersonCustomer, residentsOfOffshoreCustomer, specialDealGoodsCustomer,
@@ -131,9 +132,9 @@ FORM EVAT 'Электронная счёт-фактура'
                   branchCodeSupplier, branchCodeCustomer,
                   codeDocType, blankCodeDoc, dateDoc, seriesDoc, 
                   totalSum, totalExciseSum, totalVATSum, totalSumWithVAT
-
+    
     OBJECTS d = EVATDetail
-    PROPERTIES(d) name, code, quantity, price, sum, exciseSum, vatRate, vatRateType, vatSum, sumWithVAT, captionDescriptionType, NEW, DELETE
+    PROPERTIES(d) READONLY name, code, quantity, price, sum, exciseSum, vatRate, vatRateType, vatSum, sumWithVAT, captionDescriptionType
     FILTERS EVAT(d) == e
     EDIT EVAT OBJECT e
 ;
@@ -364,7 +365,7 @@ exportToXml 'Экспорт ЭСЧФ' () {
             seriesDoc(e) <- '';
             
             EXPORT issuance OBJECTS e = e XML TO System.exportFile;
-            zipping(VARSTRING[100] s) <- exportFile() WHERE s = exportNumber(e);
+            zipping(VARSTRING[100] s) <- exportFile() WHERE s = exportFileXml(e);
             
         }
         makeZipFile();

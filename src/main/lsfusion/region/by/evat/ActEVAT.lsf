@@ -9,7 +9,7 @@ lastEVATAct 'Последний ЭСЧФ по акту' = GROUP LAST EVAT e ORDE
 in 'Вкл.' = DATA LOCAL BOOLEAN (Act);
 
 generateEVAT 'Сформировать ЭСЧФ' ()  {
-     
+    
     FOR in(Act a) DO NEWSESSION {
         NEW e = EVAT {
             EVATDocument(e) <- a;
@@ -49,7 +49,7 @@ generateEVAT 'Сформировать ЭСЧФ' ()  {
 FORM ActEVATs 'Формирование электронных счет-фактур'
     OBJECTS a = Act
     PROPERTIES(a) in
-    PROPERTIES(a) READONLY number, date, name, nameType, numberContract, numberAgreement, nameCustomer, nameLegalEntity, sum SELECTOR
+    PROPERTIES(a) READONLY id, number, date, name, nameType, numberContract, numberAgreement, nameCustomer, nameLegalEntity, sum SELECTOR
     PROPERTIES() generateEVAT DRAW a TOOLBAR
     FILTERS NOT lastEVATAct(a)
     
