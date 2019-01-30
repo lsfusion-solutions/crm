@@ -264,14 +264,6 @@ NAVIGATOR {
 }
 
 ///// экспорт ЭСЧФ в XML
-exportPathEVAT 'Каталог для экспорта ЭСЧФ' = DATA VARSTRING[255] ();
-EXTEND FORM options PROPERTIES exportPathEVAT();
-DESIGN options { 
-    commons { 
-        MOVE PROPERTY(exportPathEVAT());
-    } 
-}
-
 dateIssuance 'Текущая дата (симв.)' = DATA LOCAL VARSTRING[10] ();
 dateTransaction 'Дата операции (симв.)' = DATA LOCAL VARSTRING[10] ();
 dateContract 'Дата договора' = DATA LOCAL VARSTRING[10] ();
@@ -349,30 +341,35 @@ FORM issuance
 ;
 
 exportToXml 'Экспорт ЭСЧФ' () {
-    FOR in(EVAT e) DO NEWSESSION {
-        dateIssuance() <- VARSTRING[10] ([FORMULA 'to_char(($1),($2))'](currentDate(), 'YYYY-MM-DD'));
-        dateTransaction() <- VARSTRING[10] ([FORMULA 'to_char(($1),($2))'](date(e), 'YYYY-MM-DD'));
-        dateContract() <- VARSTRING[10] ([FORMULA 'to_char(($1),($2))'](dateContract(e), 'YYYY-MM-DD'));
-        dateDoc() <- VARSTRING[10] ([FORMULA 'to_char(($1),($2))'](dateDoc(e), 'YYYY-MM-DD'));
-        
-        exported(e) <- TRUE;
-        in(e) <- NULL;
-        
-        documentType(e) <- 'ORIGINAL';
-        legalEntityStatusCustomer(e) <- 'SELLER';
-        countryCodeCustomer(e) <- '112';
-        
-        legalEntityStatusSupplier(e) <- 'CUSTOMER';
-        countryCodeSupplier(e) <- '112';
-        
-        codeDocType(e) <- 606;
-        
-        blankCodeDoc(e) <- '';
-        seriesDoc(e) <- '';
-        
-        EXPORT issuance OBJECTS e = e XML TO System.exportFile;
-        WRITE System.exportFile() TO 'file://' + exportPathEVAT() + exportNumber(e);
-        
+    NEWSESSION { 
+        FOR in(EVAT e) DO {
+            dateIssuance() <- VARSTRING[10] ([FORMULA 'to_char(($1),($2))'](currentDate(), 'YYYY-MM-DD'));
+            dateTransaction() <- VARSTRING[10] ([FORMULA 'to_char(($1),($2))'](date(e), 'YYYY-MM-DD'));
+            dateContract() <- VARSTRING[10] ([FORMULA 'to_char(($1),($2))'](dateContract(e), 'YYYY-MM-DD'));
+            dateDoc() <- VARSTRING[10] ([FORMULA 'to_char(($1),($2))'](dateDoc(e), 'YYYY-MM-DD'));
+            
+            exported(e) <- TRUE;
+            in(e) <- NULL;
+            
+            documentType(e) <- 'ORIGINAL';
+            legalEntityStatusCustomer(e) <- 'SELLER';
+            countryCodeCustomer(e) <- '112';
+            
+            legalEntityStatusSupplier(e) <- 'CUSTOMER';
+            countryCodeSupplier(e) <- '112';
+            
+            codeDocType(e) <- 606;
+            
+            blankCodeDoc(e) <- '';
+            seriesDoc(e) <- '';
+            
+            EXPORT issuance OBJECTS e = e XML TO System.exportFile;
+            zipping(VARSTRING[100] s) <- exportFile() WHERE s = exportNumber(e);
+            
+        }
+        makeZipFile();
+        open(zipped(), 'evat');
+
         APPLY ;
     }
 }
