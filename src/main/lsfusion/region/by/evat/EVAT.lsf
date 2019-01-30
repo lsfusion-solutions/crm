@@ -341,7 +341,7 @@ FORM issuance
 ;
 
 exportToXml 'Экспорт ЭСЧФ' () {
-    NEWSESSION { 
+    NEWSESSION NESTED LOCAL { 
         FOR in(EVAT e) DO {
             dateIssuance() <- VARSTRING[10] ([FORMULA 'to_char(($1),($2))'](currentDate(), 'YYYY-MM-DD'));
             dateTransaction() <- VARSTRING[10] ([FORMULA 'to_char(($1),($2))'](date(e), 'YYYY-MM-DD'));
