@@ -98,7 +98,7 @@ printContractWord 'Сформировать по шаблону' (Contract ct) {
         value(TemplateEntry d) <- OVERRIDE addressBank(legalEntity(ct)), '' WHERE key(d) = 'ADDRESS_BANK_LEGAL_ENTITY' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE mfoBank(legalEntity(ct)), '' WHERE key(d) = 'MFO_BANK_LEGAL_ENTITY' AND template (d) == t;
         
-        FOR ContractSubject cs = [GROUP LAST ContractSubject css BY type(css), contract(css)](SubjectType cst, ct) DO {
+        FOR ContractSubject cs = [GROUP LAST ContractSubject css ORDER date(css) IF date(css) <= date(contract(css)) BY type(css), contract(css)](SubjectType cst, ct) DO {
         
             value(TemplateEntry d) <- TEXT (quantity(cs)) WHERE key(d) = id(cst) + '_QUANTITY' AND template (d) == t;
             value(TemplateEntry d) <- TEXT (round2(price(cs))) WHERE key(d) = id(cst) + '_PRICE' AND template (d) == t;
