@@ -197,7 +197,7 @@ FORM debtDashboard 'Контроль задолженности'
     ORDER name(c), name(t)
     
     OBJECTS db = Debt
-    PROPERTIES (db) READONLY date, numberContract, nameContract, nameLegalEntity, nameCompany, numberAgreement, 
+    PROPERTIES (db) READONLY date, numberContract, nameContract, nameLegalEntity, nameCompany, numberAgreement, nameAgreement,
                              numberAct, shortNameCurrency, sumCurrency, sum, paid, note
     FILTERS customer(db) == c, date(db) <= dd, sum(db) (-) paid(db) > 0, type(contract(db)) == t
     ORDER date(db)
@@ -234,7 +234,7 @@ DESIGN debtDashboard {
                     type = CONTAINERH;
                     fill = 1;
                     MOVE BOX (ct) { fill = 1; }
-                    MOVE BOX (db) { fill = 4; }
+                    MOVE BOX (db) { fill = 5; }
                 }
             }
         }

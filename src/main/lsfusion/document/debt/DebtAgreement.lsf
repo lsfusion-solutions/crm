@@ -5,7 +5,8 @@ REQUIRE Debt, PaymentAgreement;
 NAMESPACE Contract;
 
 agreement = DATA Agreement(Debt);
-numberAgreement 'Соглашение' (Debt d) = number(agreement(d));
+numberAgreement 'Номер соглашения' (Debt d) = number(agreement(d));
+nameAgreement 'Наименование соглашения' (Debt d) = name(agreement(d));
 
 EXTEND FORM contract PROPERTIES numberAgreement(d);
 
