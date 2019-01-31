@@ -3,12 +3,8 @@ MODULE CustomerRole;
 REQUIRE Customer, Role, Employee;
 
 in 'Вкл.' = DATA BOOLEAN (Customer, Employee, Role);
-
-CONSTRAINT in(Customer c, Employee e, Role r) AND NOT customer(e) == c MESSAGE 'Сотрудник не относится к клиенту';
-
-WHEN LOCAL SET (in(Customer c, Employee e, Role r)) AND NOT (customer(e) == c) DO {
-    customer(e) <- c;
-}
+dataIn 'Вкл.' = DATA BOOLEAN (Customer, Employee);
+in (Customer c, Employee e) = OVERRIDE dataIn(c, e), TRUE IF (GROUP SUM 1 IF in(c, e, Role r));
 
 roles 'Роли' (Customer c, Employee e) = GROUP CONCAT name(Role r) IF in(c, e, r), ', ' ORDER name(r) CHARWIDTH 20;
 
@@ -20,9 +16,24 @@ FORM dialogCustomerRoles 'Роли'
     FILTERGROUP in FILTER 'Отмеченные' in(c, e, r)
 ;
 
+FORM dialogCustomerEmployees 'Сотрудники'
+    OBJECTS c = Customer PANEL 
+    OBJECTS e = Employee
+    PROPERTIES(e) READONLY id, number, login, name, namePosition, nameLegalEntity, email, phone, addPhones, skype, note, inactive, authorisedDocument
+    ORDER name(e)
+    FILTERS NOT in(c, e)
+;
+
+addEmployee 'Добавить' (Customer c) {
+    DIALOG dialogCustomerEmployees OBJECTS e INPUT DO {
+        dataIn(c, e) <- TRUE;
+    }
+} IMAGE 'add.png';
+
 EXTEND FORM customer
     OBJECTS e = Employee
     PROPERTIES name(e) READONLY, roles(o, e) ON CHANGE { SHOW dialogCustomerRoles OBJECTS c = o, e = e; }
-    FILTERS customer(e) == o
+    PROPERTIES DRAW e TOOLBAR addEmployee(o)
+    FILTERS in(o, e)
     ORDER name(e)
 ;
