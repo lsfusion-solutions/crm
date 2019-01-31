@@ -208,6 +208,7 @@ FORM contacts 'Контакты'
 FORM dialogContacts 'Контакты'
     OBJECTS o = Contact
     PROPERTIES(o) READONLY id, lastName, firstName, middleName, nameCustomer, nameLegalEntity, namePosition, email, phone, addPhones, skype, note, authorisedDocument
+    PROPERTIES(o) NEWSESSION NEW, EDIT
     ORDER lastName(o)
     
     LIST Contact OBJECT o
