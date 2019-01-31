@@ -42,6 +42,7 @@ FORM dashboardCustomer 'Работа с клиентами'
     
     OBJECTS c = Customer PANEL 
     PROPERTIES (c) name SELECTOR, info
+    PROPERTIES (c) NEWSESSION NEW, EDIT 
     
     OBJECTS le = LegalEntity
     PROPERTIES (le) READONLY id, name, fullName, nameLegalAddress, numberBank, nameBank, addressBank, mfoBank, isCompany
@@ -154,6 +155,11 @@ FORM dashboardCustomer 'Работа с клиентами'
 
 DESIGN dashboardCustomer {
     OBJECTS {
+        TOOLBARRIGHT (c) {
+            type = CONTAINERH;
+            alignment = STRETCH;
+            MOVE PROPERTY (name(c)) FIRST;
+        }
         NEW tabPane AFTER BOX (c) {
             type = TABBED;
             fill = 1;
