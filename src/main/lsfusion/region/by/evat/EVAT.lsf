@@ -57,7 +57,7 @@ numberDoc 'Номер документа' = DATA VARSTRING[15] (EVAT);
 supplier 'Поставщик' = DATA LegalEntity(EVAT);
 nameSupplier 'Поставщик' (EVAT e) = name(supplier(e));
 branchCodeSupplier 'Код филиала поставщика' = DATA INTEGER (EVAT);
-addressSupplier 'Адрес поставщика' (EVAT e) = nameLegalAddress(supplier(e));
+addressSupplier 'Адрес поставщика' (EVAT e) = OVERRIDE nameLegalAddress(supplier(e)), ' ';
 dependentPersonSupplier 'Взаимозависимое лицо' = DATA BOOLEAN (EVAT);
 residentsOfOffshoreSupplier 'Сделка с резидентом оффшорной зоны ' = DATA BOOLEAN (EVAT);
 specialDealGoodsSupplier 'Спец. сделка' = DATA BOOLEAN (EVAT);
@@ -70,7 +70,7 @@ legalEntityStatusSupplier 'Статус поставщика' = DATA VARISTRING[
 customer 'Получатель' = DATA LegalEntity(EVAT);
 nameCustomer 'Получатель' (EVAT e) = name(customer(e));
 branchCodeCustomer 'Код филиала получателя' = DATA INTEGER (EVAT);
-addressCustomer 'Адрес получателя' (EVAT e) = nameLegalAddress(customer(e));
+addressCustomer 'Адрес получателя' (EVAT e) = OVERRIDE nameLegalAddress(customer(e)), ' ';
 dependentPersonCustomer 'Взаимозависимое лицо' = DATA BOOLEAN (EVAT);
 residentsOfOffshoreCustomer 'Сделка с резидентом оффшорной зоны ' = DATA BOOLEAN (EVAT);
 specialDealGoodsCustomer 'Спец. сделка' = DATA BOOLEAN (EVAT);
@@ -90,19 +90,19 @@ name 'Наименование' = DATA VARSTRING[255] (EVATDetail);
 code 'Код ТНВЭД' = DATA VARSTRING[10] (EVATDetail);
 codeOced 'Код видов деятельности (ОКЭД)' = DATA VARSTRING[100] (EVATDetail);
 quantity 'Количество' = DATA NUMERIC[16,5] (EVATDetail); 
-price 'Цена' = DATA NUMERIC[16,5] (EVATDetail);
-sum 'Сумма' = DATA NUMERIC[16,5] (EVATDetail) NONULL;
-exciseSum 'Сумма акциза' = DATA NUMERIC[16,5] (EVATDetail);
+price 'Цена' = DATA NUMERIC[16,2] (EVATDetail);
+sum 'Сумма' = DATA NUMERIC[16,2] (EVATDetail) NONULL;
+exciseSum 'Сумма акциза' = DATA NUMERIC[16,2] (EVATDetail);
 vatRate 'Ставка НДС' = DATA NUMERIC[16,5] (EVATDetail);
 vatRateType 'Тип НДС' = DATA VARISTRING[20] (EVATDetail);
-vatSum 'Сумма НДС' = DATA NUMERIC[16,5] (EVATDetail);
-sumWithVAT 'Сумма с НДС' = DATA NUMERIC[16,5] (EVATDetail);
+vatSum 'Сумма НДС' = DATA NUMERIC[16,2] (EVATDetail);
+sumWithVAT 'Сумма с НДС' = DATA NUMERIC[16,2] (EVATDetail);
 
 CLASS DescriptionType 'Описание' {
-    deductionInFull 'Вычет в полном объеме',
-    vatExcemption 'Освобождение от НДС',
-    outsideRB 'Реализация за пределами Республики Беларусь',
-    importVAT 'Ввозной НДС'
+    deductionInFull 'DEDUCTIONINFULL',
+    vatExcemption 'VAT_EXEMPTION',
+    outsideRB 'OUTSIDERB',
+    importVAT 'IMPORTVAT'
 }
 
 FORM descriptionTypes
@@ -284,14 +284,27 @@ GROUP rosterItem : roster;
 GROUP vat;
 GROUP descriptions;
 
-FORM issuance
+FORM issuance 
     OBJECTS e = EVAT
     PROPERTIES sender =unpSender(e) ATTR
-    //PROPERTIES xmlns  ='http://www.w3schools.com' ATTR  ///// !!!!! - нужна доработка
+    //PROPERTIES xmlns  ='http://www.w3schools.com' ATTR
+    //PROPERTIES xmlns FORMEXTID '=http://w3.org/smthelse:issuance'
+    FORMEXTID '=http://www.w3schools.com:issuance'    
     
-    PROPERTIES   IN general =exportNumber(e) EXTID 'number', =documentType(e) EXTID 'documentType'
-    PROPERTIES() IN general dateIssuance, dateTransaction
-    PROPERTIES  IN provider =legalEntityStatusCustomer(e) EXTID 'providerStatus',
+    PROPERTIES   IN general  =exportNumber(e) EXTID 'number'
+    PROPERTIES() IN general  dateIssuance, dateTransaction
+    PROPERTIES   IN general  =documentType(e) EXTID 'documentType'
+    PROPERTIES   IN provider =legalEntityStatusSupplier(e) EXTID 'providerStatus',
+                             =IF dependentPersonSupplier(e) THEN 'true' ELSE 'false' EXTID 'dependentPerson',
+                             =IF residentsOfOffshoreSupplier(e) THEN 'true' ELSE 'false' EXTID 'residentsOfOffshore',
+                             =IF specialDealGoodsSupplier(e) THEN 'true' ELSE 'false' EXTID 'specialDealGoods',
+                             =IF bigCompanySupplier(e) THEN 'true' ELSE 'false' EXTID 'bigCompany',
+                             =countryCodeSupplier(e) EXTID 'countryCode',
+                             =unpSupplier(e) EXTID 'unp',
+                             =nameSupplier(e) EXTID 'name',
+                             =addressSupplier(e) EXTID 'address'
+                            
+    PROPERTIES IN recipient =legalEntityStatusCustomer(e) EXTID 'recipientStatus',
                             =IF dependentPersonCustomer(e) THEN 'true' ELSE 'false' EXTID 'dependentPerson',
                             =IF residentsOfOffshoreCustomer(e) THEN 'true' ELSE 'false' EXTID 'residentsOfOffshore',
                             =IF specialDealGoodsCustomer(e) THEN 'true' ELSE 'false' EXTID 'specialDealGoods',
@@ -300,16 +313,6 @@ FORM issuance
                             =unpCustomer(e) EXTID 'unp',
                             =nameCustomer(e) EXTID 'name',
                             =addressCustomer(e) EXTID 'address'
-                            
-    PROPERTIES IN recipient =legalEntityStatusSupplier(e) EXTID 'recipientStatus',
-                            =IF dependentPersonSupplier(e) THEN 'true' ELSE 'false' EXTID 'dependentPerson',
-                            =IF residentsOfOffshoreSupplier(e) THEN 'true' ELSE 'false' EXTID 'residentsOfOffshore',
-                            =IF specialDealGoodsSupplier(e) THEN 'true' ELSE 'false' EXTID 'specialDealGoods',
-                            =IF bigCompanySupplier(e) THEN 'true' ELSE 'false' EXTID 'bigCompany',
-                            =countryCodeSupplier(e) EXTID 'countryCode',
-                            =unpSupplier(e) EXTID 'unp',
-                            =nameSupplier(e) EXTID 'name',
-                            =addressSupplier(e) EXTID 'address'
     
     PROPERTIES IN senderReceiver ='' EXTID 'consignors', ='' EXTID 'consignees' 
     
@@ -317,7 +320,7 @@ FORM issuance
                            =dateContract() EXTID 'date'
                            
     PROPERTIES IN docType  =codeDocType(e) EXTID 'code'
-    PROPERTIES IN document =dateDoc() EXTID 'date', =blankCodeDoc(e) EXTID 'blankCode', =numberDoc(e) EXTID 'number', =seriesDoc(e) EXTID 'seria' 
+    PROPERTIES IN document =dateDoc() EXTID 'date', =blankCodeDoc(e) EXTID 'blankCode', =seriesDoc(e) EXTID 'seria', =numberDoc(e) EXTID 'number' 
     
     PROPERTIES IN roster totalCost =IF totalSum(e) THEN totalSum(e) ELSE 0 ATTR,
                          totalVat =IF totalVATSum(e) THEN totalVATSum(e) ELSE 0 ATTR,
@@ -328,17 +331,18 @@ FORM issuance
     PROPERTIES =number(rosterItem) EXTID 'number', =name(rosterItem) EXTID 'name',
                              =code(rosterItem) EXTID 'code', =codeOced(rosterItem) EXTID 'code_oced', 
                              =IF price(rosterItem) THEN price(rosterItem) ELSE 0 EXTID 'price',
-                             =IF exciseSum(rosterItem) THEN exciseSum(rosterItem) ELSE 0 EXTID 'summaExcise',
                              =IF sum(rosterItem) THEN sum(rosterItem) ELSE 0 EXTID 'cost',
-                             =IF sum(rosterItem) THEN sum(rosterItem) ELSE 0 EXTID 'costVat'
+                             =IF exciseSum(rosterItem) THEN exciseSum(rosterItem) ELSE 0 EXTID 'summaExcise'
+
     
     PROPERTIES IN vat =IF vatRate(rosterItem) THEN vatRate(rosterItem) ELSE 0 EXTID 'rate',
                       =vatRateType(rosterItem) EXTID 'rateType',
-                      =IF vatSum(rosterItem) THEN vatSum(rosterItem) ELSE 0 EXTID 'summaVat' 
-    PROPERTIES IN descriptions =descriptionType(rosterItem) EXTID 'description'
+                      =IF vatSum(rosterItem) THEN vatSum(rosterItem) ELSE 0 EXTID 'summaVat'
+    
+    PROPERTIES =IF sum(rosterItem) THEN sum(rosterItem) ELSE 0 EXTID 'costVat'
+    PROPERTIES IN descriptions =captionDescriptionType(rosterItem) EXTID 'description'
     
     FILTERS EVAT(rosterItem) = e
-
 ;
 
 exportToXml 'Экспорт ЭСЧФ' () {
@@ -353,10 +357,10 @@ exportToXml 'Экспорт ЭСЧФ' () {
             in(e) <- NULL;
             
             documentType(e) <- 'ORIGINAL';
-            legalEntityStatusCustomer(e) <- 'SELLER';
+            legalEntityStatusCustomer(e) <- 'CUSTOMER';
             countryCodeCustomer(e) <- '112';
             
-            legalEntityStatusSupplier(e) <- 'CUSTOMER';
+            legalEntityStatusSupplier(e) <- 'SELLER';
             countryCodeSupplier(e) <- '112';
             
             codeDocType(e) <- 606;
