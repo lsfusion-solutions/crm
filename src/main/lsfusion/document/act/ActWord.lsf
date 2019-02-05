@@ -53,7 +53,7 @@ createActTemplate (Act ag, Template t) {
         value(TemplateEntry d) <- OVERRIDE overName(company(ag)), '' WHERE key(d) = 'NAME_COMPANY' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE overName(legalEntity(ag)), '' WHERE key(d) = 'NAME_LEGAL_ENTITY' AND template (d) == t;
         value(TemplateEntry d) <- toCharRus(sum(ag)) WHERE key(d) = 'SUM_DOCUMENT_NUMERIC' AND template (d) == t;
-        TRY { value(TemplateEntry d) <- numSpelledRouble(sum(ag), '00d') WHERE key(d) = 'SUM_DOCUMENT_WORDS' AND template (d) == t; }
+        TRY { value(TemplateEntry d) <- numSpelledCurrency(sum(ag), '00d', currency(contract(ag))) WHERE key(d) = 'SUM_DOCUMENT_WORDS' AND template (d) == t; }
         value(TemplateEntry d) <- TEXT (toDateDDMMYYYY(dateSending(ag))) WHERE key(d) = 'SENDING_DATE_DOCUMENT' AND template (d) == t;
         value(TemplateEntry d) <- TEXT (toDateDDMMYYYY(dateReceiving(ag))) WHERE key(d) = 'RECEIVING_DATE_DOCUMENT' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE note(ag), '' WHERE key(d) = 'NOTE_DOCUMENT' AND template (d) == t;

@@ -13,6 +13,9 @@ shortName 'Наименование (сокр.)' = DATA STRING[3] (Currency);
 documentName 'Наименование (в документах)' = DATA STRING[10] (Currency);
 currencyShortName (string) = GROUP AGGR Currency currency WHERE currency IS Currency BY shortName(currency);
 
+nameWord 'Склонение названия для шаблона' = DATA VARISTRING[250](Currency);
+nameCoinsWord 'Склонение названия разменной единицы для шаблона' = DATA VARISTRING[250](Currency);
+
 onStarted() + { 
     NEWSESSION {
         setNoCancelInTransaction();
@@ -30,10 +33,20 @@ currency (sid) = GROUP AGGR (Currency currency) BY sid(currency);
 
 FORM currency 'Валюта'
     OBJECTS c = Currency PANEL
-    PROPERTIES (c)  name, shortName, sid, symbol, documentName
+    PROPERTIES (c)  name, shortName, sid, symbol, documentName, nameWord, nameCoinsWord
 
     EDIT Currency OBJECT c
 ;
+
+DESIGN currency {
+    OBJECTS {  
+        NEW word AFTER BOX (c) {
+            caption = 'Склонение названия для шаблона';
+            MOVE PROPERTY (nameWord(c)) { caption = 'Название валюты (рубль,рубля,рублей)'; }
+            MOVE PROPERTY (nameCoinsWord(c)) { caption = 'Название разменной единицы (копейка,копейки,копеек)'; }
+        }
+    }
+}
 
 FORM currencies 'Валюты'
     OBJECTS c = Currency
