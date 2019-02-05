@@ -65,6 +65,9 @@ CONSTRAINT contract(Act a) != contract(agreement(a)) CHECKED BY agreement[Act] M
 date 'Дата' = DATA DATE (Act) IN id;
 year 'Год' = DATA YEAR (Act) IN id;
 
+fromDate 'Дата с' = DATA DATE (Act);
+toDate 'Дата по' = DATA DATE (Act);
+
 CLASS ActType 'Тип акта выполненных работ';
 TABLE actType(ActType);
 
@@ -140,7 +143,7 @@ FORM act 'Акт выполненных работ'
     OBJECTS o = Act PANEL
     PROPERTIES(o) id, number, date, name, nameType, numberContract, numberAgreement, nameCustomer READONLY, nameLegalEntity READONLY, sum, 
                   dateSending, dateReceiving, dateClosing, note, text, nameCompany READONLY, nameNumerator, series, nameSendingWay,
-                  nameAuthorisedPersonLegalEntity, nameAuthorisedPersonCompany, authorisedDocumentLegalEntity, authorisedDocumentCompany
+                  nameAuthorisedPersonLegalEntity, nameAuthorisedPersonCompany, authorisedDocumentLegalEntity, authorisedDocumentCompany, fromDate, toDate
     
     EDIT Act OBJECT o
 ;
@@ -161,8 +164,14 @@ DESIGN act {
                     MOVE PROPERTY (series(o));
                     MOVE PROPERTY (number(o));
                 }
-                MOVE PROPERTY(date(o));
                 MOVE PROPERTY(nameType(o));
+                MOVE PROPERTY(date(o));
+                NEW period {
+                    caption = 'Период оказания услуг';
+                    type = CONTAINERH;
+                    MOVE PROPERTY (fromDate(o));
+                    MOVE PROPERTY (toDate(o));
+                }
             }
             NEW legalEntities {
                 caption = 'Контрагенты';
@@ -223,14 +232,14 @@ DESIGN act {
 
 FORM acts 'Акты выполненных работ'
     OBJECTS o = Act LAST 
-    PROPERTIES(o) READONLY id, numberContract, numberAgreement, number, date, name, nameType, sum, nameSendingWay, dateSending, dateReceiving, dateClosing, note, textString
+    PROPERTIES(o) READONLY id, numberContract, numberAgreement, number, date, fromDate, toDate, name, nameType, sum, nameSendingWay, dateSending, dateReceiving, dateClosing, note, textString
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
     ORDER date(o)
 ;
 
 FORM dialogActs 'Акты выполненных работ'
     OBJECTS o = Act LAST 
-    PROPERTIES(o) READONLY id, numberContract, numberAgreement, number, date, name, nameType, sum, nameSendingWay, dateSending, dateReceiving, dateClosing, note, textString
+    PROPERTIES(o) READONLY id, numberContract, numberAgreement, number, date, fromDate, toDate, name, nameType, sum, nameSendingWay, dateSending, dateReceiving, dateClosing, note, textString
     ORDER date(o)
 
     FILTERGROUP active
@@ -256,7 +265,7 @@ addAct 'Добавить' (Contract c) {
 
 EXTEND FORM contract 
     OBJECTS ac = Act LAST 
-    PROPERTIES (ac) READONLY id, numberContract, numberAgreement, number, date, name, nameType, sum, nameSendingWay, dateSending, dateReceiving, dateClosing, note, textString
+    PROPERTIES (ac) READONLY id, numberContract, numberAgreement, number, date, fromDate, toDate, name, nameType, sum, nameSendingWay, dateSending, dateReceiving, dateClosing, note, textString
     PROPERTIES DRAW ac TOOLBAR addAct(o)
     PROPERTIES(ac) NESTEDSESSION EDIT, DELETE
     ORDER date(ac)

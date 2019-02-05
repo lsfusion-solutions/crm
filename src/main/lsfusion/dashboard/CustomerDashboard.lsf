@@ -74,7 +74,7 @@ FORM dashboardCustomer 'Работа с клиентами'
     ORDER date(ag) DESC
     
     OBJECTS ac = Act
-    PROPERTIES (ac) READONLY id, numberAgreement, number, date, name, paid, nameType, sum, nameSendingWay, dateSending, dateReceiving, dateClosing, note, textString
+    PROPERTIES (ac) READONLY id, numberAgreement, number, date, fromDate, toDate, name, paid, nameType, sum, nameSendingWay, dateSending, dateReceiving, dateClosing, note, textString
     PROPERTIES (ac) NEWSESSION EDIT 
     FILTERS contract(ac) == cr
     ORDER date(ac) DESC

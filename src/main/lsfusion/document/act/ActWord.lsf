@@ -84,6 +84,8 @@ createActTemplate (Act ag, Template t) {
         value(TemplateEntry d) <- OVERRIDE postcodeBank(legalEntity(ag)), '' WHERE key(d) = 'POSTCODE_BANK_LEGAL_ENTITY' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE addressBank(legalEntity(ag)), '' WHERE key(d) = 'ADDRESS_BANK_LEGAL_ENTITY' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE mfoBank(legalEntity(ag)), '' WHERE key(d) = 'MFO_BANK_LEGAL_ENTITY' AND template (d) == t;
+        value(TemplateEntry d) <- TEXT (toDateDDMMYYYY(fromDate(ag))) WHERE key(d) = 'DATE_FROM_ACT' AND template (d) == t;
+        value(TemplateEntry d) <- TEXT (toDateDDMMYYYY(toDate(ag))) WHERE key(d) = 'DATE_TO_ACT' AND template (d) == t;
         overPrintActWord(ag, t);
 }
 
@@ -92,6 +94,8 @@ createTemplateEntries(Template t, DocType d) +{
         NEW te = TemplateEntry { template(te) <- t; key(te) <- 'NUMBER_CONTRACT'; description(te) <- 'Номер договора'; }
         NEW te = TemplateEntry { template(te) <- t; key(te) <- 'DATE_CONTRACT'; description(te) <- 'Дата договора'; }
         NEW te = TemplateEntry { template(te) <- t; key(te) <- 'NUMBER_AGREEMENT'; description(te) <- 'Номер соглашения'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'DATE_FROM_ACT'; description(te) <- 'Дата с'; }
+        NEW te = TemplateEntry { template(te) <- t; key(te) <- 'DATE_TO_ACT'; description(te) <- 'Дата по'; }
     }
 }
 
