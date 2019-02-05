@@ -55,7 +55,7 @@ numberDoc 'Номер документа' = DATA VARSTRING[15] (EVAT);
 
 //Поставщик
 supplier 'Поставщик' = DATA LegalEntity(EVAT);
-nameSupplier 'Поставщик' (EVAT e) = name(supplier(e));
+nameSupplier 'Поставщик' (EVAT e) = OVERRIDE fullName(supplier(e)), name(supplier(e));
 branchCodeSupplier 'Код филиала поставщика' = DATA INTEGER (EVAT);
 addressSupplier 'Адрес поставщика' (EVAT e) = OVERRIDE nameLegalAddress(supplier(e)), ' ';
 dependentPersonSupplier 'Взаимозависимое лицо' = DATA BOOLEAN (EVAT);
@@ -68,7 +68,7 @@ legalEntityStatusSupplier 'Статус поставщика' = DATA VARISTRING[
 
 //Получатель
 customer 'Получатель' = DATA LegalEntity(EVAT);
-nameCustomer 'Получатель' (EVAT e) = name(customer(e));
+nameCustomer 'Получатель' (EVAT e) = OVERRIDE fullName(customer(e)), name(customer(e));
 branchCodeCustomer 'Код филиала получателя' = DATA INTEGER (EVAT);
 addressCustomer 'Адрес получателя' (EVAT e) = OVERRIDE nameLegalAddress(customer(e)), ' ';
 dependentPersonCustomer 'Взаимозависимое лицо' = DATA BOOLEAN (EVAT);
@@ -287,8 +287,6 @@ GROUP descriptions;
 FORM issuance 
     OBJECTS e = EVAT
     PROPERTIES sender =unpSender(e) ATTR
-    //PROPERTIES xmlns  ='http://www.w3schools.com' ATTR
-    //PROPERTIES xmlns FORMEXTID '=http://w3.org/smthelse:issuance'
     FORMEXTID '=http://www.w3schools.com:issuance'    
     
     PROPERTIES   IN general  =exportNumber(e) EXTID 'number'
@@ -349,7 +347,7 @@ exportToXml 'Экспорт ЭСЧФ' () {
     NEWSESSION NESTED LOCAL { 
         FOR in(EVAT e) DO {
             dateIssuance() <- VARSTRING[10] ([FORMULA 'to_char(($1),($2))'](currentDate(), 'YYYY-MM-DD'));
-            dateTransaction() <- VARSTRING[10] ([FORMULA 'to_char(($1),($2))'](date(e), 'YYYY-MM-DD'));
+            dateTransaction() <- VARSTRING[10] ([FORMULA 'to_char(($1),($2))'](dateDoc(e), 'YYYY-MM-DD'));
             dateContract() <- VARSTRING[10] ([FORMULA 'to_char(($1),($2))'](dateContract(e), 'YYYY-MM-DD'));
             dateDoc() <- VARSTRING[10] ([FORMULA 'to_char(($1),($2))'](dateDoc(e), 'YYYY-MM-DD'));
             
@@ -379,6 +377,7 @@ exportToXml 'Экспорт ЭСЧФ' () {
     }
 }
 EXTEND FORM EVATs PROPERTIES() TOOLBAR exportToXml;
+
 
 // Сверка переданных ЭСЧФ с CSV-файлом
 CLASS ListEVAT 'ЭСЧФ из CSV-файла';

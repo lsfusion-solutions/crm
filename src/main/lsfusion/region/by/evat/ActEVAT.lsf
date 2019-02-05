@@ -6,12 +6,12 @@ NAMESPACE Act;
 
 lastEVATAct 'Последний ЭСЧФ по акту' = GROUP LAST EVAT e ORDER date(e), e WHERE NOT cancelled(e) BY EVATDocument(e) MATERIALIZED ;
 
+// запрет корр-ки акта, если у него есть ЭСЧФ
+forbidChange(Act a) += TRUE IF lastEVATAct(a) AND a IS Act;
+
 in 'Вкл.' = DATA LOCAL BOOLEAN (Act);
 
-viewEVATActDateMore 'Отображать акты при формировании ЭСЧФ с датой не меньше ' = DATA DATE () ;
-
-EXTEND FORM options PROPERTIES viewEVATActDateMore();
-DESIGN options { commons { MOVE PROPERTY (viewEVATActDateMore()); } }
+viewEVATActDateMore 'Начальная дата отображения актов: ' = DATA LOCAL DATE () ;
 
 isEVAT 'Формировать ЭСЧФ' = DATA BOOLEAN (LegalEntity);
 EXTEND FORM legalEntity PROPERTIES(o) isEVAT;
@@ -53,11 +53,12 @@ generateEVAT 'Сформировать ЭСЧФ' ()  {
                 vatRate(d) <- 0;
                 vatRateType(d) <- 'NO_VAT';
                 vatSum(d) <- 0;
-//                sumWithVAT(d) <- sum(d) + vatSum(d);
-                sumWithVAT(d) <- sum(d);
-                codeOced(d) <-'62010';
-                code(d) <-'';
-                name(d) <- 'По договору '+numberContract(a);
+                sumWithVAT(d) <- sum(d) + vatSum(d);
+                codeOced(d) <- '62010';
+                code(d) <- '';
+                name(d) <- IF nameType(a)=='АСР' THEN 'Услуги по эксплуатации ПО в период с ' + 
+                            OVERRIDE toChar(fromDate(a),'DD.MM.YYYY'),'?' + ' по ' + OVERRIDE toChar(toDate(a),'DD.MM.YYYY'),'?' 
+                           ELSE textString(a) ;
                 descriptionType(d) <- DescriptionType.vatExcemption;
             }
         }
@@ -70,11 +71,15 @@ generateEVAT 'Сформировать ЭСЧФ' ()  {
 
 
 FORM ActEVATs 'Формирование электронных счет-фактур'
+    
+    OBJECTS date = DATE PANEL
+    PROPERTIES value = VALUE(date)
+    
     OBJECTS a = Act
     PROPERTIES(a) in
     PROPERTIES(a) READONLY nameCompany, number, date, dateSending, dateReceiving, name, nameType, numberContract, numberAgreement, nameLegalEntity, sum, textString SELECTOR
     PROPERTIES() generateEVAT DRAW a TOOLBAR
-    FILTERS NOT lastEVATAct(a) AND isEVAT(company(a)) AND (NOT viewEVATActDateMore() OR date(a) >= viewEVATActDateMore())
+    FILTERS NOT lastEVATAct(a) AND isEVAT(company(a)) AND (NOT date OR date(a) >= date)
     
     OBJECTS dates = (dFrom = DATE, dTo = DATE) PANEL
     PROPERTIES dFrom = VALUE(dFrom), dTo = VALUE(dTo)
@@ -90,10 +95,19 @@ FORM ActEVATs 'Формирование электронных счет-факт
                          FILTER 'Не выгруженные' noexported(e) 
     FILTERGROUP cancelled FILTER 'Отмененные' cancelled(e) 
                           FILTER 'Не отмененные' nocancelled(e) DEFAULT 
+
+    EVENTS
+        ON INIT { SEEK ActEVATs.date = DATE(TEXT(currentYear())+'01'+'01'); }
 ;
 
 DESIGN ActEVATs {
     OBJECTS{
+
+        MOVE BOX(date) BEFORE BOX(e) { 
+            caption = '';
+            type = CONTAINERH;
+            PROPERTY(value){caption = 'Дата начала отображения актов';} 
+        }
         NEW acts BEFORE BOX(e){
             type = TABBED;
             fill = 1;
