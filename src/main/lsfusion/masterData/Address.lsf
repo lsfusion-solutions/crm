@@ -32,11 +32,12 @@ locality 'Нас. пункт' = DATA VARISTRING[50] (Address) CHARWIDTH 20 IN id
 street 'Улица' = DATA VARISTRING[50] (Address) CHARWIDTH 20;
 houseNumber 'Дом' = DATA VARISTRING[20] (Address) CHARWIDTH 6;
 officeNumber 'Офис' = DATA VARISTRING[20] (Address) CHARWIDTH 6;
-name 'Адрес' (Address a) = CONCAT ', ', locality(a), street(a), houseNumber(a), officeNumber(a);
+extra 'Дополнительно' = DATA VARISTRING[100](Address) CHARWIDTH 20;
+name 'Адрес' (Address a) = CONCAT ', ', locality(a), street(a), 'дом ' + houseNumber(a), 'офис ' + officeNumber(a), extra(a);
 
 FORM addresses 'Адреса'
     OBJECTS a = Address
-    PROPERTIES (a) READONLY types, postcode, region, district, locality, street, houseNumber, officeNumber, name
+    PROPERTIES (a) READONLY types, postcode, region, district, locality, street, houseNumber, officeNumber, extra, name
     
     LIST Address OBJECT a
 ;

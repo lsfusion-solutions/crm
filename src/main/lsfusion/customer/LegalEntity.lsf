@@ -146,7 +146,7 @@ FORM legalEntity 'Организация'
     FILTERGROUP active FILTER 'Активные' active(a) 'ctrl F10' DEFAULT 
     
     OBJECTS d = Address
-    PROPERTIES (d) types ON CHANGE changeAddressTypes(d), postcode, region, district, locality, street, houseNumber, officeNumber, NEW, DELETE 
+    PROPERTIES (d) types ON CHANGE changeAddressTypes(d), postcode, region, district, locality, street, houseNumber, officeNumber, extra, NEW, DELETE 
     ORDER types(d) DESC 
     FILTERS legalEntity(d) == o
     
