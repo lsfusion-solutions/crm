@@ -139,6 +139,11 @@ EXTEND CLASS DocType {
 }
 docType(Act a) += DocType.act IF a IS Act;
 
+forbidChange 'Запрет на редактирование' = ABSTRACT VALUE BOOLEAN (Act);
+
+CONSTRAINT (forbidChange(Act a)) AND (CHANGED (date(a)) OR CHANGED (number(a)) OR CHANGED (series(a)) OR CHANGED (contract(a)) OR CHANGED (sum(a)))
+    MESSAGE 'Запрещено редактировать данный акт';
+
 FORM act 'Акт выполненных работ'
     OBJECTS o = Act PANEL
     PROPERTIES(o) id, number, date, name, nameType, numberContract, numberAgreement, nameCustomer READONLY, nameLegalEntity READONLY, sum, 
