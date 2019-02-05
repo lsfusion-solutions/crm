@@ -134,7 +134,7 @@ FORM dashboardCustomer 'Работа с клиентами'
     ORDER number(ss) DESC
     
     OBJECTS cd = (df = DATE, dt = DATE) PANEL 
-    PROPERTIES dFrom 'Дата с' = VALUE (df), dTo 'Дата по' =  VALUE (dt), printCustomerReport(c, df, dt), withoutAgreements()
+    PROPERTIES dFrom 'Дата с' = VALUE (df), dTo 'Дата по' =  VALUE (dt), nameFilterProject(c), printCustomerReport(c, df, dt), withoutAgreements()
     
     OBJECTS at = Attachment
     PROPERTIES (at) READONLY id, nameCustomer, number, date, nameType, note, nameCreatedUser, createdDate
@@ -216,6 +216,7 @@ DESIGN dashboardCustomer {
                     type = CONTAINERH;
                     MOVE PROPERTY (dFrom);
                     MOVE PROPERTY (dTo);
+                    MOVE PROPERTY (nameFilterProject(c));
                     MOVE PROPERTY (printCustomerReport(c, df, dt));
                     MOVE PROPERTY (withoutAgreements());
                 }

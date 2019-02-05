@@ -51,21 +51,28 @@ nameProject 'Проект' (TimeEntry t) = name(project(t));
 customer = DATA Customer(TimeEntry);
 nameCustomer 'Клиент' (TimeEntry e) = name(customer(e));
 
-merge (Customer from, Customer to) + { customer(TimeEntry e) <- to WHERE customer(e) = from; }
-
-WHEN LOCAL SETCHANGED (customer(project(TimeEntry t))) DO {
-    customer(t) <- customer(project(t));
-}
-
-CONSTRAINT project(TimeEntry t) AND customer(t) AND NOT customer(project(t)) == customer(t) CHECKED BY customer[TimeEntry] MESSAGE 'Клиент отметки не является клиентом проекта';
-CONSTRAINT TimeEntry t IS TimeEntry AND NOT project(t) AND NOT customer(t) MESSAGE 'Для отметки времени должен быть задан проект или клиент';
-
 employee = DATA Employee(TimeEntry);
 nameEmployee 'Сотрудник' (TimeEntry t) = name(employee(t));
 
 issue = DATA Issue(TimeEntry);
 nameIssue 'Задача' (TimeEntry t) = name(issue(t));
 numberIssue 'Номер задачи' (TimeEntry t) = number(issue(t));
+
+merge (Customer from, Customer to) + { customer(TimeEntry e) <- to WHERE customer(e) = from; }
+
+WHEN LOCAL SETCHANGED (customer(project(TimeEntry t))) DO {
+    customer(t) <- customer(project(t));
+}
+
+WHEN LOCAL CHANGED (issue(TimeEntry t)) DO {
+    project(t) <- project(issue(t));
+    customer(t) <- customer(issue(t));
+}
+
+CONSTRAINT project(TimeEntry t) AND customer(t) AND NOT customer(project(t)) == customer(t) CHECKED BY customer[TimeEntry] MESSAGE 'Клиент отметки не является клиентом проекта';
+CONSTRAINT issue(TimeEntry t) AND customer(t) AND NOT customer(issue(t)) == customer(t) CHECKED BY customer[TimeEntry] MESSAGE 'Клиент отметки не является клиентом задачи';
+CONSTRAINT issue(TimeEntry t) AND project(t) AND NOT project(issue(t)) == project(t) CHECKED BY project[TimeEntry] MESSAGE 'Проект отметки не является проектом задачи';
+CONSTRAINT TimeEntry t IS TimeEntry AND NOT project(t) AND NOT customer(t) MESSAGE 'Для отметки времени должен быть задан проект или клиент';
 
 disableEditing = ABSTRACT BOOLEAN (TimeEntry);
 

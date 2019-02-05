@@ -23,7 +23,7 @@
 	<field name="df.object" class="java.util.Date"/>
 	<field name="dt.object" class="java.util.Date"/>
 	<field name="name(c)" class="java.lang.String"/>
-	<field name="hours(c,df,dt)" class="java.math.BigDecimal"/>
+	<field name="hoursFilterProject(c,df,dt)" class="java.math.BigDecimal"/>
 	<field name="_OBJVALUE_Project_customerReport_df(df)" class="java.util.Date"/>
 	<field name="_OBJVALUE_Project_customerReport_dt(dt)" class="java.util.Date"/>
 	<group name="designGroup11456">
@@ -149,7 +149,7 @@
 				<textElement textAlignment="Right">
 					<font isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{hours(c,df,dt)}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{hoursFilterProject(c,df,dt)}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="0" y="0" width="192" height="15" uuid="89a07c9e-0fb2-4cac-8d10-f8d43031c4da"/>
