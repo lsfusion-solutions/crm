@@ -3,8 +3,7 @@ MODULE CustomerRole;
 REQUIRE Customer, Role, Employee;
 
 in 'Вкл.' = DATA BOOLEAN (Customer, Employee, Role);
-dataIn 'Вкл.' = DATA BOOLEAN (Customer, Employee);
-in (Customer c, Employee e) = OVERRIDE dataIn(c, e), TRUE IF (GROUP SUM 1 IF in(c, e, Role r));
+in (Customer c, Employee e) = GROUP SUM 1 IF in(c, e, Role r);
 
 roles 'Роли' (Customer c, Employee e) = GROUP CONCAT name(Role r) IF in(c, e, r), ', ' ORDER name(r) CHARWIDTH 20;
 
@@ -16,17 +15,28 @@ FORM dialogCustomerRoles 'Роли'
     FILTERGROUP in FILTER 'Отмеченные' in(c, e, r)
 ;
 
+in 'Вкл.' = DATA LOCAL BOOLEAN (Employee);
+in 'Вкл.' = DATA LOCAL BOOLEAN (Role, Employee);
+
 FORM dialogCustomerEmployees 'Сотрудники'
     OBJECTS c = Customer PANEL 
     OBJECTS e = Employee
-    PROPERTIES(e) READONLY id, number, login, name, namePosition, nameLegalEntity, email, phone, addPhones, skype, note, inactive, authorisedDocument
+    PROPERTIES in(e)
+    PROPERTIES(e) READONLY name, id, number, namePosition, nameLegalEntity
     ORDER name(e)
     FILTERS NOT in(c, e)
+    
+    OBJECTS r = Role
+    PROPERTIES in(r, e), name(r) READONLY 
 ;
+
+DESIGN dialogCustomerEmployees {
+    size = (600, 600);
+}
 
 addEmployee 'Добавить' (Customer c) {
     DIALOG dialogCustomerEmployees OBJECTS e INPUT DO {
-        dataIn(c, e) <- TRUE;
+        in(c, Employee ee, Role r) <- TRUE WHERE in(r, ee);
     }
 } IMAGE 'add.png';
 
