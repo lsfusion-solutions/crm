@@ -61,7 +61,7 @@ FORM profit 'Прибыль по клиентам'
     
     OBJECTS p = Payment
     PROPERTIES (p) READONLY id, nameLegalEntity, nameCustomer, numberContract, nameTypeContract, numberAct, number, date, 
-                                                       year, monthNumber, sum, shortNameCurrency, sumCurrency, note
+                                                       year, monthNumber, nameType, sum, shortNameCurrency, sumCurrency, note
     
     FILTERS customer(p) == c
     FILTERGROUP paymentInterval

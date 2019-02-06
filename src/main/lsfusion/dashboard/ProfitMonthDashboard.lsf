@@ -43,7 +43,7 @@ FORM profitMonthDashboard 'Прибыль по месяцам'
     
     OBJECTS p = Payment
     PROPERTIES (p) READONLY id, nameLegalEntity, nameCustomer, numberContract, nameTypeContract, nameGroupContract, numberAct, number, date, 
-                            year, monthNumber, sum, shortNameCurrency, sumCurrency BACKGROUND backgroundReceipt(), note
+                            year, monthNumber, nameType, sum, shortNameCurrency, sumCurrency BACKGROUND backgroundReceipt(), note
     PROPERTIES (p) NEWSESSION EDIT
     FILTERS year(p) == y, extractMonth(date(p)) == m, NOT skipReceipt(legalEntity(p))
     

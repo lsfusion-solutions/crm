@@ -204,7 +204,7 @@ FORM debtsPlan 'План платежей'
     FILTERS extractMonth(date(d)) == m, extractYear(date(d)) == y
     
     OBJECTS p = Payment
-    PROPERTIES (p) READONLY id, nameLegalEntity, nameCustomer, nameCompany, number, date, monthNumber, sum, shortNameCurrency, sumCurrency, note
+    PROPERTIES (p) READONLY id, nameLegalEntity, nameCustomer, nameCompany, number, date, monthNumber, nameType, sum, shortNameCurrency, sumCurrency, note
     ORDER date(p)
     FILTERS extractYear(date(p)) == y, extractMonth(date(p)) == m
     

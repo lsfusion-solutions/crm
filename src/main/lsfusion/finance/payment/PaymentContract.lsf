@@ -45,7 +45,7 @@ EXTEND FORM dialogContracts
 
 EXTEND FORM contract
     OBJECTS p = Payment
-    PROPERTIES (p) READONLY id, number, date, year, monthNumber, sum, shortNameCurrency, sumCurrency, note
+    PROPERTIES (p) READONLY id, number, date, year, monthNumber, nameType, sum, shortNameCurrency, sumCurrency, note
     FILTERS contract(p) == o
 ;
 

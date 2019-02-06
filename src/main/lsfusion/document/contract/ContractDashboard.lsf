@@ -61,7 +61,7 @@ FORM contractDashboard 'Работа с договорами'
     FILTERGROUP activeAc FILTER 'Активные' active(ac) DEFAULT 
     
     OBJECTS p = Payment LAST 
-    PROPERTIES(p) READONLY id, numberAgreement, numberAct, number, date, year, monthNumber, sum, shortNameCurrency, sumCurrency, note
+    PROPERTIES(p) READONLY id, numberAgreement, numberAct, number, date, year, monthNumber, nameType, sum, shortNameCurrency, sumCurrency, note
     PROPERTIES(p) NEWSESSION EDIT 
     ORDER date(p)
     FILTERS contract(p) == o

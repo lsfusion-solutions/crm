@@ -28,6 +28,29 @@ monthNumber 'Номер месяца' (Payment p) = extractMonthNumber(date(p));
 sum 'Сумма' = DATA NUMERIC[16,5](Payment);
 note 'Примечание' = DATA VARISTRING[100](Payment);
 
+CLASS PaymentType 'Вид платежа';
+TABLE paymentType (PaymentType);
+
+name 'Наименование' = DATA VARISTRING[100] (PaymentType) CHARWIDTH 15;
+
+FORM paymentType 'Вид платежа'
+    OBJECTS o = PaymentType PANEL
+    PROPERTIES(o) name
+    
+    EDIT PaymentType OBJECT o
+;
+
+FORM paymentTypes 'Виды платежа'
+    OBJECTS o = PaymentType
+    PROPERTIES(o) READONLY name
+    PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
+    
+    LIST PaymentType OBJECT o
+;
+
+type = DATA PaymentType(Payment);
+nameType 'Вид платежа' (Payment e) = name(type(e));
+
 currency = DATA Currency(Payment);
 nameCurrency 'Валюта платежа' (Payment p) = name(currency(p));
 shortNameCurrency 'Валюта (сокр.)' (Payment p) = shortName(currency(p));
@@ -80,7 +103,7 @@ DESIGN dialogInputSum {
 
 FORM payment 'Платёж'
     OBJECTS o = Payment PANEL
-    PROPERTIES(o) id, nameLegalEntity, nameCompany, number, date, sum, shortNameCurrency, sumCurrency, note, numberAccount, numberAccountFrom
+    PROPERTIES(o) id, nameLegalEntity, nameCompany, number, date, nameType, sum, shortNameCurrency, sumCurrency, note, numberAccount, numberAccountFrom
         
     EDIT Payment OBJECT o
 ;
@@ -93,6 +116,7 @@ DESIGN payment {
             MOVE PROPERTY (id(o));
             MOVE PROPERTY (date(o));
             MOVE PROPERTY (number(o));
+            MOVE PROPERTY (nameType(o));
         }
         NEW contacts AFTER main {
             type = CONTAINERH;
@@ -124,7 +148,7 @@ DESIGN payment {
 FORM payments 'Платежи'
     OBJECTS o = Payment LAST 
     PROPERTIES(o) READONLY id, nameLegalEntity,nameCustomer, nameCompany, number, date, 
-                           year, monthNumber, sum, shortNameCurrency, sumCurrency, note, numberAccount, numberAccountFrom
+                           year, monthNumber, nameType, sum, shortNameCurrency, sumCurrency, note, numberAccount, numberAccountFrom
     ORDER date(o), nameLegalEntity(o), nameCompany(o)
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
     ORDER date(o)
@@ -133,7 +157,7 @@ FORM payments 'Платежи'
 FORM dialogPayments 'Платежи'
     OBJECTS o = Payment LAST 
     PROPERTIES(o) READONLY id, nameLegalEntity, nameCustomer, nameCompany, number, date, 
-                           year, monthNumber, sum, shortNameCurrency, sumCurrency, note, numberAccount, numberAccountFrom
+                           year, monthNumber, nameType, sum, shortNameCurrency, sumCurrency, note, numberAccount, numberAccountFrom
     ORDER date(o), nameLegalEntity(o), nameCompany(o)
     
     LIST Payment OBJECT o

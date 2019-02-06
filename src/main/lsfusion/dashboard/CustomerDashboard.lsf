@@ -80,7 +80,7 @@ FORM dashboardCustomer 'Работа с клиентами'
     ORDER date(ac) DESC
 
     OBJECTS ppm = Payment
-    PROPERTIES (ppm) READONLY id, numberAct, number, date, year, monthNumber, sum, nameCurrency, shortNameCurrency, sumCurrency, note 
+    PROPERTIES (ppm) READONLY id, numberAct, number, date, year, monthNumber, nameType, sum, nameCurrency, shortNameCurrency, sumCurrency, note 
     FILTERS contract(ppm) == cr
     ORDER date(ppm) DESC
     

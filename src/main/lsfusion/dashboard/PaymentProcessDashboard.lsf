@@ -52,7 +52,7 @@ FORM paymentProcessDasboard 'Обработка платежей'
     PROPERTIES DRAW p TOOLBAR showCustomerDashboard(p) SHOWIF customer(p), addPayment(dt) 
     PROPERTIES (p) isPosted, id, nameLegalEntity, nameCustomer, nameCompany, numberContract, nameContract, nameTypeContract READONLY, 
                    numberAgreement BACKGROUND backgroundAgreement(p), nameAgreement BACKGROUND backgroundAgreement(p), numberAct, number, date, year READONLY, 
-                   monthNumber READONLY, sum, shortNameCurrency, sumCurrency, numberAccount, numberAccountFrom BACKGROUND backgroundNumberAccountFrom(p), note, DELETE 
+                   monthNumber READONLY, nameType, sum, shortNameCurrency, sumCurrency, numberAccount, numberAccountFrom BACKGROUND backgroundNumberAccountFrom(p), note, DELETE 
     PROPERTIES(p) TOOLBAR split
     ORDER date(p), nameLegalEntity(p), nameCompany(p), numberContract(p)
     FILTERS date(p) >= df AND date(p) <= dt 
@@ -160,7 +160,7 @@ FORM reviseSum 'Расхождение сумм платежей'
     
     OBJECTS p = Payment
     PROPERTIES (p) READONLY isPosted, id, nameLegalEntity, nameCustomer, nameCompany, numberContract, nameTypeContract, 
-                   numberAgreement, numberAct, number, date, sum, shortNameCurrency, sumCurrency, note 
+                   numberAgreement, numberAct, number, date, nameType, sum, shortNameCurrency, sumCurrency, note 
     FILTERS date(p) == d, account(p) == account(legalEntity(p))
           
     OBJECTS i = INTEGER
