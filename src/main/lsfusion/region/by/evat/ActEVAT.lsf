@@ -9,6 +9,11 @@ lastEVATAct 'Последний ЭСЧФ по акту' = GROUP LAST EVAT e ORDE
 // запрет корр-ки акта, если у него есть ЭСЧФ
 forbidChange(Act a) += TRUE IF lastEVATAct(a) AND a IS Act;
 
+// Шаблон для текста в ЭСЧФ
+shablonEVATName 'Шаблон для текста в ЭСЧФ' = DATA VARISTRING[250](ActType) ;
+EXTEND FORM actType PROPERTIES shablonEVATName(o) ;
+shablonEVATName 'Шаблон для текста в ЭСЧФ' (Act a) = shablonEVATName(type(a)) ;
+
 in 'Вкл.' = DATA LOCAL BOOLEAN (Act);
 
 viewEVATActDateMore 'Начальная дата отображения актов: ' = DATA LOCAL DATE () ;
@@ -56,9 +61,12 @@ generateEVAT 'Сформировать ЭСЧФ' ()  {
                 sumWithVAT(d) <- sum(d) + vatSum(d);
                 codeOced(d) <- '62010';
                 code(d) <- '';
-                name(d) <- IF nameType(a)=='АСР' THEN 'Услуги по эксплуатации ПО в период с ' + 
-                            OVERRIDE toChar(fromDate(a),'DD.MM.YYYY'),'?' + ' по ' + OVERRIDE toChar(toDate(a),'DD.MM.YYYY'),'?' 
-                           ELSE textString(a) ;
+                name(d) <- shablonEVATName(a);
+                /// замена полей в шаблоне значениями
+                name(d) <- replace(name(d), 'Act.text', text(a)) ;
+                name(d) <- replace(name(d), 'Act.fromDate', OVERRIDE toChar(fromDate(a),'DD.MM.YYYY'),'?') ;
+                name(d) <- replace(name(d), 'Act.toDate', OVERRIDE toChar(toDate(a),'DD.MM.YYYY'),'?') ;
+                ///
                 descriptionType(d) <- DescriptionType.vatExcemption;
             }
         }
@@ -137,4 +145,3 @@ NAVIGATOR {
         NEW ActEVATs;
     }
 }
-
