@@ -20,7 +20,7 @@ CONSTRAINT filterProject(Customer c) AND NOT customer(filterProject(c)) == c CHE
 
 FORM customerReport 'Отчёт для клиента'
     OBJECTS cd = (c = Customer, df = DATE, dt = DATE) PANEL SUBREPORT 
-    PROPERTIES 'Клиент' = name(c) SELECTOR, 'Дата с' = VALUE (df), 'Дата по' =  VALUE (dt), hoursFilterProject(c, df, dt), withoutAgreements()
+    PROPERTIES 'Клиент' = name(c) SELECTOR, 'Дата с' = VALUE (df), 'Дата по' =  VALUE (dt), hoursFilterProject(c, df, dt), withoutAgreements(), nameFilterProject(c)
     
     OBJECTS i = Issue
     PROPERTIES (i) READONLY number, dateTimeCreated, estimatedHours, nameAuthor, nameAssignedTo, nameTracker, nameStatus, name
