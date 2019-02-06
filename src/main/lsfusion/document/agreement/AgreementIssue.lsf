@@ -31,11 +31,13 @@ FORM dialogAgreementsIssue 'Соглашения'
 ;
 
 setAgreement 'Привязать соглашение' (Customer c) {
-    NEWSESSION DIALOG dialogAgreementsIssue OBJECTS c = c, a INPUT NULL DO {
-        FOR in(Issue i) DO {
-            agreement(i) <- a;
+    NEWSESSION NESTED LOCAL {
+        DIALOG dialogAgreementsIssue OBJECTS c = c, a INPUT NULL DO {
+            FOR in(Issue i) DO {
+                agreement(i) <- a;
+            }
+            APPLY;
         }
-        APPLY;
     }
 }
 
