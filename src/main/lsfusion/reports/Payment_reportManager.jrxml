@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.6.0.final using JasperReports Library version 6.4.3  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Отчёт менеджера" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="30" bottomMargin="30" uuid="f552adb6-15f7-41d4-94ba-3ab244c13afd">
+	<property name="net.sf.jasperreports.export.xls.print.page.width" value="842"/>
+	<property name="net.sf.jasperreports.export.xls.print.page.height" value="595"/>
+	<style name="DefaultStyle" isDefault="true" vTextAlign="Middle" vImageAlign="Middle" fontName="lsf.TimesNewRoman" fontSize="10">
+		<box>
+			<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+		</box>
+		<paragraph leftIndent="2" rightIndent="2"/>
+	</style>
+	<style name="GroupCellStyle2" vTextAlign="Middle" vImageAlign="Middle" fontName="lsf.TimesNewRoman" fontSize="10">
+		<box>
+			<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+		</box>
+		<paragraph leftIndent="2" rightIndent="2"/>
+	</style>
+	<style name="GroupCellStyle1" mode="Opaque" backcolor="#DFDFDF" vTextAlign="Middle" vImageAlign="Middle" fontName="lsf.TimesNewRoman" fontSize="10">
+		<box>
+			<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+		</box>
+		<paragraph leftIndent="2" rightIndent="2"/>
+	</style>
+	<style name="GroupCellStyle0" vTextAlign="Middle" vImageAlign="Middle" fontName="lsf.TimesNewRoman" fontSize="10">
+		<box>
+			<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+		</box>
+		<paragraph leftIndent="2" rightIndent="2"/>
+	</style>
+	<field name="e.object" class="java.lang.Long"/>
+	<field name="r.object" class="java.lang.Long"/>
+	<field name="dt.object" class="java.util.Date"/>
+	<field name="df.object" class="java.util.Date"/>
+	<field name="_OBJVALUE_Payment_reportManager_df(df)" class="java.util.Date"/>
+	<field name="_OBJVALUE_Payment_reportManager_dt(dt)" class="java.util.Date"/>
+	<field name="name(r)" class="java.lang.String"/>
+	<field name="name(e)" class="java.lang.String"/>
+	<field name="p.object" class="java.lang.Long"/>
+	<field name="nameLegalEntity(p)" class="java.lang.String"/>
+	<field name="date(p)" class="java.util.Date"/>
+	<field name="sum(p)" class="java.math.BigDecimal"/>
+	<field name="nameType(p)" class="java.lang.String"/>
+	<field name="note(p)" class="java.lang.String"/>
+	<variable name="sum" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{sum(p)}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<group name="designGroup16676">
+		<groupExpression><![CDATA[String.valueOf($F{df.object})+" "+String.valueOf($F{dt.object})+" "+String.valueOf($F{r.object})+" "+String.valueOf($F{e.object})]]></groupExpression>
+	</group>
+	<title>
+		<band height="47">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="GroupCellStyle0" stretchType="RelativeToBandHeight" x="0" y="0" width="802" height="18" uuid="7adac70a-518a-4ebc-97c5-7b4d3f5e2559"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Отчет по менджеру " + $F{name(e)}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="GroupCellStyle0" stretchType="RelativeToBandHeight" x="0" y="18" width="802" height="18" uuid="63019f14-34cf-415f-8584-4293285c80aa"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["за период с " + lsfusion.base.BaseUtils.dateToString("dd.MM.yy",$F{df.object}) + " по " + lsfusion.base.BaseUtils.dateToString("dd.MM.yy",$F{dt.object})]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="18">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="GroupCellStyle0" stretchType="RelativeToBandHeight" mode="Opaque" x="0" y="0" width="260" height="18" backcolor="#33CC00" uuid="31a55455-625d-40be-98fe-53035f89e1a4"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA["Наименование предприятия"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="GroupCellStyle0" stretchType="RelativeToBandHeight" mode="Opaque" x="260" y="0" width="60" height="18" backcolor="#33CC00" uuid="6bac8942-42db-4772-8555-fee3cc764902"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA["Дата оплаты"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="GroupCellStyle0" stretchType="RelativeToBandHeight" mode="Opaque" x="320" y="0" width="110" height="18" backcolor="#33CC00" uuid="9437e960-02e4-4d1b-957e-236abb730c90"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA["Сумма оплаты (руб.)"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="GroupCellStyle0" stretchType="RelativeToBandHeight" mode="Opaque" x="430" y="0" width="70" height="18" backcolor="#33CC00" uuid="1f06674b-72ac-4a3d-a148-9a394dd66426"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA["Вид платежа"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="GroupCellStyle0" stretchType="RelativeToBandHeight" mode="Opaque" x="500" y="0" width="302" height="18" backcolor="#33CC00" uuid="70ae048e-f966-486b-b44e-dc8f0aab57ce"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA["Примечание"]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="18" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="GroupCellStyle0" positionType="Float" stretchType="ElementGroupHeight" x="0" y="0" width="260" height="18" uuid="1c2a284b-4eec-415e-95f1-a6e9649be69c"/>
+				<textElement textAlignment="Left">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nameLegalEntity(p)}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="dd.MM.yy" isBlankWhenNull="true">
+				<reportElement style="GroupCellStyle0" positionType="Float" stretchType="ElementGroupHeight" x="260" y="0" width="60" height="18" uuid="dc00d17e-c160-4148-9dab-5ef18bfe6e31"/>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{date(p)}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00;-#,##0.00" isBlankWhenNull="true">
+				<reportElement style="GroupCellStyle0" positionType="Float" stretchType="ElementGroupHeight" x="320" y="0" width="110" height="18" uuid="c5099125-0926-46a3-a264-cbe57c117aa5"/>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{sum(p)}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="GroupCellStyle0" positionType="Float" stretchType="ElementGroupHeight" x="430" y="0" width="70" height="18" uuid="7496de50-4464-42eb-9558-c7012902270a"/>
+				<textElement textAlignment="Left">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nameType(p)}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="GroupCellStyle0" positionType="Float" stretchType="ElementGroupHeight" x="500" y="0" width="302" height="18" uuid="af9263ef-4756-427b-bd33-ac53ddd79b83"/>
+				<textElement textAlignment="Left">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{note(p)}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="18">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="GroupCellStyle0" positionType="Float" stretchType="RelativeToBandHeight" x="0" y="0" width="260" height="18" uuid="d982c318-78ae-4308-a89e-fe05de8c6f09"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["ИТОГО ПО СЧЕТУ:"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00;-#,##0.00" isBlankWhenNull="true">
+				<reportElement style="GroupCellStyle0" positionType="Float" stretchType="RelativeToBandHeight" mode="Transparent" x="320" y="0" width="110" height="18" forecolor="#0022FF" uuid="e4300aef-8048-43f0-a486-38a907e00322"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{sum}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

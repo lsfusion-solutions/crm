@@ -1,0 +1,43 @@
+MODULE PaymentRole;
+
+REQUIRE Payment, CustomerRole, Employee, Dashboard;
+
+NAMESPACE Payment;
+
+FORM dialogReportManager 'Отчёт менеджера'
+    OBJECTS dates = (df = DATE, dt = DATE) PANEL 
+    OBJECTS re = (r = Role, e = Employee) PANEL 
+    PROPERTIES 'Дата с' = VALUE (df), 'Дата по' = VALUE (dt), name(r) SELECTOR, name(e) SELECTOR 
+;
+
+DESIGN dialogReportManager {
+    OBJECTS {
+        NEW manager AFTER BOX (dates) {
+            caption = 'Менеджер';
+            type = CONTAINERH;
+            MOVE PROPERTY (name(r)) { caption = 'Роль'; }
+            MOVE PROPERTY (name(e)) { caption = 'Сотрудник'; }
+        }
+    }
+}
+
+FORM reportManager 'Отчёт менеджера'
+    OBJECTS dates = (df = DATE, dt = DATE, r = Role, e = Employee) PANEL 
+    PROPERTIES READONLY VALUE (df), VALUE (dt), name(r), name(e)
+    
+    OBJECTS p = Payment
+    PROPERTIES (p) READONLY nameLegalEntity, date, sum, nameType, note
+    FILTERS in(customer(p), e, r), date(p) >= df AND date(p) <= dt
+;
+
+printReportManager 'Отчёт менеджера' () {
+   DIALOG dialogReportManager OBJECTS df INPUT, dt INPUT, r INPUT, e INPUT DO {
+        PRINT reportManager OBJECTS df = df, dt = dt, r = r, e = e XLS;
+   }
+}
+
+NAVIGATOR {
+    dashboard {
+        NEW ACTION printReportManager;
+    }
+}
