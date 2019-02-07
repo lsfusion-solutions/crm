@@ -237,10 +237,13 @@ DESIGN act {
 
 FORM acts 'Акты выполненных работ'
     OBJECTS o = Act LAST 
-    PROPERTIES(o) READONLY id, numberContract, numberAgreement, number, date, fromDate, toDate, name, nameType, sum, nameSendingWay, dateSending, dateReceiving, dateClosing, note, textString
+    PROPERTIES(o) READONLYIF isReadonly() id, numberContract, numberAgreement, number, date, fromDate, toDate, name, 
+                             nameType, sum, nameSendingWay, dateSending, dateReceiving, dateClosing, note, textString
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
     ORDER date(o)
 ;
+
+@extendFormEditable(acts);
 
 FORM dialogActs 'Акты выполненных работ'
     OBJECTS o = Act LAST 
