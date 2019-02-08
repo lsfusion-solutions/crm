@@ -107,10 +107,14 @@ importPaymentsDbf 'Импорт платежей (dbf)' (DATE df, DATE dt) {
             MESSAGE CONCAT ' ', 'Платежи, для которых не найдена организация: ', count(), message();
         }
         
-        FOR [GROUP SUM 1 IF sum(INTEGER i) < 0 BY type(i)](VARSTRING[15] type) AND type != '' AND NOT (GROUP MAX ExpenseType t IF name(t) == type) DO NEW t = ExpenseType {
+        FOR [GROUP SUM 1 IF sum(INTEGER i) < 0 AND expense(i) BY type(i)](VARSTRING[15] type) AND type != '' AND NOT (GROUP MAX ExpenseType t IF name(t) == type) DO NEW t = ExpenseType {
             name(t) <- type;
         }
                 
+        FOR [GROUP SUM 1 IF sum(INTEGER i) > 0 AND payment(i) BY type(i)](VARSTRING[15] type) AND type != '' AND NOT (GROUP MAX PaymentType t IF name(t) == type) DO NEW t = PaymentType {
+            name(t) <- type;
+        }
+        
         FOR imported(INTEGER i) AND sum(i) < 0 AND NOT expense(i) AND date(i) >= df AND date(i) <= dt DO NEW p = Expense {
             date(p) <- date(i);
             legalEntity(p) <- legalEntityEx(idLegalEntity(i));
@@ -130,6 +134,7 @@ importPaymentsDbf 'Импорт платежей (dbf)' (DATE df, DATE dt) {
             currency(p) <- defaultCurrency();
             note(p) <- text(i);
             sum(p) <- round2(sum(i)/extractDay(date(i)));
+            type(p) <- GROUP MAX PaymentType t IF name(t) == type(i);
         }
     }
 }

@@ -31,7 +31,7 @@ FORM reportManager 'Отчёт менеджера'
 ;
 
 printReportManager 'Отчёт менеджера' () {
-   DIALOG dialogReportManager OBJECTS df INPUT, dt INPUT, r INPUT, e INPUT DO {
+   DIALOG dialogReportManager OBJECTS df INPUT, dt INPUT, r INPUT, e = currentUser() INPUT DO {
         PRINT reportManager OBJECTS df = df, dt = dt, r = r, e = e XLS;
    }
 }
