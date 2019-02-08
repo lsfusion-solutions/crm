@@ -136,6 +136,10 @@ FORM dashboardCustomer 'Работа с клиентами'
     OBJECTS cd = (df = DATE, dt = DATE) PANEL 
     PROPERTIES dFrom 'Дата с' = VALUE (df), dTo 'Дата по' =  VALUE (dt), nameFilterProject(c), printCustomerReport(c, df, dt), withoutAgreements()
     
+    OBJECTS a = Agreement PANEL 
+    PROPERTIES description(a) SELECTOR, printCustomerReportAgreement(c, a)
+    FILTERS customer(a) == c
+    
     OBJECTS at = Attachment
     PROPERTIES (at) READONLY id, nameCustomer, number, date, nameType, note, nameCreatedUser, createdDate
     PROPERTIES DRAW at TOOLBAR openFile(at), addAttachment(c)
@@ -211,14 +215,26 @@ DESIGN dashboardCustomer {
             NEW projects {
                 caption = 'Проекты';
                 fill = 1;
-                NEW report {
-                    caption = 'Отчет по клиенту';
+                NEW reports {
                     type = CONTAINERH;
-                    MOVE PROPERTY (dFrom);
-                    MOVE PROPERTY (dTo);
-                    MOVE PROPERTY (nameFilterProject(c));
-                    MOVE PROPERTY (printCustomerReport(c, df, dt));
-                    MOVE PROPERTY (withoutAgreements());
+                    NEW report {
+                        caption = 'Отчет по клиенту';
+                        type = CONTAINERH;
+                        MOVE PROPERTY (dFrom);
+                        MOVE PROPERTY (dTo);
+                        MOVE PROPERTY (nameFilterProject(c));
+                        MOVE PROPERTY (printCustomerReport(c, df, dt));
+                        MOVE PROPERTY (withoutAgreements());
+                    }
+                    NEW reportAgreement {
+                        caption = 'Отчет по соглашению';
+                        type = CONTAINERH;
+                        MOVE PROPERTY (description(a)) { 
+                            caption = 'Соглашение'; 
+                            charWidth = 50;
+                        }
+                        MOVE PROPERTY (printCustomerReportAgreement(c, a));
+                    }
                 }
                 NEW projectsTab {
                     type = TABBED;
