@@ -1,0 +1,79 @@
+MODULE EquipmentDashboard;
+
+REQUIRE Equipment, Dashboard, Utils;
+
+NAMESPACE Equipment;
+
+equipmentID 'Идентификатор оборудования' = DATA VARISTRING[20](SubjectType);
+
+EXTEND FORM subjectType PROPERTIES equipmentID(o);
+EXTEND FORM subjectTypes PROPERTIES READONLY equipmentID(o);
+
+quantitySerial 'Кол-во серийных номеров' (Contract c) = GROUP SUM 1 BY contract(equipment(EquipmentSerial s));
+
+file = DATA FILE (Equipment);
+downloadFile 'Открыть файл лицензии' (Equipment a)  { open(file(a)); }
+
+generateLicense = FORMULA TEXT 'generateLicense($1,$2)';
+
+generateLicense 'Сгенерировать лицензию' (Equipment e) {
+    stringToFile((GROUP CONCAT generateLicense(equipmentID(subjectType(e)), number(EquipmentSerial s)) IF equipment(s) == e, '\r\r\n'), 'UTF-8', 'txt');
+    file(e) <- resultFile();
+}
+
+EXTEND FORM equipment PROPERTIES generateLicense(o), downloadFile(o) SHOWIF TRUE IF file(o);
+
+DESIGN equipment {
+    GROUP (,o) {
+        columns = 3;
+    }
+}
+
+addEquipment 'Добавить' (SubjectType t, Contract c) {
+    NEWSESSION NEW e = Equipment {
+        subjectType(e) <- t;
+        contract(e) <- c;
+        SHOW equipment OBJECTS o = e DOCKED;
+    }
+} IMAGE 'add.png';
+
+FORM equipmentDashboard 'Оборудование'
+    OBJECTS t = SubjectType PANEL 
+    OBJECTS c = Contract PANEL 
+    PROPERTIES name(t) SELECTOR, description(c) SELECTOR, quantitySerial(c) READONLY 
+    FILTERS in(c, t)
+    
+    OBJECTS e = Equipment
+    PROPERTIES (e) READONLY name
+    PROPERTIES addEquipment(t, c) DRAW e TOOLBAR 
+    PROPERTIES (e) NEWSESSION EDIT, DELETE 
+    FILTERS subjectType(e) == t, contract(e) == c
+    
+    OBJECTS n = EquipmentSerial
+    PROPERTIES (n) READONLY number
+    FILTERS equipment(n) == e
+;
+
+DESIGN equipmentDashboard {
+    OBJECTS {
+        NEW head FIRST {
+            caption = 'Параметры';
+            type = CONTAINERH;
+            MOVE PROPERTY (name(t)) { caption = 'Тип предмета договора'; }
+            MOVE PROPERTY (description(c)) { caption = 'Договор'; }
+            MOVE PROPERTY (quantitySerial(c));
+        }
+        NEW equip {
+            type = CONTAINERH;
+            fill = 1;
+            MOVE BOX (e);
+            MOVE BOX (n);
+        }
+    }
+}
+
+NAVIGATOR {
+    dashboard {
+        NEW equipmentDashboard;
+    }
+}

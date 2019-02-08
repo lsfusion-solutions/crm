@@ -1,0 +1,77 @@
+MODULE Equipment;
+
+REQUIRE ContractSubject;
+
+CLASS Equipment 'Оборудование';
+TABLE equipment (Equipment);
+
+name 'Наименование' = DATA VARISTRING[100] (Equipment) CHARWIDTH 15;
+
+contract = DATA Contract(Equipment);
+nameContract 'Договор' (Equipment e) = description(contract(e));
+
+subjectType = DATA SubjectType(Equipment);
+nameSubjectType 'Тип предмета договора' (Equipment e) = name(subjectType(e));
+
+in (Contract c, SubjectType t) = GROUP SUM 1 BY contract(ContractSubject s), type(s);
+
+CONSTRAINT contract(Equipment e) AND subjectType(e) AND NOT in(contract(e), subjectType(e)) CHECKED BY contract[Equipment] 
+    MESSAGE 'В выбранном договоре нет предметов договора с выбранным типом';
+
+CLASS EquipmentSerial 'Серийный номер';
+TABLE equipmentSerial (EquipmentSerial);
+
+number 'Серийный номер' = DATA VARISTRING[100] (EquipmentSerial) CHARWIDTH 15;
+
+equipment = DATA Equipment(EquipmentSerial) NONULL DELETE;
+
+FORM equipmentSerial 'Серийный номер'
+    OBJECTS o = EquipmentSerial PANEL
+    PROPERTIES(o) number
+    
+    EDIT EquipmentSerial OBJECT o
+;
+
+FORM equipmentSerials 'Серийные номера'
+    OBJECTS o = EquipmentSerial
+    PROPERTIES(o) READONLY number
+    PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
+;
+
+FORM dialogEquipmentSerials 'Серийные номера'
+    OBJECTS o = EquipmentSerial
+    PROPERTIES(o) READONLY number
+    
+    LIST EquipmentSerial OBJECT o
+;
+
+FORM equipment 'Оборудование'
+    OBJECTS o = Equipment PANEL
+    PROPERTIES(o) name, nameSubjectType, nameContract
+    
+    OBJECTS s = EquipmentSerial
+    PROPERTIES (s) number, NEW, DELETE 
+    FILTERS equipment(s) == o
+    
+    EDIT Equipment OBJECT o
+;
+
+FORM equipments 'Оборудование'
+    OBJECTS o = Equipment
+    PROPERTIES(o) READONLY name
+    PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
+;
+
+FORM dialogEquipments 'Оборудование'
+    OBJECTS o = Equipment
+    PROPERTIES(o) READONLY name
+    
+    LIST Equipment OBJECT o
+;
+
+NAVIGATOR {
+    masterData {
+        NEW equipments;
+        NEW equipmentSerials;
+    }
+}

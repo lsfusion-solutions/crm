@@ -19,7 +19,7 @@ FORM subjectType 'Тип предмета'
     EDIT SubjectType OBJECT o
 ;
 
-FORM subjectTypes 'Типы предмета'
+FORM subjectTypes 'Типы предмета договора'
     OBJECTS o = SubjectType
     PROPERTIES(o) READONLY id, name
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
@@ -97,6 +97,7 @@ FORM dialogSubjects 'Предметы договора'
 NAVIGATOR {
     contractFolder {
         NEW subjects;
+        NEW subjectTypes;
     }
 }
 
