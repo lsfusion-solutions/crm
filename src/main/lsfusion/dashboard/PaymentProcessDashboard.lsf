@@ -50,7 +50,7 @@ FORM paymentProcessDasboard 'Обработка платежей'
     
     OBJECTS p = Payment
     PROPERTIES DRAW p TOOLBAR showCustomerDashboard(p) SHOWIF customer(p), addPayment(dt) 
-    PROPERTIES (p) isPosted, id, nameLegalEntity, nameCustomer, nameCompany, numberContract, nameContract, nameTypeContract READONLY, 
+    PROPERTIES (p) isPosted, id, nameLegalEntity, nameCustomer, nameCompany, numberContract, dateContract, nameContract, nameTypeContract READONLY, 
                    numberAgreement BACKGROUND backgroundAgreement(p), nameAgreement BACKGROUND backgroundAgreement(p), numberAct, number, date, year READONLY, 
                    monthNumber READONLY, nameType, sum, shortNameCurrency, sumCurrency, numberAccount, numberAccountFrom BACKGROUND backgroundNumberAccountFrom(p), note, DELETE 
     PROPERTIES(p) TOOLBAR split

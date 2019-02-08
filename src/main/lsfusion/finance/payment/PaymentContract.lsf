@@ -8,6 +8,7 @@ contract = DATA Contract(Payment);
 idContract 'Код договора' (Payment a) = id(contract(a));
 numberContract 'Номер договора' (Payment a) = number(contract(a)) IN id;
 nameContract 'Наименование договора' (Payment a) = name(contract(a)) IN id;
+dateContract 'Дата договора' (Payment a) = date(contract(a));
 typeContract (Payment p) = type(contract(p));
 nameTypeContract 'Тип договора' (Payment p) = nameType(contract(p));
 nameGroupContract 'Группа договора' (Payment p) = nameGroup(contract(p));
@@ -18,6 +19,7 @@ CONSTRAINT contract(Payment p) AND company(p) AND NOT company(p) = company(contr
 paid 'Оплачено' (Contract c) = GROUP SUM sum(Payment p) BY contract(p);
 paidCurrency 'Оплачено в валюте' (Contract c) = GROUP SUM sumCurrency(Payment p) BY contract(p);
 dateLastPaid 'Дата последней оплаты' (Contract c) = GROUP LAST date(Payment p) ORDER date(p), p BY contract(p);
+paid 'Оплачено' (Contract c, DATE dt) = GROUP SUM sum(Payment p) IF date(p) <= dt BY contract(p);
 
 paid(Contract c) += paid(c);
 dateLastPaid(Contract c) += dateLastPaid(c);

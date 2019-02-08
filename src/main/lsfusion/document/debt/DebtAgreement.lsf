@@ -50,16 +50,27 @@ WHEN SETCHANGED (agreement(Debt d)) AND NOT CHANGED (contract(d)) DO {
 
 CONSTRAINT agreement(Debt d) AND NOT contract(d) == contract(agreement(d)) CHECKED BY agreement[Debt] MESSAGE 'Договор соглашения не совпадает с договором';
 
-paidAgreement 'Оплачено' (Debt d) = GROUP SUM sum(Payment p) IF agreement(p) == agreement(d) MATERIALIZED;
+paidAgreement 'Оплачено по соглашениям' (Debt d) = GROUP SUM sum(Payment p) IF agreement(p) == agreement(d) MATERIALIZED;
 
 paidNotDebt (Contract c) = paid(c) (-) [GROUP SUM paidAgreement(Debt d) BY contract(d)](c);
 
-paidContract 'Оплачено' (Debt d) = PARTITION UNGROUP paidNotDebt
+paidContract 'Оплачено по контракту без соглашений' (Debt d) = PARTITION UNGROUP paidNotDebt
                                                       LIMIT sum(d) (-) paidAgreement(d)
                                                       ORDER date(d),d 
                                                       BY contract(d) MATERIALIZED; 
                                                       
 paid 'Оплачено' (Debt d) = paidAgreement(d) (+) paidContract(d);
+
+paidAgreement 'Оплачено' (Debt d, DATE dt) = GROUP SUM sum(Payment p) IF agreement(p) == agreement(d) AND date(p) <= dt;
+
+paidNotDebt (Contract c, DATE dt) = paid(c, dt) (-) [GROUP SUM paidAgreement(Debt d, dt) BY contract(d)](c);
+
+paidContract 'Оплачено' (Debt d, DATE dt) = PARTITION UNGROUP paidNotDebt
+                                                      LIMIT sum(d) (-) paidAgreement(d, dt)
+                                                      ORDER date(d),d 
+                                                      BY contract(d), dt; 
+                                                      
+paid 'Оплачено' (Debt d, DATE dt) = paidAgreement(d, dt) (+) paidContract(d, dt);
 
 EXTEND FORM debts PROPERTIES READONLY paid(o) AFTER sum(o);
 EXTEND FORM dialogDebts PROPERTIES READONLY paid(o) AFTER sum(o);
