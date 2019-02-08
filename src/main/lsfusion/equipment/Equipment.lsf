@@ -68,10 +68,3 @@ FORM dialogEquipments 'Оборудование'
     
     LIST Equipment OBJECT o
 ;
-
-NAVIGATOR {
-    masterData {
-        NEW equipments;
-        NEW equipmentSerials;
-    }
-}
