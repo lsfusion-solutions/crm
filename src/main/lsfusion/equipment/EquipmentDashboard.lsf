@@ -12,12 +12,12 @@ EXTEND FORM subjectTypes PROPERTIES READONLY equipmentID(o);
 quantitySerial 'Кол-во серийных номеров' (Contract c) = GROUP SUM 1 BY contract(equipment(EquipmentSerial s));
 
 file = DATA FILE (Equipment);
-downloadFile 'Открыть файл лицензии' (Equipment a)  { open(file(a)); }
+downloadFile 'Открыть файл лицензии' (Equipment a)  { open(file(a), 'lic'); }
 
 generateLicense = FORMULA TEXT 'generateLicense($1,$2)';
 
 generateLicense 'Сгенерировать лицензию' (Equipment e) {
-    stringToFile((GROUP CONCAT generateLicense(equipmentID(subjectType(e)), number(EquipmentSerial s)) IF equipment(s) == e, '\r\r\n'), 'UTF-8', 'txt');
+    stringToFile((GROUP CONCAT generateLicense(equipmentID(subjectType(e)), number(EquipmentSerial s)) IF equipment(s) == e, '\r\r\n'), 'UTF-8', '');
     file(e) <- resultFile();
 }
 
