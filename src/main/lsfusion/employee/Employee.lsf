@@ -16,10 +16,20 @@ employee (VARSTRING[15] id) = GROUP AGGR Employee e BY id(e);
 inactive 'Неактивный' = DATA BOOLEAN (Employee);
 active 'Активный' (Employee e) = NOT inactive(e);
 
+//in 'Вкл.' = DATA BOOLEAN (Employee, UserRole);
+addRoles 'Дополнительные роли' (Employee e) = GROUP CONCAT name(UserRole r) IF in(e, r), ', ' CHARWIDTH 15;
+
+FORM dialogEmployeeRoles 'Роли'
+    OBJECTS e = Employee PANEL 
+    OBJECTS r = UserRole
+    PROPERTIES in(e, r), name(r) READONLY 
+;
+
 FORM employee 'Сотрудник'
     OBJECTS o = Employee PANEL
     PROPERTIES(o) id, number, login, sha256Password ON CHANGE changeSHA256Password(o), nameMainRole, firstName, lastName, middleName,
-                  shortName, fullName, fullNameRp, namePosition, nameLegalEntity, nameCustomer, email, phone, skype, note, inactive, authorisedDocument
+                  shortName, fullName, fullNameRp, namePosition, nameLegalEntity, nameCustomer, email, phone, skype, note, inactive, authorisedDocument,
+                  addRoles ON CHANGE { SHOW dialogEmployeeRoles OBJECTS e = o; }
         
     OBJECTS p = Phone
     PROPERTIES (p) nameType, number, NEW, DELETE 
@@ -44,6 +54,7 @@ DESIGN employee {
                 MOVE PROPERTY (login(o));
                 MOVE PROPERTY (sha256Password(o));
                 MOVE PROPERTY (nameMainRole(o));
+                MOVE PROPERTY (addRoles(o));
             }
             NEW client {
                 flex = 1;
@@ -92,7 +103,7 @@ DESIGN employee {
 }
 FORM employees 'Сотрудники'
     OBJECTS o = Employee
-    PROPERTIES(o) READONLYIF isReadonly() id, number, login, nameMainRole, name, namePosition, nameLegalEntity, email, 
+    PROPERTIES(o) READONLYIF isReadonly() id, number, login, name, namePosition, nameLegalEntity, nameMainRole, addRoles, email, 
                                           phone, addPhones, skype, note, inactive, authorisedDocument
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
     ORDER name(o)
