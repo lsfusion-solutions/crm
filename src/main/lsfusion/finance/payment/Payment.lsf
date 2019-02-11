@@ -70,7 +70,7 @@ WHEN LOCAL CHANGED (company(Payment p)) AND NOT CHANGED (account(p)) DO {
 }
 
 CONSTRAINT account(Payment p) AND NOT company(p) == legalEntity(account(p)) CHECKED BY account[Payment] MESSAGE 'Счёт платежа не соответствует компании';
-CONSTRAINT accountFrom(Payment p) AND NOT legalEntity(p) == legalEntity(accountFrom(p)) CHECKED BY accountFrom[Payment] MESSAGE 'Счёт с платежа не соответствует компании';
+CONSTRAINT accountFrom(Payment p) AND NOT company(p) == legalEntity(accountFrom(p)) CHECKED BY accountFrom[Payment] MESSAGE 'Счёт с платежа не соответствует компании';
 
 CLASS PaymentAccountLedger : AccountLedger;
 paymentAccountLedger = AGGR PaymentAccountLedger WHERE accountFrom(Payment payment);
