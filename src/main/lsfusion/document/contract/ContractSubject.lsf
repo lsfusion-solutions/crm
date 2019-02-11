@@ -4,7 +4,7 @@ REQUIRE Contract, Agreement, DocFile;
 
 NAMESPACE Contract;
 
-CLASS SubjectType 'Тип предмета';
+CLASS SubjectType 'Тип предмета договора';
 TABLE subjectType (SubjectType);
 
 id 'Код' = DATA VARSTRING[15] (SubjectType) CHARWIDTH 5 IN id;
@@ -12,7 +12,7 @@ subjectType (id) = GROUP AGGR SubjectType c BY id (c);
 
 name 'Наименование' = DATA VARISTRING[100] (SubjectType) CHARWIDTH 15;
 
-FORM subjectType 'Тип предмета'
+FORM subjectType 'Тип предмета договора'
     OBJECTS o = SubjectType PANEL
     PROPERTIES(o) id, name
     
