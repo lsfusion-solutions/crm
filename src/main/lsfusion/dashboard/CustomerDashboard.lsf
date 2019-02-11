@@ -1,7 +1,7 @@
 MODULE CustomerDashboard;
 
 REQUIRE Project, PaymentAct, Event, Issue, TimeEntry, Dashboard, LegalEntity, DocFile, TimeEntryCustomer, ProjectExternal, 
-        DebtAgreement, CustomerAttachment, AgreementIssue, CustomerTag, CustomerRole;
+        DebtAgreement, CustomerAttachment, AgreementIssue, ContractIssue, CustomerTag, CustomerRole;
 
 NAMESPACE Dashboard;
 
@@ -112,8 +112,8 @@ FORM dashboardCustomer 'Работа с клиентами'
     OBJECTS is = Issue
     PROPERTIES(is) in
     PROPERTIES(is) READONLY number, name, descriptionString, dateTo, dateTimeCreated, dateTimeUpdated, dateFrom, doneRatio, 
-                            estimatedHours, hours, nameProject, nameAuthor, nameAssignedTo, nameTracker, numberAgreement, nameAgreement
-    PROPERTIES DRAW is TOOLBAR changeStatus(is), setAgreement(c), open(is)
+                            estimatedHours, hours, nameProject, nameAuthor, nameAssignedTo, nameTracker, numberAgreement, nameAgreement, numberContract, nameContract
+    PROPERTIES DRAW is TOOLBAR changeStatus(is), setAgreement(c), setContract(c), open(is)
     FILTERS customer(is) == c, status(is) == st
     ORDER number(is) DESC
     
@@ -139,6 +139,10 @@ FORM dashboardCustomer 'Работа с клиентами'
     OBJECTS a = Agreement PANEL 
     PROPERTIES description(a) SELECTOR, printCustomerReportAgreement(c, a)
     FILTERS customer(a) == c
+    
+    OBJECTS con = Contract PANEL 
+    PROPERTIES description(con) SELECTOR, printCustomerReportContract(c, con)
+    FILTERS customer(con) == c
     
     OBJECTS at = Attachment
     PROPERTIES (at) READONLY id, nameCustomer, number, date, nameType, note, nameCreatedUser, createdDate
@@ -234,6 +238,15 @@ DESIGN dashboardCustomer {
                             charWidth = 50;
                         }
                         MOVE PROPERTY (printCustomerReportAgreement(c, a));
+                    }
+                    NEW reporContract {
+                        caption = 'Отчет по договору';
+                        type = CONTAINERH;
+                        MOVE PROPERTY (description(con)) { 
+                            caption = 'Договор'; 
+                            charWidth = 50;
+                        }
+                        MOVE PROPERTY (printCustomerReportContract(c, con));
                     }
                 }
                 NEW projectsTab {

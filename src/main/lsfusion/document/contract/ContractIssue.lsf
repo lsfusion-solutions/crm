@@ -1,0 +1,44 @@
+MODULE ContractIssue;
+
+REQUIRE Contract, Issue;
+
+NAMESPACE Contract;
+
+contract = DATA Contract(Issue);
+nameContract 'Договор' (Issue i) = name(contract(i));
+numberContract 'Номер договора' (Issue i) = number(contract(i));
+
+EXTEND FORM contract
+    OBJECTS i = Issue
+    PROPERTIES (i) READONLY number, name, descriptionString, dateTo, dateTimeCreated, dateTimeUpdated, dateFrom, doneRatio, estimatedHours, nameProject, 
+                            nameCustomer, nameAuthor, nameAssignedTo, nameTracker, nameStatus
+    
+    FILTERS contract(i) == o
+;
+
+DESIGN contract {
+    details {
+        MOVE BOX (i) { caption = 'Задачи'; }
+    }
+}
+
+FORM dialogContractsIssue 'Договоры'
+    OBJECTS c = Customer PANEL 
+    OBJECTS a = Contract
+    PROPERTIES (a) READONLY id, numberContract, number, date, name, nameType, sum, nameSendingWay, dateSending, dateReceiving, dateClosing, note, textString
+    FILTERS customer(a) == c
+    
+;
+
+setContract 'Привязать договор' (Customer c) {
+    NEWSESSION NESTED LOCAL {
+        DIALOG dialogContractsIssue OBJECTS c = c, a INPUT NULL DO {
+            FOR in(Issue i) DO {
+                contract(i) <- a;
+            }
+            APPLY;
+        }
+    }
+}
+
+CONSTRAINT contract(Issue i) AND customer(i) AND NOT customer(contract(i)) == customer(i) CHECKED BY contract[Issue] MESSAGE 'Клиент договора не соответствует клиенту задачи';

@@ -25,6 +25,7 @@
 	<field name="name(c)" class="java.lang.String"/>
 	<field name="nameFilterProject(c)" class="java.lang.String"/>
 	<field name="nameFilterAgreement()" class="java.lang.String"/>
+	<field name="nameFilterContract()" class="java.lang.String"/>
 	<field name="hoursFilterProject(c,df,dt)" class="java.math.BigDecimal"/>
 	<field name="_OBJVALUE_Project_customerReport_df(df)" class="java.util.Date"/>
 	<field name="_OBJVALUE_Project_customerReport_dt(dt)" class="java.util.Date"/>
@@ -57,7 +58,7 @@
 				<textElement textAlignment="Center">
 					<font size="12" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Отчёт по предприятию: " + $F{name(c)} + ($F{nameFilterProject(c)}!=null?(". Проект: " + $F{nameFilterProject(c)}):"") + ($F{nameFilterAgreement()}!=null?(". " + $F{nameFilterAgreement()}):"")]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Отчёт по предприятию: " + $F{name(c)} + ($F{nameFilterProject(c)}!=null?(". Проект: " + $F{nameFilterProject(c)}):"") + ($F{nameFilterAgreement()}!=null?(". " + $F{nameFilterAgreement()}):"") + ($F{nameFilterContract()}!=null?(". " + $F{nameFilterContract()}):"")]]></textFieldExpression>
 			</textField>
 		</band>
 	</title>
