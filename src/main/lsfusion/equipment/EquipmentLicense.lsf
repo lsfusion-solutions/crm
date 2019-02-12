@@ -1,0 +1,35 @@
+MODULE EquipmentLicense;
+
+REQUIRE Equipment;
+
+NAMESPACE Equipment;
+
+equipmentID 'Идентификатор оборудования' = DATA VARISTRING[20](SubjectType);
+
+EXTEND FORM subjectType PROPERTIES equipmentID(o);
+EXTEND FORM subjectTypes PROPERTIES READONLY equipmentID(o);
+
+file = DATA FILE (Equipment);
+downloadFile 'Открыть файл лицензии' (Equipment a)  { open(file(a), 'lic'); }
+
+generateLicense = FORMULA TEXT 'generateLicense($1,$2)';
+
+generateLicense 'Сгенерировать лицензию' (Equipment e) {
+    stringToFile((GROUP CONCAT generateLicense(equipmentID(subjectType(e)), number(EquipmentSerial s)) IF equipment(s) == e, '\r\r\n'), 'UTF-8', '');
+    file(e) <- resultFile();
+}
+
+EXTEND FORM equipment PROPERTIES generateLicense(o), downloadFile(o) SHOWIF TRUE IF file(o);
+
+DESIGN equipment {
+    BOX (o) {
+        GROUP (,o) {
+            columns = 3;
+        }
+        NEW lic {
+            type = CONTAINERH;
+            MOVE PROPERTY (generateLicense(o));
+            MOVE PROPERTY (downloadFile(o));
+        }
+    }
+}

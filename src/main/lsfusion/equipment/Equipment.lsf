@@ -30,7 +30,7 @@ createdTime(Equipment e) <- currentTime() WHEN SET (e IS Equipment);
 
 in (Contract c, SubjectType t) = GROUP SUM 1 BY contract(ContractSubject s), type(s);
 
-CONSTRAINT contract(Equipment e) AND NOT customer(contract(e)) == customer(e) CHECKED BY customer[Equipment] MESSAGE 'Клиент оборудования не является клиентом договора';
+CONSTRAINT contract(Equipment e) AND NOT customer(contract(e)) == customer(e) CHECKED BY contract[Equipment] MESSAGE 'Клиент оборудования не является клиентом договора';
 
 WHEN LOCAL CHANGED (contract(Equipment e)) AND NOT CHANGED (customer(e)) DO {
     customer(e) <- customer(contract(e));
@@ -69,7 +69,7 @@ quantitySerial 'Кол-во серийных номеров' (Equipment e) = OVE
 
 FORM equipment 'Оборудование'
     OBJECTS o = Equipment PANEL
-    PROPERTIES(o) nameSubjectType, nameContract, nameCustomer, note, quantitySerial
+    PROPERTIES(o) nameSubjectType, nameCustomer, nameContract, note, quantitySerial
     
     OBJECTS s = EquipmentSerial
     PROPERTIES (s) number, NEW, DELETE 
@@ -110,8 +110,8 @@ importEquipments () {
             }
             
             FOR imported(INTEGER i) AND i > 0 DO NEW e = Equipment {
-                customer(e) <- customer(idCustomer(i));
                 contract(e) <- contract(idContract(i));
+                customer(e) <- OVERRIDE customer(contract(idContract(i))), customer(idCustomer(i));
                 createdUser(e) <- employee(idEmployee(i));
                 subjectType(e) <- GROUP MAX SubjectType t IF name(t) == trim(subject(i));
                 dataQuantitySerial(e) <- quantity(i);
@@ -119,11 +119,13 @@ importEquipments () {
                 note(e) <- VARISTRING[250] (trim(note(i)));
                 comment(e) <- serials(i);
                 
+                serials(i) <- replace(serials(i), '\n', '');
+                
                 FOR serials(i) != '' AND iterate(INTEGER j, 1, wordCount(serials(i), ';')) 
-                    AND VARISTRING[250](replace(getWord(serials(i), ';', j), '\n', '')) != '' DO NEW s = EquipmentSerial {
+                    AND VARISTRING[250](getWord(serials(i), ';', j)) != '' DO NEW s = EquipmentSerial {
                     
                     equipment(s) <- e;
-                    number(s) <- VARISTRING[250] (replace(getWord(serials(i), ';', j), '\n', ''));
+                    number(s) <- VARISTRING[250] (getWord(serials(i), ';', j));
                 }
             }
         }
