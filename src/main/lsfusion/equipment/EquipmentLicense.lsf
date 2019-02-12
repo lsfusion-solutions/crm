@@ -18,17 +18,4 @@ generateLicense 'Сгенерировать лицензию' (Equipment e) {
     file(e) <- resultFile();
 }
 
-EXTEND FORM equipment PROPERTIES generateLicense(o), downloadFile(o) SHOWIF TRUE IF file(o);
-
-DESIGN equipment {
-    BOX (o) {
-        GROUP (,o) {
-            columns = 3;
-        }
-        NEW lic {
-            type = CONTAINERH;
-            MOVE PROPERTY (generateLicense(o));
-            MOVE PROPERTY (downloadFile(o));
-        }
-    }
-}
+CONSTRAINT DROPPED (Equipment e IS Equipment) AND PREV (file(e)) MESSAGE 'Нельзя удалять оборудование, у когорого есть файл лицензии';

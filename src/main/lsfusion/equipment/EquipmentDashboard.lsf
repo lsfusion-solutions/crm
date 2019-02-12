@@ -1,6 +1,6 @@
 MODULE EquipmentDashboard;
 
-REQUIRE Equipment, Dashboard, Utils;
+REQUIRE EquipmentLicense, Dashboard, Utils;
 
 NAMESPACE Equipment;
 
@@ -32,8 +32,8 @@ FORM equipmentDashboard 'Оборудование'
     
     OBJECTS e = Equipment
     PROPERTIES (e) READONLY note, quantitySerial, nameCreatedUser, createdDate, createdTime
-    PROPERTIES addEquipment(t, c) DRAW e TOOLBAR 
-    PROPERTIES (e) NEWSESSION EDIT, DELETE 
+    PROPERTIES DRAW e TOOLBAR generateLicense(e), downloadFile(e) SHOWIF TRUE IF file(e), addEquipment(t, c) 
+    PROPERTIES (e) NEWSESSION EDIT, DELETE SHOWIF TRUE IF NOT file(e)
     FILTERS subjectType(e) == t, customer(e) == c, contract(e) == filterContract(t, c) OR NOT filterContract(t, c)
     
     OBJECTS n = EquipmentSerial
