@@ -4,6 +4,11 @@ REQUIRE TimeEntry, ProjectExternal;
 
 NAMESPACE Project;
 
+daysImportTimeEntry 'За сколько дней импортировать отметки времени' = DATA INTEGER ();
+
+EXTEND FORM options PROPERTIES daysImportTimeEntry();
+DESIGN options { commons { MOVE PROPERTY (daysImportTimeEntry()); } }
+
 importTimeEntry 'Импорт отметок времени' (External e) {
     NEWSESSION {
         LOCAL id = INTEGER(INTEGER);
@@ -22,12 +27,13 @@ importTimeEntry 'Импорт отметок времени' (External e) {
         
         IMPORT TABLE FROM file() TO id, hours, comments, spent_on, activity_name, project_id, login, issue_id;
         
-        FOR INTEGER ii = [GROUP MIN INTEGER i BY VARSTRING[15](id(i))](VARSTRING[15] id) AND id != '' AND NOT timeEntry(id, e) DO NEW s = TimeEntry {
+        FOR INTEGER ii = [GROUP MIN INTEGER i IF NOT daysBetweenDates(currentDate(), spent_on(i)) > daysImportTimeEntry() BY VARSTRING[15](id(i))](VARSTRING[15] id)
+            AND id != '' AND NOT timeEntry(id, e) DO NEW s = TimeEntry {
             id(s) <- id;
             external(s) <- e;
         }
         
-        FOR TimeEntry s = timeEntry(VARSTRING[15](id(INTEGER i)), e) AND id(i) DO {
+        FOR TimeEntry s = timeEntry(VARSTRING[15](id(INTEGER i)), e) AND id(i) AND NOT daysBetweenDates(currentDate(), spent_on(i)) > daysImportTimeEntry() DO {
         
             hours(s) <- hours(i);
             comments(s) <- comments(i);
@@ -38,14 +44,15 @@ importTimeEntry 'Импорт отметок времени' (External e) {
             issue(s) <- issue(VARSTRING[15](issue_id(i)), e);
         }
         
-        FOR external(TimeEntry s) == e AND NOT [GROUP SUM 1 IF imported(INTEGER i) BY VARSTRING[15](id(i))](id(s)) DO {
+        FOR external(TimeEntry s) == e AND NOT daysBetweenDates(currentDate(), date(s)) > daysImportTimeEntry() AND 
+            NOT [GROUP SUM 1 IF imported(INTEGER i) AND NOT daysBetweenDates(currentDate(), spent_on(i)) > daysImportTimeEntry() BY VARSTRING[15](id(i))](id(s)) DO {
             DELETE s;
         }
         
         message() <- '';
         count() <- 0;
         
-        FOR imported(INTEGER i) AND NOT [GROUP MAX Employee p BY login(p)](trim(login(i))) DO {
+        FOR imported(INTEGER i) AND NOT [GROUP MAX Employee p BY login(p)](trim(login(i))) AND NOT daysBetweenDates(currentDate(), spent_on(i)) > daysImportTimeEntry() DO {
             count() <- count() + 1;
             message() <- CONCAT ' ', message() + '\r\nстрока:', (i + 1), 'login:', trim(login(i));
         }
