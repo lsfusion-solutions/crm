@@ -19,10 +19,12 @@ filterContract = DATA LOCAL Contract();
 nameFilterContract 'Соглашение' () = description(filterContract());
 
 hoursFilterProject 'Трудозатраты' (Customer c, DATE  df, DATE dt) = 
-    GROUP SUM hours(TimeEntry t) IF date(t) >= df AND date(t) <= dt AND (customer(t) == c OR customer(project(t)) == c OR customer(issue(t)) == c)
+    GROUP SUM hours(TimeEntry t) IF date(t) >= df AND date(t) <= dt 
+        AND (customer(t) == c OR customer(project(t)) == c OR customer(issue(t)) == c)
         AND (project(t) == filterProject(c) OR project(issue(t)) == filterProject(c) OR NOT filterProject(c)) 
         AND (agreement(issue(t)) == filterAgreement() OR NOT filterAgreement()) 
-        AND (contract(issue(t)) == filterContract() OR NOT filterContract());
+        AND (contract(issue(t)) == filterContract() OR NOT filterContract())
+        AND ((withoutAgreements() AND NOT agreement(issue(t))) OR NOT withoutAgreements() OR filterAgreement() OR filterContract());
     
 CONSTRAINT filterProject(Customer c) AND NOT customer(filterProject(c)) == c CHECKED BY filterProject[Customer] MESSAGE 'Проект не соответсвует клиенту';
 

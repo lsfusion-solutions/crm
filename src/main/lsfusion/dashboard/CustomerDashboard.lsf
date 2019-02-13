@@ -113,7 +113,7 @@ FORM dashboardCustomer 'Работа с клиентами'
     PROPERTIES(is) in
     PROPERTIES(is) READONLY number, name, descriptionString, dateTo, dateTimeCreated, dateTimeUpdated, dateFrom, doneRatio, 
                             estimatedHours, hours, nameProject, nameAuthor, nameAssignedTo, nameTracker, numberAgreement, nameAgreement, numberContract, nameContract
-    PROPERTIES DRAW is TOOLBAR changeStatus(is), setAgreement(c), setContract(c), open(is)
+    PROPERTIES DRAW is TOOLBAR changeStatus(is), open(is)
     FILTERS customer(is) == c, status(is) == st
     ORDER number(is) DESC
     
@@ -132,17 +132,6 @@ FORM dashboardCustomer 'Работа с клиентами'
     FILTERGROUP open FILTER 'Открытые' NOT isClosed(status(ss)) DEFAULT 
     FILTERGROUP inner FILTER 'Внутренние' NOT external(ss) DEFAULT 
     ORDER number(ss) DESC
-    
-    OBJECTS cd = (df = DATE, dt = DATE) PANEL 
-    PROPERTIES dFrom 'Дата с' = VALUE (df), dTo 'Дата по' =  VALUE (dt), nameFilterProject(c), printCustomerReport(c, df, dt), withoutAgreements()
-    
-    OBJECTS a = Agreement PANEL 
-    PROPERTIES description(a) SELECTOR, printCustomerReportAgreement(c, a)
-    FILTERS customer(a) == c
-    
-    OBJECTS con = Contract PANEL 
-    PROPERTIES description(con) SELECTOR, printCustomerReportContract(c, con)
-    FILTERS customer(con) == c
     
     OBJECTS at = Attachment
     PROPERTIES (at) READONLY id, nameCustomer, number, date, nameType, note, nameCreatedUser, createdDate
@@ -219,36 +208,6 @@ DESIGN dashboardCustomer {
             NEW projects {
                 caption = 'Проекты';
                 fill = 1;
-                NEW reports {
-                    type = CONTAINERH;
-                    NEW report {
-                        caption = 'Отчет по клиенту';
-                        type = CONTAINERH;
-                        MOVE PROPERTY (dFrom);
-                        MOVE PROPERTY (dTo);
-                        MOVE PROPERTY (nameFilterProject(c));
-                        MOVE PROPERTY (printCustomerReport(c, df, dt));
-                        MOVE PROPERTY (withoutAgreements());
-                    }
-                    NEW reportAgreement {
-                        caption = 'Отчет по соглашению';
-                        type = CONTAINERH;
-                        MOVE PROPERTY (description(a)) { 
-                            caption = 'Соглашение'; 
-                            charWidth = 50;
-                        }
-                        MOVE PROPERTY (printCustomerReportAgreement(c, a));
-                    }
-                    NEW reporContract {
-                        caption = 'Отчет по договору';
-                        type = CONTAINERH;
-                        MOVE PROPERTY (description(con)) { 
-                            caption = 'Договор'; 
-                            charWidth = 50;
-                        }
-                        MOVE PROPERTY (printCustomerReportContract(c, con));
-                    }
-                }
                 NEW projectsTab {
                     type = TABBED;
                     fill = 1;

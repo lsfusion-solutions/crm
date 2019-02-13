@@ -1,0 +1,142 @@
+MODULE CustomerTime;
+
+REQUIRE Customer, Dashboard, ContractSubject, TimeEntryCustomer, ContractIssue, AgreementIssue;
+
+NAMESPACE Customer;
+
+calcHours 'Считать часы' = DATA BOOLEAN (ContractType);
+
+EXTEND FORM contractType PROPERTIES calcHours(o);
+EXTEND FORM contractTypes PROPERTIES READONLY calcHours(o);
+
+subjectTypeHours = DATA SubjectType();
+nameSubjectTypeHours 'Тип предмета договора, обозначающий часы' () = name(subjectTypeHours());
+
+EXTEND FORM options PROPERTIES nameSubjectTypeHours();
+DESIGN options { commons { MOVE PROPERTY (nameSubjectTypeHours()); } }
+
+quantityHours 'Кол-во часов' (Customer c, Month m, INTEGER y) = GROUP SUM quantity(ContractSubject s) 
+    IF type(s) == subjectTypeHours() AND calcHours(type(contract(s))) BY customer(contract(s)), extractMonth(date(s)), extractYear(date(s));
+
+hours 'Трудозатраты' (Customer c, Month m, INTEGER y) = GROUP SUM hours(TimeEntry t) BY customer(t), month(t), year(t);
+hoursWithoutDocs 'Трудозатраты без привязки к документам' (Customer c, Month m, INTEGER y) = 
+    GROUP SUM hours(TimeEntry t) IF NOT contract(issue(t)) AND NOT agreement(issue(t)) BY customer(t), month(t), year(t);
+
+FORM customerTimeDashboard 'Выставление счетов'
+    OBJECTS y = INTEGER PANEL, m = Month PANEL 
+    PROPERTIES year 'Год' = VALUE (y), month 'Месяц' = staticCaption(m) SELECTOR 
+    
+    OBJECTS c = Customer
+    PROPERTIES READONLY name(c), quantityHours(c, m, y), hours(c, m, y), hoursWithoutDocs(c, m, y)
+    FILTERS quantityHours(c, m, y) OR hours(c, m, y)
+    ORDER name(c)
+    
+    OBJECTS t = TimeEntry
+    PROPERTIES (t) READONLY id, hours, commentsString, date, nameActivity, nameProject, nameEmployee, numberIssue, nameIssue
+    FILTERS customer(t) == c, month(t) == m, year(t) == y
+    ORDER date(t) DESC
+          
+    OBJECTS st = IssueStatus
+    PROPERTIES (st) READONLY name
+    PROPERTIES READONLY count(c, st)
+    FILTERS count(c, st)
+      
+    OBJECTS is = Issue
+    PROPERTIES(is) in
+    PROPERTIES(is) READONLY number, name, descriptionString, dateTo, dateTimeCreated, dateTimeUpdated, dateFrom, doneRatio, 
+                            estimatedHours, hours, nameProject, nameAuthor, nameAssignedTo, nameTracker, numberAgreement, nameAgreement, numberContract, nameContract
+    PROPERTIES DRAW is TOOLBAR changeStatus(is), setAgreement(c), setContract(c), open(is)
+    FILTERS customer(is) == c, status(is) == st
+    ORDER number(is) DESC
+    
+    OBJECTS cd = (df = DATE, dt = DATE) PANEL 
+    PROPERTIES dFrom 'Дата с' = VALUE (df), dTo 'Дата по' =  VALUE (dt), nameFilterProject(c) PANEL, printCustomerReport(c, df, dt), withoutAgreements()
+    
+    OBJECTS a = Agreement PANEL 
+    PROPERTIES description(a) SELECTOR, printCustomerReportAgreement(c, a)
+    FILTERS customer(a) == c
+    
+    OBJECTS con = Contract PANEL 
+    PROPERTIES description(con) SELECTOR, printCustomerReportContract(c, con)
+    FILTERS customer(con) == c
+    
+    EVENTS ON INIT {
+        SEEK customerTimeDashboard.y = currentYear();
+        SEEK customerTimeDashboard.m = currentMonth();
+    }
+;
+
+DESIGN customerTimeDashboard {
+    OBJECTS {
+        NEW head FIRST {
+            caption = 'Фильтры';
+            type = CONTAINERH;
+            MOVE PROPERTY (year);
+            MOVE PROPERTY (month);
+        }
+        NEW main AFTER head {
+            type = SPLITH;
+            fill = 1;
+            MOVE BOX (c) { fill = 1; }
+            NEW tab {
+                type = TABBED;
+                fill = 3;
+                NEW timeEntries {
+                    caption = 'Отмеченное время';
+                    NEW report {
+                        caption = 'Отчет по клиенту';
+                        type = CONTAINERH;
+                        MOVE PROPERTY (dFrom);
+                        MOVE PROPERTY (dTo);
+                        MOVE PROPERTY (nameFilterProject(c));
+                        MOVE PROPERTY (printCustomerReport(c, df, dt));
+                        MOVE PROPERTY (withoutAgreements());
+                    }
+                    MOVE BOX (t);
+                }
+                NEW issues {
+                    caption = 'Задачи';
+                    fill = 1;
+                    NEW docReport {
+                        type = CONTAINERH;
+                        NEW reportAgreement {
+                            caption = 'Отчет по соглашению';
+                            type = CONTAINERH;
+                            MOVE PROPERTY (description(a)) { 
+                                caption = 'Соглашение'; 
+                                charWidth = 50;
+                            }
+                            MOVE PROPERTY (printCustomerReportAgreement(c, a));
+                        }
+                        NEW reporContract {
+                            caption = 'Отчет по договору';
+                            type = CONTAINERH;
+                            MOVE PROPERTY (description(con)) { 
+                                caption = 'Договор'; 
+                                charWidth = 50;
+                            }
+                            MOVE PROPERTY (printCustomerReportContract(c, con));
+                        }
+                    }
+                    NEW issuesBox {
+                        type = SPLITH;
+                        fill = 1;
+                        MOVE BOX (st) {
+                            fill = 1;
+                        }  
+                        MOVE BOX (is) { 
+                            caption = 'Задачи'; 
+                            fill = 5;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+NAVIGATOR {
+    dashboard {
+        NEW customerTimeDashboard;
+    }
+}
