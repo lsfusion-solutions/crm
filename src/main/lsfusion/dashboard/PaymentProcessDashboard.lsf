@@ -19,18 +19,6 @@ post 'Провести все' (DATE df, DATE dt) {
     }
 } CONFIRM;
 
-addPayment 'Добавить' (DATE d) {
-    NEW p = Payment {
-        date(p) <- d;
-    }
-} IMAGE 'add.png'  CHANGEKEY 'INSERT' HIDE;
-
-addExpense 'Добавить' (DATE d) {
-    NEW e = Expense {
-        date(e) <- d;
-    }
-} IMAGE 'add.png'  CHANGEKEY 'INSERT' HIDE;
-
 backgroundAgreement(Payment p) = RGB (222, 255, 222) IF [GROUP SUM 1 BY contract(Agreement a)](contract(p)) AND NOT agreement(p);
 
 filterCustomer = DATA LOCAL Customer();
@@ -49,22 +37,41 @@ FORM paymentProcessDasboard 'Обработка платежей'
     PROPERTIES dfrom 'Дата с' = VALUE (df), dto 'Дата по' = VALUE (dt), post(df, dt), nameFilterCustomer()
     
     OBJECTS p = Payment
-    PROPERTIES DRAW p TOOLBAR showCustomerDashboard(p) SHOWIF customer(p), addPayment(dt) 
+    PROPERTIES DRAW p TOOLBAR showCustomerDashboard(p) SHOWIF customer(p)
     PROPERTIES (p) isPosted, id, nameLegalEntity, nameCustomer, nameCompany, numberContract, dateContract, nameContract, nameTypeContract READONLY, 
                    numberAgreement BACKGROUND backgroundAgreement(p), nameAgreement BACKGROUND backgroundAgreement(p), numberAct, number, date, year READONLY, 
-                   monthNumber READONLY, nameType, sum, shortNameCurrency, sumCurrency, numberAccount, numberAccountFrom BACKGROUND backgroundNumberAccountFrom(p), note, DELETE 
+                   monthNumber READONLY, nameType, sum, shortNameCurrency, sumCurrency, numberAccount, numberAccountFrom BACKGROUND backgroundNumberAccountFrom(p), note 
     PROPERTIES(p) TOOLBAR split
     ORDER date(p), nameLegalEntity(p), nameCompany(p), numberContract(p)
     FILTERS date(p) >= df AND date(p) <= dt 
     FILTERGROUP postedP FILTER 'Не проведен' NOT isPosted(p) DEFAULT 
                                        
     OBJECTS e = Expense
-    PROPERTIES DRAW e TOOLBAR showCustomerDashboard(e) SHOWIF customer(e), addExpense(dt)
+    PROPERTIES DRAW e TOOLBAR showCustomerDashboard(e) SHOWIF customer(e)
     PROPERTIES (e) isPosted, nameCompany, nameLegalEntity, nameCustomer, date, datePayment, nameType, sum, shortNameCurrency, sumCurrency, 
-                   numberAccount, numberAccountTo BACKGROUND backgroundNumberAccountTo(e), noteString, DELETE 
+                   numberAccount, numberAccountTo BACKGROUND backgroundNumberAccountTo(e), noteString 
     ORDER date(e)
     FILTERS date(e) >= df AND date(e) <= dt, customer(p) == filterCustomer() OR NOT filterCustomer()
     FILTERGROUP postedE FILTER 'Не проведен' NOT isPosted(e) DEFAULT 
+;
+
+addPayment 'Добавить' (DATE d) {
+    NEW p = Payment {
+        date(p) <- d;
+        SEEK paymentProcessDasboard.p = p;
+    }
+} IMAGE 'add.png'  CHANGEKEY 'INSERT' HIDE;
+
+addExpense 'Добавить' (DATE d) {
+    NEW e = Expense {
+        date(e) <- d;
+        SEEK paymentProcessDasboard.e = e;
+    }
+} IMAGE 'add.png'  CHANGEKEY 'INSERT' HIDE;
+
+EXTEND FORM paymentProcessDasboard
+    PROPERTIES DRAW p TOOLBAR addPayment(dt), DELETE(p) 
+    PROPERTIES DRAW e TOOLBAR addExpense(dt), DELETE(e)
 ;
 
 NAVIGATOR {
