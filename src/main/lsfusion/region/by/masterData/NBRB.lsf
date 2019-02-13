@@ -91,7 +91,7 @@ fillCrossFromTo 'Пересчитать обратный и кросс-курс 
                 rate(t, Currency c, DATE date) <- NUMERIC[15,8]( 1 / (rate(parent(t), currency(t), dateCur()) IF rate(parent(t), currency(t), dateCur())!=0)) 
                     WHERE date == dateCur() AND c ==currency(parent(t));
             } ELSE {
-                rate(t, Currency c, DATE date) <- NUMERIC[15,8](rateOn(parent(t), currency(t),dateCur())/(rateOn(parent(t), c, dateCur()) IF rateOn(parent(t), c, dateCur())!=0)) WHERE date == dateCur() AND c IS Currency;
+                rate(t, Currency c, DATE date) <- NUMERIC[15,8](rateOn(parent(t), c, dateCur())/(rateOn(parent(t), currency(t), dateCur()) IF rateOn(parent(t), currency(t), dateCur())!=0)) WHERE date == dateCur() AND c IS Currency;
             
             }        
         }
