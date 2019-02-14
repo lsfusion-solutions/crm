@@ -93,6 +93,7 @@ active (Agreement c) = NOT dateClosing(c) <= currentDate();
 note 'Примечание' = DATA VARISTRING[100](Agreement) CHARWIDTH 20;
 text 'Текст' = DATA TEXT (Agreement);
 textString 'Текст' (Agreement c) = VARISTRING[500](text(c)) CHARWIDTH 20;
+terms 'Условия' = DATA TEXT (Agreement) CHARWIDTH 20;
 
 sendingWay = DATA SendingWay(Agreement);
 nameSendingWay 'Способ отправки документа' (Agreement c) = name(sendingWay(c));
@@ -124,9 +125,9 @@ docType(Agreement a) += DocType.agreement IF a IS Agreement;
 
 FORM agreement 'Соглашение'
     OBJECTS o = Agreement PANEL
-    PROPERTIES(o) id, nameNumerator, series, number, date, name, nameType, numberContract, nameCustomer READONLY, nameLegalEntity READONLY, sum, 
+    PROPERTIES(o) id, nameNumerator, series, number, date, name, nameType, numberContract, nameCustomer READONLY, nameLegalEntity READONLY, sum,
                   dateSending, dateReceiving, dateClosing, note, text, nameCompany READONLY, nameAuthorisedPersonLegalEntity, nameAuthorisedPersonCompany, 
-                  authorisedDocumentLegalEntity, authorisedDocumentCompany, nameSendingWay
+                  authorisedDocumentLegalEntity, authorisedDocumentCompany, nameSendingWay, terms
     
     EDIT Agreement OBJECT o
 ;
@@ -195,10 +196,24 @@ DESIGN agreement {
             type = TABBED;
             fill = 1;
             NEW text {
-                caption = 'Текст';
-                MOVE PROPERTY (text(o)) { 
-                    caption = '';
+                caption = 'Содержание';
+                fill = 1;
+                type = CONTAINERH;
+                NEW texts {
+                    caption = 'Текст';
                     fill = 1;
+                    MOVE PROPERTY (text(o)) { 
+                        caption = '';
+                        fill = 1;
+                    }
+                }
+                NEW terms {
+                    caption = 'Условия';
+                    fill = 1;
+                    MOVE PROPERTY (terms(o)) { 
+                        caption = '';
+                        fill = 1;
+                    }
                 }
             }
         }
