@@ -16,6 +16,7 @@ balance 'Остаток' (Account a) = GROUP SUM sum(AccountLedger l) BY account
 balanceCurrency 'Остаток в валюте' (Account a) = round2(balance(a) * OVERRIDE (rateOn(defaultTypeExchange(), currency(a), currentDate())), 1);
 
 balance 'Остаток' (Account a, DATE d) = balance(a) (-) [GROUP SUM sum(AccountLedger l) IF iterate(date(l), sum(d, 1), currentDate()) BY account(l)](a);
+balanceAccounts 'Сумма остатков' (DATE d) = GROUP SUM balance(Account a, d);
 
 FORM accountBalances 'Остатки по счетам'
     OBJECTS a = Account
@@ -35,6 +36,11 @@ FORM accountBalances 'Остатки по счетам'
     PROPERTIES vd 'Дата' = VALUE(d), balance(a, d)
     ORDER vd DESC 
     FILTERS iterate(d, df, dt)
+    
+    OBJECTS dd = DATE 
+    PROPERTIES dd 'Дата' = VALUE (dd), balanceAccounts(dd)
+    ORDER dd DESC 
+    FILTERS iterate(dd, df, dt)
 ;
 
 DESIGN accountBalances {
@@ -50,7 +56,12 @@ DESIGN accountBalances {
                 NEW balances {
                     caption = 'Динамика остатка';
                     MOVE BOX (dates);
-                    MOVE BOX (d);
+                    NEW balance {
+                        type = CONTAINERH;
+                        fill = 1;
+                        MOVE BOX (d) { caption = 'По счёту'; }
+                        MOVE BOX (dd) { caption = 'По всем счетам'; }
+                    }
                 }
             }
         }
