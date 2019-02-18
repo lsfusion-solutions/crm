@@ -63,7 +63,7 @@ numberAgreement 'Номер соглашения' (Act a) = number(agreement(a))
 CONSTRAINT contract(Act a) != contract(agreement(a)) CHECKED BY agreement[Act] MESSAGE 'Договор акта не соответствует договору';
 
 date 'Дата' = DATA DATE (Act) IN id;
-year 'Год' = DATA YEAR (Act) IN id;
+year 'Год' (Act a) = extractYear(date(a));
 
 fromDate 'Дата с' = DATA DATE (Act);
 toDate 'Дата по' = DATA DATE (Act);
