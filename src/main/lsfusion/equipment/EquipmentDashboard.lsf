@@ -31,7 +31,7 @@ FORM equipmentDashboard 'Оборудование'
     PROPERTIES name(t) SELECTOR, nameFilterContract(t, c), name(c) SELECTOR, quantitySerial(c, t) READONLY 
     
     OBJECTS e = Equipment
-    PROPERTIES (e) READONLY note, quantitySerial, nameCreatedUser, createdDate, createdTime
+    PROPERTIES (e) READONLY note, quantitySerial, nameCreatedUser, createdDate, createdTime, nameContract, nameLegalEntityContract
     PROPERTIES DRAW e TOOLBAR generateLicense(e), downloadFile(e) SHOWIF TRUE IF file(e), addEquipment(t, c) 
     PROPERTIES (e) NEWSESSION EDIT, DELETE SHOWIF TRUE IF NOT file(e)
     FILTERS subjectType(e) == t, customer(e) == c, contract(e) == filterContract(t, c) OR NOT filterContract(t, c)
@@ -39,6 +39,12 @@ FORM equipmentDashboard 'Оборудование'
     OBJECTS n = EquipmentSerial
     PROPERTIES (n) READONLY number
     FILTERS equipment(n) == e
+    
+    OBJECTS es = EquipmentSerial
+    PROPERTIES (es) READONLY noteEquipment, quantitySerialEquipment, nameCreatedUserEquipment, createdDateEquipment, 
+                             createdTimeEquipment, nameSubjectTypeEquipment, nameContractEquipment, nameLegalEntityContractEquipment, number
+    FILTERS customer(equipment(es)) == c
+    ORDER createdDateEquipment(es), createdTimeEquipment(es)
 ;
 
 DESIGN equipmentDashboard {
@@ -51,11 +57,17 @@ DESIGN equipmentDashboard {
             MOVE PROPERTY (nameFilterContract(t, c)) { caption = 'Договор'; }
             MOVE PROPERTY (quantitySerial(c, t));
         }
-        NEW equip {
-            type = CONTAINERH;
+        NEW tab {
+            type = TABBED;
             fill = 1;
-            MOVE BOX (e);
-            MOVE BOX (n);
+            NEW equip {
+                caption = 'Оборудование';
+                type = CONTAINERH;
+                fill = 1;
+                MOVE BOX (e);
+                MOVE BOX (n);
+            }
+            MOVE BOX (es) { caption = 'Серийные номера по клиенту'; }
         }
     }
 }

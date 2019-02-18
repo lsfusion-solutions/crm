@@ -13,6 +13,7 @@ nameCustomer 'Клиент' (Equipment e) = name(customer(e));
 
 contract = DATA Contract(Equipment);
 nameContract 'Договор' (Equipment e) = description(contract(e));
+nameLegalEntityContract 'Организация договора' (Equipment e) = name(legalEntity(contract(e)));
 
 subjectType = DATA SubjectType(Equipment);
 nameSubjectType 'Тип предмета договора' (Equipment e) = name(subjectType(e));
@@ -66,6 +67,15 @@ FORM dialogEquipmentSerials 'Серийные номера'
 dataQuantitySerial 'Кол-во серийных номеров' = DATA INTEGER (Equipment);
 overQuantitySerial 'Кол-во серийных номеров' (Equipment e) = GROUP SUM 1 BY equipment(EquipmentSerial s);
 quantitySerial 'Кол-во серийных номеров' (Equipment e) = OVERRIDE dataQuantitySerial(e), overQuantitySerial(e);
+
+noteEquipment 'Примечание' (EquipmentSerial s) = note(equipment(s));
+quantitySerialEquipment 'Кол-во серийных номеров' (EquipmentSerial s) = quantitySerial(equipment(s));
+nameCreatedUserEquipment 'Создан пользователем' (EquipmentSerial s) = nameCreatedUser(equipment(s));
+createdDateEquipment 'Дата создания' (EquipmentSerial s) = createdDate(equipment(s));
+createdTimeEquipment 'Время создания' (EquipmentSerial s) = createdTime(equipment(s));
+nameContractEquipment 'Договор' (EquipmentSerial s) = nameContract(equipment(s));
+nameLegalEntityContractEquipment 'Организация договора' (EquipmentSerial s) = nameLegalEntityContract(equipment(s));
+nameSubjectTypeEquipment 'Тип предмета договора' (EquipmentSerial s) = nameSubjectType(equipment(s));
 
 FORM equipment 'Оборудование'
     OBJECTS o = Equipment PANEL
