@@ -83,6 +83,16 @@ printAgreementWord 'Сформировать по шаблону' (Agreement ag)
         value(TemplateEntry d) <- OVERRIDE postcodeBank(legalEntity(ag)), '' WHERE key(d) = 'POSTCODE_BANK_LEGAL_ENTITY' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE addressBank(legalEntity(ag)), '' WHERE key(d) = 'ADDRESS_BANK_LEGAL_ENTITY' AND template (d) == t;
         value(TemplateEntry d) <- OVERRIDE mfoBank(legalEntity(ag)), '' WHERE key(d) = 'MFO_BANK_LEGAL_ENTITY' AND template (d) == t;
+        
+        FOR AgreementSubject cs = [GROUP LAST AgreementSubject css ORDER date(css) IF date(css) <= date(agreement(css)) BY type(css), agreement(css)](SubjectType cst, ag) DO {
+        
+            value(TemplateEntry d) <- TEXT (quantity(cs)) WHERE key(d) = id(cst) + '_QUANTITY' AND template (d) == t;
+            value(TemplateEntry d) <- TEXT (round2(price(cs))) WHERE key(d) = id(cst) + '_PRICE_NUMERIC' AND template (d) == t;
+            value(TemplateEntry d) <- numSpelledCurrency(price(cs), '00d', currency(contract(ag))) WHERE key(d) = id(cst) + '_PRICE_WORDS' AND template (d) == t;
+            value(TemplateEntry d) <- TEXT (round2(sum(cs))) WHERE key(d) = id(cst) + '_SUM_NUMERIC' AND template (d) == t;
+            TRY { value(TemplateEntry d) <- numSpelledCurrency(sum(cs), '00d', currency(contract(ag))) WHERE key(d) = id(cst) + '_SUM_WORDS' AND template (d) == t; }
+        }
+        
         overPrintAgreementWord(ag, t);
         SHOW editTemplate OBJECTS t = t;
     }
