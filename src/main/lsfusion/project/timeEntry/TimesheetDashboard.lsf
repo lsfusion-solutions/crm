@@ -4,7 +4,7 @@ REQUIRE TimeEntryTotalDashboard, TimeEntryAbsense;
 
 NAMESPACE Project;
 
-absenseHours 'Часы' (Employee e, AbsenceReason r, INTEGER y) = GROUP SUM hours(Absence a) (-) workedHours(a) BY employee(a), reason(a), extractYear(date(a));
+absenseHours 'Часы' (Employee e, AbsenceReason r, INTEGER y) = GROUP SUM hours(Absence a) (-) workedHours(a) BY employee(a), reason(a), extractYear(dateFrom(a));
 
 addTimeEntry 'Добавить' (DATE d) {
     NEWSESSION NEW t = TimeEntry {
