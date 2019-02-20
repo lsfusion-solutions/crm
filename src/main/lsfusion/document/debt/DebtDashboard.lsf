@@ -14,7 +14,7 @@ FORM dialogActTemplates 'Шаблоны Word'
 ;
 
 changeActTemplate (Contract c) {
-    DIALOG dialogActTemplates OBJECTS t INPUT DO {
+    DIALOG dialogActTemplates OBJECTS t INPUT NULL DO {
         actTemplate(c) <- t;
     }
 }
@@ -126,6 +126,10 @@ createActs 'Создать акты' () {
                 text(a) <- text(c);
             }
             created(a) <- TRUE;
+        }
+        
+        IF GROUP SUM 1 IF created(Act a) AND NOT actTemplate(contract(a)) THEN {
+            MESSAGE 'Для договоров № ' + (GROUP CONCAT (OVERRIDE number(contract(Act a)), 'б/н') IF created(a) AND NOT actTemplate(contract(a)), ', ' ORDER date(contract(a))) + ' не выбран шаблон для актов';
         }
         
         SHOW requiredTemplateEntries OBJECTS d = currentDate();
