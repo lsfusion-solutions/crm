@@ -41,6 +41,7 @@ createActFiles 'Сформировать' (DATE dd, DATE df, DATE dt) {
             FOR in(VARISTRING[100] key) AND text(key) DO {
                 value(TemplateEntry d) <- text(key) WHERE key(d) = key AND template(d) == actTemplate(contract(a));
             }
+            resultTemplate() <- NULL;
             process(actTemplate(contract(a)));
             NEW cf = DocumentFile {
                 document(cf) <- a;
