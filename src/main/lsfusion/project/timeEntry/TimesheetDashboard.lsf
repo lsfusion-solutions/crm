@@ -55,6 +55,7 @@ FORM timesheetDashboard 'Табель рабочего времени'
         SEEK timesheetDashboard.m = extractMonth(currentDate());
         SEEK timesheetDashboard.y = extractYear(currentDate());
         SEEK timesheetDashboard.e = currentUser();
+//        SEEK timesheetDashboard.d = currentDate();
     }
 ;
 
