@@ -1,0 +1,73 @@
+MODULE EmailTemplate;
+
+REQUIRE Email, MasterData;
+
+NAMESPACE Email;
+
+CLASS EmailTemplate 'Шаблон email';
+TABLE emailTemplate (EmailTemplate);
+
+name 'Наименование' = DATA VARISTRING[100] (EmailTemplate) CHARWIDTH 15;
+subject 'Тема' = DATA TEXT (EmailTemplate);
+message 'Сообщение' = DATA RICHTEXT (EmailTemplate);
+
+account = DATA Account(EmailTemplate);
+nameAccount 'Аккаунт' (EmailTemplate t) = name(account(t));
+
+FORM emailTemplate 'Шаблон email'
+    OBJECTS o = EmailTemplate PANEL
+    PROPERTIES(o) name, nameAccount, subject, message
+    
+    EDIT EmailTemplate OBJECT o
+;
+
+DESIGN emailTemplate {
+    OBJECTS {
+        NEW mail AFTER BOX (o) {
+            fill = 1;
+            NEW subject {
+                fill = 1;
+                caption = 'Тема';
+                MOVE PROPERTY (subject(o)) {
+                    fill = 1;
+                    caption = '';
+                }
+            }
+            NEW message {
+                fill = 8;
+                caption = 'Сообщение';
+                MOVE PROPERTY (message(o)) {
+                    fill = 1;
+                    caption = '';
+                }
+            }
+        }
+    }
+}
+
+FORM emailTemplates 'Шаблоны email'
+    OBJECTS o = EmailTemplate
+    PROPERTIES(o) READONLY name, nameAccount, subject, message
+    PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
+;
+
+FORM dialogEmailTemplates 'Шаблоны email'
+    OBJECTS o = EmailTemplate
+    PROPERTIES(o) READONLY name, nameAccount, subject, message
+    
+    LIST EmailTemplate OBJECT o
+;
+
+NAVIGATOR {
+    templatesNavigator {
+        NEW emailTemplates;
+    }
+}
+
+send 'Отправить' (EmailTemplate t, VARISTRING[100] to) {
+    EMAIL 
+        FROM fromAddress(account(t))
+        SUBJECT subject(t)
+        TO to
+        BODY message(t);
+}

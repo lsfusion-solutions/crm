@@ -1,0 +1,24 @@
+MODULE DebtEmailTemplate;
+
+REQUIRE Debt, ActEmailTemplate;
+
+NAMESPACE Debt;
+
+emailTemplate = DATA EmailTemplate(LegalEntity);
+nameEmailTemplate 'Шаблон письма о задолженности' (LegalEntity l) = name(emailTemplate(l));
+
+EXTEND FORM legalEntity PROPERTIES (o) nameActContact, nameEmailTemplate;
+
+DESIGN legalEntity {
+    OBJECTS {
+        NEW debt BEFORE tab {
+            caption = 'Дополнительно';
+            type = CONTAINERH;
+            MOVE PROPERTY (nameActContact(o));
+            MOVE PROPERTY (nameEmailTemplate(o));
+        }
+    }
+}
+
+emailTemplate (Debt d) = emailTemplate(legalEntity(contract(d)));
+nameEmailTemplate 'Шаблон письма о задолженности' (Debt d) = name(emailTemplate(d));

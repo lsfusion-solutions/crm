@@ -1,6 +1,6 @@
 MODULE DebtDashboard;
 
-REQUIRE DebtAgreement, Act, ActWord, DebtEvent;
+REQUIRE DebtAgreement, Act, ActWord, DebtEvent, DebtEmailTemplate;
 
 NAMESPACE Contract;
 
@@ -170,6 +170,16 @@ addEvent 'Добавить' (Debt d) {
     }
 } IMAGE 'add.png';
 
+sendEmail 'Отправить email' () {
+    NEWSESSION NESTED (in[Debt]) {
+        FOR in(Debt d) AND act(d) DO {
+            process(act(d), emailTemplate(d));
+            send(emailTemplate(d), email(actContact(legalEntity(contract(d)))));
+        }
+    }
+    in(Debt d) <- NULL;
+}
+
 sumDebt 'Сумма неоплаченной задолженности' (Customer c, ContractType t, DATE d) = GROUP SUM sum(Debt dd) (-) paid(dd, d) IF date(dd) <= d BY customer(dd), type(contract(dd));
 sumDebt 'Сумма неоплаченной задолженности' (Customer c, DATE d) = GROUP SUM sum(Debt dd) (-) paid(dd, d) IF date(dd) <= d BY customer(dd);
 dateFirstDebt 'Дата ранней неоплаченной задолженности' (Customer c, ContractType t, DATE d) = 
@@ -187,7 +197,8 @@ nameFilterCustomerContractType 'Тип договора' () = name(filterCustome
 FORM debtDashboard 'Контроль задолженности'
     PROPERTIES () filterDateFrom, filterDateTo, nameDebtFilterContractType
     OBJECTS d = Debt
-    PROPERTIES in(d), createActs() DRAW d TOOLBAR, createActZip() DRAW d TOOLBAR
+    PROPERTIES in(d)
+    PROPERTIES () DRAW d TOOLBAR createActs, createActZip, sendEmail
     PROPERTIES (d) TOOLBAR SHOWIF act(d) editAct, deleteAct 
     PROPERTIES (d) READONLY date, numberContract, nameContract, nameContractType, nameCustomer, nameLegalEntity, nameCompany, numberAgreement, numberAct, dateAct, 
                             shortNameCurrency, sumCurrency, sum, paid, note

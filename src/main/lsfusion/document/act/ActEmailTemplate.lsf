@@ -1,0 +1,28 @@
+MODULE ActEmailTemplate;
+
+REQUIRE Act, EmailTemplate, ActWord;
+
+NAMESPACE Act;
+
+process (Act a, EmailTemplate t) {
+        subject(t) <- replace(subject(t), 'SUM_DOCUMENT_NUMERIC', toCharRus(sum(a)));
+        subject(t) <- replace(subject(t), 'SUM_DOCUMENT_WORDS', numSpelledCurrency(sum(a), '00d', currency(contract(a))));
+        subject(t) <- replace(subject(t), 'NUMBER_CONTRACT', OVERRIDE numberContract(a), '');
+        subject(t) <- replace(subject(t), 'DATE_CONTRACT', TEXT (toDateDDMMYYYY(dateContract(a))));
+        subject(t) <- replace(subject(t), 'NUMBER_DOCUMENT', OVERRIDE number(a), '');
+        subject(t) <- replace(subject(t), 'DATE_DOCUMENT', TEXT (toDateDDMMYYYY(date(a))));
+        subject(t) <- replace(subject(t), 'NAME_LEGAL_ENTITY', OVERRIDE overName(legalEntity(a)), '');
+        
+        message(t) <- replace(message(t), 'SUM_DOCUMENT_NUMERIC', toCharRus(sum(a)));
+        message(t) <- replace(message(t), 'SUM_DOCUMENT_WORDS', numSpelledCurrency(sum(a), '00d', currency(contract(a))));
+        message(t) <- replace(message(t), 'NUMBER_CONTRACT', OVERRIDE numberContract(a), '');
+        message(t) <- replace(message(t), 'DATE_CONTRACT', TEXT (toDateDDMMYYYY(dateContract(a))));
+        message(t) <- replace(message(t), 'NUMBER_DOCUMENT', OVERRIDE number(a), '');
+        message(t) <- replace(message(t), 'DATE_DOCUMENT', TEXT (toDateDDMMYYYY(date(a))));
+        message(t) <- replace(message(t), 'NAME_LEGAL_ENTITY', OVERRIDE overName(legalEntity(a)), '');
+}
+
+actContact = DATA Contact.Contact (LegalEntity);
+nameActContact 'Ответственный за обработку актов' (LegalEntity l) = name(actContact(l));
+
+CONSTRAINT actContact(LegalEntity l) AND NOT legalEntity(actContact(l)) == l CHECKED BY actContact[LegalEntity] MESSAGE 'Организация ответственного за обработку актов не совпадает с организацией';

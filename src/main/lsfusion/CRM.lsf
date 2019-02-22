@@ -15,4 +15,5 @@ REQUIRE Scheduler, Service, SystemEvents, Backup, EvalScript, SQLUtils, ProcessU
         Numerator, Pattern, PatternWord,
         LegalEntityBy, CustomerDashboardBy, LegalEntityImportBy, ContractWordBy, AgreementWordBy, ActWordBy,
         EquipmentDashboard, EquipmentLicense,
+        EmailTemplate, ActEmailTemplate, DebtEmailTemplate,
         EVAT, ActEVAT;
