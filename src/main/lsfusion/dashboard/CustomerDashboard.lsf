@@ -38,6 +38,13 @@ addIssue 'Добавить' (Customer c) {
     }
 } IMAGE 'add.png'  CHANGEKEY 'INSERT' HIDE;
 
+in 'Отм.' = DATA LOCAL BOOLEAN (Contact.Contact);
+
+sendEmailToContacts 'Написать письмо' (Customer c) {
+    open(LINK('mailto:' + (GROUP CONCAT email(Contact.Contact cc) IF in(cc), ',')));
+    in(Contact.Contact cc) <- NULL;
+}
+
 FORM dashboardCustomer 'Работа с клиентами'
     
     OBJECTS c = Customer PANEL 
@@ -52,8 +59,9 @@ FORM dashboardCustomer 'Работа с клиентами'
     ORDER name(le)
     
     OBJECTS ct = Contact.Contact
+    PROPERTIES (ct) in
     PROPERTIES (ct) READONLY id, name, nameLegalEntity, namePosition, email, phone, addPhones, skype, note
-    PROPERTIES addContact(c) DRAW ct TOOLBAR 
+    PROPERTIES DRAW ct TOOLBAR sendEmailToContacts(c), addContact(c)
     PROPERTIES (ct) NEWSESSION EDIT, DELETE 
     FILTERS customer(ct) == c
     ORDER name(ct)
