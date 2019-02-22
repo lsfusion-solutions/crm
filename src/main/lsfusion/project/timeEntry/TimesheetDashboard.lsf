@@ -41,11 +41,11 @@ FORM timesheetDashboard 'Табель рабочего времени'
     OBJECTS a = Absence
     PROPERTIES (a) READONLY id, nameEmployee, nameReason, dateFrom, dateTo, hours, workedHours, workingHours, date, note
     PROPERTIES (a) NEWSESSION NEW, EDIT SHOWIF isEditable(a), DELETE SHOWIF isEditable(a)
-    ORDER date(a)
+    ORDER dateFrom(a)
     FILTERS employee(a) == e
-    FILTERGROUP aday FILTER 'За день' date(a) == d DEFAULT
-                     FILTER 'За месяц' extractMonth(date(a)) == m AND extractYear(date(a)) == y
-                     FILTER 'За год' extractYear(date(a)) == y
+    FILTERGROUP aday FILTER 'За день' dateFrom(a) == d DEFAULT
+                     FILTER 'За месяц' extractMonth(dateFrom(a)) == m AND extractYear(date(a)) == y
+                     FILTER 'За год' extractYear(dateFrom(a)) == y
     
     OBJECTS r = AbsenceReason
     PROPERTIES READONLY name(r), absenseHours(e, r, y)

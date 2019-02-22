@@ -132,9 +132,9 @@ employee(e) <- currentUser() WHEN SET(e IS Event);
 date(e) <- currentDate() WHEN SET(e IS Event);
 time(e) <- currentTime() WHEN SET(e IS Event);
 
-WHEN LOCAL FORMS event SETCHANGED (customer(Event e)) AND NOT CHANGED (legalEntity(e)) AND [GROUP SUM 1 BY customer(LegalEntity l)](customer(e)) == 1 DO {
-    legalEntity(e) <- GROUP MAX LegalEntity l IF customer(l) == customer(e);
-}
+//WHEN LOCAL FORMS event SETCHANGED (customer(Event e)) AND NOT CHANGED (legalEntity(e)) AND [GROUP SUM 1 BY customer(LegalEntity l)](customer(e)) == 1 DO {
+//    legalEntity(e) <- GROUP MAX LegalEntity l IF customer(l) == customer(e);
+//}
 
 FORM events 'События'
     OBJECTS o = Event LAST 
