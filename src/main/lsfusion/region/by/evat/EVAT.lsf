@@ -390,12 +390,12 @@ sumWithVAT 'Сумма с НДС' = DATA NUMERIC[16,2] (ListEVAT);
 datev 'Дата выставления' = DATA DATE (ListEVAT);
 dates 'Дата совершения' = DATA DATE (ListEVAT);
 
-EVATNumber = GROUP LAST EVAT e BY exportNumber(e), date(e);
-EVAT (ListEVAT li) = EVATNumber(number(li), dates(li));
+EVATExportedNumber = GROUP LAST EVAT e IF nocancelled(e) AND exported(e) BY exportNumber(e), date(e);
+EVATExported (ListEVAT li) = EVATExportedNumber(number(li), dates(li));
 
 backgroundColor (ListEVAT li) = CASE
-    WHEN EVAT(li) AND NOT sumWithVAT(li) == totalSumWithVAT(EVAT(li)) THEN RGB(255, 255, 128)
-    WHEN li IS ListEVAT AND NOT EVAT(li) THEN RGB(255, 70, 64);
+    WHEN EVATExported(li) AND NOT sumWithVAT(li) == totalSumWithVAT(EVATExported(li)) THEN RGB(255, 255, 128)
+    WHEN li IS ListEVAT AND NOT EVATExported(li) THEN RGB(255, 70, 64);
 
 listEVATNumber = GROUP LAST ListEVAT li BY number(li), dates(li); 
 listEVAT (EVAT e) = listEVATNumber(exportNumber(e), date(e));
@@ -441,13 +441,13 @@ FORM compareListEVAT 'Сравнение со списком ЭСЧФ из CSV-�
     OBJECTS e = EVAT
     PROPERTIES(e) READONLY BACKGROUND backgroundColor(e) date, exportNumber, unpCustomer, nameCustomer, totalSumWithVAT
     ORDER exportNumber(e)
-    FILTERS date(e) >= dFrom, date(e) <= dTo AND nocancelled(e)
+    FILTERS date(e) >= dFrom, date(e) <= dTo AND nocancelled(e) AND exported(e)
     
     OBJECTS li = ListEVAT
     PROPERTIES(li) READONLY BACKGROUND backgroundColor(li) dates, number, unpCustomer, nameCustomer, sumWithVAT
 
     ORDER number(li)
-    //FILTERS dates(li) >= dFrom, dates(li) <= dTo
+    FILTERS dates(li) >= dFrom, dates(li) <= dTo
 ;
 
 DESIGN compareListEVAT {

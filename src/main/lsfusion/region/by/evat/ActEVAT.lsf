@@ -145,3 +145,94 @@ NAVIGATOR {
         NEW ActEVATs;
     }
 }
+
+// Сверка сумм переданных ЭСЧФ с суммами актов в разрезе организаций 
+CLASS CompareEVAT 'Сравнение ЭСЧФ';
+
+unpSupplier 'УНП поставщика' = DATA VARSTRING[9] (CompareEVAT) CHARWIDTH 5;
+unpCustomer 'УНП получателя' = DATA VARSTRING[9] (CompareEVAT) CHARWIDTH 5;
+nameCustomer 'Наименование получателя' = DATA VARSTRING[250] (CompareEVAT) CHARWIDTH 100;
+sumAct 'Сумма из актов' = DATA NUMERIC[16,2] (CompareEVAT);
+sumWithVAT 'Сумма с НДС из CSV-файла' = DATA NUMERIC[16,2] (CompareEVAT);
+
+compareEVAT  = GROUP AGGR CompareEVAT ce BY unpSupplier(ce), unpCustomer(ce);
+
+controlWithCsvFileLegalEntity 'Сравнить' (DATE dFrom, DATE dTo)  { 
+    
+    LOCAL unpSupplier  = VARSTRING[9](INTEGER);
+    LOCAL unpCustomer  = VARSTRING[9](INTEGER);
+    LOCAL nameCustomer = VARSTRING[250](INTEGER);
+    LOCAL sumWithVAT   = NUMERIC[16,2](INTEGER);
+    
+    INPUT f = FILE DO {
+        
+        DELETE CompareEVAT li WHERE li IS CompareEVAT;
+        
+        // инфа из актов
+        FOR isEVAT(company(Act a)) AND date(a) >= dFrom AND date(a) <= dTo DO {
+            IF NOT compareEVAT(UNP(company(a)), UNP(legalEntity(a))) THEN {
+                NEW ce = CompareEVAT {
+                    unpSupplier(ce) <- UNP(company(a)) ;
+                    unpCustomer(ce) <- UNP(legalEntity(a));
+                    nameCustomer(ce) <- name(legalEntity(a));
+                    sumAct(ce) <- sum(a);
+                    sumWithVAT(ce) <- 0.0 ;
+                }
+            }
+            ELSE {
+                FOR CompareEVAT ce = compareEVAT(UNP(company(a)), UNP(legalEntity(a))) DO {
+                    sumAct(ce) <- sumAct(ce) + sum(a) ;
+                }
+            }
+        }
+        
+        // инфа из csv-файла
+        IMPORT CSV ';' NOHEADER CHARSET 'cp1251' FROM f AS FILE TO unpSupplier = B, unpCustomer = I,
+                       nameCustomer = K, sumWithVAT = AQ;
+        
+        FOR trim(unpCustomer(INTEGER i)) AND i > 1 DO {
+            IF NOT compareEVAT(unpSupplier(i), unpCustomer(i)) THEN {
+                NEW ce = CompareEVAT {
+                    unpSupplier(ce) <- unpSupplier(i);
+                    unpCustomer(ce) <- unpCustomer(i);
+                    nameCustomer(ce) <- nameCustomer(i);
+                    sumAct(ce) <- 0.0;
+                    sumWithVAT(ce) <- sumWithVAT(i);
+                }
+            }
+            ELSE {
+                FOR CompareEVAT ce = compareEVAT(unpSupplier(i), unpCustomer(i)) DO {
+                    sumWithVAT(ce) <- sumWithVAT(ce) + sumWithVAT(i) ;
+                }
+            }
+        }
+        //
+    }
+}
+
+FORM compareEVAT 'Сравнение сумм по организациям в актах и ЭСЧФ из CSV-файла'
+    OBJECTS dates = (dFrom = DATE, dTo = DATE) PANEL
+    PROPERTIES dFrom = VALUE(dFrom), dTo = VALUE(dTo)
+    
+    PROPERTIES DRAW dates controlWithCsvFileLegalEntity(dFrom, dTo)  
+    
+    OBJECTS ce = CompareEVAT
+    PROPERTIES(ce) READONLY  unpSupplier, unpCustomer, nameCustomer, sumAct, sumWithVAT  
+    ORDER unpSupplier(ce), nameCustomer(ce)
+    FILTERGROUP defaultSum FILTER 'Несовпадающие суммы' NOT sumAct(ce)==sumWithVAT(ce) 'F10' DEFAULT
+;
+
+DESIGN compareEVAT {
+    MOVE BOX(dates);
+    NEW compareBox {
+        fill = 1;
+        MOVE BOX(ce);
+    }
+    MOVE TOOLBARBOX;
+}
+  
+NAVIGATOR {
+    EVATFolder {
+        NEW compareEVAT ;
+    }
+}  
