@@ -65,6 +65,7 @@ FORM dialogDebts 'Задолженность'
 sumMonth 'Сумма ежемесячного платежа' = DATA NUMERIC[16,5](Contract) CHARWIDTH 10;
 paymentDay 'День платежа' = DATA INTEGER (Contract) CHARWIDTH 2;
 currencyDay 'День курса' = DATA INTEGER (Contract) CHARWIDTH 2;
+prevMonthCurrency 'Предыдущий месяц курса' = DATA BOOLEAN (Contract);
 
 countMonthsDebt 'Кол-во месяцев для формирования задолженности' = DATA INTEGER () CHARWIDTH 3;
 
@@ -84,21 +85,29 @@ createDebts 'Сгенерировать задолженности' (Contract c)
         LOCAL year = INTEGER ();
         LOCAL date = DATE ();
         LOCAL dateCur = DATE ();
+        LOCAL monthCur = INTEGER ();
+        LOCAL yearCur = INTEGER ();
         
         DELETE Debt d WHERE contract(d) == c AND date(d) > currentDate();
         
         month() <- extractMonthNumber(currentDate());
         year() <- extractYear(currentDate());
         
+        monthCur() <- CASE WHEN NOT prevMonthCurrency(c) THEN month()
+                           WHEN (prevMonthCurrency(c) AND (month() == 1)) THEN 12
+                           ELSE month() (-) 1;
+        
+        yearCur() <- CASE WHEN monthCur() == 12 THEN year() (-) 1 ELSE year();
+        
         FOR iterate(INTEGER i, 1, countMonthsDebt()) DO {
                         
             TRY {
                 date() <- toDateFormat(text(paymentDay(c)) + text(month()) + year(), 'DDMMYYYY');
-                dateCur() <- toDateFormat(text(currencyDay(c)) + text(month()) + year(), 'DDMMYYYY');
+                dateCur() <- toDateFormat(text(currencyDay(c)) + text(monthCur()) + yearCur(), 'DDMMYYYY');
             }
             CATCH {
                 date() <- lastDayOfMonth(toDateFormat('01' + text(month()) + year(), 'DDMMYYYY'));
-                dateCur() <- lastDayOfMonth(toDateFormat('01' + text(month()) + year(), 'DDMMYYYY'));
+                dateCur() <- lastDayOfMonth(toDateFormat('01' + text(monthCur()) + yearCur(), 'DDMMYYYY'));
             }
                 
             IF NOT debt(date(), c) THEN NEW d = Debt {
@@ -118,10 +127,15 @@ createDebts 'Сгенерировать задолженности' (Contract c)
             }
 
             month() <- month() (+) 1;
+            monthCur() <- monthCur() (+) 1;
             
             IF month() > 12 THEN {
                 month() <- month() - 12;
                 year() <- year() + 1;
+            }
+            IF monthCur() > 12 THEN {
+                monthCur() <- monthCur() - 12;
+                yearCur() <- yearCur() + 1;
             }
         }
     }
@@ -145,7 +159,7 @@ createFullDebt 'Сгенерировать задолженность' (Contract
 EXTEND FORM dialogContracts PROPERTIES sumMonth(o) BEFORE nameType(o);
 
 EXTEND FORM contract 
-    PROPERTIES (o) sumMonth, paymentDay, currencyDay SHOWIF inCurrency(o), createDebts SHOWIF (sumMonth(o) AND paymentDay(o)), createFullDebt
+    PROPERTIES (o) sumMonth, paymentDay, currencyDay SHOWIF inCurrency(o), prevMonthCurrency SHOWIF inCurrency(o), createDebts SHOWIF (sumMonth(o) AND paymentDay(o)), createFullDebt
     OBJECTS d = Debt
     PROPERTIES (d) date, sumCurrency SHOWIF inCurrency(o), sum, dateCurrency SHOWIF inCurrency(o), note, NEW, DELETE
     ORDER date(d)
@@ -173,6 +187,7 @@ DESIGN contract {
                     MOVE PROPERTY (sumMonth(o));
                     MOVE PROPERTY (paymentDay(o));
                     MOVE PROPERTY (currencyDay(o));
+                    MOVE PROPERTY (prevMonthCurrency(o));
                     MOVE PROPERTY (createDebts(o));
                 }
             }
