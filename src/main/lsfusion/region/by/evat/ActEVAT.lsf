@@ -155,6 +155,8 @@ nameCustomer 'Наименование получателя' = DATA VARSTRING[25
 sumAct 'Сумма из актов' = DATA NUMERIC[16,2] (CompareEVAT);
 sumWithVAT 'Сумма с НДС из CSV-файла' = DATA NUMERIC[16,2] (CompareEVAT);
 
+sumDiff 'Разница' (CompareEVAT c) = sumAct(c) (-) sumWithVAT(c);
+
 compareEVAT  = GROUP AGGR CompareEVAT ce BY unpSupplier(ce), unpCustomer(ce);
 
 controlWithCsvFileLegalEntity 'Сравнить' (DATE dFrom, DATE dTo)  { 
@@ -217,7 +219,7 @@ FORM compareEVAT 'Сравнение сумм по организациям в �
     PROPERTIES DRAW dates controlWithCsvFileLegalEntity(dFrom, dTo)  
     
     OBJECTS ce = CompareEVAT
-    PROPERTIES(ce) READONLY  unpSupplier, unpCustomer, nameCustomer, sumAct, sumWithVAT  
+    PROPERTIES(ce) READONLY  unpSupplier, unpCustomer, nameCustomer, sumAct, sumWithVAT, sumDiff  
     ORDER unpSupplier(ce), nameCustomer(ce)
     FILTERGROUP defaultSum FILTER 'Несовпадающие суммы' NOT sumAct(ce)==sumWithVAT(ce) 'F10' DEFAULT
 ;
