@@ -18,6 +18,9 @@ balanceCurrency 'Остаток в валюте' (Account a) = round2(balance(a)
 balance 'Остаток' (Account a, DATE d) = balance(a) (-) [GROUP SUM sum(AccountLedger l) IF iterate(date(l), sum(d, 1), currentDate()) BY account(l)](a);
 balanceAccounts 'Сумма остатков' (DATE d) = GROUP SUM balance(Account a, d);
 
+balanceCurrency 'Остаток в валюте' (Account a, DATE d) = balance(a, d) * OVERRIDE rateOn(defaultTypeExchange(), currency(a), d), 1;
+balanceAccountsCurrency 'Сумма остатков в валюте' (DATE d) = GROUP SUM balanceCurrency(Account a, d);
+
 FORM accountBalances 'Остатки по счетам'
     OBJECTS a = Account
     PROPERTIES (a) READONLY nameLegalEntity, number, nameBank, addressBank, MFOBank, note, rate, dateTo, balance, balanceCurrency
@@ -33,12 +36,12 @@ FORM accountBalances 'Остатки по счетам'
     PROPERTIES 'Дата с' = VALUE (df), 'Дата по' = VALUE (dt)
     
     OBJECTS d = DATE 
-    PROPERTIES vd 'Дата' = VALUE(d), balance(a, d)
+    PROPERTIES vd 'Дата' = VALUE(d), balance(a, d), balanceCurrency(a, d)
     ORDER vd DESC 
     FILTERS iterate(d, df, dt)
     
     OBJECTS dd = DATE 
-    PROPERTIES dd 'Дата' = VALUE (dd), balanceAccounts(dd)
+    PROPERTIES dd 'Дата' = VALUE (dd), balanceAccounts(dd), balanceAccountsCurrency(dd)
     ORDER dd DESC 
     FILTERS iterate(dd, df, dt)
 ;
