@@ -17,6 +17,8 @@ dateToNext 'по' = DATA LOCAL DATE ();
 phoneContact 'Телефон контактного лица' (Event e) = OVERRIDE phone(contact(e)), (GROUP LAST number(Phone p) ORDER DESC p IF contact(p) == contact(e)) CHARWIDTH 15;
 namePositionContact 'Должность контактного лица' (Event e) = name(position(contact(e)));
 
+showCustomerDashboard 'Работа с клиентом' (Event d) { show(customer(d)); }
+
 FORM eventDashboard 'Обработка событий'
     PROPERTIES () dateFromEvent, dateToEvent, dateFromNext, dateToNext
     
@@ -24,6 +26,7 @@ FORM eventDashboard 'Обработка событий'
     PROPERTIES(o) READONLY id, name, nameType, nameCustomer, nameLegalEntity, nameEmployee, nameContact, phoneContact, 
                            namePositionContact, date, time, dateNext, descriptionString, additionString, nameDocument
     PROPERTIES(o) PANEL READONLY description, addition
+    PROPERTIES DRAW o TOOLBAR showCustomerDashboard(o) SHOWIF customer(o)
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
     ORDER date(o) DESC, time(o) DESC
     FILTERS NOT date(o) < dateFromEvent() AND NOT date(o) > dateToEvent() AND NOT dateNext(o) < dateFromNext() AND NOT dateNext(o) > dateToNext()
