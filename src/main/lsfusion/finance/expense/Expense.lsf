@@ -20,7 +20,7 @@ nameCustomer 'Клиент' (Expense e) = name(customer(legalEntity(e)));
 CLASS ExpenseType 'Вид оплаты';
 TABLE expenseType (ExpenseType);
 
-name 'Наименование' = DATA VARISTRING[100] (ExpenseType) CHARWIDTH 15;
+name 'Наименование' = DATA VARISTRING[100] (ExpenseType) CHARWIDTH 8;
 skipExpense 'Не учитывать в расходах' = DATA BOOLEAN (ExpenseType);
 
 FORM expenseType 'Вид оплаты'

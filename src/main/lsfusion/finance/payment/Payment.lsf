@@ -31,7 +31,7 @@ note 'Примечание' = DATA VARISTRING[100](Payment);
 CLASS PaymentType 'Вид платежа';
 TABLE paymentType (PaymentType);
 
-name 'Наименование' = DATA VARISTRING[100] (PaymentType) CHARWIDTH 15;
+name 'Наименование' = DATA VARISTRING[100] (PaymentType) CHARWIDTH 8;
 
 FORM paymentType 'Вид платежа'
     OBJECTS o = PaymentType PANEL
