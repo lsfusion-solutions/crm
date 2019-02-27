@@ -180,7 +180,8 @@ sendEmail 'Отправить email' () {
     in(Debt d) <- NULL;
 }
 
-sumDebt 'Сумма неоплаченной задолженности' (Customer c, ContractType t, DATE d) = GROUP SUM sum(Debt dd) (-) paid(dd, d) IF date(dd) <= d BY customer(dd), type(contract(dd));
+sumDebt 'Сумма задолженностей' (Customer c, ContractType t, DATE d) = GROUP SUM sum(Debt dd) (-) paid(dd, d) IF date(dd) <= d BY customer(dd), type(contract(dd));
+sumDebtNoProblem 'Сумма непроблемных задолженностей' (Customer c, ContractType t, DATE d) = GROUP SUM sum(Debt dd) (-) paid(dd, d) IF date(dd) <= d AND NOT problem(dd) BY customer(dd), type(contract(dd));
 sumDebt 'Сумма неоплаченной задолженности' (Customer c, DATE d) = GROUP SUM sum(Debt dd) (-) paid(dd, d) IF date(dd) <= d BY customer(dd);
 dateFirstDebt 'Дата ранней неоплаченной задолженности' (Customer c, ContractType t, DATE d) = 
     GROUP LAST date(Debt dd) ORDER DESC date(dd), dd IF date(dd) <= d AND (sum(dd) (-) paid(dd, d) > 0) BY customer(dd), type(contract(dd));
@@ -194,14 +195,17 @@ filterDateTo 'Дата по' = DATA LOCAL DATE ();
 filterCustomerContractType = DATA LOCAL ContractType();
 nameFilterCustomerContractType 'Тип договора' () = name(filterCustomerContractType());
 
+backgroundDebt (Debt d) = RGB (255, 222, 222) IF problem(d);
+
 FORM debtDashboard 'Контроль задолженности'
     PROPERTIES () filterDateFrom, filterDateTo, nameDebtFilterContractType
     OBJECTS d = Debt
     PROPERTIES in(d)
     PROPERTIES () DRAW d TOOLBAR createActs, createActZip, sendEmail
     PROPERTIES (d) TOOLBAR SHOWIF act(d) editAct, deleteAct 
-    PROPERTIES (d) READONLY date, numberContract, nameContract, nameContractType, nameCustomer, nameLegalEntity, nameCompany, numberAgreement, numberAct, dateAct, 
-                            shortNameCurrency, sumCurrency, sum, paid, note
+    PROPERTIES (d) READONLY BACKGROUND backgroundDebt(d) date, numberContract, nameContract, nameContractType, nameCustomer, 
+                                                         nameLegalEntity, nameCompany, numberAgreement, numberAct, dateAct, 
+                                                         shortNameCurrency, sumCurrency, sum, paid, note
     PROPERTIES (d) TOOLBAR editContract, showCustomerDashboard SHOWIF customer(d)
     ORDER date(d)
     FILTERS  contractType(d) == filterDebtContractType() OR NOT filterDebtContractType(),
@@ -220,14 +224,14 @@ FORM debtDashboard 'Контроль задолженности'
     PROPERTIES nameFilterCustomerContractType()
     
     OBJECTS ct = (c = Customer, t = ContractType)
-    PROPERTIES READONLY name(c), name(t), sumDebt(c, t, dd),dateFirstDebt(c, t, dd)
+    PROPERTIES READONLY name(c), name(t), sumDebt(c, t, dd), sumDebtNoProblem(c, t, dd), dateFirstDebt(c, t, dd)
     FILTERS sumDebt(c, t, dd), t == filterCustomerContractType() OR NOT filterCustomerContractType()
     ORDER name(c), name(t)
     
     OBJECTS db = Debt
-    PROPERTIES (db) READONLY date, numberContract, nameContract, nameLegalEntity, nameCompany, numberAgreement, nameAgreement,
+    PROPERTIES (db) READONLY BACKGROUND backgroundDebt(db) date, numberContract, nameContract, nameLegalEntity, nameCompany, numberAgreement, nameAgreement,
                              numberAct, shortNameCurrency, sumCurrency, sum, note
-    PROPERTIES paid(db, dd) AFTER sum(db)
+    PROPERTIES BACKGROUND backgroundDebt(db) paid(db, dd) AFTER sum(db)
     FILTERS customer(db) == c, date(db) <= dd, type(contract(db)) == t
     FILTERGROUP notPaid FILTER 'Неоплаченные' sum(db) (-) paid(db, dd) > 0 DEFAULT 
     ORDER date(db)

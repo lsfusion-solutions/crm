@@ -25,6 +25,8 @@ CONSTRAINT contract(Debt d) AND NOT dateSigningCustomer(contract(d)) MESSAGE 'Н
 
 note 'Примечание' = DATA VARISTRING[250](Debt) CHARWIDTH 20;
 
+problem 'Проблемная' = DATA BOOLEAN (Debt);
+
 currency (Debt d) = currency(contract(d));
 shortNameCurrency 'Валюта (сокр.)' (Debt p) = shortName(currency(p));
 
@@ -43,20 +45,20 @@ dateAct 'Дата акта' (Debt d) = date(act(d));
 
 FORM debt 'Задолженность'
     OBJECTS o = Debt PANEL
-    PROPERTIES(o) numberContract, date, shortNameCurrency, sumCurrency, sum, dateCurrency, note
+    PROPERTIES(o) numberContract, date, shortNameCurrency, sumCurrency, sum, dateCurrency, note, problem
     
     EDIT Debt OBJECT o
 ;
 
 FORM debts 'Задолженность'
     OBJECTS o = Debt
-    PROPERTIES(o) READONLY numberContract, nameContract, date, shortNameCurrency, sumCurrency, sum, dateCurrency, note
+    PROPERTIES(o) READONLY numberContract, nameContract, date, shortNameCurrency, sumCurrency, sum, dateCurrency, note, problem
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
 ;
 
 FORM dialogDebts 'Задолженность'
     OBJECTS o = Debt
-    PROPERTIES(o) READONLY numberContract, nameContract, date, shortNameCurrency, sumCurrency, sum, dateCurrency, note
+    PROPERTIES(o) READONLY numberContract, nameContract, date, shortNameCurrency, sumCurrency, sum, dateCurrency, note, problem
     
     LIST Debt OBJECT o
 ;
@@ -161,7 +163,7 @@ EXTEND FORM dialogContracts PROPERTIES sumMonth(o) BEFORE nameType(o);
 EXTEND FORM contract 
     PROPERTIES (o) sumMonth, paymentDay, currencyDay SHOWIF inCurrency(o), prevMonthCurrency SHOWIF inCurrency(o), createDebts SHOWIF (sumMonth(o) AND paymentDay(o)), createFullDebt
     OBJECTS d = Debt
-    PROPERTIES (d) date, sumCurrency SHOWIF inCurrency(o), sum, dateCurrency SHOWIF inCurrency(o), note, NEW, DELETE
+    PROPERTIES (d) date, sumCurrency SHOWIF inCurrency(o), sum, dateCurrency SHOWIF inCurrency(o), note, problem, NEW, DELETE
     ORDER date(d)
     FILTERS contract(d) == o
 ;

@@ -80,7 +80,7 @@ EXTEND FORM debtsPlan PROPERTIES READONLY paid(d) AFTER sum(d);
 EXTEND FORM agreement
     PROPERTIES shortNameCurrency(o) READONLY, sumCurrency(o) SHOWIF inCurrency(o), createFullDebt(o)
     OBJECTS d = Debt
-    PROPERTIES (d) date, sumCurrency SHOWIF inCurrency(contract(o)), sum, paid, note
+    PROPERTIES (d) date, sumCurrency SHOWIF inCurrency(contract(o)), sum, paid, note, problem
     PROPERTIES addDebt(o) DRAW d TOOLBAR 
     PROPERTIES (d) DELETE 
     ORDER date(d)
