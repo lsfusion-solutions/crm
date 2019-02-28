@@ -43,6 +43,8 @@ act = DATA Act (Debt);
 numberAct 'Номер акта' (Debt d) = number(act(d));
 dateAct 'Дата акта' (Debt d) = date(act(d));
 
+CONSTRAINT act(Debt d) AND NOT contract(d) == contract(act(d)) CHECKED BY act[Debt] MESSAGE 'Договор акта не соответствует договору';
+
 FORM debt 'Задолженность'
     OBJECTS o = Debt PANEL
     PROPERTIES(o) numberContract, date, shortNameCurrency, sumCurrency, sum, dateCurrency, note, problem

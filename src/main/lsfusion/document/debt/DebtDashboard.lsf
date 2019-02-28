@@ -204,8 +204,9 @@ FORM debtDashboard 'Контроль задолженности'
     PROPERTIES () DRAW d TOOLBAR createActs, createActZip, sendEmail
     PROPERTIES (d) TOOLBAR SHOWIF act(d) editAct, deleteAct 
     PROPERTIES (d) READONLY BACKGROUND backgroundDebt(d) date, numberContract, nameContract, nameContractType, nameCustomer, 
-                                                         nameLegalEntity, nameCompany, numberAgreement, numberAct, dateAct, 
+                                                         nameLegalEntity, nameCompany, numberAgreement, dateAct, 
                                                          shortNameCurrency, sumCurrency, sum, paid, note
+    PROPERTIES BACKGROUND backgroundDebt(d) numberAct(d) AFTER numberAgreement(d)
     PROPERTIES (d) TOOLBAR editContract, showCustomerDashboard SHOWIF customer(d)
     ORDER date(d)
     FILTERS  contractType(d) == filterDebtContractType() OR NOT filterDebtContractType(),
