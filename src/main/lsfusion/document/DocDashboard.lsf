@@ -79,7 +79,7 @@ FORM documentReport 'Реестр отправленной корреспонд�
     
     OBJECTS d = Document
     PROPERTIES (d) fullNameLegalEntity, nameType, description, note
-    FILTERS company(d) == filterLegalEntity(), dateSending(d) >= df AND dateSending(d) <= dt
+    FILTERS company(d) == filterLegalEntity(), dateSending(d) >= df AND dateSending(d) <= dt, mail(sendingWay(d))
 ;
 
 printDocumentReport 'Реестр отправленной корреспонденции' (DATE df, DATE dt) {
