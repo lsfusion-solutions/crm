@@ -86,6 +86,16 @@ createActTemplate (Act ag, Template t) {
         value(TemplateEntry d) <- OVERRIDE mfoBank(legalEntity(ag)), '' WHERE key(d) = 'MFO_BANK_LEGAL_ENTITY' AND template (d) == t;
         value(TemplateEntry d) <- TEXT (toDateDDMMYYYY(fromDate(ag))) WHERE key(d) = 'DATE_FROM_ACT' AND template (d) == t;
         value(TemplateEntry d) <- TEXT (toDateDDMMYYYY(toDate(ag))) WHERE key(d) = 'DATE_TO_ACT' AND template (d) == t;
+        
+        FOR ContractSubject cs = [GROUP LAST ContractSubject css ORDER date(css) IF date(css) <= date(contract(css)) BY type(css), contract(css)](SubjectType cst, contract(ag)) DO {
+        
+            value(TemplateEntry d) <- TEXT (quantity(cs)) WHERE key(d) = id(cst) + '_QUANTITY' AND template (d) == t;
+            value(TemplateEntry d) <- toCharRus(round2(price(cs))) WHERE key(d) = id(cst) + '_PRICE_NUMERIC' AND template (d) == t;
+            value(TemplateEntry d) <- numSpelledCurrency(price(cs), '00d', currency(contract(ag))) WHERE key(d) = id(cst) + '_PRICE_WORDS' AND template (d) == t;
+            value(TemplateEntry d) <- toCharRus(round2(sum(cs))) WHERE key(d) = id(cst) + '_SUM_NUMERIC' AND template (d) == t;
+            TRY { value(TemplateEntry d) <- numSpelledCurrency(sum(cs), '00d', currency(contract(ag))) WHERE key(d) = id(cst) + '_SUM_WORDS' AND template (d) == t; }
+        }
+        
         overPrintActWord(ag, t);
 }
 
