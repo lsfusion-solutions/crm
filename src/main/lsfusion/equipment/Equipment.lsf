@@ -15,6 +15,12 @@ contract = DATA Contract(Equipment);
 nameContract 'Договор' (Equipment e) = description(contract(e));
 nameLegalEntityContract 'Организация договора' (Equipment e) = name(legalEntity(contract(e)));
 
+agreement = DATA Agreement(Equipment);
+nameAgreement 'Соглашение' (Equipment e) = description(agreement(e));
+
+CONSTRAINT agreement(Equipment e) AND NOT contract(agreement(e)) == contract(e) CHECKED BY agreement[Equipment] 
+    MESSAGE 'Соглашение не относится к договору оборудования';
+
 subjectType = DATA SubjectType(Equipment);
 nameSubjectType 'Тип предмета договора' (Equipment e) = name(subjectType(e));
 
@@ -79,7 +85,7 @@ nameSubjectTypeEquipment 'Тип предмета договора' (EquipmentSe
 
 FORM equipment 'Оборудование'
     OBJECTS o = Equipment PANEL
-    PROPERTIES(o) nameSubjectType, nameCustomer, nameContract, note, quantitySerial
+    PROPERTIES(o) nameSubjectType, nameCustomer, nameContract, nameAgreement, note, quantitySerial
     
     OBJECTS s = EquipmentSerial
     PROPERTIES (s) number, NEW, DELETE 
@@ -90,13 +96,13 @@ FORM equipment 'Оборудование'
 
 FORM equipments 'Оборудование'
     OBJECTS o = Equipment
-    PROPERTIES(o) READONLY nameCustomer, note, nameSubjectType, nameContract, quantitySerial, nameCreatedUser, createdDate, createdTime
+    PROPERTIES(o) READONLY nameCustomer, note, nameSubjectType, nameContract, nameAgreement, quantitySerial, nameCreatedUser, createdDate, createdTime
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
 ;
 
 FORM dialogEquipments 'Оборудование'
     OBJECTS o = Equipment
-    PROPERTIES(o) READONLY nameCustomer, note, nameSubjectType, nameContract, quantitySerial, nameCreatedUser, createdDate, createdTime
+    PROPERTIES(o) READONLY nameCustomer, note, nameSubjectType, nameContract, nameAgreement, quantitySerial, nameCreatedUser, createdDate, createdTime
     
     LIST Equipment OBJECT o
 ;
