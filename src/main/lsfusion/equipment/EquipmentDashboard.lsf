@@ -4,7 +4,7 @@ REQUIRE EquipmentLicense, Dashboard, Utils;
 
 NAMESPACE Equipment;
 
-filterContract = DATA LOCAL Contract(SubjectType, Customer);
+filterContract = DATA LOCAL NESTED Contract(SubjectType, Customer);
 nameFilterContract 'Договор' (SubjectType t, Customer c) = description(filterContract(t, c));
 
 CONSTRAINT filterContract(SubjectType t, Customer c) AND NOT in(filterContract(t, c), t) CHECKED BY filterContract 
