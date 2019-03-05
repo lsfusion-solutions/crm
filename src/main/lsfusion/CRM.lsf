@@ -12,7 +12,7 @@ REQUIRE Scheduler, Service, SystemEvents, Backup, EvalScript, SQLUtils, ProcessU
         CustomerDashboard, ProfitDashboard, ContractDashboard, TimeEntryTotalDashboard, TimeEntryAbsense, TimeEntryDefault, DocDashboard, DocFile, EventDashboard,
         ContractWord, AgreementWord, ActWord, WorkingHours, CustomerAttachment, TimeEntryImport, TimesheetDashboard, DebtDashboard, CustomerAttachmentImport,
         Expense, ExpenseImport, ProfitMonthDashboard, PaymentProcessDashboard, CustomerTag, CustomerRole, PaymentRole, CustomerTime,
-        Numerator, Pattern, PatternWord,
+        Numerator, Pattern, PatternWord, ActTotalDashboard,
         LegalEntityBy, CustomerDashboardBy, LegalEntityImportBy, ContractWordBy, AgreementWordBy, ActWordBy,
         EquipmentDashboard, EquipmentLicense,
         EmailTemplate, ActEmailTemplate, DebtEmailTemplate,
