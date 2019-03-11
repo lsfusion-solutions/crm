@@ -75,3 +75,9 @@ FORM contractSendingWays 'Способы отправки документа'
 
 sendingWay = ABSTRACT SendingWay(Document);
 nameSendingWay 'Способ отправки документа' (Document d) = name(sendingWay(d));
+
+sumCurrency 'Сумма в валюте' = ABSTRACT NUMERIC[16,5](Document);
+paidCurrency 'Оплачено в валюте' = ABSTRACT NUMERIC[16,5](Document);
+inCurrency 'В валюте' = ABSTRACT BOOLEAN (Document);
+currency = ABSTRACT Currency(Document);
+shortNameCurrency 'Валюта (сокр.)' (Document d) = shortName(currency(d));

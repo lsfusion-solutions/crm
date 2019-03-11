@@ -22,6 +22,7 @@ dateLastPaid 'Дата последней оплаты' (Contract c) = GROUP LAS
 paid 'Оплачено' (Contract c, DATE dt) = GROUP SUM sum(Payment p) IF date(p) <= dt BY contract(p);
 
 paid(Contract c) += paid(c);
+paidCurrency(Contract c) += NUMERIC[16,5](paidCurrency(c));
 dateLastPaid(Contract c) += dateLastPaid(c);
 
 EXTEND FORM payment PROPERTIES (o) numberContract;

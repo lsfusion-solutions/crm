@@ -17,6 +17,10 @@ shortNameCurrency 'Валюта (сокр.)' (Agreement p) = shortName(currency(
 inCurrency 'В валюте' (Agreement a) = inCurrency(contract(a));
 sumCurrency 'Стоимость в валюте' = DATA NUMERIC[16,5](Agreement);
 
+sumCurrency(Agreement a) += round2(sumCurrency(a));
+currency(Agreement a) += currency(a);
+inCurrency(Agreement a) += inCurrency(a);
+
 WHEN LOCAL SETCHANGED (sumCurrency(Agreement c)) AND inCurrency(c) AND NOT CHANGED (sum(c)) DO {
     sum(c) <- round2(sumCurrency(c) / OVERRIDE (rateOn(defaultTypeExchange(), currency(c), date(c))), 1);
 }

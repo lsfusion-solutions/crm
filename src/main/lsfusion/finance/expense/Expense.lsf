@@ -61,9 +61,13 @@ numberAccountTo 'Р/с на' (Expense p) = number(accountTo(p)) CHARWIDTH 10;
 WHEN LOCAL CHANGED (company(Expense p)) AND NOT CHANGED (account(p)) DO {
     account(p) <- account(company(p));
 }
+WHEN LOCAL CHANGED (legalEntity(Expense p)) AND NOT CHANGED (accountTo(p)) DO {
+    accountTo(p) <- account(legalEntity(p));
+}
 
 CONSTRAINT account(Expense p) AND NOT company(p) == legalEntity(account(p)) CHECKED BY account[Expense] MESSAGE 'Счёт расхода не соответствует компании';
 CONSTRAINT accountTo(Expense p) AND NOT legalEntity(p) == legalEntity(accountTo(p)) CHECKED BY accountTo[Expense] MESSAGE 'Счёт на расхода не соответствует организации';
+CONSTRAINT company(Expense p) AND NOT isCompany(company(p)) CHECKED BY company[Expense] MESSAGE 'Компания расхода не является компанией';
 
 CLASS ExpenseAccountLedger : AccountLedger;
 expenseAccountLedger = AGGR ExpenseAccountLedger WHERE accountTo(Expense expense);
@@ -90,11 +94,13 @@ FORM expenses 'Расходы'
     OBJECTS o = Expense
     PROPERTIES(o) READONLY nameCompany, nameLegalEntity, nameCustomer, date, datePayment, nameType, sum, shortNameCurrency, sumCurrency, numberAccount, numberAccountTo, noteString
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
+    ORDER date(o), datePayment(o)
 ;
 
 FORM dialogExpenses 'Расходы'
     OBJECTS o = Expense
     PROPERTIES(o) READONLY nameCompany, nameLegalEntity, nameCustomer, date, datePayment, nameType, sum, shortNameCurrency, sumCurrency, numberAccount, numberAccountTo, noteString
+    ORDER date(o), datePayment(o)
     
     LIST Expense OBJECT o
 ;
