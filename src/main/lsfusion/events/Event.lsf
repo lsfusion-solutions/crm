@@ -60,6 +60,7 @@ FORM eventTypes 'Тип события'
     OBJECTS o = EventType
     PROPERTIES(o) READONLY name
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
+    ORDER name(o)
     
     LIST EventType OBJECT o
 ;
@@ -140,6 +141,7 @@ FORM events 'События'
     OBJECTS o = Event LAST 
     PROPERTIES(o) READONLY id, name, nameType, nameCustomer, nameLegalEntity, nameEmployee, nameContact, date, time, dateNext, descriptionString, additionString
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
+    ORDER date(o), time(o)
 ;
 
 FORM dialogEvents 'События'

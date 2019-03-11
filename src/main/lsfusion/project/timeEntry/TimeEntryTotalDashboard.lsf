@@ -42,7 +42,7 @@ FORM timeEntryDashboard 'Контроль отмеченного времени'
     
     OBJECTS p = Project
     PROPERTIES READONLY name(p), hours(e, p, y, m)
-    ORDER hours(e, p, y, m)
+    ORDER hours(e, p, y, m) DESC
     FILTERS hours(e, p, y, m)
     
     OBJECTS t = TimeEntry
