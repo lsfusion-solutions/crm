@@ -16,6 +16,7 @@ customer = DATA Customer(Project);
 nameCustomer 'Клиент' (Project p) = name(customer(p));
 
 inactive 'Неактивный' = DATA BOOLEAN (Project);
+active 'Активный' (Project p) = NOT inactive(p);
 
 merge (Customer from, Customer to) + { customer(Project p) <- to WHERE customer(p) = from; }
 

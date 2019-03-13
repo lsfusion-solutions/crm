@@ -110,19 +110,20 @@ FORM dashboardCustomer 'Работа с клиентами'
     OBJECTS pr = Project
     PROPERTIES (pr) READONLY id, name, identifier
     FILTERS customer(pr) == c
+    FILTERGROUP active FILTER 'Активные' active(pr) DEFAULT 
     ORDER name(pr) DESC
     
     OBJECTS st = IssueStatus
     PROPERTIES (st) READONLY name
-    PROPERTIES READONLY count(c, st)
-    FILTERS count(c, st)
+    PROPERTIES READONLY countActive(c, st)
+    FILTERS countActive(c, st)
     
     OBJECTS is = Issue
     PROPERTIES(is) in
     PROPERTIES(is) READONLY number, name, descriptionString, dateTo, dateTimeCreated, dateTimeUpdated, dateFrom, doneRatio, 
                             estimatedHours, hours, nameProject, nameAuthor, nameAssignedTo, nameTracker, numberAgreement, nameAgreement, numberContract, nameContract
     PROPERTIES DRAW is TOOLBAR changeStatus(is), open(is)
-    FILTERS customer(is) == c, status(is) == st
+    FILTERS customer(is) == c, status(is) == st, NOT inactive(project(is))
     ORDER number(is) DESC
     
     OBJECTS te = TimeEntry
