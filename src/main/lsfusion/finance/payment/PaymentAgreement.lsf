@@ -5,6 +5,7 @@ REQUIRE PaymentContract, Agreement;
 NAMESPACE Payment;
 
 agreement = DATA Agreement(Payment);
+idAgreement 'Код соглашения' (Payment p) = id(agreement(p));
 numberAgreement 'Номер соглашения' (Payment p) = number(agreement(p));
 nameAgreement 'Наименование соглашения' (Payment p) = name(agreement(p));
 

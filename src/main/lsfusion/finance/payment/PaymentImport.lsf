@@ -18,6 +18,7 @@ importPayments 'Импорт платежей' (FILE f) {
     LOCAL idLegalEntity = VARSTRING[15](INTEGER);
     LOCAL idContract = VARSTRING[15](INTEGER);
     LOCAL type = VARSTRING[50](INTEGER);
+    LOCAL idAgreement = VARSTRING[15](INTEGER);
     LOCAL idAct = VARSTRING[15](INTEGER);
     LOCAL number = VARSTRING[15](INTEGER);
     LOCAL date = DATE (INTEGER);
@@ -28,7 +29,7 @@ importPayments 'Импорт платежей' (FILE f) {
     LOCAL message = VARSTRING[2000] ();
     LOCAL count = INTEGER ();
     
-    IMPORT XLS NOHEADER FROM f TO idPayment, idCompany, idLegalEntity, idContract, type, idAct, number, date, sum, currency, note;
+    IMPORT XLS NOHEADER FROM f TO idPayment = B, idCompany, idLegalEntity, idContract, idAgreement, idAct, type, number, date, sum, currency, note;
     
     contract(INTEGER i) <- (OVERRIDE contract(trim(idContract(i))),
         [GROUP LAST Contract c ORDER date(c), c IF date(c) <= date(i) BY legalEntity(c), company(c), upper(nameType(c))](legalEntity(idLegalEntity(i)), legalEntity(idCompany(i)), upper(trim(type(i)))),
@@ -38,7 +39,7 @@ importPayments 'Импорт платежей' (FILE f) {
     message() <- '';
     count() <- 0;
     
-    FOR imported(INTEGER i) AND i > 0 AND NOT legalEntity(idLegalEntity(i)) DO {
+    FOR imported(INTEGER i) AND i > 1 AND NOT legalEntity(idLegalEntity(i)) DO {
         message() <- CONCAT ' ', message() + '\r\nстрока:', (i + 1), 'id:', idPayment(i), 'Код организации:', idLegalEntity(i);
         count() <- count() + 1;
     }
@@ -50,7 +51,7 @@ importPayments 'Импорт платежей' (FILE f) {
     message() <- '';
     count() <- 0;
     
-    FOR imported(INTEGER i) AND i > 0 AND NOT isCompany(legalEntity(idCompany(i))) DO {
+    FOR imported(INTEGER i) AND i > 1 AND NOT isCompany(legalEntity(idCompany(i))) DO {
         message() <- CONCAT ' ', message() + '\r\nстрока:', (i + 1), 'id:', idPayment(i), 'Код компании:', idCompany(i);
         count() <- count() + 1;
     }
@@ -58,6 +59,12 @@ importPayments 'Импорт платежей' (FILE f) {
     IF count() > 0 THEN {
         MESSAGE CONCAT ' ', 'Неимпортированные платежи, для которых не найдена компания: ', count(), message();
     }  
+    
+    FOR [GROUP SUM 1 IF INTEGER i > 1 BY trim(type(i))](VARSTRING[50] type) AND type != '' 
+        AND NOT (GROUP MAX PaymentType t IF upper(name(t)) == upper(type)) DO NEW t = PaymentType {
+        
+        name(t) <- type; 
+    }
         
     IF NOT lines() THEN {
         
@@ -69,7 +76,7 @@ importPayments 'Импорт платежей' (FILE f) {
 //            sum(p) <- sum;
 //        }
         
-        FOR Payment p = payment(trim(idLegalEntity(INTEGER i)), date(i), sum(i)) AND company(contract(i)) = company(p) AND NOT contract(act(idAct(i))) != contract(i) AND i > 0 DO {
+        FOR Payment p = payment(trim(idLegalEntity(INTEGER i)), date(i), sum(i)) AND company(contract(i)) = company(p) AND NOT contract(act(idAct(i))) != contract(i) AND i > 1 DO {
             
             contract(p) <- contract(i);
             act(p) <- act(idAct(i));
@@ -81,7 +88,7 @@ importPayments 'Импорт платежей' (FILE f) {
     }
     
     IF lines() THEN {
-        FOR imported(INTEGER i) AND i > 0 AND legalEntity(idLegalEntity(i)) AND isCompany(legalEntity(idCompany(i))) DO NEW p = Payment {
+        FOR imported(INTEGER i) AND i > 1 AND legalEntity(idLegalEntity(i)) AND isCompany(legalEntity(idCompany(i))) DO NEW p = Payment {
         
             legalEntity(p) <- legalEntity(idLegalEntity(i));
             company(p) <- legalEntity(idCompany(i));
@@ -89,10 +96,12 @@ importPayments 'Импорт платежей' (FILE f) {
             sum(p) <- sum(i);
             contract(p) <- contract(i);
             id(p) <- idPayment(i) IF idPayment(i) AND trim(idPayment(i)) != '0';
+            agreement(p) <- agreement(idAgreement(i));
             act(p) <- act(idAct(i));
             number(p) <- number(i);
             note(p) <- trim(note(i));
-            currency(p) <- GROUP MAX Currency c IF shortName(c) == currency(i);
+            currency(p) <- currency(currency(i));
+            type(p) <- GROUP MAX PaymentType t IF upper(name(t)) == upper(type(i));
         } 
     }
 }
@@ -112,4 +121,29 @@ importPayments 'Импорт платежей' () {
     }
 }
 
-EXTEND FORM migrationData PROPERTIES() importPayments, importPaymentContracts;
+FORM exportPayments 'Экспорт платежей'
+    OBJECTS p = Payment
+    PROPERTIES (p) id, idCompany, idLegalEntity, idContract, idAgreement, idAct, nameType, number, date, sum, sidCurrency, note
+    ORDER date(p)
+;
+
+exportPayments 'Экспорт платежей' () {
+    
+    LOCAL file = FILE();
+    
+    PRINT exportPayments XLS TO file;
+    WRITE CLIENT DIALOG file() TO 'Платежи';
+    open(file(), 'Платежи');
+}
+
+EXTEND FORM migrationData PROPERTIES() exportPayments, importPayments, importPaymentContracts;
+
+DESIGN migrationData {
+    GROUP () {
+        NEW payments AFTER PROPERTY (exportPayments()) {
+            type = CONTAINERH;
+            MOVE PROPERTY (importPayments());
+            MOVE PROPERTY (importPaymentContracts());
+        }
+    }
+}

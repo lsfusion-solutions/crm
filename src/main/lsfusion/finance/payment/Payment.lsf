@@ -17,6 +17,7 @@ customer (Payment p) = customer(legalEntity(p)) MATERIALIZED INDEXED;
 nameCustomer 'Клиент' (Payment p) = name(customer(p));
 
 company = DATA LegalEntity(Payment);
+idCompany 'Код компании' (Payment p) = id(company(p));
 nameCompany 'Компания' (Payment p) = name(company(p)) IN id;
 
 CONSTRAINT company(Payment p) AND NOT isCompany(company(p)) CHECKED BY company[Payment] MESSAGE 'Компания платежа не является компанией';
@@ -54,6 +55,7 @@ nameType 'Вид платежа' (Payment e) = name(type(e));
 currency = DATA Currency(Payment);
 nameCurrency 'Валюта платежа' (Payment p) = name(currency(p));
 shortNameCurrency 'Валюта (сокр.)' (Payment p) = shortName(currency(p));
+sidCurrency 'Валюта (сокр.)' (Payment p) = sid(currency(p));
 
 sumCurrency 'Сумма в валюте' (Payment p) = round2(sum(p) * OVERRIDE rateOn(defaultTypeExchange(), currency(p), date(p)), 1);
 

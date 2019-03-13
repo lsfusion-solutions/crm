@@ -131,6 +131,7 @@ FORM phoneTypes 'Типы телефона'
 
 contact (Phone p) = DATA Contact(Phone) NONULL DELETE;
 
+number(Contact c, PhoneType t) = GROUP MAX number(Phone p) BY contact(p), type(p);
 addPhones 'Доп. телефоны' (Contact c) = GROUP CONCAT number(Phone p), ', ' BY contact(p) CHARWIDTH 15;
 
 authorisedDocument 'На основании' = DATA VARISTRING[1000](Contact) CHARWIDTH 15;

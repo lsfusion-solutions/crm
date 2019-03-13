@@ -15,6 +15,7 @@ date 'Дата' = DATA DATE (Attachment);
 note 'Примечание' = DATA VARISTRING[250] (Attachment) CHARWIDTH 20;
 
 createdUser = DATA Employee(Attachment);
+idCreatedUser 'Код Создан пользователем' (Attachment a) = id(createdUser(a));
 nameCreatedUser 'Создан пользователем' (Attachment a) = name(createdUser(a));
 createdUser (Attachment o) <- currentUser() WHEN SET(o IS Attachment);
 
@@ -22,6 +23,7 @@ createdDate 'Дата создания' = DATA DATE (Attachment);
 createdDate (Attachment o) <- currentDate() WHEN SET(o IS Attachment);
 
 customer = DATA Customer(Attachment) NONULL;
+idCustomer 'Код клиента' (Attachment a) = id(customer(a));
 nameCustomer 'Клиент' (Attachment a) = name(customer(a));
 
 CLASS AttachmentType 'Тип предложения';

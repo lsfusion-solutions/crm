@@ -7,25 +7,32 @@ NAMESPACE Agreement;
 importAgreements 'Импорт соглашений' (FILE f) {
     LOCAL idAgreement = VARSTRING[15](INTEGER);
     LOCAL idContract = VARSTRING[15](INTEGER);
+    LOCAL idPersonLegalEntity = VARSTRING[15](INTEGER);
+    LOCAL docPersonLegalEntity = VARSTRING[50](INTEGER);
+    LOCAL idPersonCompany = VARSTRING[15](INTEGER);
+    LOCAL docPersonCompany = VARSTRING[50](INTEGER);
     LOCAL number = VARSTRING[15](INTEGER);
     LOCAL date1 = DATE (INTEGER);
     LOCAL name = VARSTRING[150](INTEGER);
     LOCAL type = VARSTRING[50](INTEGER);
     LOCAL sum = NUMERIC[16,5] (INTEGER);
+    LOCAL nameSending = VARSTRING[50](INTEGER);
     LOCAL sending = DATE (INTEGER);
     LOCAL receiving = DATE (INTEGER);
     LOCAL closing = DATE (INTEGER);
     LOCAL note = VARSTRING[100](INTEGER);
     LOCAL text = TEXT(INTEGER);
+    LOCAL terms = TEXT(INTEGER);
     LOCAL message = VARSTRING[2000] ();
     LOCAL count = INTEGER ();
     
     message() <- '';
     count() <- 0;
         
-    IMPORT XLS NOHEADER FROM f TO idAgreement, idContract, number, date1, name, type, sum, sending, receiving, closing, note, text;
+    IMPORT XLS NOHEADER FROM f TO idAgreement = B, idContract, idPersonCompany, docPersonCompany, idPersonLegalEntity, 
+        docPersonLegalEntity, number, date1, name, type, sum, nameSending, sending, receiving, closing, note, text, terms;
           
-    FOR imported(INTEGER i) AND i > 2 AND trim(idContract(i)) AND NOT contract(trim(idContract(i))) DO {
+    FOR imported(INTEGER i) AND i > 1 AND trim(idContract(i)) AND NOT contract(trim(idContract(i))) DO {
     
         message() <- CONCAT ' ', message() + '\r\nстрока:', (i + 1), 'id:', idAgreement(i), 'Код договора:', idContract(i);
         count() <- count() + 1;
@@ -35,28 +42,36 @@ importAgreements 'Импорт соглашений' (FILE f) {
         MESSAGE CONCAT ' ', 'Неимпортированные соглашения, для которых не найдены договоры: ', count(), message();
     }
     
-    FOR [GROUP SUM 1 IF INTEGER i > 2 AND contract(trim(idContract(i))) BY trim(idAgreement(i))](VARSTRING[15] id) AND id != '' AND NOT agreement(id) DO NEW c = Agreement {
+    FOR [GROUP SUM 1 IF INTEGER i > 1 AND contract(trim(idContract(i))) BY trim(idAgreement(i))](VARSTRING[15] id) AND id != '' AND NOT agreement(id) DO NEW c = Agreement {
         id(c) <- id;
     }
     
-    FOR [GROUP SUM 1 IF INTEGER i > 2 BY trim(type(i))](VARSTRING[50] type) AND type != '' 
+    FOR [GROUP SUM 1 IF INTEGER i > 1 BY trim(type(i))](VARSTRING[50] type) AND type != '' 
         AND NOT (GROUP MAX AgreementType t IF upper(name(t)) == upper(type)) DO NEW t = AgreementType {
         
         name(t) <- type; 
     }
     
-    FOR Agreement a = agreement(trim(idAgreement(INTEGER i))) AND contract(trim(idContract(i))) AND trim(idAgreement(i)) != '' AND i > 2 DO {
+    FOR [GROUP SUM 1 IF INTEGER i > 1 BY trim(nameSending(i))](VARSTRING[50] sending) AND sending != '' 
+        AND NOT (GROUP MAX SendingWay t IF upper(name(t)) == upper(sending)) DO NEW t = SendingWay {
+        
+        name(t) <- sending; 
+    }
+    
+    FOR Agreement a = agreement(trim(idAgreement(INTEGER i))) AND contract(trim(idContract(i))) AND trim(idAgreement(i)) != '' AND i > 1 DO {
         contract(a) <- contract(idContract(i));
         number(a) <- number(i);
         date(a) <- date1(i);
         name(a) <- trim(name(i));
         sum(a) <- sum(i);
         type(a) <- GROUP MAX AgreementType t IF upper(name(t)) == upper(trim(type(i)));
+        sendingWay(a) <- GROUP MAX SendingWay s IF upper(name(s)) == upper(trim(nameSending(i)));
         dateSending(a) <- sending(i);
         dateReceiving(a) <- receiving(i);
         dateClosing(a) <- closing(i);
         note(a) <- trim(note(i));
         text(a) <- trim(text(i));
+        terms(a) <- trim(terms(i));
     }
 }
 
@@ -67,7 +82,24 @@ importAgreements 'Импорт соглашений' () {
     }
 }
 
-EXTEND FORM migrationData PROPERTIES() importAgreements;
+FORM exportAgreements 'Экспорт соглашений'
+    OBJECTS c = Agreement
+    PROPERTIES (c) id, idContract, idAuthorisedPersonCompany, authorisedDocumentCompany, idAuthorisedPersonLegalEntity, 
+                   authorisedDocumentLegalEntity, number, date, name, nameType, sum, nameSendingWay, dateSending, dateReceiving, 
+                   dateClosing, note, text, terms
+    ORDER date(c)
+;
+
+exportAgreements 'Экспорт соглашений' () {
+    
+    LOCAL file = FILE();
+    
+    PRINT exportAgreements XLS TO file;
+    WRITE CLIENT DIALOG file() TO 'Соглашения';
+    open(file(), 'Соглашения');
+}
+
+EXTEND FORM migrationData PROPERTIES() exportAgreements, importAgreements;
 
 importAgreementDocumentsXls 'Импорт документов соглашений' () {
     

@@ -20,12 +20,12 @@ importExpense 'Импорт расходов' () {
         LOCAL count = INTEGER ();
         
         INPUT f = FILE DO {
-            IMPORT XLS NOHEADER FROM f TO idCompany, idLegalEntity, date, dateP, type, sum, currency, note;
+            IMPORT XLS NOHEADER FROM f TO idCompany = B, idLegalEntity, date, dateP, type, sum, currency, note;
             
             message() <- '';
             count() <- 0;
             
-            FOR imported(INTEGER i) AND i > 0 AND (NOT legalEntity(idLegalEntity(i)) OR NOT legalEntity(idCompany(i))) DO {
+            FOR imported(INTEGER i) AND i > 1 AND (NOT legalEntity(idLegalEntity(i)) OR NOT legalEntity(idCompany(i))) DO {
                 message() <- CONCAT ' ', message() + '\r\nстрока:', (i + 1), 
                                     ('Код компании: ' + idCompany(i)) IF NOT legalEntity(idCompany(i)), 
                                     ('Код организации: ' + idLegalEntity(i)) IF NOT legalEntity(idLegalEntity(i));
@@ -36,7 +36,7 @@ importExpense 'Импорт расходов' () {
                 MESSAGE CONCAT ' ', 'Неимпортированные платежи, для которых не найдена организация или компания: ', count(), message();
             }
     
-            FOR [GROUP MIN INTEGER i IF i > 0 BY trim(type(i))](VARSTRING[15] name) AND name != ''
+            FOR [GROUP MIN INTEGER i IF i > 1 BY trim(type(i))](VARSTRING[15] name) AND name != ''
                 AND NOT [GROUP MAX ExpenseType t BY name(t)](name) DO NEW t = ExpenseType {
                 
                 name(t) <- name;
@@ -50,7 +50,7 @@ importExpense 'Импорт расходов' () {
                 datePayment(e) <- dateP(i);
                 type(e) <- GROUP MAX ExpenseType t IF upper(name(t)) == upper(trim(type(i)));
                 sum(e) <- sum(i);
-                currency(e) <- currencyShortName(currency(i));
+                currency(e) <- currency(currency(i));
                 note(e) <- trim(note(i));
             }
         }
@@ -58,4 +58,19 @@ importExpense 'Импорт расходов' () {
     }
 }
 
-EXTEND FORM migrationData PROPERTIES importExpense();
+FORM exportExpenses 'Экспорт расходов'
+    OBJECTS p = Expense
+    PROPERTIES (p) idCompany, idLegalEntity, date, datePayment, nameType, sum, sidCurrency, note
+    ORDER date(p)
+;
+
+exportExpenses 'Экспорт расходов' () {
+    
+    LOCAL file = FILE();
+    
+    PRINT exportExpenses XLS TO file;
+    WRITE CLIENT DIALOG file() TO 'Расходы';
+    open(file(), 'Расходы');
+}
+
+EXTEND FORM migrationData PROPERTIES() exportExpenses, importExpense;

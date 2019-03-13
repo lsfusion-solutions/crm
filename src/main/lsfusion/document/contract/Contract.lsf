@@ -25,10 +25,12 @@ idCompany 'Код компании' (Contract c) = id(company(c));
 nameCompany 'Компания' (Contract c) = name(company(c)) IN id;
 
 authorisedPersonLegalEntity = DATA Contact.Contact(Contract);
+idAuthorisedPersonLegalEntity 'Код уп. лица организации' (Contract c) = id(authorisedPersonLegalEntity(c));
 nameAuthorisedPersonLegalEntity 'Уп. лицо организации' (Contract c) = name(authorisedPersonLegalEntity(c));
 authorisedDocumentLegalEntity 'На основании' = DATA VARISTRING[1000](Contract) CHARWIDTH 20;
 
 authorisedPersonCompany  (Contract c) = DATA Contact.Contact(Contract);
+idAuthorisedPersonCompany 'Код уп. лица компании' (Contract c) = id(authorisedPersonCompany(c));
 nameAuthorisedPersonCompany 'Уп. лицо компании' (Contract c) = name(authorisedPersonCompany(c));
 authorisedDocumentCompany 'На основании' = DATA VARISTRING[1000](Contract) CHARWIDTH 20;
 
@@ -59,6 +61,7 @@ sum 'Стоимость' = DATA NUMERIC[16,5](Contract) CHARWIDTH 10;
 currency = DATA Currency (Contract);
 nameCurrnecy 'Валюта' (Contract d) = name(currency(d));
 shortNameCurrency 'Валюта (сокр.)' (Contract p) = shortName(currency(p));
+sidCurrency 'Валюта (сокр.)' (Contract p) = sid(currency(p));
 
 inCurrency 'В валюте' = DATA BOOLEAN (Contract);
 sumCurrency 'Стоимость в валюте' = DATA NUMERIC[16,5](Contract);

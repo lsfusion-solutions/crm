@@ -47,6 +47,7 @@ sum 'Сумма' = DATA NUMERIC[16,5](Expense);
 
 currency = DATA Currency(Expense);
 shortNameCurrency 'Валюта' (Expense e) = shortName(currency(e));
+sidCurrency 'Валюта' (Expense e) = sid(currency(e));
 sumCurrency 'Сумма в валюте' (Expense e) = round2(sum(e) * OVERRIDE (rateOn(defaultTypeExchange(), currency(e), date(e))), 1);
 
 note 'Примечание' = DATA TEXT (Expense);

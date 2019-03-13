@@ -41,24 +41,24 @@ importLegalEntities 'Импорт организаций' (FILE f) {
     LOCAL account = VARSTRING[50](INTEGER);
     LOCAL info = TEXT(INTEGER);
     
-    IMPORT XLS NOHEADER FROM f TO idCustomer, nameCustomer, customerGroup, status, emailCustomer, phoneCustomer, siteCustomer, noteCustomer, dateCustomer, 
-                         idLegalEntity, extIdLegalEntity, nameLegalEntity, postcodeL, regionL, districtL, localityL, streetL, houseL, officeL, 
-                         postcodeP, regionP, districtP, localityP, streetP, houseP, officeP, account, idBank, numberBank, nameBank, addressBank, mfoBank, info;
+    IMPORT XLS NOHEADER FROM f TO idCustomer = B, nameCustomer, customerGroup, status, emailCustomer, phoneCustomer, siteCustomer, noteCustomer, dateCustomer, 
+                         info, idLegalEntity, extIdLegalEntity, nameLegalEntity, postcodeL, regionL, districtL, localityL, streetL, houseL, officeL, 
+                         postcodeP, regionP, districtP, localityP, streetP, houseP, officeP, account, idBank, numberBank, nameBank, addressBank, mfoBank;
                          
-    FOR [GROUP SUM 1 IF INTEGER i > 0 BY trim(idCustomer(i))](VARSTRING[15] id) AND id AND NOT customer(id) DO NEW c = Customer {
+    FOR [GROUP SUM 1 IF INTEGER i > 1 BY trim(idCustomer(i))](VARSTRING[15] id) AND id AND NOT customer(id) DO NEW c = Customer {
         id(c) <- id;
     }
-    FOR INTEGER ii = [GROUP MIN INTEGER i IF i > 0 BY trim(idLegalEntity(i))](VARSTRING[15] id) AND id AND NOT legalEntity(id) DO NEW l = LegalEntity {
+    FOR INTEGER ii = [GROUP MIN INTEGER i IF i > 1 BY trim(idLegalEntity(i))](VARSTRING[15] id) AND id AND NOT legalEntity(id) DO NEW l = LegalEntity {
         id(l) <- id;
         customer(l) <- customer(trim(idCustomer(ii)));
     }
-    FOR [GROUP SUM 1 IF INTEGER i > 0 BY trim(idBank(i))](VARSTRING[15] id) AND id AND NOT bank(id) DO NEW b = Bank {
+    FOR [GROUP SUM 1 IF INTEGER i > 1 BY trim(idBank(i))](VARSTRING[15] id) AND id AND NOT bank(id) DO NEW b = Bank {
         id(b) <- id;
     }
-    FOR INTEGER i = [GROUP MIN INTEGER ii IF ii > 0 BY trim(status(ii))](VARSTRING[15] name) AND name AND NOT [GROUP SUM 1 BY name(StatusCustomer c)](name) DO NEW s = StatusCustomer {
+    FOR INTEGER i = [GROUP MIN INTEGER ii IF ii > 1 BY trim(status(ii))](VARSTRING[15] name) AND name AND NOT [GROUP SUM 1 BY name(StatusCustomer c)](name) DO NEW s = StatusCustomer {
         name(s) <- name;
     }
-    FOR INTEGER i = [GROUP MIN INTEGER ii IF ii > 0 BY trim(customerGroup(ii))](VARSTRING[15] name) AND name AND NOT [GROUP SUM 1 BY name(CustomerGroup c)](name) DO NEW g = CustomerGroup {
+    FOR INTEGER i = [GROUP MIN INTEGER ii IF ii > 1 BY trim(customerGroup(ii))](VARSTRING[15] name) AND name AND NOT [GROUP SUM 1 BY name(CustomerGroup c)](name) DO NEW g = CustomerGroup {
         name(g) <- name;
     }
     
@@ -137,4 +137,32 @@ importLegalEntities 'Импорт организаций' () {
     }
 }
 
-EXTEND FORM migrationData PROPERTIES() importLegalEntities;
+FORM exportLegalEntities 'Экспорт организаций'
+    
+    OBJECTS l = LegalEntity
+    PROPERTIES idCustomer(l), nameCustomer(l), 'Группа клиента' = nameGroup(customer(l)), 'Статус' = nameStatus(customer(l)), 
+               'E-mail' = email(customer(l)), 'Телефон' = phone(customer(l)), 'Сайт' = site(customer(l)), 'Примечание' = note(customer(l)), 
+               'Дата начала' = dateFrom(customer(l)), 'Информация клиента' = info(customer(l)), 
+               'Код организации' = id(l), extId(l), 'Организация' = name(l), 
+               'Индекс (юридический)' = postcode(legalAddress(l)), 'Регион (юридический)' = region(legalAddress(l)), 
+               'Район (юридический)' = district(legalAddress(l)), 'Регион (юридический)' = locality(legalAddress(l)), 
+               'Улица (юридический)' = street(legalAddress(l)), 'Дом (юридический)' = houseNumber(legalAddress(l)), 
+               'Офис (юридический)' = officeNumber(legalAddress(l)),
+               'Индекс (физический)' = postcode(physicalAddress(l)), 'Регион (физический)' = region(physicalAddress(l)), 
+               'Район (физический)' = district(physicalAddress(l)), 'Регион (физический)' = locality(physicalAddress(l)), 
+               'Улица (физический)' = street(physicalAddress(l)), 'Дом (физический)' = houseNumber(physicalAddress(l)), 
+               'Офис (физический)' = officeNumber(physicalAddress(l)), numberAccount(l), 'ID банка' = id(bank(account(l))), 
+               numberBank(l), nameBank(l), addressBank(l), mfoBank(l)
+    ORDER nameCustomer(l), name(l)   
+;
+
+exportLegalEntities 'Экспорт организаций' () {
+    
+    LOCAL file = FILE();
+    
+    PRINT exportLegalEntities XLS TO file;
+    WRITE CLIENT DIALOG file() TO 'Организации';
+    open(file(), 'Организации');
+}
+
+EXTEND FORM migrationData PROPERTIES() exportLegalEntities, importLegalEntities;

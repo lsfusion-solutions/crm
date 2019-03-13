@@ -5,6 +5,7 @@ REQUIRE Agreement, ContractEvent, DocEvent;
 NAMESPACE Agreement;
 
 agreement = DATA Agreement(Event);
+idAgreement 'Код соглашения' (Event e) = id(agreement(e));
 numberAgreement 'Соглашение' (Event e) = number(agreement(e));
 
 EXTEND FORM events PROPERTIES numberAgreement(o);

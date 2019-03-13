@@ -27,10 +27,12 @@ company (Agreement a) = company(contract(a));
 nameCompany 'Компания' (Agreement a) = name(company(a));
 
 authorisedPersonLegalEntity = DATA Contact.Contact(Agreement);
+idAuthorisedPersonLegalEntity 'Код уп. лица организации' (Agreement c) = id(authorisedPersonLegalEntity(c));
 nameAuthorisedPersonLegalEntity 'Уп. лицо организации' (Agreement c) = name(authorisedPersonLegalEntity(c));
 authorisedDocumentLegalEntity 'На основании' = DATA VARISTRING[1000](Agreement) CHARWIDTH 20;
 
 authorisedPersonCompany  (Agreement c) = DATA Contact.Contact(Agreement);
+idAuthorisedPersonCompany 'Код уп. лица компании' (Agreement c) = id(authorisedPersonCompany(c));
 nameAuthorisedPersonCompany 'Уп. лицо компании' (Agreement c) = name(authorisedPersonCompany(c));
 authorisedDocumentCompany 'На основании' = DATA VARISTRING[1000](Agreement) CHARWIDTH 20;
 

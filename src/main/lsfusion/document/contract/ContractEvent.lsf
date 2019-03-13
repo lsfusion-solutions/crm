@@ -5,6 +5,7 @@ REQUIRE Contract, DocEvent;
 NAMESPACE Contract;
 
 contract = DATA Contract(Event);
+idContract 'Код договора' (Event e) = id(contract(e));
 numberContract 'Договор' (Event e) = number(contract(e));
 
 EXTEND FORM events PROPERTIES numberContract(o);

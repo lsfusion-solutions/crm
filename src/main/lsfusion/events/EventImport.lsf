@@ -1,6 +1,6 @@
 MODULE EventImport;
 
-REQUIRE Event;
+REQUIRE Event, ContractEvent, AgreementEvent, ActEvent;
 
 NAMESPACE Event;
 
@@ -10,6 +10,10 @@ importEvents 'Импорт событий' (FILE f) {
     LOCAL idCustomer = VARSTRING[15](INTEGER);
     LOCAL idLegalEntity = VARSTRING[15](INTEGER);
     LOCAL idEmployee = VARSTRING[15](INTEGER);
+    LOCAL idContract = VARSTRING[15](INTEGER);
+    LOCAL idAgreement = VARSTRING[15](INTEGER);
+    LOCAL idAct = VARSTRING[15](INTEGER);
+    LOCAL type = VARSTRING[50](INTEGER);
     LOCAL date = DATE (INTEGER);
     LOCAL time = VARSTRING[5] (INTEGER);
     LOCAL idContact = VARSTRING[15](INTEGER);
@@ -19,15 +23,16 @@ importEvents 'Импорт событий' (FILE f) {
     LOCAL add = TEXT(INTEGER);
     
     
-    IMPORT XLS NOHEADER FROM f TO idEvent, idCustomer, idLegalEntity, idEmployee, date, time, idContact, name, text, dateNext, add;
+    IMPORT XLS NOHEADER FROM f TO idEvent = B, name, type, idCustomer, idLegalEntity, idEmployee, idContact, date, time, 
+                                  dateNext, text, add, idContract, idAgreement, idAct;
     
     time(INTEGER i) <- NULL WHERE NOT substr(time(i), 3, 1) == ':';
     
-    FOR [GROUP SUM 1 IF INTEGER i > 0 BY trim(idEvent(i))](VARSTRING[15] id) AND id != '' AND NOT event(id) DO NEW c = Event {
+    FOR [GROUP SUM 1 IF INTEGER i > 1 BY trim(idEvent(i))](VARSTRING[15] id) AND id != '' AND NOT event(id) DO NEW c = Event {
         id(c) <- id;
     }
     
-    FOR Event c = event(trim(idEvent(INTEGER i))) AND trim(idEvent(i)) != '' AND i > 0 DO {
+    FOR Event c = event(trim(idEvent(INTEGER i))) AND trim(idEvent(i)) != '' AND i > 1 DO {
         
         customer(c) <- OVERRIDE customer(legalEntity(trim(idLegalEntity(i)))), customer(trim(idCustomer(i)));
         legalEntity(c) <- legalEntity(trim(idLegalEntity(i)));
@@ -39,6 +44,9 @@ importEvents 'Импорт событий' (FILE f) {
         dateNext(c) <- dateNext(i);
         description(c) <- trim(text(i));
         addition(c) <- add(i);
+        contract(c) <- contract(idContract(i));
+        agreement(c) <- agreement(idAgreement(i));
+        act(c) <- act(idAct(i));
     }
 }
 
@@ -49,4 +57,20 @@ importEvents 'Импорт событий' () {
     }
 }
 
-EXTEND FORM migrationData PROPERTIES importEvents();
+FORM exportEvents 'Экспорт событий'
+    OBJECTS p = Event
+    PROPERTIES (p) id, name, nameType, idCustomer, idLegalEntity, idEmployee, idContact, date, time, dateNext, 
+                   description, addition, idContract, idAgreement, idAct
+    ORDER date(p)
+;
+
+exportEvents 'Экспорт событий' () {
+    
+    LOCAL file = FILE();
+    
+    PRINT exportEvents XLS TO file;
+    WRITE CLIENT DIALOG file() TO 'События';
+    open(file(), 'События');
+}
+
+EXTEND FORM migrationData PROPERTIES() exportEvents, importEvents;

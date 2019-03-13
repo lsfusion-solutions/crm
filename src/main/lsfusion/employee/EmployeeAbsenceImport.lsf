@@ -15,13 +15,13 @@ importEmployeeAbsences 'Импорт отсутствия сотрудников
     LOCAL date = DATE (INTEGER);
     LOCAL note = VARSTRING[100](INTEGER);
     
-    IMPORT XLS NOHEADER FROM f TO idEmployeeAbsence, idEmployee, reason, df, dt, hours, date, note;
+    IMPORT XLS NOHEADER FROM f TO idEmployeeAbsence = B, idEmployee, reason, df, dt, hours, date, note;
     
-    FOR [GROUP SUM 1 IF INTEGER i > 0 BY idEmployeeAbsence(i)](VARSTRING[15] id) AND id != '' AND NOT absence(id) DO NEW a = Absence {
+    FOR [GROUP SUM 1 IF INTEGER i > 1 BY idEmployeeAbsence(i)](VARSTRING[15] id) AND id != '' AND NOT absence(id) DO NEW a = Absence {
         id(a) <- id;
     }
     
-    FOR [GROUP SUM 1 IF INTEGER i > 0 BY trim(reason(i))](VARSTRING[100] reason) AND reason != '' AND NOT [GROUP MAX AbsenceReason r BY name(r)](reason) DO NEW r = AbsenceReason {
+    FOR [GROUP SUM 1 IF INTEGER i > 1 BY trim(reason(i))](VARSTRING[100] reason) AND reason != '' AND NOT [GROUP MAX AbsenceReason r BY name(r)](reason) DO NEW r = AbsenceReason {
         name(r) <- reason;
     }
     
@@ -44,4 +44,19 @@ importEmployeeAbsences 'Импорт отсутствия сотрудников
     }
 }
 
-EXTEND FORM migrationData PROPERTIES() importEmployeeAbsences;
+FORM exportEmployeeAbsences 'Экспорт отсутствия сотрудников'
+    OBJECTS c = Absence
+    PROPERTIES (c) id, idEmployee, reason, dateFrom, dateTo, hours, date, note
+    ORDER dateFrom(c)
+;
+
+exportEmployeeAbsences 'Экспорт отсутствия сотрудников' () {
+    
+    LOCAL file = FILE();
+    
+    PRINT exportEmployeeAbsences XLS TO file;
+    WRITE CLIENT DIALOG file() TO 'Отсутствие сотрудников';
+    open(file(), 'Отсутствие сотрудников');
+}
+
+EXTEND FORM migrationData PROPERTIES() exportEmployeeAbsences, importEmployeeAbsences;

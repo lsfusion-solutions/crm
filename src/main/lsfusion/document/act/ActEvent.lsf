@@ -5,6 +5,7 @@ REQUIRE Act, AgreementEvent, DocDashboard;
 NAMESPACE Act;
 
 act = DATA Act(Event);
+idAct 'Код акта' (Event e) = id(act(e));
 numberAct 'Акт' (Event e) = number(act(e));
 
 EXTEND FORM events PROPERTIES numberAct(o);

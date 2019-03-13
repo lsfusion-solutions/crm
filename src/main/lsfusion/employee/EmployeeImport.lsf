@@ -9,7 +9,9 @@ importEmployees (FILE f) {
     LOCAL idEmployee = VARSTRING[15](INTEGER);
     LOCAL idLegalEntity = VARSTRING[15](INTEGER);
     LOCAL login = VARSTRING[50](INTEGER);
-    LOCAL name = VARSTRING[100](INTEGER);
+    LOCAL name1 = VARSTRING[100](INTEGER);
+    LOCAL name2 = VARSTRING[100](INTEGER);
+    LOCAL name3 = VARSTRING[100](INTEGER);
     LOCAL position = VARSTRING[100](INTEGER);
     LOCAL email = VARSTRING[100](INTEGER);
     LOCAL phone1 = VARSTRING[100](INTEGER);
@@ -26,9 +28,10 @@ importEmployees (FILE f) {
     message() <- '';
     count() <- 0;
     
-    IMPORT XLS NOHEADER FROM f TO idEmployee, idLegalEntity, login, name, position, email, phone1, phone2, phone3, phone4, phone5, phone6, skype, note;
+    IMPORT XLS NOHEADER FROM f TO idEmployee = B, idLegalEntity, login, name1, name2, name3, position, email, skype, note, 
+                                  phone1, phone2, phone3, phone4, phone5, phone6;
           
-    FOR imported(INTEGER i) AND i > 0 AND trim(idLegalEntity(i)) != '' AND NOT isCompany(legalEntity(trim(idLegalEntity(i)))) DO {
+    FOR imported(INTEGER i) AND i > 1 AND trim(idLegalEntity(i)) != '' AND NOT isCompany(legalEntity(trim(idLegalEntity(i)))) DO {
     
         message() <- CONCAT ' ', message() + '\r\nстрока:', (i + 1), 'id:', idEmployee(i), 'Код организации:', idLegalEntity(i);
         count() <- count() + 1;
@@ -38,24 +41,24 @@ importEmployees (FILE f) {
         MESSAGE CONCAT ' ', 'Неимпортированные сотрудники, у которых организация не является компанией: ', count(), message();
     }
       
-    FOR INTEGER i = [GROUP MIN INTEGER ii IF ii > 0 AND isCompany(legalEntity(trim(idLegalEntity(ii)))) BY trim(idEmployee(ii))](VARSTRING[15] id) AND id AND NOT employee(id) DO NEW c = Employee {
+    FOR INTEGER i = [GROUP MIN INTEGER ii IF ii > 1 AND isCompany(legalEntity(trim(idLegalEntity(ii)))) BY trim(idEmployee(ii))](VARSTRING[15] id) AND id AND NOT employee(id) DO NEW c = Employee {
         id(c) <- id;
     }
     
-    IF trim(phone2(0)) != '' AND NOT [GROUP SUM 1 BY name(PhoneType t)](trim(phone2(0))) THEN NEW t = PhoneType {
-        name(t) <- trim(phone2(0));
+    IF trim(phone2(1)) != '' AND NOT [GROUP SUM 1 BY name(PhoneType t)](trim(phone2(1))) THEN NEW t = PhoneType {
+        name(t) <- trim(phone2(1));
     }
-    IF trim(phone3(0)) != '' AND NOT [GROUP SUM 1 BY name(PhoneType t)](trim(phone3(0))) THEN NEW t = PhoneType {
-        name(t) <- trim(phone3(0));
+    IF trim(phone3(1)) != '' AND NOT [GROUP SUM 1 BY name(PhoneType t)](trim(phone3(1))) THEN NEW t = PhoneType {
+        name(t) <- trim(phone3(1));
     }
-    IF trim(phone4(0)) != '' AND NOT [GROUP SUM 1 BY name(PhoneType t)](trim(phone4(0))) THEN NEW t = PhoneType {
-        name(t) <- trim(phone4(0));
+    IF trim(phone4(1)) != '' AND NOT [GROUP SUM 1 BY name(PhoneType t)](trim(phone4(1))) THEN NEW t = PhoneType {
+        name(t) <- trim(phone4(1));
     }
-    IF trim(phone5(0)) != '' AND NOT [GROUP SUM 1 BY name(PhoneType t)](trim(phone5(0))) THEN NEW t = PhoneType {
-        name(t) <- trim(phone5(0));
+    IF trim(phone5(1)) != '' AND NOT [GROUP SUM 1 BY name(PhoneType t)](trim(phone5(1))) THEN NEW t = PhoneType {
+        name(t) <- trim(phone5(1));
     }
-    IF trim(phone6(0)) != '' AND NOT [GROUP SUM 1 BY name(PhoneType t)](trim(phone6(0))) THEN NEW t = PhoneType {
-        name(t) <- trim(phone6(0));
+    IF trim(phone6(1)) != '' AND NOT [GROUP SUM 1 BY name(PhoneType t)](trim(phone6(1))) THEN NEW t = PhoneType {
+        name(t) <- trim(phone6(1));
     }
     
     FOR [GROUP SUM 1 BY trim(position(INTEGER i))](VARSTRING[100] pos) AND pos != '' AND NOT (GROUP MAX Position p IF name(p) == pos) DO NEW p = Position {
@@ -65,7 +68,9 @@ importEmployees (FILE f) {
     FOR Employee c = employee(idEmployee(INTEGER i)) AND idEmployee(i) AND isCompany(legalEntity(trim(idLegalEntity(i)))) DO {
         legalEntity(c) <- legalEntity(trim(idLegalEntity(i)));
         login(c) <- trim(login(i)) IF trim(login(i)) != '';
-        lastName(c) <- trim(name(i));
+        lastName(c) <- trim(name1(i));
+        firstName(c) <- trim(name2(i));
+        middleName(c) <- trim(name3(i));
         position(c) <- GROUP MAX Position p IF upper(name(p)) == upper(trim(position(i)));
         email(c) <- trim(email(i));
         skype(c) <- trim(skype(i));
@@ -74,27 +79,27 @@ importEmployees (FILE f) {
         
         IF trim(phone2(i)) != '' AND NOT [GROUP SUM 1 BY contact(Phone p), number(p)](c, trim(phone2(i))) THEN NEW p = Phone {
             number(p) <- trim(phone2(i));
-            type(p) <- GROUP MAX PhoneType t IF name(t) == trim(phone2(0));
+            type(p) <- GROUP MAX PhoneType t IF name(t) == trim(phone2(1));
             contact(p) <- c;
         }
         IF trim(phone3(i)) != '' AND NOT [GROUP SUM 1 BY contact(Phone p), number(p)](c, trim(phone3(i))) THEN NEW p = Phone {
             number(p) <- trim(phone3(i));
-            type(p) <- GROUP MAX PhoneType t IF name(t) == trim(phone3(0));
+            type(p) <- GROUP MAX PhoneType t IF name(t) == trim(phone3(1));
             contact(p) <- c;
         }
         IF trim(phone4(i)) != '' AND NOT [GROUP SUM 1 BY contact(Phone p), number(p)](c, trim(phone4(i))) THEN NEW p = Phone {
             number(p) <- trim(phone4(i));
-            type(p) <- GROUP MAX PhoneType t IF name(t) == trim(phone4(0));
+            type(p) <- GROUP MAX PhoneType t IF name(t) == trim(phone4(1));
             contact(p) <- c;
         }
         IF trim(phone5(i)) != '' AND NOT [GROUP SUM 1 BY contact(Phone p), number(p)](c, trim(phone5(i))) THEN NEW p = Phone {
             number(p) <- trim(phone5(i));
-            type(p) <- GROUP MAX PhoneType t IF name(t) == trim(phone5(0));
+            type(p) <- GROUP MAX PhoneType t IF name(t) == trim(phone5(1));
             contact(p) <- c;
         }
         IF trim(phone6(i)) != '' AND NOT [GROUP SUM 1 BY contact(Phone p), number(p)](c, trim(phone6(i))) THEN NEW p = Phone {
             number(p) <- trim(phone6(i));
-            type(p) <- GROUP MAX PhoneType t IF name(t) == trim(phone6(0));
+            type(p) <- GROUP MAX PhoneType t IF name(t) == trim(phone6(1));
             contact(p) <- c;
         }
     }
@@ -107,4 +112,22 @@ importEmployees 'Импорт сотрудников' () {
     }
 }
 
-EXTEND FORM migrationData PROPERTIES() importEmployees;
+FORM exportEmployees 'Экспорт сотрудников'
+    
+    OBJECTS t = PhoneType
+    OBJECTS e = Employee
+    PROPERTIES (e) id, idLegalEntity, login, lastName, firstName, middleName, namePosition, email, skype, note, phone
+    PROPERTIES number(e, t) COLUMNS (t) HEADER name(t)
+    ORDER lastName(e)  
+;
+
+exportEmployees 'Экспорт сотрудников' () {
+    
+    LOCAL file = FILE();
+    
+    PRINT exportEmployees XLS TO file;
+    WRITE CLIENT DIALOG file() TO 'Сотрудники';
+    open(file(), 'Сотрудники');
+}
+
+EXTEND FORM migrationData PROPERTIES() exportEmployees, importEmployees;

@@ -4,7 +4,7 @@ REQUIRE CustomerAttachment, Import;
 
 NAMESPACE Customer;
 
-importAttachments 'Импорт договоров' (FILE f) {
+importAttachments 'Импорт документов клиентов' (FILE f) {
     LOCAL idAttachment = VARSTRING[15](INTEGER);
     LOCAL idCustomer = VARSTRING[15](INTEGER);
     LOCAL number = VARSTRING[15](INTEGER);
@@ -19,9 +19,9 @@ importAttachments 'Импорт договоров' (FILE f) {
     message() <- '';
     count() <- 0;
 
-    IMPORT XLS NOHEADER FROM f TO idAttachment, idCustomer, number, date, type, note, idEmployee, dateCreated;
+    IMPORT XLS NOHEADER FROM f TO idAttachment = B, idCustomer, number, date, type, note, idEmployee, dateCreated;
 
-    FOR imported(INTEGER i) AND i > 0 AND idAttachment(i) AND NOT customer(idCustomer(i)) DO {
+    FOR imported(INTEGER i) AND i > 1 AND idAttachment(i) AND NOT customer(idCustomer(i)) DO {
 
         message() <- CONCAT ' ', message() + '\r\nстрока:', (i + 1), 'id:', idAttachment(i), 'Код клиента:', idCustomer(i);
         count() <- count() + 1;
@@ -31,17 +31,17 @@ importAttachments 'Импорт договоров' (FILE f) {
         MESSAGE CONCAT ' ', 'Неимпортированные документы, для которых не найден клиент: ', count(), message();
     }
 
-    FOR [GROUP SUM 1 IF INTEGER i > 0 AND customer(idCustomer(i)) BY idAttachment(i)](VARSTRING[15] id) AND id != '' AND NOT attachment(id) DO NEW c = Attachment {
+    FOR [GROUP SUM 1 IF INTEGER i > 1 AND customer(idCustomer(i)) BY idAttachment(i)](VARSTRING[15] id) AND id != '' AND NOT attachment(id) DO NEW c = Attachment {
         id(c) <- id;
     }
 
-    FOR [GROUP SUM 1 IF INTEGER i > 0 BY trim(type(i))](VARSTRING[50] type) AND type != '' 
+    FOR [GROUP SUM 1 IF INTEGER i > 1 BY trim(type(i))](VARSTRING[50] type) AND type != '' 
         AND NOT (GROUP MAX AttachmentType t IF upper(name(t)) == upper(type)) DO NEW t = AttachmentType {
 
         name(t) <- type; 
     }
     
-    FOR Attachment c = attachment(idAttachment(INTEGER i)) AND customer(idCustomer(i)) AND idAttachment(i) != '' AND i > 0 DO {
+    FOR Attachment c = attachment(idAttachment(INTEGER i)) AND customer(idCustomer(i)) AND idAttachment(i) != '' AND i > 1 DO {
         
         customer(c) <- customer(idCustomer(i));
         number(c) <- trim(number(i));
@@ -61,6 +61,23 @@ importAttachments 'Импорт документов клиентов' () {
 }
 
 EXTEND FORM migrationData PROPERTIES() importAttachments;
+
+FORM exportAttachments 'Экспорт документов клиентов'
+    OBJECTS p = Attachment
+    PROPERTIES (p) id, idCustomer, number, date, type, note, idCreatedUser, createdDate
+    ORDER date(p)
+;
+
+exportAttachments 'Экспорт документов клиентов' () {
+    
+    LOCAL file = FILE();
+    
+    PRINT exportAttachments XLS TO file;
+    WRITE CLIENT DIALOG file() TO 'Документы клиентов';
+    open(file(), 'Документы клиентов');
+}
+
+EXTEND FORM migrationData PROPERTIES() exportAttachments;
 
 importAttachmentDocumentsXls 'Импорт документов клиентов' () {
 

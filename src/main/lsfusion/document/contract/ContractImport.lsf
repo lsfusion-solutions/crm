@@ -7,12 +7,18 @@ NAMESPACE Contract;
 importContracts 'Импорт договоров' (FILE f) {
     LOCAL idContract = VARSTRING[15](INTEGER);
     LOCAL idLegalEntity = VARSTRING[15](INTEGER);
+    LOCAL idPersonLegalEntity = VARSTRING[15](INTEGER);
+    LOCAL docPersonLegalEntity = VARSTRING[50](INTEGER);
     LOCAL idCompany = VARSTRING[15](INTEGER);
+    LOCAL idPersonCompany = VARSTRING[15](INTEGER);
+    LOCAL docPersonCompany = VARSTRING[50](INTEGER);
     LOCAL number = VARSTRING[15](INTEGER);
     LOCAL date1 = DATE (INTEGER);
     LOCAL name = VARSTRING[150](INTEGER);
     LOCAL sum = NUMERIC[16,5] (INTEGER);
+    LOCAL currency = VARSTRING[50](INTEGER);
     LOCAL type = VARSTRING[50](INTEGER);
+    LOCAL group = VARSTRING[50](INTEGER);
     LOCAL sending = VARSTRING[50](INTEGER);
     LOCAL date2 = DATE (INTEGER);
     LOCAL date3 = DATE (INTEGER);
@@ -22,15 +28,17 @@ importContracts 'Импорт договоров' (FILE f) {
     LOCAL date7 = DATE (INTEGER);
     LOCAL note = VARSTRING[100](INTEGER);
     LOCAL text = TEXT(INTEGER);
+    LOCAL terms = TEXT(INTEGER);
     LOCAL message = VARSTRING[2000] ();
     LOCAL count = INTEGER ();
     
     message() <- '';
     count() <- 0;
     
-    IMPORT XLS NOHEADER FROM f TO idContract, idLegalEntity, idCompany, number, date1, name, sum, type, sending, date2, date3, date4, date5, date6, date7, note, text;
+    IMPORT XLS NOHEADER FROM f TO idContract = B, idCompany, idPersonCompany, docPersonCompany, idLegalEntity, idPersonLegalEntity, 
+        docPersonLegalEntity, number, date1, name, sum, currency, type, group, sending, date2, date3, date4, date5, date6, date7, note, text, terms;
     
-    FOR imported(INTEGER i) AND i > 2 AND trim(idCompany(i)) AND NOT isCompany(legalEntity(trim(idCompany(i)))) DO {
+    FOR imported(INTEGER i) AND i > 1 AND trim(idCompany(i)) AND NOT isCompany(legalEntity(trim(idCompany(i)))) DO {
     
         message() <- CONCAT ' ', message() + '\r\nстрока:', (i + 1), 'id:', idContract(i), 'Код компании:', idCompany(i);
         count() <- count() + 1;
@@ -40,7 +48,7 @@ importContracts 'Импорт договоров' (FILE f) {
         MESSAGE CONCAT ' ', 'Неимпортированные договоры, в которых компания не является компанией: ', count(), message();
     }
     
-    FOR [GROUP SUM 1 IF INTEGER i > 2 AND isCompany(legalEntity(trim(idCompany(i)))) BY trim(idContract(i))](VARSTRING[15] id) AND id != '' AND NOT contract(id) DO NEW c = Contract {
+    FOR [GROUP SUM 1 IF INTEGER i > 1 AND isCompany(legalEntity(trim(idCompany(i)))) BY trim(idContract(i))](VARSTRING[15] id) AND id != '' AND NOT contract(id) DO NEW c = Contract {
         id(c) <- id;
     }
     
@@ -50,20 +58,32 @@ importContracts 'Импорт договоров' (FILE f) {
         name(t) <- type; 
     }
     
-    FOR [GROUP SUM 1 IF INTEGER i > 2 BY trim(sending(i))](VARSTRING[50] sending) AND sending != '' 
+    FOR [GROUP SUM 1 IF INTEGER i > 1 BY trim(group(i))](VARSTRING[50] group) AND group != '' 
+        AND NOT (GROUP MAX ContractGroup t IF upper(name(t)) == upper(group)) DO NEW t = ContractGroup {
+        
+        name(t) <- group; 
+    }
+    
+    FOR [GROUP SUM 1 IF INTEGER i > 1 BY trim(sending(i))](VARSTRING[50] sending) AND sending != '' 
         AND NOT (GROUP MAX SendingWay t IF upper(name(t)) == upper(sending)) DO NEW t = SendingWay {
         
         name(t) <- sending; 
     }
-    FOR Contract c = contract(trim(idContract(INTEGER i))) AND isCompany(legalEntity(trim(idCompany(i)))) AND trim(idContract(i)) != '' AND i > 2 DO {
+    FOR Contract c = contract(trim(idContract(INTEGER i))) AND isCompany(legalEntity(trim(idCompany(i)))) AND trim(idContract(i)) != '' AND i > 1 DO {
         
         legalEntity(c) <- legalEntity(trim(idLegalEntity(i)));
+        authorisedPersonLegalEntity(c) <- Contact.contact(idPersonLegalEntity(i));
+        authorisedDocumentLegalEntity(c) <- trim(docPersonLegalEntity(i));
         company(c) <- legalEntity(trim(idCompany(i)));
+        authorisedPersonCompany(c) <- Contact.contact(idPersonCompany(i));
+        authorisedDocumentCompany(c) <- trim(docPersonCompany(i));
         number(c) <- trim(number(i));
         date(c) <- date1(i);
         name(c) <- trim(name(i));
         sum(c) <- sum(i);
+        currency(c) <- currency(currency(i));
         type(c) <- GROUP MAX ContractType t IF upper(name(t)) == upper(trim(type(i)));
+        group(c) <- GROUP MAX ContractGroup t IF upper(name(t)) == upper(trim(group(i)));
         sendingWay(c) <- GROUP MAX SendingWay s IF upper(name(s)) == upper(trim(sending(i)));
         dateSigningCompany(c) <- date2(i);
         dateSending(c) <- date3(i);
@@ -73,6 +93,7 @@ importContracts 'Импорт договоров' (FILE f) {
         dateClosing(c) <- date7(i);
         note(c) <- trim(note(i));
         text(c) <- trim(text(i));
+        terms(c) <- trim(terms(i));
     }
 }
 
@@ -83,7 +104,24 @@ importContracts 'Импорт договоров' () {
     }
 }
 
-EXTEND FORM migrationData PROPERTIES() importContracts;
+FORM exportContracts 'Экспорт договоров'
+    OBJECTS c = Contract
+    PROPERTIES (c) id, idCompany, idAuthorisedPersonCompany, authorisedDocumentCompany, idLegalEntity, idAuthorisedPersonLegalEntity, 
+                   authorisedDocumentLegalEntity, number, date, name, sum, sidCurrency, nameType, nameGroup, nameSendingWay, 
+                   dateSigningCompany, dateSending, dateSigningCustomer, dateReceiving, dateTo, dateClosing, note, text, terms
+    ORDER date(c)
+;
+
+exportContracts 'Экспорт договоров' () {
+    
+    LOCAL file = FILE();
+    
+    PRINT exportContracts XLS TO file;
+    WRITE CLIENT DIALOG file() TO 'Договоры';
+    open(file(), 'Договоры');
+}
+
+EXTEND FORM migrationData PROPERTIES() exportContracts, importContracts;
 
 importContractDocumentsXls 'Импорт документов договоров' () {
     
