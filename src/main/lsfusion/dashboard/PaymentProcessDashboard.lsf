@@ -122,6 +122,18 @@ importPaymentsDbf 'Импорт платежей (dbf)' (DATE df, DATE dt) {
             name(t) <- type;
         }
         
+        FOR Payment p = payment(INTEGER i) AND date(i) >= df AND date(i) <= dt DO {
+            company(p) <- OVERRIDE legalEntity(idCompany(i)), defaultCompany();
+            note(p) <- text(i);
+            type(p) <- GROUP MAX PaymentType t IF name(t) == type(i);
+        }
+        
+        FOR Expense p = expense(INTEGER i) AND date(i) >= df AND date(i) <= dt DO {
+            company(p) <- OVERRIDE legalEntity(idCompany(i)), defaultCompany();
+            note(p) <- text(i);
+            type(p) <- GROUP MAX ExpenseType t IF name(t) == type(i);
+        }
+        
         FOR imported(INTEGER i) AND sum(i) < 0 AND NOT expense(i) AND date(i) >= df AND date(i) <= dt DO NEW p = Expense {
             date(p) <- date(i);
             legalEntity(p) <- legalEntityEx(idLegalEntity(i));
