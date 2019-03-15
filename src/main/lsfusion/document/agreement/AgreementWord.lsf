@@ -1,6 +1,6 @@
 MODULE AgreementWord;
 
-REQUIRE ContractWord, Agreement;
+REQUIRE ContractWord, Agreement, AgreementFile;
 
 NAMESPACE Agreement;
 
@@ -108,3 +108,10 @@ createTemplateEntries(Template t, DocType d) +{
 
 //EXTEND FORM contractDashboard PROPERTIES printAgreementWord(ag) DRAW ag TOOLBAR;
 EXTEND FORM contract PROPERTIES printAgreementWord(ag) DRAW ag TOOLBAR;
+EXTEND FORM agreement PROPERTIES printAgreementWord(o);
+
+DESIGN agreement {
+    file {
+        MOVE PROPERTY (printAgreementWord(o));
+    }
+}
