@@ -35,8 +35,8 @@ fullNameLegalEntity 'Организация' (Document d) = overName(legalEntity
 company = ABSTRACT LegalEntity(Document);
 nameCompany 'Компания' (Document d) = name(company(d)); 
 
-CLASS DocType 'Вид договора';
-name 'Наименование' (DocType d) = staticCaption(d) IF d IS DocType CHARWIDTH 20;
+CLASS DocType 'Вид документа';
+name 'Наименование' (DocType d) = staticCaption(d) IF d IS DocType CHARWIDTH 21;
 
 FORM dialogDocTypes 'Типы документа'
     OBJECTS d = DocType
@@ -46,7 +46,7 @@ FORM dialogDocTypes 'Типы документа'
 ;
 
 docType = ABSTRACT DocType(Document);
-nameDocType 'Вид договора' (Document d) = name(docType(d));
+nameDocType 'Вид документа' (Document d) = name(docType(d));
 
 WHEN LOCAL SET (Document d IS Document) AND NOT date(d) DO {
     date(d) <- currentDate();    
@@ -81,3 +81,15 @@ paidCurrency 'Оплачено в валюте' = ABSTRACT NUMERIC[16,5](Documen
 inCurrency 'В валюте' = ABSTRACT BOOLEAN (Document);
 currency = ABSTRACT Currency(Document);
 shortNameCurrency 'Валюта (сокр.)' (Document d) = shortName(currency(d));
+
+FORM dialogDocuments 'Документы'
+    OBJECTS d = Document
+    PROPERTIES (d) date, nameDocType, number, name, nameCompany, nameCustomer, nameLegalEntity
+    ORDER date(d)
+    
+    LIST Document OBJECT d
+;
+
+DESIGN dialogDocuments {
+    size = (810, 600);
+}
