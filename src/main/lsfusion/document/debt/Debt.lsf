@@ -35,7 +35,7 @@ dateCurrency 'Дата курса' (Debt d) = OVERRIDE dataDateCurrency(d), date
 
 sumCurrency 'Сумма в валюте' (Debt p) = DATA NUMERIC[16,5](Debt);
 
-WHEN LOCAL (SETCHANGED (sumCurrency(Debt d)) OR CHANGED (currency(d))) AND NOT CHANGED (sum(d)) DO {
+WHEN LOCAL (SETCHANGED (sumCurrency(Debt d)) OR CHANGED (currency(d)) OR SETCHANGED(dateCurrency(d))) AND NOT CHANGED (sum(d)) AND sumCurrency(d) DO {
     sum(d) <- round2(sumCurrency(d) / OVERRIDE (rateOn(defaultTypeExchange(), currency(d), dateCurrency(d))), 1);
 }
 
