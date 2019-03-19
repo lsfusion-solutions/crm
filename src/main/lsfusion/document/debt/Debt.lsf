@@ -251,7 +251,7 @@ NAVIGATOR {
 
 recalcCurrencyDebts 'Пересчитать валютные задолженности' () {
     NEWSESSION {
-        FOR inCurrency(contract(Debt d)) AND date(d) >= currentDate() DO {
+        FOR inCurrency(contract(Debt d)) AND date(d) >= currentDate() AND sumCurrency(d) DO {
             sum(d) <- round2(sumCurrency(d) / OVERRIDE (rateOn(defaultTypeExchange(), currency(d), dateCurrency(d))), 1);
         }
         APPLY;
