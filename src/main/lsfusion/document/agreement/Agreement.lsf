@@ -59,10 +59,12 @@ CONSTRAINT Agreement a IS Agreement AND NOT contract(a) MESSAGE 'Для согл
 
 date 'Дата' = DATA DATE (Agreement) IN id;
 
-CLASS AgreementType 'Тип соглашения';
+CLASS AgreementType 'Тип соглашения' : Type;
 TABLE agreementType(AgreementType);
 
 name 'Наименование' = DATA VARISTRING[50](AgreementType) CHARWIDTH 15;
+
+name(AgreementType c) += name(c);
 
 FORM agreementType 'Тип соглашения'
     OBJECTS o = AgreementType PANEL
@@ -104,8 +106,9 @@ id(Agreement c) += id(c);
 number(Agreement c) += number(c);
 date(Agreement c) += date(c);
 name(Agreement c) += name(c);
-nameType(Agreement c) += nameType(c);
+type(Agreement c) += type(c);
 note(Agreement c) += note(c);
+text(Agreement c) += text(c);
 dateSigningCompany(Agreement c) += dateSigningCompany(c);
 dateSending(Agreement c) += dateSending(c);
 dateSigningCustomer(Agreement c) += dateSigningCustomer(c);
@@ -124,6 +127,7 @@ EXTEND CLASS DocType {
     agreement 'Соглашение'
 }
 docType(Agreement a) += DocType.agreement IF a IS Agreement;
+docType(AgreementType c) += DocType.agreement IF c IS AgreementType;
 
 FORM agreement 'Соглашение'
     OBJECTS o = Agreement PANEL

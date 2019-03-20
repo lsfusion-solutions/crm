@@ -46,7 +46,8 @@ nameExternal 'Внешняя система' (Issue p) = name(external(p));
 
 issue = GROUP AGGR Issue p BY id (p), external(p);
 
-CONSTRAINT project(Issue i) AND NOT external(project(i)) == external(i) CHECKED BY project[Issue] MESSAGE 'Внешняя система задачи не совпадает с внешней системой проекта';
+CONSTRAINT (external(project(Issue i)) AND NOT external(project(i)) == external(i))
+    OR (project(i) AND NOT external(project(i)) AND external(i)) CHECKED BY project[Issue] MESSAGE 'Внешняя система задачи не совпадает с внешней системой проекта';
 
 EXTEND FORM issues PROPERTIES nameExternal(o);
 EXTEND FORM dialogIssues PROPERTIES nameExternal(o);

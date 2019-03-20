@@ -10,7 +10,6 @@ id 'Код' = ABSTRACT VARSTRING[15] (Document) IN id CHARWIDTH 5;
 number 'Номер' = ABSTRACT VARSTRING[15](Document) IN id CHARWIDTH 10;
 date 'Дата' = ABSTRACT DATE (Document) IN id;
 name 'Наименование' = ABSTRACT VARISTRING[150](Document) IN id CHARWIDTH 20;
-nameType 'Тип' = ABSTRACT VARISTRING[100](Document) CHARWIDTH 15;
 dateSigningCompany 'Дата подписания компанией' = ABSTRACT DATE (Document);
 dateSending 'Дата отправки' = ABSTRACT DATE (Document);
 dateSigningCustomer 'Дата подписания клиентом' = ABSTRACT DATE (Document);
@@ -24,6 +23,7 @@ balance 'Остаток' (Document d) = sum(d) (-) paid(d);
 dateLastPaid 'Дата последней оплаты' = ABSTRACT DATE (Document);
 description 'Описание' = ABSTRACT VARISTRING[250] (Document) CHARWIDTH 25;
 fileName 'Имя файла' = ABSTRACT VARISTRING[250](Document);
+text 'Текст' = ABSTRACT TEXT (Document);
 
 customer = ABSTRACT Customer (Document);
 nameCustomer 'Клиент' (Document d) = name(customer(d));
@@ -84,7 +84,7 @@ shortNameCurrency 'Валюта (сокр.)' (Document d) = shortName(currency(d
 
 FORM dialogDocuments 'Документы'
     OBJECTS d = Document
-    PROPERTIES (d) date, nameDocType, number, name, nameCompany, nameCustomer, nameLegalEntity
+    PROPERTIES (d) READONLY date, nameDocType, number, name, nameCompany, nameCustomer, nameLegalEntity
     ORDER date(d)
     
     LIST Document OBJECT d
@@ -93,3 +93,14 @@ FORM dialogDocuments 'Документы'
 DESIGN dialogDocuments {
     size = (810, 600);
 }
+
+CLASS ABSTRACT Type 'Тип документа';
+TABLE type(Type);
+
+name 'Наименование' = ABSTRACT VARISTRING[100](Type) CHARWIDTH 15;
+
+docType = ABSTRACT DocType(Type);
+nameDocType 'Вид документа' (Type t) = name(docType(t));
+
+type = ABSTRACT Type(Document);
+nameType 'Тип документа' (Document d) = name(type(d));

@@ -70,10 +70,12 @@ year 'Год' (Act a) = extractYear(date(a));
 fromDate 'Дата с' = DATA DATE (Act);
 toDate 'Дата по' = DATA DATE (Act);
 
-CLASS ActType 'Тип акта выполненных работ';
+CLASS ActType 'Тип акта выполненных работ' : Type;
 TABLE actType(ActType);
 
 name 'Наименование' = DATA VARISTRING[50](ActType) CHARWIDTH 15;
+
+name(ActType c) += name(c);
 
 FORM actType 'Тип акта'
     OBJECTS o = ActType PANEL
@@ -120,8 +122,9 @@ id(Act c) += id(c);
 number(Act c) += number(c);
 name(Act c) += name(c);
 date(Act c) += date(c);
-nameType(Act c) += nameType(c);
+type(Act c) += type(c);
 note(Act c) += note(c);
+text(Act c) += text(c);
 dateSigningCompany(Act c) += dateSigningCompany(c);
 dateSending(Act c) += dateSending(c);
 dateSigningCustomer(Act c) += dateSigningCustomer(c);
@@ -142,6 +145,7 @@ EXTEND CLASS DocType {
     act 'Акт выполненных работ'
 }
 docType(Act a) += DocType.act IF a IS Act;
+docType(ActType c) += DocType.act IF c IS ActType;
 
 forbidChange 'Запрет на редактирование' = ABSTRACT VALUE BOOLEAN (Act);
 

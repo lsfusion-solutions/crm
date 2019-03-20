@@ -72,11 +72,13 @@ WHEN LOCAL (SETCHANGED (sumCurrency(Contract c)) OR CHANGED (currency(c))) AND i
     sum(c) <- round2(sumCurrency(c) / OVERRIDE (rateOn(defaultTypeExchange(), currency(c), date(c))), 1);
 }
 
-CLASS ContractType 'Тип договора';
+CLASS ContractType 'Тип договора' : Type;
 TABLE contractType(ContractType);
 
 name 'Наименование' = DATA VARISTRING[50](ContractType) CHARWIDTH 15;
 postfix 'Постфикс' = DATA VARISTRING[5](ContractType);
+
+name(ContractType c) += name(c);
 
 FORM contractType 'Тип договора'
     OBJECTS o = ContractType PANEL
@@ -157,8 +159,9 @@ id(Contract c) += id(c);
 number(Contract c) += number(c);
 name(Contract c) += name(c);
 date(Contract c) += date(c);
-nameType(Contract c) += nameType(c);
+type(Contract c) += type(c);
 note(Contract c) += note(c);
+text(Contract c) += text(c);
 dateSigningCompany(Contract c) += dateSigningCompany(c);
 dateSending(Contract c) += dateSending(c);
 dateSigningCustomer(Contract c) += dateSigningCustomer(c);
@@ -180,6 +183,7 @@ EXTEND CLASS DocType {
     contract 'Договор'
 }
 docType(Contract c) += DocType.contract IF c IS Contract;
+docType(ContractType c) += DocType.contract IF c IS ContractType;
 
 FORM contract 'Договор'
     OBJECTS o = Contract PANEL
