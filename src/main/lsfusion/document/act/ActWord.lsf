@@ -43,60 +43,60 @@ FORM dialogActTypeTemplates 'Шаблоны Word'
 overPrintActWord ABSTRACT LIST (Act, Template);
 
 createActTemplate (Act ag, Template t) {
-        value(TemplateEntry d) <- OVERRIDE number(ag), '' WHERE key(d) = 'NUMBER_DOCUMENT' AND template (d) == t;
-        value(TemplateEntry d) <- TEXT (toDateDDMMYYYY(date(ag))) WHERE key(d) = 'DATE_DOCUMENT' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE nameType(ag), '' WHERE key(d) = 'TYPE_DOCUMENT' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE numberContract(ag), '' WHERE key(d) = 'NUMBER_CONTRACT' AND template (d) == t;
-        value(TemplateEntry d) <- TEXT (toDateDDMMYYYY(dateContract(ag))) WHERE key(d) = 'DATE_CONTRACT' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE numberAgreement(ag), '' WHERE key(d) = 'NUMBER_AGREEMENT' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE nameCustomer(ag), '' WHERE key(d) = 'NAME_CUSTOMER' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE overName(company(ag)), '' WHERE key(d) = 'NAME_COMPANY' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE overName(legalEntity(ag)), '' WHERE key(d) = 'NAME_LEGAL_ENTITY' AND template (d) == t;
-        value(TemplateEntry d) <- toCharRus(sum(ag)) WHERE key(d) = 'SUM_DOCUMENT_NUMERIC' AND template (d) == t;
-        TRY { value(TemplateEntry d) <- numSpelledCurrency(sum(ag), '00d', currency(contract(ag))) WHERE key(d) = 'SUM_DOCUMENT_WORDS' AND template (d) == t; }
-        value(TemplateEntry d) <- TEXT (toDateDDMMYYYY(dateSending(ag))) WHERE key(d) = 'SENDING_DATE_DOCUMENT' AND template (d) == t;
-        value(TemplateEntry d) <- TEXT (toDateDDMMYYYY(dateReceiving(ag))) WHERE key(d) = 'RECEIVING_DATE_DOCUMENT' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE note(ag), '' WHERE key(d) = 'NOTE_DOCUMENT' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE text(ag), '' WHERE key(d) = 'TEXT_DOCUMENT' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE authorisedDocumentLegalEntity(ag), '' WHERE key(d) = 'AUTHORISED_DOCUMENT_CUSTOMER' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE authorisedDocumentCompany(ag), '' WHERE key(d) = 'AUTHORISED_DOCUMENT_COMPANY' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE shortName(authorisedPersonLegalEntity(ag)), '' WHERE key(d) = 'SHORT_NAME_AUTHORISED_PERSON_CUSTOMER' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE fullName(authorisedPersonLegalEntity(ag)), '' WHERE key(d) = 'FULL_NAME_AUTHORISED_PERSON_CUSTOMER' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE shortName(authorisedPersonCompany(ag)), '' WHERE key(d) = 'SHORT_NAME_AUTHORISED_PERSON_COMPANY' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE fullName(authorisedPersonCompany(ag)), '' WHERE key(d) = 'FULL_NAME_AUTHORISED_PERSON_COMPANY' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE fullNameRp(authorisedPersonLegalEntity(ag)), '' WHERE key(d) = 'FULL_NAME_RP_AUTHORISED_PERSON_CUSTOMER' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE fullNameRp(authorisedPersonCompany(ag)), '' WHERE key(d) = 'FULL_NAME_RP_AUTHORISED_PERSON_COMPANY' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE namePosition(authorisedPersonCompany(ag)), '' WHERE key(d) = 'POSITION_AUTHORISED_PERSON_COMPANY' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE nameRpPosition(authorisedPersonCompany(ag)), '' WHERE key(d) = 'POSITION_RP_AUTHORISED_PERSON_COMPANY' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE namePosition(authorisedPersonLegalEntity(ag)), '' WHERE key(d) = 'POSITION_AUTHORISED_PERSON_CUSTOMER' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE nameRpPosition(authorisedPersonLegalEntity(ag)), '' WHERE key(d) = 'POSITION_RP_AUTHORISED_PERSON_CUSTOMER' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE nameLegalAddress(company(ag)), '' WHERE key(d) = 'ADDRESS_COMPANY' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE postcode(legalAddress(company(ag))), '' WHERE key(d) = 'POSTCODE_COMPANY' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE number(account(company(ag))), '' WHERE key(d) = 'ACCOUNT_COMPANY' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE nameBank(company(ag)), '' WHERE key(d) = 'NAME_BANK_COMPANY' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE postcodeBank(company(ag)), '' WHERE key(d) = 'POSTCODE_BANK_COMPANY' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE addressBank(company(ag)), '' WHERE key(d) = 'ADDRESS_BANK_COMPANY' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE mfoBank(company(ag)), '' WHERE key(d) = 'MFO_BANK_COMPANY' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE nameLegalAddress(legalEntity(ag)), '' WHERE key(d) = 'ADDRESS_LEGAL_ENTITY' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE postcode(legalAddress(legalEntity(ag))), '' WHERE key(d) = 'POSTCODE_LEGAL_ENTITY' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE number(account(legalEntity(ag))), '' WHERE key(d) = 'ACCOUNT_LEGAL_ENTITY' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE nameBank(legalEntity(ag)), '' WHERE key(d) = 'NAME_BANK_LEGAL_ENTITY' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE postcodeBank(legalEntity(ag)), '' WHERE key(d) = 'POSTCODE_BANK_LEGAL_ENTITY' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE addressBank(legalEntity(ag)), '' WHERE key(d) = 'ADDRESS_BANK_LEGAL_ENTITY' AND template (d) == t;
-        value(TemplateEntry d) <- OVERRIDE mfoBank(legalEntity(ag)), '' WHERE key(d) = 'MFO_BANK_LEGAL_ENTITY' AND template (d) == t;
-        value(TemplateEntry d) <- TEXT (toDateDDMMYYYY(fromDate(ag))) WHERE key(d) = 'DATE_FROM_ACT' AND template (d) == t;
-        value(TemplateEntry d) <- TEXT (toDateDDMMYYYY(toDate(ag))) WHERE key(d) = 'DATE_TO_ACT' AND template (d) == t;
-        
-        FOR ContractSubject cs = [GROUP LAST ContractSubject css ORDER date(css) IF date(css) <= date(contract(css)) BY type(css), contract(css)](SubjectType cst, contract(ag)) DO {
-        
-            value(TemplateEntry d) <- TEXT (quantity(cs)) WHERE key(d) = id(cst) + '_QUANTITY' AND template (d) == t;
-            value(TemplateEntry d) <- toCharRus(round2(price(cs))) WHERE key(d) = id(cst) + '_PRICE_NUMERIC' AND template (d) == t;
-            value(TemplateEntry d) <- numSpelledCurrency(price(cs), '00d', currency(contract(ag))) WHERE key(d) = id(cst) + '_PRICE_WORDS' AND template (d) == t;
-            value(TemplateEntry d) <- toCharRus(round2(sum(cs))) WHERE key(d) = id(cst) + '_SUM_NUMERIC' AND template (d) == t;
-            TRY { value(TemplateEntry d) <- numSpelledCurrency(sum(cs), '00d', currency(contract(ag))) WHERE key(d) = id(cst) + '_SUM_WORDS' AND template (d) == t; }
-        }
-        
-        overPrintActWord(ag, t);
+    value(TemplateEntry d) <- OVERRIDE number(ag), '' WHERE key(d) = 'NUMBER_DOCUMENT' AND template (d) == t;
+    value(TemplateEntry d) <- TEXT (toDateDDMMYYYY(date(ag))) WHERE key(d) = 'DATE_DOCUMENT' AND template (d) == t;
+    value(TemplateEntry d) <- OVERRIDE nameType(ag), '' WHERE key(d) = 'TYPE_DOCUMENT' AND template (d) == t;
+    value(TemplateEntry d) <- OVERRIDE numberContract(ag), '' WHERE key(d) = 'NUMBER_CONTRACT' AND template (d) == t;
+    value(TemplateEntry d) <- TEXT (toDateDDMMYYYY(dateContract(ag))) WHERE key(d) = 'DATE_CONTRACT' AND template (d) == t;
+    value(TemplateEntry d) <- OVERRIDE numberAgreement(ag), '' WHERE key(d) = 'NUMBER_AGREEMENT' AND template (d) == t;
+    value(TemplateEntry d) <- OVERRIDE nameCustomer(ag), '' WHERE key(d) = 'NAME_CUSTOMER' AND template (d) == t;
+    value(TemplateEntry d) <- OVERRIDE overName(company(ag)), '' WHERE key(d) = 'NAME_COMPANY' AND template (d) == t;
+    value(TemplateEntry d) <- OVERRIDE overName(legalEntity(ag)), '' WHERE key(d) = 'NAME_LEGAL_ENTITY' AND template (d) == t;
+    value(TemplateEntry d) <- toCharRus(sum(ag)) WHERE key(d) = 'SUM_DOCUMENT_NUMERIC' AND template (d) == t;
+    TRY { value(TemplateEntry d) <- numSpelledCurrency(sum(ag), '00d', currency(contract(ag))) WHERE key(d) = 'SUM_DOCUMENT_WORDS' AND template (d) == t; }
+    value(TemplateEntry d) <- TEXT (toDateDDMMYYYY(dateSending(ag))) WHERE key(d) = 'SENDING_DATE_DOCUMENT' AND template (d) == t;
+    value(TemplateEntry d) <- TEXT (toDateDDMMYYYY(dateReceiving(ag))) WHERE key(d) = 'RECEIVING_DATE_DOCUMENT' AND template (d) == t;
+    value(TemplateEntry d) <- OVERRIDE note(ag), '' WHERE key(d) = 'NOTE_DOCUMENT' AND template (d) == t;
+    value(TemplateEntry d) <- OVERRIDE text(ag), '' WHERE key(d) = 'TEXT_DOCUMENT' AND template (d) == t;
+    value(TemplateEntry d) <- OVERRIDE authorisedDocumentLegalEntity(ag), '' WHERE key(d) = 'AUTHORISED_DOCUMENT_CUSTOMER' AND template (d) == t;
+    value(TemplateEntry d) <- OVERRIDE authorisedDocumentCompany(ag), '' WHERE key(d) = 'AUTHORISED_DOCUMENT_COMPANY' AND template (d) == t;
+    value(TemplateEntry d) <- OVERRIDE shortName(authorisedPersonLegalEntity(ag)), '' WHERE key(d) = 'SHORT_NAME_AUTHORISED_PERSON_CUSTOMER' AND template (d) == t;
+    value(TemplateEntry d) <- OVERRIDE fullName(authorisedPersonLegalEntity(ag)), '' WHERE key(d) = 'FULL_NAME_AUTHORISED_PERSON_CUSTOMER' AND template (d) == t;
+    value(TemplateEntry d) <- OVERRIDE shortName(authorisedPersonCompany(ag)), '' WHERE key(d) = 'SHORT_NAME_AUTHORISED_PERSON_COMPANY' AND template (d) == t;
+    value(TemplateEntry d) <- OVERRIDE fullName(authorisedPersonCompany(ag)), '' WHERE key(d) = 'FULL_NAME_AUTHORISED_PERSON_COMPANY' AND template (d) == t;
+    value(TemplateEntry d) <- OVERRIDE fullNameRp(authorisedPersonLegalEntity(ag)), '' WHERE key(d) = 'FULL_NAME_RP_AUTHORISED_PERSON_CUSTOMER' AND template (d) == t;
+    value(TemplateEntry d) <- OVERRIDE fullNameRp(authorisedPersonCompany(ag)), '' WHERE key(d) = 'FULL_NAME_RP_AUTHORISED_PERSON_COMPANY' AND template (d) == t;
+    value(TemplateEntry d) <- OVERRIDE namePosition(authorisedPersonCompany(ag)), '' WHERE key(d) = 'POSITION_AUTHORISED_PERSON_COMPANY' AND template (d) == t;
+    value(TemplateEntry d) <- OVERRIDE nameRpPosition(authorisedPersonCompany(ag)), '' WHERE key(d) = 'POSITION_RP_AUTHORISED_PERSON_COMPANY' AND template (d) == t;
+    value(TemplateEntry d) <- OVERRIDE namePosition(authorisedPersonLegalEntity(ag)), '' WHERE key(d) = 'POSITION_AUTHORISED_PERSON_CUSTOMER' AND template (d) == t;
+    value(TemplateEntry d) <- OVERRIDE nameRpPosition(authorisedPersonLegalEntity(ag)), '' WHERE key(d) = 'POSITION_RP_AUTHORISED_PERSON_CUSTOMER' AND template (d) == t;
+    value(TemplateEntry d) <- OVERRIDE nameLegalAddress(company(ag)), '' WHERE key(d) = 'ADDRESS_COMPANY' AND template (d) == t;
+    value(TemplateEntry d) <- OVERRIDE postcode(legalAddress(company(ag))), '' WHERE key(d) = 'POSTCODE_COMPANY' AND template (d) == t;
+    value(TemplateEntry d) <- OVERRIDE number(account(company(ag))), '' WHERE key(d) = 'ACCOUNT_COMPANY' AND template (d) == t;
+    value(TemplateEntry d) <- OVERRIDE nameBank(company(ag)), '' WHERE key(d) = 'NAME_BANK_COMPANY' AND template (d) == t;
+    value(TemplateEntry d) <- OVERRIDE postcodeBank(company(ag)), '' WHERE key(d) = 'POSTCODE_BANK_COMPANY' AND template (d) == t;
+    value(TemplateEntry d) <- OVERRIDE addressBank(company(ag)), '' WHERE key(d) = 'ADDRESS_BANK_COMPANY' AND template (d) == t;
+    value(TemplateEntry d) <- OVERRIDE mfoBank(company(ag)), '' WHERE key(d) = 'MFO_BANK_COMPANY' AND template (d) == t;
+    value(TemplateEntry d) <- OVERRIDE nameLegalAddress(legalEntity(ag)), '' WHERE key(d) = 'ADDRESS_LEGAL_ENTITY' AND template (d) == t;
+    value(TemplateEntry d) <- OVERRIDE postcode(legalAddress(legalEntity(ag))), '' WHERE key(d) = 'POSTCODE_LEGAL_ENTITY' AND template (d) == t;
+    value(TemplateEntry d) <- OVERRIDE number(account(legalEntity(ag))), '' WHERE key(d) = 'ACCOUNT_LEGAL_ENTITY' AND template (d) == t;
+    value(TemplateEntry d) <- OVERRIDE nameBank(legalEntity(ag)), '' WHERE key(d) = 'NAME_BANK_LEGAL_ENTITY' AND template (d) == t;
+    value(TemplateEntry d) <- OVERRIDE postcodeBank(legalEntity(ag)), '' WHERE key(d) = 'POSTCODE_BANK_LEGAL_ENTITY' AND template (d) == t;
+    value(TemplateEntry d) <- OVERRIDE addressBank(legalEntity(ag)), '' WHERE key(d) = 'ADDRESS_BANK_LEGAL_ENTITY' AND template (d) == t;
+    value(TemplateEntry d) <- OVERRIDE mfoBank(legalEntity(ag)), '' WHERE key(d) = 'MFO_BANK_LEGAL_ENTITY' AND template (d) == t;
+    value(TemplateEntry d) <- TEXT (toDateDDMMYYYY(fromDate(ag))) WHERE key(d) = 'DATE_FROM_ACT' AND template (d) == t;
+    value(TemplateEntry d) <- TEXT (toDateDDMMYYYY(toDate(ag))) WHERE key(d) = 'DATE_TO_ACT' AND template (d) == t;
+    
+    FOR ContractSubject cs = [GROUP LAST ContractSubject css ORDER date(css) IF date(css) <= date(contract(css)) BY type(css), contract(css)](SubjectType cst, contract(ag)) DO {
+    
+        value(TemplateEntry d) <- TEXT (quantity(cs)) WHERE key(d) = id(cst) + '_QUANTITY' AND template (d) == t;
+        value(TemplateEntry d) <- toCharRus(round2(price(cs))) WHERE key(d) = id(cst) + '_PRICE_NUMERIC' AND template (d) == t;
+        value(TemplateEntry d) <- numSpelledCurrency(price(cs), '00d', currency(contract(ag))) WHERE key(d) = id(cst) + '_PRICE_WORDS' AND template (d) == t;
+        value(TemplateEntry d) <- toCharRus(round2(sum(cs))) WHERE key(d) = id(cst) + '_SUM_NUMERIC' AND template (d) == t;
+        TRY { value(TemplateEntry d) <- numSpelledCurrency(sum(cs), '00d', currency(contract(ag))) WHERE key(d) = id(cst) + '_SUM_WORDS' AND template (d) == t; }
+    }
+    
+    overPrintActWord(ag, t);
 }
 
 createTemplateEntries(Template t, DocType d) +{
