@@ -4,37 +4,39 @@ REQUIRE EquipmentLicense, Dashboard, Utils;
 
 NAMESPACE Equipment;
 
-filterContract = DATA LOCAL NESTED Contract(SubjectType, Customer);
-nameFilterContract 'Договор' (SubjectType t, Customer c) = description(filterContract(t, c));
+filterCustomer = DATA LOCAL NESTED Customer();
+nameFilterCustomer 'Клиент' () = name(filterCustomer());
 
-CONSTRAINT filterContract(SubjectType t, Customer c) AND NOT in(filterContract(t, c), t) CHECKED BY filterContract 
+filterContract = DATA LOCAL NESTED Contract(SubjectType);
+nameFilterContract 'Договор' (SubjectType t) = description(filterContract(t));
+
+CONSTRAINT filterContract(SubjectType t) AND NOT in(filterContract(t), t) CHECKED BY filterContract 
     MESSAGE 'В выбранном договоре нет предметов договора с выбранным типом';
     
-CONSTRAINT filterContract(SubjectType t, Customer c) AND NOT customer(filterContract(t, c)) == c CHECKED BY filterContract
+CONSTRAINT filterContract(SubjectType t) AND NOT customer(filterContract(t)) == filterCustomer() CHECKED BY filterContract
     MESSAGE 'Клиент выбранного договора не соответсвует клиенту';
     
-addEquipment 'Добавить' (SubjectType t, Customer c) {
+addEquipment 'Добавить' (SubjectType t) {
     NEWSESSION NESTED (filterContract) NEW e = Equipment {
         subjectType(e) <- t;
-        contract(e) <- filterContract(t, c);
-        customer(e) <- c;
+        contract(e) <- filterContract(t);
+        customer(e) <- filterCustomer();
         SHOW equipment OBJECTS o = e DOCKED;
     }
 } IMAGE 'add.png';
 
-quantitySerial 'Кол-во серийных номеров' (Customer c, SubjectType t) = 
-    GROUP SUM 1 IF contract(equipment(EquipmentSerial s)) == filterContract(t, c) OR NOT filterContract(t, c) AND c = customer(equipment(s));
+quantitySerial 'Кол-во серийных номеров' (SubjectType t) = 
+    GROUP SUM 1 IF contract(equipment(EquipmentSerial s)) == filterContract(t) OR NOT filterContract(t) AND (customer(equipment(s)) == filterCustomer() OR NOT filterCustomer());
 
 FORM equipmentDashboard 'Оборудование'
     OBJECTS t = SubjectType PANEL 
-    OBJECTS c = Customer PANEL 
-    PROPERTIES name(t) SELECTOR, nameFilterContract(t, c), name(c) SELECTOR, quantitySerial(c, t) READONLY 
+    PROPERTIES name(t) SELECTOR, nameFilterContract(t), nameFilterCustomer() SELECTOR, quantitySerial(t) READONLY 
     
     OBJECTS e = Equipment
-    PROPERTIES (e) READONLY note, quantitySerial, nameCreatedUser, createdDate, createdTime, nameContract, nameLegalEntityContract, nameAgreement
-    PROPERTIES DRAW e TOOLBAR generateLicense(e), downloadFile(e) SHOWIF TRUE IF file(e), addEquipment(t, c) 
+    PROPERTIES (e) READONLY note, quantitySerial, nameCreatedUser, createdDate, createdTime, nameCustomer SHOWIF NOT filterCustomer(), nameContract, nameLegalEntityContract, nameAgreement
+    PROPERTIES DRAW e TOOLBAR generateLicense(e), downloadFile(e) SHOWIF TRUE IF file(e), addEquipment(t) 
     PROPERTIES (e) NEWSESSION EDIT, DELETE SHOWIF TRUE IF NOT file(e)
-    FILTERS subjectType(e) == t, customer(e) == c, contract(e) == filterContract(t, c) OR NOT filterContract(t, c)
+    FILTERS subjectType(e) == t, customer(e) == filterCustomer() OR NOT filterCustomer(), contract(e) == filterContract(t) OR NOT filterContract(t)
     
     OBJECTS n = EquipmentSerial
     PROPERTIES (n) READONLY number
@@ -43,7 +45,7 @@ FORM equipmentDashboard 'Оборудование'
     OBJECTS es = EquipmentSerial
     PROPERTIES (es) READONLY noteEquipment, quantitySerialEquipment, nameCreatedUserEquipment, createdDateEquipment, 
                              createdTimeEquipment, nameSubjectTypeEquipment, nameContractEquipment, nameLegalEntityContractEquipment, number
-    FILTERS customer(equipment(es)) == c
+    FILTERS customer(equipment(es)) == filterCustomer() OR NOT filterCustomer()
     ORDER createdDateEquipment(es), createdTimeEquipment(es)
 ;
 
@@ -53,19 +55,19 @@ DESIGN equipmentDashboard {
             caption = 'Параметры';
             type = CONTAINERH;
             MOVE PROPERTY (name(t)) { caption = 'Тип предмета договора'; }
-            MOVE PROPERTY (name(c)) { caption = 'Клиент'; }
-            MOVE PROPERTY (nameFilterContract(t, c)) { caption = 'Договор'; }
-            MOVE PROPERTY (quantitySerial(c, t));
+            MOVE PROPERTY (nameFilterCustomer()) { caption = 'Клиент'; }
+            MOVE PROPERTY (nameFilterContract(t)) { caption = 'Договор'; }
+            MOVE PROPERTY (quantitySerial(t));
         }
         NEW tab {
             type = TABBED;
             fill = 1;
             NEW equip {
                 caption = 'Оборудование';
-                type = CONTAINERH;
+                type = SPLITH;
                 fill = 1;
-                MOVE BOX (e);
-                MOVE BOX (n);
+                MOVE BOX (e) { fill = 2; }
+                MOVE BOX (n) { fill = 1; }
             }
             MOVE BOX (es) { caption = 'Серийные номера по клиенту'; }
         }
