@@ -51,43 +51,81 @@ FORM timesheetDashboard 'Табель рабочего времени'
     PROPERTIES READONLY name(r), absenseHours(e, r, y)
     FILTERS absenseHours(e, r, y)
     
+    OBJECTS mm = Month PANEL, yy = INTEGER PANEL
+    PROPERTIES month1 'Месяц' = staticCaption(mm) SELECTOR, year1 'Год' = VALUE (yy)
+    
+    OBJECTS dd = DATE 
+    OBJECTS ee = Employee
+    PROPERTIES READONLY name(ee), absenceHours(ee, yy, mm), absenceHours(ee, dd) COLUMNS (dd) HEADER extractDay(dd)
+    PROPERTIES extractDay(dd) SHOWIF NULL 
+    ORDER extractDay(dd), name(ee)
+    
+    FILTERS iterate(dd, toDateFormat('01' + lpad(TEXT (number(mm)), 2, '0') + yy, 'DDMMYYYY'),
+                                    lastDayOfMonth(toDateFormat('01' + lpad(TEXT (number(mm)), 2, '0') + yy, 'DDMMYYYY')))
+                                    
+    FILTERGROUP hours FILTER 'С отсутствием' absenceHours(ee, yy, mm) DEFAULT 
+    FILTERGROUP active FILTER 'Активные' active(ee) DEFAULT 
+    
     EVENTS ON INIT {
         SEEK timesheetDashboard.m = extractMonth(currentDate());
         SEEK timesheetDashboard.y = extractYear(currentDate());
         SEEK timesheetDashboard.e = currentUser();
 //        SEEK timesheetDashboard.d = currentDate();
+        SEEK timesheetDashboard.mm = extractMonth(currentDate());
+        SEEK timesheetDashboard.yy = extractYear(currentDate());
     }
 ;
 
 DESIGN timesheetDashboard {
     OBJECTS {
-        NEW header FIRST {
-            caption = 'Фильтры';
-            type = CONTAINERH;
-            MOVE PROPERTY (month) { charWidth = 15; }
-            MOVE PROPERTY (year) { charWidth = 5; }
-            MOVE PROPERTY (name(e)) { charWidth = 25; }
-        }
-        NEW bottom {
-            type = SPLITH;
+        NEW mainTab {
+            type = TABBED;
             fill = 1;
-            NEW left {
-                MOVE BOX (d) { 
-                    fill = 2;
-                    PROPERTY (workingHours(d)) { charWidth = 10; }
-                    PROPERTY (totalHours(e, d)) { charWidth = 10; }
+            NEW hours {
+                caption = 'Табель рабочего времени';
+                NEW header FIRST {
+                    caption = 'Фильтры';
+                    type = CONTAINERH;
+                    MOVE PROPERTY (month) { charWidth = 15; }
+                    MOVE PROPERTY (year) { charWidth = 5; }
+                    MOVE PROPERTY (name(e)) { charWidth = 25; }
                 }
-                MOVE BOX (r) { 
-                    caption = 'Отсутствие за год'; 
+                NEW bottom {
+                    type = SPLITH;
                     fill = 1;
+                    NEW left {
+                        MOVE BOX (d) { 
+                            fill = 2;
+                            PROPERTY (workingHours(d)) { charWidth = 10; }
+                            PROPERTY (totalHours(e, d)) { charWidth = 10; }
+                        }
+                        MOVE BOX (r) { 
+                            caption = 'Отсутствие за год'; 
+                            fill = 1;
+                        }
+                        fill = 1;
+                    }
+                    NEW right {
+                        type = CONTAINERV;
+                        MOVE BOX (t) { fill = 2; }
+                        MOVE BOX (a) { fill = 1; }
+                        fill = 3;
+                    }
                 }
-                fill = 1;
             }
-            NEW right {
-                type = CONTAINERV;
-                MOVE BOX (t) { fill = 2; }
-                MOVE BOX (a) { fill = 1; }
-                fill = 3;
+            NEW absences {
+                caption = 'Отсутствие сотрудников';
+                fill = 1;
+                NEW header1 FIRST {
+                    caption = 'Фильтры';
+                    type = CONTAINERH;
+                    MOVE PROPERTY (month1) { charWidth = 15; }
+                    MOVE PROPERTY (year1) { charWidth = 5; }
+                }
+                MOVE BOX (mm);
+                MOVE BOX (yy);
+                MOVE BOX (dd);
+                MOVE BOX (ee);
             }
         }
     }

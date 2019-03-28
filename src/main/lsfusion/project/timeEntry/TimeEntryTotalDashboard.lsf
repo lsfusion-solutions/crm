@@ -10,7 +10,7 @@ absenceDays 'Кол-во дней' (Employee e, AbsenceReason r, INTEGER y) = ro
 absenceHours 'Кол-во часов' (AbsenceReason r, INTEGER y) =  GROUP SUM hours(Absence a, DATE d) BY reason(a), extractYear(d);
 absenceHours 'Кол-во часов' (Employee e, INTEGER y) =  GROUP SUM hours(Absence a, DATE d) BY employee(a), extractYear(d);
 absenceDays 'Кол-во дней отсутствия' (Employee e, INTEGER y) = round1(absenceHours(e, y) / 8);
-absenceHours (Employee e, INTEGER y, Month m) =  GROUP SUM hours(Absence a, DATE d) BY employee(a), extractYear(d), extractMonth(d);
+absenceHours 'Кол-во часов' (Employee e, INTEGER y, Month m) =  GROUP SUM hours(Absence a, DATE d) BY employee(a), extractYear(d), extractMonth(d);
 totalHours 'Часов в месяц' (Employee e, INTEGER y, Month m) = hours(e, y, m) (+) absenceHours(e, y, m);
 totalHours 'Часов за год' (Employee e, INTEGER y) = hours(e, y) (+) absenceHours(e, y);
 

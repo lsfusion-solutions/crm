@@ -67,7 +67,7 @@ hours 'Часы' (Absence a, DATE d) = PARTITION UNGROUP hours
                                                              BY a; 
                                                       
 
-absenceHours 'Часы' (Employee e, DATE d) = GROUP SUM hours(Absence a, d) BY employee(a);
+absenceHours 'Часы' (Employee e, DATE d) = GROUP SUM hours(Absence a, d) BY employee(a) CHARWIDTH 2;
 
 employee(Absence a) <- currentUser() WHEN SET(a IS Absence);
 date(Absence a) <- currentDate() WHEN SET(a IS Absence);
