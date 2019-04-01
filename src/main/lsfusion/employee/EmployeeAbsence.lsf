@@ -55,7 +55,7 @@ CONSTRAINT dateTo(Absence a) < dateFrom(a) MESSAGE 'Дата по должна �
 
 @addRoleApplicationSetting(editDays, 'Дней для редактирования отсутствия', INTEGER);
 
-isEditable (Absence a) = NOT dateFrom(a) < sum(currentDate(), -editDays(mainRole(currentUser()))) AND NOT dateTo(a) > sum(currentDate(), editDays(mainRole(currentUser())));
+isEditable (Absence a) = NOT dateFrom(a) < sum(currentDate(), -editDays(mainRole(currentUser()))) AND NOT dateTo(a) < sum(currentDate(), -editDays(mainRole(currentUser())));
 
 CONSTRAINT (CHANGED(dateFrom(Absence a)) OR CHANGED(dateTo(a))) AND NOT isEditable(a) MESSAGE 'Дата отсутствия не попадает в период редактирования';
 
