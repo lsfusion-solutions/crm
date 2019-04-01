@@ -49,7 +49,7 @@ FORM customerTimeDashboard 'Выставление счетов'
     FILTERS customer(is) == c, status(is) == st
     ORDER number(is) DESC
     
-    OBJECTS cd = (df = DATE, dt = DATE) PANEL 
+    OBJECTS df = DATE PANEL, dt = DATE PANEL 
     PROPERTIES dFrom 'Дата с' = VALUE (df), dTo 'Дата по' =  VALUE (dt), nameFilterProject(c) PANEL, printCustomerReport(c, df, dt), withoutAgreements()
     
     OBJECTS a = Agreement PANEL 
@@ -62,7 +62,15 @@ FORM customerTimeDashboard 'Выставление счетов'
     
     EVENTS ON INIT {
         SEEK customerTimeDashboard.y = currentYear();
-        SEEK customerTimeDashboard.m = currentMonth();
+        SEEK customerTimeDashboard.m = extractMonth(currentDate());
+    }
+    EVENTS ON CHANGE y {
+        SEEK customerTimeDashboard.df = toDateFormat('01' + lpad(TEXT (number(m)), 2, '0') + y, 'DDMMYYYY');
+        SEEK customerTimeDashboard.dt = lastDayOfMonth(toDateFormat('01' + lpad(TEXT (number(m)), 2, '0') + y, 'DDMMYYYY'));
+    }
+    EVENTS ON CHANGE m {
+        SEEK customerTimeDashboard.df = toDateFormat('01' + lpad(TEXT (number(m)), 2, '0') + y, 'DDMMYYYY');
+        SEEK customerTimeDashboard.dt = lastDayOfMonth(toDateFormat('01' + lpad(TEXT (number(m)), 2, '0') + y, 'DDMMYYYY'));
     }
 ;
 
