@@ -44,7 +44,7 @@ FORM timesheetDashboard 'Табель рабочего времени'
     ORDER dateFrom(a)
     FILTERS employee(a) == e
     FILTERGROUP aday FILTER 'За день' dateFrom(a) == d DEFAULT
-                     FILTER 'За месяц' extractMonth(dateFrom(a)) == m AND extractYear(date(a)) == y
+                     FILTER 'За месяц' extractMonth(dateFrom(a)) == m AND extractYear(dateFrom(a)) == y
                      FILTER 'За год' extractYear(dateFrom(a)) == y
     
     OBJECTS r = AbsenceReason
