@@ -270,7 +270,7 @@ EXTEND FORM customer
     FILTERS customer(le) = o
     
     OBJECTS c = Contact.Contact
-    PROPERTIES (c) id, firstName, lastName, nameLegalEntity, namePosition, email, phone, addPhones, skype, note, NEW, EDIT, DELETE
+    PROPERTIES (c) id, firstName, lastName, login, nameLegalEntity, namePosition, email, phone, addPhones, skype, note, NEW, EDIT, DELETE
     FILTERS customer(c) = o
 ;
 DESIGN customer {
