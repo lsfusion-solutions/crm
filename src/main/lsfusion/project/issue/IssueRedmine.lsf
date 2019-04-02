@@ -58,6 +58,8 @@ importIssue 'Импорт задач' (External e) {
             tracker(s) <- tracker(tracker_name(i));
             status(s) <- issueStatus(e, status_id(i));
         }
+
+        project(TimeEntry te) <- project(issue(te)) WHERE project(te) != project(issue(te)) AND external(te) = e;
         
         FOR external(Issue s) == e AND NOT [GROUP SUM 1 IF imported(INTEGER i) BY VARSTRING[15](id(i))](id(s)) DO {
             DELETE s;
