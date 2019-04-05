@@ -23,7 +23,7 @@ importTimeEntry 'Импорт отметок времени' (External e) {
         LOCAL count = INTEGER ();
             
         LOCAL file = FILE ();
-        READ path(e) + '@SELECT time_entries.id, hours, comments, spent_on, activities.name AS activity_name, time_entries.project_id, users.login, issue_id FROM time_entries LEFT JOIN users ON time_entries.user_id = users.id LEFT JOIN enumerations activities ON time_entries.activity_id = activities.id' TO file;
+        EXTERNAL SQL path(e) EXEC 'SELECT time_entries.id, hours, comments, spent_on, activities.name AS activity_name, time_entries.project_id, users.login, issue_id FROM time_entries LEFT JOIN users ON time_entries.user_id = users.id LEFT JOIN enumerations activities ON time_entries.activity_id = activities.id' TO file;
         
         IMPORT TABLE FROM file() TO id, hours, comments, spent_on, activity_name, project_id, login, issue_id;
         
@@ -70,7 +70,7 @@ importActivity 'Импорт деятельностей' (External e) {
         LOCAL name = VARSTRING[100](INTEGER);
             
         LOCAL file = FILE ();
-        READ path(e) + '@SELECT name FROM enumerations activities WHERE type = \'TimeEntryActivity\'' TO file;
+        EXTERNAL SQL path(e) EXEC 'SELECT name FROM enumerations activities WHERE type = \'TimeEntryActivity\'' TO file;
         
         IMPORT TABLE FROM file() TO name;
         

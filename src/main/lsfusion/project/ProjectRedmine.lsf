@@ -12,7 +12,7 @@ importProject 'Импорт проектов' (External e) {
         LOCAL active = BOOLEAN (INTEGER);
             
         LOCAL file = FILE ();
-        READ path(e) + '@SELECT id, name, identifier, (status = 1) AS active FROM projects' TO file;
+        EXTERNAL SQL path(e) EXEC 'SELECT id, name, identifier, (status = 1) AS active FROM projects' TO file;
         
         IMPORT TABLE FROM file() TO id, name, identifier, active;
         
