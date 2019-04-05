@@ -321,7 +321,7 @@ FORM dialogContracts 'Договоры'
 ;
 
 NAVIGATOR {
-    NEW FOLDER contractFolder 'Документы' BEFORE masterData WINDOW toolbar {
+    contractFolder {
         NEW contracts; 
     }
 }

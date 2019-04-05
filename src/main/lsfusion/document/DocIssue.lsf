@@ -37,7 +37,7 @@ subject 'Тема' = DATA VARISTRING[100](TaskTemplate) CHARWIDTH 20;
 assignedTo = DATA Employee(TaskTemplate);
 nameAssignedTo 'Назначена' (TaskTemplate t) = name(assignedTo(t));
 
-EXTEND FORM options
+FORM createIssue 'Создание задач'
     OBJECTS t = Type
     PROPERTIES (t) READONLY nameDocType, name
     ORDER nameDocType(t), name(t)
@@ -49,19 +49,15 @@ EXTEND FORM options
     ORDER name(tt)
 ;
 
-DESIGN options {
-    pane {
-        NEW issues {
-            caption = 'Задачи';
-            fill = 1;
-            NEW create {
-                caption = 'Автоматическое создание задач';
-                type = CONTAINERH;
-                fill = 1;
-                MOVE BOX (t);
-                MOVE BOX (tt);
-            }
-        }
+DESIGN createIssue {
+    OBJECTS {
+     type = CONTAINERH;
+    }
+}
+
+NAVIGATOR {
+    contractFolder {
+        NEW createIssue; 
     }
 }
 

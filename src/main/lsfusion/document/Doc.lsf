@@ -4,6 +4,10 @@ REQUIRE Customer, LegalEntity;
 
 NAMESPACE Doc;
 
+NAVIGATOR {
+    NEW FOLDER contractFolder 'Документы' BEFORE masterData WINDOW toolbar { }
+}
+
 CLASS ABSTRACT Document 'Документ';
 
 id 'Код' = ABSTRACT VARSTRING[15] (Document) IN id CHARWIDTH 5;
