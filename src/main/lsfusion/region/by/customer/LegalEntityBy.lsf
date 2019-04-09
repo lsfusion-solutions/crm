@@ -4,7 +4,7 @@ REQUIRE LegalEntity;
 
 NAMESPACE LegalEntity;
 
-UNP 'УНП' = DATA VARSTRING[9] (LegalEntity) CHARWIDTH 9 FIXED;
+UNP 'УНП' = DATA VARSTRING[9] (LegalEntity) CHARWIDTH 9 NOFLEX;
 OKPO 'ОКПО' = DATA VARSTRING[20] (LegalEntity) CHARWIDTH 15;
 
 EXTEND FORM legalEntity PROPERTIES(o) UNP, OKPO;

@@ -77,7 +77,7 @@ NAVIGATOR {
 CLASS Account 'Расчетный счет';
 TABLE account (Account);
 
-number 'Номер расчетного счета'  = DATA VARSTRING[50] (Account) IN id CHARWIDTH 28 FIXED;
+number 'Номер расчетного счета'  = DATA VARSTRING[50] (Account) IN id CHARWIDTH 28 NOFLEX;
 account (number) = GROUP MAX Account account BY number(account);
 
 note 'Примечание'  = DATA VARISTRING[50] (Account);
