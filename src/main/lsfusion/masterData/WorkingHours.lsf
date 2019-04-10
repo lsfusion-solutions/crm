@@ -1,19 +1,36 @@
 MODULE WorkingHours;
 
-REQUIRE Time, MasterData;
+REQUIRE Time, MasterData, Employee;
 
 workingHours 'Рабочих часов в день' = DATA NUMERIC[7,2](DATE) CHARWIDTH 2;
 monthHours 'Часов в месяц' (INTEGER y, Month m) = GROUP SUM workingHours(DATE d) BY extractYear(d), extractMonth(d) MATERIALIZED;
 
 maxCount = DATA INTEGER (DATE);
 
+overWorkingHours 'Рабочих часов в день' = DATA NUMERIC[7,2](DATE, Employee) CHARWIDTH 2;
+workingHours 'Рабочих часов в день' (DATE d, Employee e) = OVERRIDE overWorkingHours(d, e), workingHours(d) CHARWIDTH 2;
+
+in 'Отм.' = DATA BOOLEAN (Employee);
+employees 'Сотрудники' = GROUP CONCAT name(Employee e) IF in(e), ', ' ORDER name(e) CHARWIDTH 50 FLEX;
+
+FORM dialogEmployees 'Сотрудники'
+    OBJECTS e = Employee
+    PROPERTIES in(e), name(e) READONLY 
+    FILTERGROUP active FILTER 'Активные' active(e)
+;
+
 FORM workingHours 'Рабочее время'
     
     OBJECTS dates = (df = DATE, dt = DATE) PANEL 
-    PROPERTIES VALUE (df), VALUE (dt)
+    PROPERTIES 'Дата с' = VALUE (df), 'Дата по' = VALUE (dt), employees() ON CHANGE { SHOW dialogEmployees; } DRAW dates
+    
+    OBJECTS e = Employee 
+    PROPERTIES READONLY name(e) SHOWIF NULL 
+    ORDER name(e)
+    FILTERS in(e)
     
     OBJECTS d = DATE 
-    PROPERTIES dd = VALUE(d) READONLY, workingHours(d)
+    PROPERTIES dd = VALUE(d) READONLY, workingHours(d), workingHours(d, e) COLUMNS (e) HEADER name(e) BACKGROUND RGB (255, 255, 222) IF overWorkingHours(d, e)
     PROPERTIES (d) READONLY extractDOWName, extractMonthName, 'Номер месяца' = extractMonthNumber
     ORDER dd
     FILTERS iterate(d, df, dt)
@@ -33,7 +50,7 @@ DESIGN workingHours {
             fill = 1;
             NEW days {
                 caption = 'Дни';
-                MOVE BOX (dates);
+                MOVE BOX (dates) { alignment = STRETCH; }
                 MOVE BOX (d) { caption = 'Дни'; }
             }
             MOVE BOX (yy) { caption = 'Месяцы'; }
