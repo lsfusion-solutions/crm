@@ -1,6 +1,6 @@
 MODULE EventDashboard;
 
-REQUIRE Event, Dashboard, DocEvent;
+REQUIRE Event, Dashboard, DocEvent, DocIssue;
 
 NAMESPACE Event;
 
@@ -96,3 +96,19 @@ NAVIGATOR {
         NEW eventDashboard;
     }
 }
+
+event = DATA Event (Issue);
+
+createIssue 'Создать задачу' (Event e) {
+    NEWSESSION NEW i = Issue {
+        event(i) <- e;
+        name(i) <- name(e);
+        description(i) <- CONCAT '\n', description(e), addition(e);
+        customer(i) <- customer(e);
+        document(i) <- document(e);
+        assignedTo(i) <- employee(e);
+        SHOW issue OBJECTS o = i DOCKED;
+    }
+}
+
+EXTEND FORM eventDashboard PROPERTIES createIssue(o) BEFORE showCustomerDashboard(o) TOOLBAR;
