@@ -46,9 +46,10 @@ WHEN LOCAL CHANGED (contract(Equipment e)) AND NOT CHANGED (customer(e)) DO {
 CLASS EquipmentSerial 'Серийный номер';
 TABLE equipmentSerial (EquipmentSerial);
 
-number 'Серийный номер' = DATA VARISTRING[250] (EquipmentSerial) CHARWIDTH 15;
-
 equipment = DATA Equipment(EquipmentSerial) NONULL DELETE;
+
+number 'Серийный номер' = DATA VARISTRING[250] (EquipmentSerial) CHARWIDTH 15;
+equipmentSerial = GROUP AGGR EquipmentSerial s BY number(s), subjectType(equipment(s));
 
 FORM equipmentSerial 'Серийный номер'
     OBJECTS o = EquipmentSerial PANEL
