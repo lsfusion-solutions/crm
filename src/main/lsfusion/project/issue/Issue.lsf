@@ -168,7 +168,7 @@ FORM issues 'Задачи'
     OBJECTS o = Issue LAST 
     PROPERTIES(o) READONLY number, name, descriptionString, dateTo, dateTimeCreated, dateTimeUpdated, dateFrom, doneRatio, estimatedHours, nameProject, 
                            nameCustomer, nameAuthor, nameAssignedTo, nameTracker, nameStatus
-    ORDER number(o)
+    ORDER dateTimeCreated(o), number(o)
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
 ;
 

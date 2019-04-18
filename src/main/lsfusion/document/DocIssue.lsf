@@ -34,6 +34,9 @@ nameTracker 'Трекер' (TaskTemplate t) = name(tracker(t));
 
 subject 'Тема' = DATA VARISTRING[100](TaskTemplate) CHARWIDTH 20;
 
+author = DATA Employee(TaskTemplate);
+nameAuthor 'Автор' (TaskTemplate t) = name(author(t));
+
 assignedTo = DATA Employee(TaskTemplate);
 nameAssignedTo 'Назначена' (TaskTemplate t) = name(assignedTo(t));
 
@@ -44,7 +47,7 @@ FORM createIssue 'Создание задач'
     
     OBJECTS tt = TaskTemplate
     PROPERTIES in(t, tt)
-    PROPERTIES (tt) name, nameTracker, subject, nameAssignedTo, NEW, DELETE 
+    PROPERTIES (tt) name, nameTracker, subject, nameAuthor, nameAssignedTo, NEW, DELETE 
     FILTERGROUP in FILTER 'Отмеченные' in(t, tt)
     ORDER name(tt)
 ;
@@ -65,8 +68,10 @@ WHEN SET (Document d IS Document) AND in(type(d), TaskTemplate t) DO {
     NEW i = Issue {
         tracker(i) <- tracker(t);
         name(i) <- subject(t);
+        author(i) <- author(t);
         assignedTo(i) <- assignedTo(t);
         customer(i) <- customer(d);
         description(i) <- text(d);
+        document(i) <- d;
     }
 }
