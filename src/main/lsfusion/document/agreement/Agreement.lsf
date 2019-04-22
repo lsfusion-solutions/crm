@@ -228,7 +228,7 @@ DESIGN agreement {
 
 FORM agreements 'Соглашения'
     OBJECTS o = Agreement LAST 
-    PROPERTIES(o) READONLY id, numberContract, number, date, name, nameType, sum, nameSendingWay, dateSending, dateReceiving, dateClosing, note, textString
+    PROPERTIES(o) READONLY id, nameCompany, nameLegalEntity, numberContract, number, date, name, nameType, sum, nameSendingWay, dateSending, dateReceiving, dateClosing, note, textString
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
     ORDER date(o)
 ;
