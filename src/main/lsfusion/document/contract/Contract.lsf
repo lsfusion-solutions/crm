@@ -11,7 +11,7 @@ id 'Код' = DATA VARSTRING[15] (Contract) CHARWIDTH 5 IN id;
 contract (id) = GROUP AGGR Contract c BY id (c);
 
 name 'Наименование' = DATA VARISTRING[150](Contract) CHARWIDTH 20;
-series 'Серия' = DATA STRING[2](Contract);
+series 'Серия' = DATA BPSTRING[2](Contract);
 number 'Номер' = DATA VARSTRING[15](Contract) IN id;
 
 legalEntity = DATA LegalEntity(Contract) NONULL;
