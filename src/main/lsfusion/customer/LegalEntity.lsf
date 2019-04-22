@@ -7,15 +7,15 @@ NAMESPACE LegalEntity;
 CLASS LegalEntity 'Организация';
 TABLE legalEntity (LegalEntity);
 
-id 'Код' = DATA VARSTRING[15] (LegalEntity) INDEXED CHARWIDTH 5 IN id;
+id 'Код' = DATA STRING[15] (LegalEntity) INDEXED CHARWIDTH 5 IN id;
 legalEntity (id) = GROUP AGGR LegalEntity le BY id (le);
 isCompany 'Компания' = DATA BOOLEAN (LegalEntity);
 
-extId 'Код для экспорта' = DATA VARSTRING[15](LegalEntity) IN id;
+extId 'Код для экспорта' = DATA STRING[15](LegalEntity) IN id;
 legalEntityEx (id) = GROUP AGGR LegalEntity le BY extId (le);
 
-name 'Наименование' = DATA VARISTRING[250] (LegalEntity) CHARWIDTH 20 IN id;
-fullName 'Полное наименование' = DATA VARISTRING[250] (LegalEntity) CHARWIDTH 50;
+name 'Наименование' = DATA ISTRING[250] (LegalEntity) CHARWIDTH 20 IN id;
+fullName 'Полное наименование' = DATA ISTRING[250] (LegalEntity) CHARWIDTH 50;
 overName 'Наименование' (LegalEntity l) = OVERRIDE fullName(l), name(l);
 
 legalEntity = DATA LegalEntity(Address);
@@ -35,14 +35,14 @@ merge (Customer from, Customer to) + { customer(LegalEntity l) <- to WHERE custo
 CLASS Bank 'Банк';
 TABLE bank (Bank);
 
-id 'Код' = DATA VARSTRING[15] (Bank) MATERIALIZED INDEXED CHARWIDTH 5 IN id;
+id 'Код' = DATA STRING[15] (Bank) MATERIALIZED INDEXED CHARWIDTH 5 IN id;
 bank (id) = GROUP AGGR Bank b BY id (b);
 
-number 'Код банка' = DATA VARSTRING[10](Bank) CHARWIDTH 5 IN id;
-name 'Наименование' = DATA VARISTRING[100] (Bank) CHARWIDTH 15 IN id;
-postcode 'Почтовый индекс' = DATA VARSTRING[50](Bank) CHARWIDTH 6;
-address 'Адрес' = DATA VARSTRING[250](Bank) CHARWIDTH 20;
-mfo 'МФО' = DATA VARSTRING[11] (Bank);
+number 'Код банка' = DATA STRING[10](Bank) CHARWIDTH 5 IN id;
+name 'Наименование' = DATA ISTRING[100] (Bank) CHARWIDTH 15 IN id;
+postcode 'Почтовый индекс' = DATA STRING[50](Bank) CHARWIDTH 6;
+address 'Адрес' = DATA STRING[250](Bank) CHARWIDTH 20;
+mfo 'МФО' = DATA STRING[11] (Bank);
 
 FORM bank 'Банк'
     OBJECTS o = Bank PANEL
@@ -77,10 +77,10 @@ NAVIGATOR {
 CLASS Account 'Расчетный счет';
 TABLE account (Account);
 
-number 'Номер расчетного счета'  = DATA VARSTRING[50] (Account) IN id CHARWIDTH 28 NOFLEX;
+number 'Номер расчетного счета'  = DATA STRING[50] (Account) IN id CHARWIDTH 28 NOFLEX;
 account (number) = GROUP MAX Account account BY number(account);
 
-note 'Примечание'  = DATA VARISTRING[50] (Account);
+note 'Примечание'  = DATA ISTRING[50] (Account);
 rate 'Процентная ставка' = DATA NUMERIC[6,2](Account);
 dateTo 'Дата по' = DATA DATE (Account);
 active 'Активный' (Account a) = dateTo(a) >= currentDate() OR NOT dateTo(a);
@@ -112,7 +112,7 @@ postcodeBank 'Почтовый индекс банка' (LegalEntity l) = postco
 equals 'Основной' (LegalEntity legalEntity, Account account) = userAccount(legalEntity) == account;
 
 accountID 'Расчетный счет по номеру' (number, legalEntityId) = GROUP AGGR Account account WHERE account IS Account BY number(account), id(legalEntity(account));
-legalEntityAccount (VARSTRING[20] number) = legalEntity(account(number)); 
+legalEntityAccount (STRING[20] number) = legalEntity(account(number)); 
 
 currency = DATA Currency (Account);
 nameCurrency 'Валюта счета' = name(currency(Account account));

@@ -5,31 +5,31 @@ REQUIRE ContractFile, Import;
 NAMESPACE Contract;
 
 importContracts 'Импорт договоров' (FILE f) {
-    LOCAL idContract = VARSTRING[15](INTEGER);
-    LOCAL idLegalEntity = VARSTRING[15](INTEGER);
-    LOCAL idPersonLegalEntity = VARSTRING[15](INTEGER);
-    LOCAL docPersonLegalEntity = VARSTRING[50](INTEGER);
-    LOCAL idCompany = VARSTRING[15](INTEGER);
-    LOCAL idPersonCompany = VARSTRING[15](INTEGER);
-    LOCAL docPersonCompany = VARSTRING[50](INTEGER);
-    LOCAL number = VARSTRING[15](INTEGER);
+    LOCAL idContract = STRING[15](INTEGER);
+    LOCAL idLegalEntity = STRING[15](INTEGER);
+    LOCAL idPersonLegalEntity = STRING[15](INTEGER);
+    LOCAL docPersonLegalEntity = STRING[50](INTEGER);
+    LOCAL idCompany = STRING[15](INTEGER);
+    LOCAL idPersonCompany = STRING[15](INTEGER);
+    LOCAL docPersonCompany = STRING[50](INTEGER);
+    LOCAL number = STRING[15](INTEGER);
     LOCAL date1 = DATE (INTEGER);
-    LOCAL name = VARSTRING[150](INTEGER);
+    LOCAL name = STRING[150](INTEGER);
     LOCAL sum = NUMERIC[16,5] (INTEGER);
-    LOCAL currency = VARSTRING[50](INTEGER);
-    LOCAL type = VARSTRING[50](INTEGER);
-    LOCAL group = VARSTRING[50](INTEGER);
-    LOCAL sending = VARSTRING[50](INTEGER);
+    LOCAL currency = STRING[50](INTEGER);
+    LOCAL type = STRING[50](INTEGER);
+    LOCAL group = STRING[50](INTEGER);
+    LOCAL sending = STRING[50](INTEGER);
     LOCAL date2 = DATE (INTEGER);
     LOCAL date3 = DATE (INTEGER);
     LOCAL date4 = DATE (INTEGER);
     LOCAL date5 = DATE (INTEGER);
     LOCAL date6 = DATE (INTEGER);
     LOCAL date7 = DATE (INTEGER);
-    LOCAL note = VARSTRING[100](INTEGER);
+    LOCAL note = STRING[100](INTEGER);
     LOCAL text = TEXT(INTEGER);
     LOCAL terms = TEXT(INTEGER);
-    LOCAL message = VARSTRING[2000] ();
+    LOCAL message = STRING[2000] ();
     LOCAL count = INTEGER ();
     
     message() <- '';
@@ -48,23 +48,23 @@ importContracts 'Импорт договоров' (FILE f) {
         MESSAGE CONCAT ' ', 'Неимпортированные договоры, в которых компания не является компанией: ', count(), message();
     }
     
-    FOR [GROUP SUM 1 IF INTEGER i > 1 AND isCompany(legalEntity(trim(idCompany(i)))) BY trim(idContract(i))](VARSTRING[15] id) AND id != '' AND NOT contract(id) DO NEW c = Contract {
+    FOR [GROUP SUM 1 IF INTEGER i > 1 AND isCompany(legalEntity(trim(idCompany(i)))) BY trim(idContract(i))](STRING[15] id) AND id != '' AND NOT contract(id) DO NEW c = Contract {
         id(c) <- id;
     }
     
-    FOR [GROUP SUM 1 IF INTEGER i > 2 BY trim(type(i))](VARSTRING[50] type) AND type != '' 
+    FOR [GROUP SUM 1 IF INTEGER i > 2 BY trim(type(i))](STRING[50] type) AND type != '' 
         AND NOT (GROUP MAX ContractType t IF upper(name(t)) == upper(type)) DO NEW t = ContractType {
         
         name(t) <- type; 
     }
     
-    FOR [GROUP SUM 1 IF INTEGER i > 1 BY trim(group(i))](VARSTRING[50] group) AND group != '' 
+    FOR [GROUP SUM 1 IF INTEGER i > 1 BY trim(group(i))](STRING[50] group) AND group != '' 
         AND NOT (GROUP MAX ContractGroup t IF upper(name(t)) == upper(group)) DO NEW t = ContractGroup {
         
         name(t) <- group; 
     }
     
-    FOR [GROUP SUM 1 IF INTEGER i > 1 BY trim(sending(i))](VARSTRING[50] sending) AND sending != '' 
+    FOR [GROUP SUM 1 IF INTEGER i > 1 BY trim(sending(i))](STRING[50] sending) AND sending != '' 
         AND NOT (GROUP MAX SendingWay t IF upper(name(t)) == upper(sending)) DO NEW t = SendingWay {
         
         name(t) <- sending; 
@@ -126,8 +126,8 @@ EXTEND FORM migrationData PROPERTIES() exportContracts, importContracts;
 importContractDocumentsXls 'Импорт документов договоров' () {
     
     NEWSESSION {
-        LOCAL id = VARSTRING[15](INTEGER);
-        LOCAL path = VARSTRING[250](INTEGER);
+        LOCAL id = STRING[15](INTEGER);
+        LOCAL path = STRING[250](INTEGER);
         LOCAL file = FILE();
         
         INPUT f = FILE DO {

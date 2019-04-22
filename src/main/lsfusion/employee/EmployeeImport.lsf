@@ -6,23 +6,23 @@ NAMESPACE Employee;
 
 importEmployees (FILE f) {
     
-    LOCAL idEmployee = VARSTRING[15](INTEGER);
-    LOCAL idLegalEntity = VARSTRING[15](INTEGER);
-    LOCAL login = VARSTRING[50](INTEGER);
-    LOCAL name1 = VARSTRING[100](INTEGER);
-    LOCAL name2 = VARSTRING[100](INTEGER);
-    LOCAL name3 = VARSTRING[100](INTEGER);
-    LOCAL position = VARSTRING[100](INTEGER);
-    LOCAL email = VARSTRING[100](INTEGER);
-    LOCAL phone1 = VARSTRING[100](INTEGER);
-    LOCAL phone2 = VARSTRING[30](INTEGER);
-    LOCAL phone3 = VARSTRING[30](INTEGER);
-    LOCAL phone4 = VARSTRING[30](INTEGER);
-    LOCAL phone5 = VARSTRING[30](INTEGER);
-    LOCAL phone6 = VARSTRING[30](INTEGER);
-    LOCAL skype = VARSTRING[50](INTEGER);
-    LOCAL note = VARSTRING[100](INTEGER);
-    LOCAL message = VARSTRING[2000] ();
+    LOCAL idEmployee = STRING[15](INTEGER);
+    LOCAL idLegalEntity = STRING[15](INTEGER);
+    LOCAL login = STRING[50](INTEGER);
+    LOCAL name1 = STRING[100](INTEGER);
+    LOCAL name2 = STRING[100](INTEGER);
+    LOCAL name3 = STRING[100](INTEGER);
+    LOCAL position = STRING[100](INTEGER);
+    LOCAL email = STRING[100](INTEGER);
+    LOCAL phone1 = STRING[100](INTEGER);
+    LOCAL phone2 = STRING[30](INTEGER);
+    LOCAL phone3 = STRING[30](INTEGER);
+    LOCAL phone4 = STRING[30](INTEGER);
+    LOCAL phone5 = STRING[30](INTEGER);
+    LOCAL phone6 = STRING[30](INTEGER);
+    LOCAL skype = STRING[50](INTEGER);
+    LOCAL note = STRING[100](INTEGER);
+    LOCAL message = STRING[2000] ();
     LOCAL count = INTEGER ();
     
     message() <- '';
@@ -41,7 +41,7 @@ importEmployees (FILE f) {
         MESSAGE CONCAT ' ', 'Неимпортированные сотрудники, у которых организация не является компанией: ', count(), message();
     }
       
-    FOR INTEGER i = [GROUP MIN INTEGER ii IF ii > 1 AND isCompany(legalEntity(trim(idLegalEntity(ii)))) BY trim(idEmployee(ii))](VARSTRING[15] id) AND id AND NOT employee(id) DO NEW c = Employee {
+    FOR INTEGER i = [GROUP MIN INTEGER ii IF ii > 1 AND isCompany(legalEntity(trim(idLegalEntity(ii)))) BY trim(idEmployee(ii))](STRING[15] id) AND id AND NOT employee(id) DO NEW c = Employee {
         id(c) <- id;
     }
     
@@ -61,7 +61,7 @@ importEmployees (FILE f) {
         name(t) <- trim(phone6(1));
     }
     
-    FOR [GROUP SUM 1 BY trim(position(INTEGER i))](VARSTRING[100] pos) AND pos != '' AND NOT (GROUP MAX Position p IF name(p) == pos) DO NEW p = Position {
+    FOR [GROUP SUM 1 BY trim(position(INTEGER i))](STRING[100] pos) AND pos != '' AND NOT (GROUP MAX Position p IF name(p) == pos) DO NEW p = Position {
         name(p) <- pos;
     }
     

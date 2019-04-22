@@ -7,10 +7,10 @@ NAMESPACE Contract;
 CLASS SubjectType 'Тип предмета договора';
 TABLE subjectType (SubjectType);
 
-id 'Код' = DATA VARSTRING[15] (SubjectType) CHARWIDTH 5 IN id;
+id 'Код' = DATA STRING[15] (SubjectType) CHARWIDTH 5 IN id;
 subjectType (id) = GROUP AGGR SubjectType c BY id (c);
 
-name 'Наименование' = DATA VARISTRING[100] (SubjectType) CHARWIDTH 15;
+name 'Наименование' = DATA ISTRING[100] (SubjectType) CHARWIDTH 15;
 
 FORM subjectType 'Тип предмета договора'
     OBJECTS o = SubjectType PANEL
@@ -30,7 +30,7 @@ FORM subjectTypes 'Типы предмета договора'
 CLASS Subject 'Предмет договора';
 TABLE subject (Subject);
 
-name 'Наименование' = DATA VARISTRING[100] (Subject) CHARWIDTH 15;
+name 'Наименование' = DATA ISTRING[100] (Subject) CHARWIDTH 15;
 
 type = DATA SubjectType(Subject);
 nameType 'Тип предмета договора' (Subject s) = name(type(s));

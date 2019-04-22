@@ -7,7 +7,7 @@ NAMESPACE Project;
 CLASS Activity 'Деятельность';
 TABLE activity (Activity);
 
-name 'Наименование' = DATA VARISTRING[100] (Activity) CHARWIDTH 15 IN id;
+name 'Наименование' = DATA ISTRING[100] (Activity) CHARWIDTH 15 IN id;
 activity = GROUP AGGR Activity p BY name (p);
 
 FORM activity 'Деятельность'
@@ -33,11 +33,11 @@ FORM dialogActivities 'Деятельности'
 CLASS TimeEntry 'Отметка времени';
 TABLE timeEntry (TimeEntry);
 
-id 'Код' = DATA VARSTRING[15] (TimeEntry) INDEXED CHARWIDTH 5 IN id;
+id 'Код' = DATA STRING[15] (TimeEntry) INDEXED CHARWIDTH 5 IN id;
 
 hours 'Часы' = DATA NUMERIC[7,2](TimeEntry);
 comments 'Комментарий' = DATA TEXT (TimeEntry);
-commentsString 'Комментарий' (TimeEntry t) = VARISTRING[1000](comments(t)) CHARWIDTH 50;
+commentsString 'Комментарий' (TimeEntry t) = ISTRING[1000](comments(t)) CHARWIDTH 50;
 date 'Дата' = DATA DATE (TimeEntry);
 month (TimeEntry t) = extractMonth(date(t));
 year 'Год' (TimeEntry t) = extractYear(date(t));

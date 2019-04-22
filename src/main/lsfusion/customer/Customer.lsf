@@ -7,15 +7,15 @@ NAMESPACE Customer;
 CLASS Customer 'Клиент';
 TABLE customer (Customer);
 
-id 'Код' = DATA VARSTRING[15] (Customer) INDEXED CHARWIDTH 5 IN id;
+id 'Код' = DATA STRING[15] (Customer) INDEXED CHARWIDTH 5 IN id;
 customer (id) = GROUP AGGR Customer c BY id (c);
 
 inactive 'Неактивный' = DATA BOOLEAN (Customer);
-name 'Наименование' = DATA VARISTRING[250] (Customer) CHARWIDTH 20 IN id;
-email 'E-mail' = DATA VARISTRING[200] (Customer) CHARWIDTH 20;
-phone 'Тел. приёмной' = DATA VARISTRING[50] (Customer) CHARWIDTH 20;
-site 'Сайт' = DATA VARISTRING[100] (Customer) CHARWIDTH 20;
-note 'Примечание' = DATA VARISTRING[100] (Customer) CHARWIDTH 20;
+name 'Наименование' = DATA ISTRING[250] (Customer) CHARWIDTH 20 IN id;
+email 'E-mail' = DATA ISTRING[200] (Customer) CHARWIDTH 20;
+phone 'Тел. приёмной' = DATA ISTRING[50] (Customer) CHARWIDTH 20;
+site 'Сайт' = DATA ISTRING[100] (Customer) CHARWIDTH 20;
+note 'Примечание' = DATA ISTRING[100] (Customer) CHARWIDTH 20;
 dateFrom 'Дата начала' = DATA DATE (Customer);
 
 customer = DATA Customer(Address);
@@ -27,12 +27,12 @@ nameLegalAddress 'Юр. адрес' (Customer l) = name(legalAddress(l));
 address (Customer l) = GROUP LAST Address a ORDER DESC types(a),a BY customer(a);
 nameAddress 'Адрес' (Customer c) = name(address(c));
 info 'Информация' = DATA TEXT (Customer);
-infoString 'Информация' (Customer c) = VARISTRING[1000](info(c)) CHARWIDTH 20;
+infoString 'Информация' (Customer c) = ISTRING[1000](info(c)) CHARWIDTH 20;
 
 CLASS CustomerGroup 'Группа клиентов';
 TABLE customerGroup(CustomerGroup);
 
-name 'Наименование' = DATA VARISTRING[50](CustomerGroup) CHARWIDTH 15;
+name 'Наименование' = DATA ISTRING[50](CustomerGroup) CHARWIDTH 15;
 
 FORM customerGroup 'Группа клиентов'
     OBJECTS o = CustomerGroup PANEL
@@ -55,7 +55,7 @@ nameGroup 'Группа клиентов' (Customer c) = name(group(c)) CHARWIDT
 CLASS StatusCustomer 'Статус клиента';
 TABLE StatusCustomer (StatusCustomer);
 
-name 'Наименование' = DATA VARISTRING[100] (StatusCustomer) CHARWIDTH 5;
+name 'Наименование' = DATA ISTRING[100] (StatusCustomer) CHARWIDTH 5;
 
 FORM StatusCustomer 'Статус клиента'
     OBJECTS o = StatusCustomer PANEL

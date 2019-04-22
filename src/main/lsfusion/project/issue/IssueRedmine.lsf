@@ -16,7 +16,7 @@ EXTEND FORM issueStatus
 importIssue 'Импорт задач' (External e) {
     NEWSESSION {
         LOCAL id = INTEGER(INTEGER);
-        LOCAL subject = VARSTRING[500] (INTEGER);
+        LOCAL subject = STRING[500] (INTEGER);
         LOCAL description = TEXT (INTEGER);
         LOCAL due_date = DATE (INTEGER);
         LOCAL created_on = DATETIME (INTEGER);
@@ -25,9 +25,9 @@ importIssue 'Импорт задач' (External e) {
         LOCAL done_ratio = INTEGER (INTEGER);
         LOCAL estimated_hours = NUMERIC[7,2] (INTEGER);
         LOCAL project_id = INTEGER (INTEGER);
-        LOCAL author_login = VARSTRING[1000] (INTEGER);
-        LOCAL assigned_to_login = VARSTRING[1000] (INTEGER);
-        LOCAL tracker_name = VARSTRING[100] (INTEGER);
+        LOCAL author_login = STRING[1000] (INTEGER);
+        LOCAL assigned_to_login = STRING[1000] (INTEGER);
+        LOCAL tracker_name = STRING[100] (INTEGER);
         LOCAL status_id = INTEGER (INTEGER);
             
         LOCAL file = FILE ();
@@ -36,14 +36,14 @@ importIssue 'Импорт задач' (External e) {
         IMPORT TABLE FROM file() TO id, subject, description, due_date, created_on, updated_on, start_date, done_ratio, estimated_hours, 
                                                       project_id, author_login, assigned_to_login, tracker_name, status_id;
 
-        FOR INTEGER ii = [GROUP MIN INTEGER i BY VARSTRING[15](id(i))](VARSTRING[15] id) AND id != '' AND NOT issue(id, e) DO NEW s = Issue {
+        FOR INTEGER ii = [GROUP MIN INTEGER i BY STRING[15](id(i))](STRING[15] id) AND id != '' AND NOT issue(id, e) DO NEW s = Issue {
             id(s) <- id;
             external(s) <- e;
         }
         
-        FOR Issue s = issue(VARSTRING[15](id(INTEGER i)), e) AND id(i) DO {
+        FOR Issue s = issue(STRING[15](id(INTEGER i)), e) AND id(i) DO {
             
-            project(s) <- project(VARSTRING[15](project_id(i)), e);
+            project(s) <- project(STRING[15](project_id(i)), e);
             name(s) <- subject(i);
             description(s) <- description(i);
             dateTo(s) <- due_date(i);
@@ -52,7 +52,7 @@ importIssue 'Импорт задач' (External e) {
             dateFrom(s) <- start_date(i);
             doneRatio(s) <- done_ratio(i);
             estimatedHours(s) <- estimated_hours(i);
-            project(s) <- project(VARSTRING[15](project_id(i)), e);
+            project(s) <- project(STRING[15](project_id(i)), e);
             author(s) <- GROUP MAX CustomUser p IF login(p) == author_login(i);
             assignedTo(s) <- GROUP MAX Employee p IF login(p) == assigned_to_login(i);
             tracker(s) <- tracker(tracker_name(i));
@@ -61,7 +61,7 @@ importIssue 'Импорт задач' (External e) {
 
         project(TimeEntry te) <- project(issue(te)) WHERE project(te) != project(issue(te)) AND external(te) = e;
         
-        FOR external(Issue s) == e AND NOT [GROUP SUM 1 IF imported(INTEGER i) BY VARSTRING[15](id(i))](id(s)) DO {
+        FOR external(Issue s) == e AND NOT [GROUP SUM 1 IF imported(INTEGER i) BY STRING[15](id(i))](id(s)) DO {
             DELETE s;
         }
         APPLY;
@@ -70,14 +70,14 @@ importIssue 'Импорт задач' (External e) {
 
 importTracker 'Импорт трекеров' (External e) {
     NEWSESSION {
-        LOCAL name = VARSTRING[100](INTEGER);
+        LOCAL name = STRING[100](INTEGER);
             
         LOCAL file = FILE ();
         EXTERNAL SQL path(e) EXEC 'SELECT name FROM trackers' TO file;
         
         IMPORT TABLE FROM file() TO name;
         
-        FOR [GROUP MIN INTEGER i BY name(i)](VARSTRING[100] name) AND name != '' AND NOT tracker(name) DO NEW s = Tracker {
+        FOR [GROUP MIN INTEGER i BY name(i)](STRING[100] name) AND name != '' AND NOT tracker(name) DO NEW s = Tracker {
             name(s) <- name;
         }
         APPLY;
@@ -87,14 +87,14 @@ importTracker 'Импорт трекеров' (External e) {
 importIssueStatus 'Импорт статусов задачи' (External e) {
     NEWSESSION {
         LOCAL id = INTEGER (INTEGER);
-        LOCAL name = VARSTRING[100](INTEGER);
+        LOCAL name = STRING[100](INTEGER);
             
         LOCAL file = FILE ();
         EXTERNAL SQL path(e) EXEC 'SELECT id, name FROM issue_statuses' TO file;
         
         IMPORT TABLE FROM file() TO id, name;
 
-        FOR [GROUP MIN INTEGER i BY name(i)](VARSTRING[100] name) AND name != '' AND NOT issueStatus(name) DO NEW s = IssueStatus {
+        FOR [GROUP MIN INTEGER i BY name(i)](STRING[100] name) AND name != '' AND NOT issueStatus(name) DO NEW s = IssueStatus {
             name(s) <- name;
         }
 
@@ -115,7 +115,7 @@ open (Issue i) + {
     } 
 }
 
-apiKey = DATA VARSTRING[50] (External, User);
+apiKey = DATA STRING[50] (External, User);
 EXTEND FORM external
     OBJECTS e = User
     PROPERTIES(e) READONLY name, login GRID

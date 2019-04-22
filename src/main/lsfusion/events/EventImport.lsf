@@ -6,18 +6,18 @@ NAMESPACE Event;
 
 importEvents 'Импорт событий' (FILE f) {
 
-    LOCAL idEvent = VARSTRING[15](INTEGER);
-    LOCAL idCustomer = VARSTRING[15](INTEGER);
-    LOCAL idLegalEntity = VARSTRING[15](INTEGER);
-    LOCAL idEmployee = VARSTRING[15](INTEGER);
-    LOCAL idContract = VARSTRING[15](INTEGER);
-    LOCAL idAgreement = VARSTRING[15](INTEGER);
-    LOCAL idAct = VARSTRING[15](INTEGER);
-    LOCAL type = VARSTRING[50](INTEGER);
+    LOCAL idEvent = STRING[15](INTEGER);
+    LOCAL idCustomer = STRING[15](INTEGER);
+    LOCAL idLegalEntity = STRING[15](INTEGER);
+    LOCAL idEmployee = STRING[15](INTEGER);
+    LOCAL idContract = STRING[15](INTEGER);
+    LOCAL idAgreement = STRING[15](INTEGER);
+    LOCAL idAct = STRING[15](INTEGER);
+    LOCAL type = STRING[50](INTEGER);
     LOCAL date = DATE (INTEGER);
-    LOCAL time = VARSTRING[5] (INTEGER);
-    LOCAL idContact = VARSTRING[15](INTEGER);
-    LOCAL name = VARSTRING[100](INTEGER);
+    LOCAL time = STRING[5] (INTEGER);
+    LOCAL idContact = STRING[15](INTEGER);
+    LOCAL name = STRING[100](INTEGER);
     LOCAL text = TEXT(INTEGER);
     LOCAL dateNext = DATE (INTEGER);
     LOCAL add = TEXT(INTEGER);
@@ -28,7 +28,7 @@ importEvents 'Импорт событий' (FILE f) {
     
     time(INTEGER i) <- NULL WHERE NOT substr(time(i), 3, 1) == ':';
     
-    FOR [GROUP SUM 1 IF INTEGER i > 1 BY trim(idEvent(i))](VARSTRING[15] id) AND id != '' AND NOT event(id) DO NEW c = Event {
+    FOR [GROUP SUM 1 IF INTEGER i > 1 BY trim(idEvent(i))](STRING[15] id) AND id != '' AND NOT event(id) DO NEW c = Event {
         id(c) <- id;
     }
     

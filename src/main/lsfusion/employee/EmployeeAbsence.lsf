@@ -7,7 +7,7 @@ NAMESPACE Employee;
 CLASS Absence 'Отсутствие';
 TABLE absence (Absence);
 
-id 'Код' = DATA VARSTRING[15] (Absence) INDEXED CHARWIDTH 5 IN id;
+id 'Код' = DATA STRING[15] (Absence) INDEXED CHARWIDTH 5 IN id;
 absence (id) = GROUP AGGR Absence c BY id (c);
 
 employee = DATA Employee (Absence);
@@ -17,7 +17,7 @@ nameEmployee 'Сотрудник' (Absence a) = name(employee(a));
 CLASS AbsenceReason 'Причина отсутствия';
 TABLE absenceReason (AbsenceReason);
 
-name 'Наименование' = DATA VARISTRING[100] (AbsenceReason) CHARWIDTH 15;
+name 'Наименование' = DATA ISTRING[100] (AbsenceReason) CHARWIDTH 15;
 inactive 'Неактивный' = DATA BOOLEAN (AbsenceReason);
 
 FORM absenceReason 'Причина отсутствия'
@@ -49,7 +49,7 @@ dateFrom 'Дата с' = DATA DATE (Absence);
 dateTo 'Дата по' = DATA DATE (Absence);
 hours 'Кол-во часов' = DATA NUMERIC[7,2](Absence);
 date 'Дата ввода' = DATA DATE (Absence);
-note 'Примечание' = DATA VARISTRING[100] (Absence) CHARWIDTH 30;
+note 'Примечание' = DATA ISTRING[100] (Absence) CHARWIDTH 30;
 
 CONSTRAINT dateTo(Absence a) < dateFrom(a) MESSAGE 'Дата по должна быть не раньше даты с';
 

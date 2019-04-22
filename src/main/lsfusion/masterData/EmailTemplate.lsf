@@ -7,7 +7,7 @@ NAMESPACE Email;
 CLASS EmailTemplate 'Шаблон email';
 TABLE emailTemplate (EmailTemplate);
 
-name 'Наименование' = DATA VARISTRING[100] (EmailTemplate) CHARWIDTH 15;
+name 'Наименование' = DATA ISTRING[100] (EmailTemplate) CHARWIDTH 15;
 subject 'Тема' = DATA TEXT (EmailTemplate);
 message 'Сообщение' = DATA RICHTEXT (EmailTemplate);
 
@@ -64,7 +64,7 @@ NAVIGATOR {
     }
 }
 
-send 'Отправить' (EmailTemplate t, VARISTRING[100] to) {
+send 'Отправить' (EmailTemplate t, ISTRING[100] to) {
     EMAIL 
         FROM fromAddress(account(t))
         SUBJECT subject(t)

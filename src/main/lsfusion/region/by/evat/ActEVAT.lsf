@@ -10,7 +10,7 @@ lastEVATAct 'Последний ЭСЧФ по акту' = GROUP LAST EVAT e ORDE
 forbidChange(Act a) += TRUE IF lastEVATAct(a) AND a IS Act;
 
 // Шаблон для текста в ЭСЧФ
-shablonEVATName 'Шаблон для текста в ЭСЧФ' = DATA VARISTRING[250](ActType) ;
+shablonEVATName 'Шаблон для текста в ЭСЧФ' = DATA ISTRING[250](ActType) ;
 EXTEND FORM actType PROPERTIES shablonEVATName(o) ;
 shablonEVATName 'Шаблон для текста в ЭСЧФ' (Act a) = shablonEVATName(type(a)) ;
 
@@ -149,9 +149,9 @@ NAVIGATOR {
 // Сверка сумм переданных ЭСЧФ с суммами актов в разрезе организаций 
 CLASS CompareEVAT 'Сравнение ЭСЧФ';
 
-unpSupplier 'УНП поставщика' = DATA VARSTRING[9] (CompareEVAT) CHARWIDTH 5;
-unpCustomer 'УНП получателя' = DATA VARSTRING[9] (CompareEVAT) CHARWIDTH 5;
-nameCustomer 'Наименование получателя' = DATA VARSTRING[250] (CompareEVAT) CHARWIDTH 100;
+unpSupplier 'УНП поставщика' = DATA STRING[9] (CompareEVAT) CHARWIDTH 5;
+unpCustomer 'УНП получателя' = DATA STRING[9] (CompareEVAT) CHARWIDTH 5;
+nameCustomer 'Наименование получателя' = DATA STRING[250] (CompareEVAT) CHARWIDTH 100;
 sumAct 'Сумма из актов' = DATA NUMERIC[16,2] (CompareEVAT);
 sumWithVAT 'Сумма с НДС из CSV-файла' = DATA NUMERIC[16,2] (CompareEVAT);
 
@@ -161,9 +161,9 @@ compareEVAT  = GROUP AGGR CompareEVAT ce BY unpSupplier(ce), unpCustomer(ce);
 
 controlWithCsvFileLegalEntity 'Сравнить' (DATE dFrom, DATE dTo)  { 
     
-    LOCAL unpSupplier  = VARSTRING[9](INTEGER);
-    LOCAL unpCustomer  = VARSTRING[9](INTEGER);
-    LOCAL nameCustomer = VARSTRING[250](INTEGER);
+    LOCAL unpSupplier  = STRING[9](INTEGER);
+    LOCAL unpCustomer  = STRING[9](INTEGER);
+    LOCAL nameCustomer = STRING[250](INTEGER);
     LOCAL sumWithVAT   = NUMERIC[16,2](INTEGER);
     
     INPUT f = FILE DO {

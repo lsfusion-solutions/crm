@@ -4,7 +4,7 @@ REQUIRE Equipment;
 
 NAMESPACE Equipment;
 
-equipmentID 'Идентификатор оборудования' = DATA VARISTRING[20](SubjectType);
+equipmentID 'Идентификатор оборудования' = DATA ISTRING[20](SubjectType);
 
 EXTEND FORM subjectType PROPERTIES equipmentID(o);
 

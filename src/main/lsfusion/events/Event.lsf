@@ -7,17 +7,17 @@ NAMESPACE Event;
 CLASS Event 'Событие';
 TABLE event (Event);
 
-id 'Код' = DATA VARSTRING[15] (Event) INDEXED CHARWIDTH 5 IN id;
+id 'Код' = DATA STRING[15] (Event) INDEXED CHARWIDTH 5 IN id;
 event (id) = GROUP AGGR Event c BY id (c);
 
-name 'Наименование' = DATA VARISTRING[100] (Event) CHARWIDTH 15;
+name 'Наименование' = DATA ISTRING[100] (Event) CHARWIDTH 15;
 date 'Дата ввода' = DATA DATE (Event);
 time 'Время ввода' = DATA TIME (Event);
 dateNext 'Дата следующего' = DATA DATE (Event);
 description 'Содержание' = DATA TEXT (Event);
-descriptionString 'Содержание' (Event e) = VARISTRING[1000](description(e)) CHARWIDTH 30;
+descriptionString 'Содержание' (Event e) = ISTRING[1000](description(e)) CHARWIDTH 30;
 addition 'Дополнение' = DATA TEXT (Event);
-additionString 'Дополнение' (Event e) = VARISTRING[1000](addition(e)) CHARWIDTH 30;
+additionString 'Дополнение' (Event e) = ISTRING[1000](addition(e)) CHARWIDTH 30;
 
 customer = DATA Customer(Event);
 idCustomer 'Код клиента' (Event e) = id(customer(e));
@@ -47,7 +47,7 @@ CONSTRAINT legalEntity(Event e) AND contact(e) AND NOT legalEntity(contact(e)) =
 CLASS EventType 'Тип события';
 TABLE eventType (EventType);
 
-name 'Наименование' = DATA VARISTRING[100] (EventType) CHARWIDTH 15;
+name 'Наименование' = DATA ISTRING[100] (EventType) CHARWIDTH 15;
 
 FORM eventType 'Тип события'
     OBJECTS o = EventType PANEL

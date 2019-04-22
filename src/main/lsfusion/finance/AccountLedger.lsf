@@ -9,7 +9,7 @@ TABLE accountLedger(AccountLedger);
 
 account = ABSTRACT Account(AccountLedger) MATERIALIZED INDEXED;
 date 'Дата' = ABSTRACT DATE (AccountLedger) MATERIALIZED;
-note 'Примечание' = ABSTRACT VARISTRING[250](AccountLedger) MATERIALIZED;
+note 'Примечание' = ABSTRACT ISTRING[250](AccountLedger) MATERIALIZED;
 sum 'Сумма' = ABSTRACT NUMERIC[16,5](AccountLedger) MATERIALIZED;
 
 balance 'Остаток' (Account a) = GROUP SUM sum(AccountLedger l) BY account(l) MATERIALIZED;

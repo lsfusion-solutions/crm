@@ -6,22 +6,22 @@ NAMESPACE Employee;
 
 importEmployeeAbsences 'Импорт отсутствия сотрудников' (FILE f) {
     
-    LOCAL idEmployeeAbsence = VARSTRING[15](INTEGER);
-    LOCAL idEmployee = VARSTRING[15](INTEGER);
-    LOCAL reason = VARSTRING[100](INTEGER);
+    LOCAL idEmployeeAbsence = STRING[15](INTEGER);
+    LOCAL idEmployee = STRING[15](INTEGER);
+    LOCAL reason = STRING[100](INTEGER);
     LOCAL df = DATE (INTEGER);
     LOCAL dt = DATE (INTEGER);
     LOCAL hours = NUMERIC[7,2](INTEGER);
     LOCAL date = DATE (INTEGER);
-    LOCAL note = VARSTRING[100](INTEGER);
+    LOCAL note = STRING[100](INTEGER);
     
     IMPORT XLS NOHEADER FROM f TO idEmployeeAbsence = B, idEmployee, reason, df, dt, hours, date, note;
     
-    FOR [GROUP SUM 1 IF INTEGER i > 1 BY idEmployeeAbsence(i)](VARSTRING[15] id) AND id != '' AND NOT absence(id) DO NEW a = Absence {
+    FOR [GROUP SUM 1 IF INTEGER i > 1 BY idEmployeeAbsence(i)](STRING[15] id) AND id != '' AND NOT absence(id) DO NEW a = Absence {
         id(a) <- id;
     }
     
-    FOR [GROUP SUM 1 IF INTEGER i > 1 BY trim(reason(i))](VARSTRING[100] reason) AND reason != '' AND NOT [GROUP MAX AbsenceReason r BY name(r)](reason) DO NEW r = AbsenceReason {
+    FOR [GROUP SUM 1 IF INTEGER i > 1 BY trim(reason(i))](STRING[100] reason) AND reason != '' AND NOT [GROUP MAX AbsenceReason r BY name(r)](reason) DO NEW r = AbsenceReason {
         name(r) <- reason;
     }
     

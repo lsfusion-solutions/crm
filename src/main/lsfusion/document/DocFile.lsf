@@ -16,9 +16,9 @@ time 'Время' (DocumentFile f) = TIME (dateTime(f));
 user = DATA User(DocumentFile);
 nameUser 'Имя пользователя' (DocumentFile f) = name(user(f));
 loginUser 'Логин пользователя' (DocumentFile f) = login(user(f));
-note 'Примечание' = DATA VARISTRING[1000](DocumentFile) CHARWIDTH 20;
+note 'Примечание' = DATA ISTRING[1000](DocumentFile) CHARWIDTH 20;
 
-safeOpen (FILE f, VARISTRING[255] fileName) {
+safeOpen (FILE f, ISTRING[255] fileName) {
     open(f, replace(replace(fileName, '"', '\''), ',', '.'));
 }
 
@@ -29,7 +29,7 @@ open 'Открыть' (DocumentFile c) {
 CLASS DocumentFileType 'Тип файла документа';
 TABLE documentFileType (DocumentFileType);
 
-name 'Наименование' = DATA VARISTRING[100] (DocumentFileType) CHARWIDTH 15;
+name 'Наименование' = DATA ISTRING[100] (DocumentFileType) CHARWIDTH 15;
 
 in 'Вкл.' = DATA BOOLEAN (DocumentFileType, DocType);
 docTypes 'Типы документов' (DocumentFileType t) = GROUP CONCAT name(DocType d) IF in(t, d), ', ' CHARWIDTH 20;

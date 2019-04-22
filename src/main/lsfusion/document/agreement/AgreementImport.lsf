@@ -5,25 +5,25 @@ REQUIRE AgreementFile, Import;
 NAMESPACE Agreement;
 
 importAgreements 'Импорт соглашений' (FILE f) {
-    LOCAL idAgreement = VARSTRING[15](INTEGER);
-    LOCAL idContract = VARSTRING[15](INTEGER);
-    LOCAL idPersonLegalEntity = VARSTRING[15](INTEGER);
-    LOCAL docPersonLegalEntity = VARSTRING[50](INTEGER);
-    LOCAL idPersonCompany = VARSTRING[15](INTEGER);
-    LOCAL docPersonCompany = VARSTRING[50](INTEGER);
-    LOCAL number = VARSTRING[15](INTEGER);
+    LOCAL idAgreement = STRING[15](INTEGER);
+    LOCAL idContract = STRING[15](INTEGER);
+    LOCAL idPersonLegalEntity = STRING[15](INTEGER);
+    LOCAL docPersonLegalEntity = STRING[50](INTEGER);
+    LOCAL idPersonCompany = STRING[15](INTEGER);
+    LOCAL docPersonCompany = STRING[50](INTEGER);
+    LOCAL number = STRING[15](INTEGER);
     LOCAL date1 = DATE (INTEGER);
-    LOCAL name = VARSTRING[150](INTEGER);
-    LOCAL type = VARSTRING[50](INTEGER);
+    LOCAL name = STRING[150](INTEGER);
+    LOCAL type = STRING[50](INTEGER);
     LOCAL sum = NUMERIC[16,5] (INTEGER);
-    LOCAL nameSending = VARSTRING[50](INTEGER);
+    LOCAL nameSending = STRING[50](INTEGER);
     LOCAL sending = DATE (INTEGER);
     LOCAL receiving = DATE (INTEGER);
     LOCAL closing = DATE (INTEGER);
-    LOCAL note = VARSTRING[100](INTEGER);
+    LOCAL note = STRING[100](INTEGER);
     LOCAL text = TEXT(INTEGER);
     LOCAL terms = TEXT(INTEGER);
-    LOCAL message = VARSTRING[2000] ();
+    LOCAL message = STRING[2000] ();
     LOCAL count = INTEGER ();
     
     message() <- '';
@@ -42,17 +42,17 @@ importAgreements 'Импорт соглашений' (FILE f) {
         MESSAGE CONCAT ' ', 'Неимпортированные соглашения, для которых не найдены договоры: ', count(), message();
     }
     
-    FOR [GROUP SUM 1 IF INTEGER i > 1 AND contract(trim(idContract(i))) BY trim(idAgreement(i))](VARSTRING[15] id) AND id != '' AND NOT agreement(id) DO NEW c = Agreement {
+    FOR [GROUP SUM 1 IF INTEGER i > 1 AND contract(trim(idContract(i))) BY trim(idAgreement(i))](STRING[15] id) AND id != '' AND NOT agreement(id) DO NEW c = Agreement {
         id(c) <- id;
     }
     
-    FOR [GROUP SUM 1 IF INTEGER i > 1 BY trim(type(i))](VARSTRING[50] type) AND type != '' 
+    FOR [GROUP SUM 1 IF INTEGER i > 1 BY trim(type(i))](STRING[50] type) AND type != '' 
         AND NOT (GROUP MAX AgreementType t IF upper(name(t)) == upper(type)) DO NEW t = AgreementType {
         
         name(t) <- type; 
     }
     
-    FOR [GROUP SUM 1 IF INTEGER i > 1 BY trim(nameSending(i))](VARSTRING[50] sending) AND sending != '' 
+    FOR [GROUP SUM 1 IF INTEGER i > 1 BY trim(nameSending(i))](STRING[50] sending) AND sending != '' 
         AND NOT (GROUP MAX SendingWay t IF upper(name(t)) == upper(sending)) DO NEW t = SendingWay {
         
         name(t) <- sending; 
@@ -104,8 +104,8 @@ EXTEND FORM migrationData PROPERTIES() exportAgreements, importAgreements;
 importAgreementDocumentsXls 'Импорт документов соглашений' () {
     
     NEWSESSION {
-        LOCAL id = VARSTRING[15](INTEGER);
-        LOCAL path = VARSTRING[250](INTEGER);
+        LOCAL id = STRING[15](INTEGER);
+        LOCAL path = STRING[250](INTEGER);
         LOCAL file = FILE();
         
         INPUT f = FILE DO {

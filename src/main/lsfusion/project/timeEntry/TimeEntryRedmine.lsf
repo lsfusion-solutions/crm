@@ -15,11 +15,11 @@ importTimeEntry 'Импорт отметок времени' (External e) {
         LOCAL hours = NUMERIC[5,2] (INTEGER);
         LOCAL comments = TEXT (INTEGER);
         LOCAL spent_on = DATE (INTEGER);
-        LOCAL activity_name = VARSTRING[100] (INTEGER);
+        LOCAL activity_name = STRING[100] (INTEGER);
         LOCAL project_id = INTEGER (INTEGER);
         LOCAL login = TEXT (INTEGER);
         LOCAL issue_id = INTEGER (INTEGER);
-        LOCAL message = VARSTRING[1000] ();
+        LOCAL message = STRING[1000] ();
         LOCAL count = INTEGER ();
             
         LOCAL file = FILE ();
@@ -27,25 +27,25 @@ importTimeEntry 'Импорт отметок времени' (External e) {
         
         IMPORT TABLE FROM file() TO id, hours, comments, spent_on, activity_name, project_id, login, issue_id;
         
-        FOR INTEGER ii = [GROUP MIN INTEGER i IF NOT daysBetweenDates(currentDate(), spent_on(i)) > daysImportTimeEntry() BY VARSTRING[15](id(i))](VARSTRING[15] id)
+        FOR INTEGER ii = [GROUP MIN INTEGER i IF NOT daysBetweenDates(currentDate(), spent_on(i)) > daysImportTimeEntry() BY STRING[15](id(i))](STRING[15] id)
             AND id != '' AND NOT timeEntry(id, e) DO NEW s = TimeEntry {
             id(s) <- id;
             external(s) <- e;
         }
         
-        FOR TimeEntry s = timeEntry(VARSTRING[15](id(INTEGER i)), e) AND id(i) AND NOT daysBetweenDates(currentDate(), spent_on(i)) > daysImportTimeEntry() DO {
+        FOR TimeEntry s = timeEntry(STRING[15](id(INTEGER i)), e) AND id(i) AND NOT daysBetweenDates(currentDate(), spent_on(i)) > daysImportTimeEntry() DO {
         
             hours(s) <- hours(i);
             comments(s) <- comments(i);
             date(s) <- spent_on(i);
             activity(s) <- activity(activity_name(i));
-            project(s) <- project(VARSTRING[15](project_id(i)), e);
+            project(s) <- project(STRING[15](project_id(i)), e);
             employee(s) <- GROUP MAX Employee p IF login(p) == trim(login(i));
-            issue(s) <- issue(VARSTRING[15](issue_id(i)), e);
+            issue(s) <- issue(STRING[15](issue_id(i)), e);
         }
         
         FOR external(TimeEntry s) == e AND NOT daysBetweenDates(currentDate(), date(s)) > daysImportTimeEntry() AND 
-            NOT [GROUP SUM 1 IF imported(INTEGER i) AND NOT daysBetweenDates(currentDate(), spent_on(i)) > daysImportTimeEntry() BY VARSTRING[15](id(i))](id(s)) DO {
+            NOT [GROUP SUM 1 IF imported(INTEGER i) AND NOT daysBetweenDates(currentDate(), spent_on(i)) > daysImportTimeEntry() BY STRING[15](id(i))](id(s)) DO {
             DELETE s;
         }
         
@@ -67,14 +67,14 @@ importTimeEntry 'Импорт отметок времени' (External e) {
 
 importActivity 'Импорт деятельностей' (External e) {
     NEWSESSION {
-        LOCAL name = VARSTRING[100](INTEGER);
+        LOCAL name = STRING[100](INTEGER);
             
         LOCAL file = FILE ();
         EXTERNAL SQL path(e) EXEC 'SELECT name FROM enumerations activities WHERE type = \'TimeEntryActivity\'' TO file;
         
         IMPORT TABLE FROM file() TO name;
         
-        FOR [GROUP MIN INTEGER i BY name(i)](VARSTRING[100] name) AND name != '' AND NOT activity(name) DO NEW s = Activity {
+        FOR [GROUP MIN INTEGER i BY name(i)](STRING[100] name) AND name != '' AND NOT activity(name) DO NEW s = Activity {
             name(s) <- name;
         }
         APPLY;

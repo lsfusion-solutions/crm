@@ -8,15 +8,15 @@ NAMESPACE Expense;
 importExpense 'Импорт расходов' () {
     
     NEWSESSION {
-        LOCAL idCompany = VARSTRING[15] (INTEGER);
-        LOCAL idLegalEntity = VARSTRING[15] (INTEGER);
+        LOCAL idCompany = STRING[15] (INTEGER);
+        LOCAL idLegalEntity = STRING[15] (INTEGER);
         LOCAL date = DATE (INTEGER);
         LOCAL dateP = DATE (INTEGER);
-        LOCAL type = VARSTRING[15] (INTEGER);
+        LOCAL type = STRING[15] (INTEGER);
         LOCAL sum = NUMERIC[18,4](INTEGER);
-        LOCAL currency = VARSTRING[15] (INTEGER);
+        LOCAL currency = STRING[15] (INTEGER);
         LOCAL note = TEXT (INTEGER);
-        LOCAL message = VARSTRING[2000] ();
+        LOCAL message = STRING[2000] ();
         LOCAL count = INTEGER ();
         
         INPUT f = FILE DO {
@@ -36,7 +36,7 @@ importExpense 'Импорт расходов' () {
                 MESSAGE CONCAT ' ', 'Неимпортированные платежи, для которых не найдена организация или компания: ', count(), message();
             }
     
-            FOR [GROUP MIN INTEGER i IF i > 1 BY trim(type(i))](VARSTRING[15] name) AND name != ''
+            FOR [GROUP MIN INTEGER i IF i > 1 BY trim(type(i))](STRING[15] name) AND name != ''
                 AND NOT [GROUP MAX ExpenseType t BY name(t)](name) DO NEW t = ExpenseType {
                 
                 name(t) <- name;

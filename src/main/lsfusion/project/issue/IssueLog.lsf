@@ -89,7 +89,7 @@ WHEN (CHANGED (name(Issue i)) OR CHANGED (status(i)) OR CHANGED (description(i))
         }
         
         TRY {
-            FOR VARISTRING[100] to == email(author(i)) OR to == email(assignedTo(i)) DO {
+            FOR ISTRING[100] to == email(author(i)) OR to == email(assignedTo(i)) DO {
                 EMAIL
                     SUBJECT CONCAT ', ', nameCustomer(i), nameProject(i), name(i), nameStatus(i) 
                     TO to
@@ -140,14 +140,14 @@ WHEN (CHANGED (name(Issue i)) OR CHANGED (status(i)) OR CHANGED (description(i))
 //    dateTime(l) <- currentDateTime();
 //    user(l) <- currentUser();
 //    property(l) <- 'Оценка трудозатрат';
-//    value(l) <- VARISTRING[500] (estimatedHours(i));
+//    value(l) <- ISTRING[500] (estimatedHours(i));
 //}
 //WHEN CHANGED (doneRatio(Issue i)) AND NOT external(project(i)) DO NEW l = IssueLog {
 //    issue(l) <- i;
 //    dateTime(l) <- currentDateTime();
 //    user(l) <- currentUser();
 //    property(l) <- 'Готовность';
-//    value(l) <- VARISTRING[500] (doneRatio(i));
+//    value(l) <- ISTRING[500] (doneRatio(i));
 //}
 //WHEN CHANGED (dateFrom(Issue i)) AND NOT external(project(i)) DO NEW l = IssueLog {
 //    issue(l) <- i;

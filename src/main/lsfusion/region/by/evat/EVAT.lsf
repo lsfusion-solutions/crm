@@ -25,12 +25,12 @@ nocancelled 'Не отмененный' (EVAT e) = NOT cancelled(e);
 //CONSTRAINT DROPPED (EVAT e IS EVAT) AND PREV (exported(e)) MESSAGE 'Запрещено удалять Выгруженные счета-фактуры';
 //CONSTRAINT SET (cancelled(EVAT e)) AND exported(e) MESSAGE 'Запрещено отменять Выгруженные счета-фактуры';
 
-unpSender 'Субъект хозяйствования, составляющий ЭСЧФ' = DATA VARSTRING[100](EVAT);
+unpSender 'Субъект хозяйствования, составляющий ЭСЧФ' = DATA STRING[100](EVAT);
 exportYear 'Год для экспорта' = DATA INTEGER (EVAT);
 date 'Дата совершения операции' = DATA DATE (EVAT);
 
-padNumber = ABSTRACT VALUE VARSTRING[20] (EVAT);
-padNumber (EVAT e) += VARSTRING[20](lpad(number(e), 10, '0'));
+padNumber = ABSTRACT VALUE STRING[20] (EVAT);
+padNumber (EVAT e) += STRING[20](lpad(number(e), 10, '0'));
 
 exportNumber 'Номер для экспорта' (EVAT e) = unpSender(e) + '-' + (OVERRIDE exportYear(e), Time.extractYear(currentDate()) IF e IS EVAT ) + '-' + padNumber(e);
 exportDNumber 'Номер для экспорта' (EVAT e) = unpSender(e) + '-' + exportYear(e) + '-' + padNumber(e);
@@ -41,17 +41,17 @@ exportFileXml 'Имя файла для экспорта' (EVAT e) = exportNumbe
 //WHEN SET(exported(EVAT e)) DO exportYear(e) <- Time.extractYear(currentDate());
 WHEN SET(EVAT e IS EVAT) DO exportYear(e) <- Time.extractYear(currentDate());
 
-documentType 'Название вида документа' = DATA VARSTRING[30] (EVAT);
+documentType 'Название вида документа' = DATA STRING[30] (EVAT);
 
 codeDocType 'Код вида документа' = DATA INTEGER (EVAT);
-blankCodeDoc 'Код типа бланка' = DATA VARSTRING[100] (EVAT);
+blankCodeDoc 'Код типа бланка' = DATA STRING[100] (EVAT);
 dataDateDoc 'Дата' = DATA DATE (EVAT);
 dateDoc 'Дата' (EVAT e)= OVERRIDE dataDateDoc(e), date(e);
-seriesDoc 'Серия' = DATA VARSTRING[100] (EVAT);
+seriesDoc 'Серия' = DATA STRING[100] (EVAT);
 
-numberContract 'Номер договора на поставку товара' = DATA VARSTRING[15] (EVAT);
+numberContract 'Номер договора на поставку товара' = DATA STRING[15] (EVAT);
 dateContract 'Дата договора на поставку товара' = DATA DATE (EVAT);
-numberDoc 'Номер документа' = DATA VARSTRING[15] (EVAT);
+numberDoc 'Номер документа' = DATA STRING[15] (EVAT);
 
 //Поставщик
 supplier 'Поставщик' = DATA LegalEntity(EVAT);
@@ -62,9 +62,9 @@ dependentPersonSupplier 'Взаимозависимое лицо' = DATA BOOLEAN
 residentsOfOffshoreSupplier 'Сделка с резидентом оффшорной зоны ' = DATA BOOLEAN (EVAT);
 specialDealGoodsSupplier 'Спец. сделка' = DATA BOOLEAN (EVAT);
 bigCompanySupplier 'Крупный плательщик (поставщик)' = DATA BOOLEAN (EVAT);
-countryCodeSupplier 'Код страны поставщика' = DATA VARISTRING[30] (EVAT);
+countryCodeSupplier 'Код страны поставщика' = DATA ISTRING[30] (EVAT);
 unpSupplier 'УНП поставщика' (EVAT e) = UNP(supplier(e));
-legalEntityStatusSupplier 'Статус поставщика' = DATA VARISTRING[30] (EVAT);
+legalEntityStatusSupplier 'Статус поставщика' = DATA ISTRING[30] (EVAT);
 
 //Получатель
 customer 'Получатель' = DATA LegalEntity(EVAT);
@@ -75,9 +75,9 @@ dependentPersonCustomer 'Взаимозависимое лицо' = DATA BOOLEAN
 residentsOfOffshoreCustomer 'Сделка с резидентом оффшорной зоны ' = DATA BOOLEAN (EVAT);
 specialDealGoodsCustomer 'Спец. сделка' = DATA BOOLEAN (EVAT);
 bigCompanyCustomer 'Крупный плательщик (получатель)' = DATA BOOLEAN (EVAT);
-countryCodeCustomer 'Код страны получателя' = DATA VARISTRING[30] (EVAT);
+countryCodeCustomer 'Код страны получателя' = DATA ISTRING[30] (EVAT);
 unpCustomer 'УНП получателя' (EVAT e) = UNP(customer(e));
-legalEntityStatusCustomer 'Статус получателя' = DATA VARISTRING[30] (EVAT);
+legalEntityStatusCustomer 'Статус получателя' = DATA ISTRING[30] (EVAT);
 
 
 //Товар
@@ -86,15 +86,15 @@ TABLE EVATDetail(EVATDetail);
 
 EVAT = DATA EVAT (EVATDetail) NONULL DELETE INDEXED;
 number 'Порядковый номер' = DATA INTEGER (EVATDetail);
-name 'Наименование' = DATA VARSTRING[255] (EVATDetail);
-code 'Код ТНВЭД' = DATA VARSTRING[10] (EVATDetail);
-codeOced 'Код видов деятельности (ОКЭД)' = DATA VARSTRING[100] (EVATDetail);
+name 'Наименование' = DATA STRING[255] (EVATDetail);
+code 'Код ТНВЭД' = DATA STRING[10] (EVATDetail);
+codeOced 'Код видов деятельности (ОКЭД)' = DATA STRING[100] (EVATDetail);
 quantity 'Количество' = DATA NUMERIC[16,5] (EVATDetail); 
 price 'Цена' = DATA NUMERIC[16,2] (EVATDetail);
 sum 'Сумма' = DATA NUMERIC[16,2] (EVATDetail) NONULL;
 exciseSum 'Сумма акциза' = DATA NUMERIC[16,2] (EVATDetail);
 vatRate 'Ставка НДС' = DATA NUMERIC[16,5] (EVATDetail);
-vatRateType 'Тип НДС' = DATA VARISTRING[20] (EVATDetail);
+vatRateType 'Тип НДС' = DATA ISTRING[20] (EVATDetail);
 vatSum 'Сумма НДС' = DATA NUMERIC[16,2] (EVATDetail);
 sumWithVAT 'Сумма с НДС' = DATA NUMERIC[16,2] (EVATDetail);
 
@@ -265,10 +265,10 @@ NAVIGATOR {
 }
 
 ///// экспорт ЭСЧФ в XML
-dateIssuance 'Текущая дата (симв.)' = DATA LOCAL VARSTRING[10] ();
-dateTransaction 'Дата операции (симв.)' = DATA LOCAL VARSTRING[10] ();
-dateContract 'Дата договора' = DATA LOCAL VARSTRING[10] ();
-dateDoc 'Дата документа' = DATA LOCAL VARSTRING[10] ();
+dateIssuance 'Текущая дата (симв.)' = DATA LOCAL STRING[10] ();
+dateTransaction 'Дата операции (симв.)' = DATA LOCAL STRING[10] ();
+dateContract 'Дата договора' = DATA LOCAL STRING[10] ();
+dateDoc 'Дата документа' = DATA LOCAL STRING[10] ();
 
 GROUP general;
 GROUP provider;
@@ -346,10 +346,10 @@ FORM issuance
 exportToXml 'Экспорт ЭСЧФ' () {
     NEWSESSION NESTED LOCAL { 
         FOR in(EVAT e) DO {
-            dateIssuance() <- VARSTRING[10] ([FORMULA 'to_char(($1),($2))'](currentDate(), 'YYYY-MM-DD'));
-            dateTransaction() <- VARSTRING[10] ([FORMULA 'to_char(($1),($2))'](dateDoc(e), 'YYYY-MM-DD'));
-            dateContract() <- VARSTRING[10] ([FORMULA 'to_char(($1),($2))'](dateContract(e), 'YYYY-MM-DD'));
-            dateDoc() <- VARSTRING[10] ([FORMULA 'to_char(($1),($2))'](dateDoc(e), 'YYYY-MM-DD'));
+            dateIssuance() <- STRING[10] ([FORMULA 'to_char(($1),($2))'](currentDate(), 'YYYY-MM-DD'));
+            dateTransaction() <- STRING[10] ([FORMULA 'to_char(($1),($2))'](dateDoc(e), 'YYYY-MM-DD'));
+            dateContract() <- STRING[10] ([FORMULA 'to_char(($1),($2))'](dateContract(e), 'YYYY-MM-DD'));
+            dateDoc() <- STRING[10] ([FORMULA 'to_char(($1),($2))'](dateDoc(e), 'YYYY-MM-DD'));
             
             exported(e) <- TRUE;
             in(e) <- NULL;
@@ -367,7 +367,7 @@ exportToXml 'Экспорт ЭСЧФ' () {
             seriesDoc(e) <- '';
             
             EXPORT issuance OBJECTS e = e XML TO System.exportFile;
-            zipping(VARSTRING[100] s) <- exportFile() WHERE s = exportFileXml(e);
+            zipping(STRING[100] s) <- exportFile() WHERE s = exportFileXml(e);
             
         }
         makeZipFile();
@@ -382,10 +382,10 @@ EXTEND FORM EVATs PROPERTIES() TOOLBAR exportToXml;
 // Сверка переданных ЭСЧФ с CSV-файлом
 CLASS ListEVAT 'ЭСЧФ из CSV-файла';
 
-number 'Номер' = DATA VARSTRING[28] (ListEVAT);
-unpSupplier 'УНП поставщика' = DATA VARSTRING[9] (ListEVAT);
-unpCustomer 'УНП получателя' = DATA VARSTRING[9] (ListEVAT);
-nameCustomer 'Наименование получателя' = DATA VARSTRING[250] (ListEVAT);
+number 'Номер' = DATA STRING[28] (ListEVAT);
+unpSupplier 'УНП поставщика' = DATA STRING[9] (ListEVAT);
+unpCustomer 'УНП получателя' = DATA STRING[9] (ListEVAT);
+nameCustomer 'Наименование получателя' = DATA STRING[250] (ListEVAT);
 sumWithVAT 'Сумма с НДС' = DATA NUMERIC[16,2] (ListEVAT);
 datev 'Дата выставления' = DATA DATE (ListEVAT);
 dates 'Дата совершения' = DATA DATE (ListEVAT);
@@ -406,10 +406,10 @@ backgroundColor (EVAT e) = CASE
 
 controlWithCsvFile 'Сверка с CSV-файлом' ()  { 
     
-    LOCAL number       = VARSTRING[28](INTEGER);
-    LOCAL unpSupplier  = VARSTRING[9](INTEGER);
-    LOCAL unpCustomer  = VARSTRING[9](INTEGER);
-    LOCAL nameCustomer = VARSTRING[250](INTEGER);
+    LOCAL number       = STRING[28](INTEGER);
+    LOCAL unpSupplier  = STRING[9](INTEGER);
+    LOCAL unpCustomer  = STRING[9](INTEGER);
+    LOCAL nameCustomer = STRING[250](INTEGER);
     LOCAL sumWithVAT   = NUMERIC[16,2](INTEGER);
     LOCAL datev        = DATE (INTEGER);
     LOCAL dates        = DATE (INTEGER);

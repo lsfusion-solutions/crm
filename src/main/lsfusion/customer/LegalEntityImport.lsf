@@ -7,58 +7,58 @@ NAMESPACE LegalEntity;
 overLegalEntityImport ABSTRACT LIST (FILE);
 
 importLegalEntities 'Импорт организаций' (FILE f) {
-    LOCAL idCustomer = VARSTRING[15](INTEGER);
-    LOCAL nameCustomer = VARSTRING[250](INTEGER);
-    LOCAL customerGroup = VARSTRING[100](INTEGER);
-    LOCAL status = VARSTRING[100](INTEGER);
-    LOCAL emailCustomer = VARSTRING[200](INTEGER);
-    LOCAL phoneCustomer = VARSTRING[50](INTEGER);
-    LOCAL siteCustomer = VARSTRING[100](INTEGER);
-    LOCAL noteCustomer = VARSTRING[100](INTEGER);
+    LOCAL idCustomer = STRING[15](INTEGER);
+    LOCAL nameCustomer = STRING[250](INTEGER);
+    LOCAL customerGroup = STRING[100](INTEGER);
+    LOCAL status = STRING[100](INTEGER);
+    LOCAL emailCustomer = STRING[200](INTEGER);
+    LOCAL phoneCustomer = STRING[50](INTEGER);
+    LOCAL siteCustomer = STRING[100](INTEGER);
+    LOCAL noteCustomer = STRING[100](INTEGER);
     LOCAL dateCustomer = DATE(INTEGER);
-    LOCAL idLegalEntity = VARSTRING[15](INTEGER);
-    LOCAL extIdLegalEntity = VARSTRING[15](INTEGER);
-    LOCAL nameLegalEntity = VARSTRING[250](INTEGER);
-    LOCAL postcodeL = VARSTRING[10](INTEGER);
-    LOCAL regionL = VARSTRING[20](INTEGER);
-    LOCAL districtL = VARSTRING[20](INTEGER);
-    LOCAL localityL = VARSTRING[50](INTEGER);
-    LOCAL streetL = VARSTRING[50](INTEGER);
-    LOCAL houseL = VARSTRING[20](INTEGER);
-    LOCAL officeL = VARSTRING[20](INTEGER);
-    LOCAL postcodeP = VARSTRING[10](INTEGER);
-    LOCAL regionP = VARSTRING[20](INTEGER);
-    LOCAL districtP = VARSTRING[20](INTEGER);
-    LOCAL localityP = VARSTRING[50](INTEGER);
-    LOCAL streetP = VARSTRING[50](INTEGER);
-    LOCAL houseP = VARSTRING[20](INTEGER);
-    LOCAL officeP = VARSTRING[20](INTEGER);
-    LOCAL idBank = VARSTRING[15](INTEGER);
-    LOCAL numberBank = VARSTRING[10](INTEGER);
-    LOCAL nameBank = VARSTRING[100](INTEGER);
-    LOCAL addressBank = VARSTRING[250](INTEGER);
-    LOCAL mfoBank = VARSTRING[11](INTEGER);
-    LOCAL account = VARSTRING[50](INTEGER);
+    LOCAL idLegalEntity = STRING[15](INTEGER);
+    LOCAL extIdLegalEntity = STRING[15](INTEGER);
+    LOCAL nameLegalEntity = STRING[250](INTEGER);
+    LOCAL postcodeL = STRING[10](INTEGER);
+    LOCAL regionL = STRING[20](INTEGER);
+    LOCAL districtL = STRING[20](INTEGER);
+    LOCAL localityL = STRING[50](INTEGER);
+    LOCAL streetL = STRING[50](INTEGER);
+    LOCAL houseL = STRING[20](INTEGER);
+    LOCAL officeL = STRING[20](INTEGER);
+    LOCAL postcodeP = STRING[10](INTEGER);
+    LOCAL regionP = STRING[20](INTEGER);
+    LOCAL districtP = STRING[20](INTEGER);
+    LOCAL localityP = STRING[50](INTEGER);
+    LOCAL streetP = STRING[50](INTEGER);
+    LOCAL houseP = STRING[20](INTEGER);
+    LOCAL officeP = STRING[20](INTEGER);
+    LOCAL idBank = STRING[15](INTEGER);
+    LOCAL numberBank = STRING[10](INTEGER);
+    LOCAL nameBank = STRING[100](INTEGER);
+    LOCAL addressBank = STRING[250](INTEGER);
+    LOCAL mfoBank = STRING[11](INTEGER);
+    LOCAL account = STRING[50](INTEGER);
     LOCAL info = TEXT(INTEGER);
     
     IMPORT XLS NOHEADER FROM f TO idCustomer = B, nameCustomer, customerGroup, status, emailCustomer, phoneCustomer, siteCustomer, noteCustomer, dateCustomer, 
                          info, idLegalEntity, extIdLegalEntity, nameLegalEntity, postcodeL, regionL, districtL, localityL, streetL, houseL, officeL, 
                          postcodeP, regionP, districtP, localityP, streetP, houseP, officeP, account, idBank, numberBank, nameBank, addressBank, mfoBank;
                          
-    FOR [GROUP SUM 1 IF INTEGER i > 1 BY trim(idCustomer(i))](VARSTRING[15] id) AND id AND NOT customer(id) DO NEW c = Customer {
+    FOR [GROUP SUM 1 IF INTEGER i > 1 BY trim(idCustomer(i))](STRING[15] id) AND id AND NOT customer(id) DO NEW c = Customer {
         id(c) <- id;
     }
-    FOR INTEGER ii = [GROUP MIN INTEGER i IF i > 1 BY trim(idLegalEntity(i))](VARSTRING[15] id) AND id AND NOT legalEntity(id) DO NEW l = LegalEntity {
+    FOR INTEGER ii = [GROUP MIN INTEGER i IF i > 1 BY trim(idLegalEntity(i))](STRING[15] id) AND id AND NOT legalEntity(id) DO NEW l = LegalEntity {
         id(l) <- id;
         customer(l) <- customer(trim(idCustomer(ii)));
     }
-    FOR [GROUP SUM 1 IF INTEGER i > 1 BY trim(idBank(i))](VARSTRING[15] id) AND id AND NOT bank(id) DO NEW b = Bank {
+    FOR [GROUP SUM 1 IF INTEGER i > 1 BY trim(idBank(i))](STRING[15] id) AND id AND NOT bank(id) DO NEW b = Bank {
         id(b) <- id;
     }
-    FOR INTEGER i = [GROUP MIN INTEGER ii IF ii > 1 BY trim(status(ii))](VARSTRING[15] name) AND name AND NOT [GROUP SUM 1 BY name(StatusCustomer c)](name) DO NEW s = StatusCustomer {
+    FOR INTEGER i = [GROUP MIN INTEGER ii IF ii > 1 BY trim(status(ii))](STRING[15] name) AND name AND NOT [GROUP SUM 1 BY name(StatusCustomer c)](name) DO NEW s = StatusCustomer {
         name(s) <- name;
     }
-    FOR INTEGER i = [GROUP MIN INTEGER ii IF ii > 1 BY trim(customerGroup(ii))](VARSTRING[15] name) AND name AND NOT [GROUP SUM 1 BY name(CustomerGroup c)](name) DO NEW g = CustomerGroup {
+    FOR INTEGER i = [GROUP MIN INTEGER ii IF ii > 1 BY trim(customerGroup(ii))](STRING[15] name) AND name AND NOT [GROUP SUM 1 BY name(CustomerGroup c)](name) DO NEW g = CustomerGroup {
         name(g) <- name;
     }
     

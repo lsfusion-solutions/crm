@@ -25,14 +25,14 @@ changeAddressTypes (Address a) {
     SHOW dialogAddressTypes;
 }
 
-postcode 'Индекс' = DATA VARISTRING[10] (Address) CHARWIDTH 6;
-region 'Область' = DATA VARISTRING[20] (Address) CHARWIDTH 15;
-district 'Район' = DATA VARISTRING[20] (Address) CHARWIDTH 15;
-locality 'Нас. пункт' = DATA VARISTRING[200] (Address) CHARWIDTH 20 IN id;
-street 'Улица' = DATA VARISTRING[50] (Address) CHARWIDTH 20;
-houseNumber 'Дом' = DATA VARISTRING[20] (Address) CHARWIDTH 6;
-officeNumber 'Офис' = DATA VARISTRING[20] (Address) CHARWIDTH 6;
-extra 'Дополнительно' = DATA VARISTRING[200](Address) CHARWIDTH 20;
+postcode 'Индекс' = DATA ISTRING[10] (Address) CHARWIDTH 6;
+region 'Область' = DATA ISTRING[20] (Address) CHARWIDTH 15;
+district 'Район' = DATA ISTRING[20] (Address) CHARWIDTH 15;
+locality 'Нас. пункт' = DATA ISTRING[200] (Address) CHARWIDTH 20 IN id;
+street 'Улица' = DATA ISTRING[50] (Address) CHARWIDTH 20;
+houseNumber 'Дом' = DATA ISTRING[20] (Address) CHARWIDTH 6;
+officeNumber 'Офис' = DATA ISTRING[20] (Address) CHARWIDTH 6;
+extra 'Дополнительно' = DATA ISTRING[200](Address) CHARWIDTH 20;
 name 'Адрес' (Address a) = CONCAT ', ', locality(a), street(a), 'дом ' + houseNumber(a), 'офис ' + officeNumber(a), extra(a);
 
 FORM addresses 'Адреса'

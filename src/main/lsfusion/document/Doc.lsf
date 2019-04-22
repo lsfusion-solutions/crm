@@ -10,23 +10,23 @@ NAVIGATOR {
 
 CLASS ABSTRACT Document 'Документ';
 
-id 'Код' = ABSTRACT VARSTRING[15] (Document) IN id CHARWIDTH 5;
-number 'Номер' = ABSTRACT VARSTRING[15](Document) IN id CHARWIDTH 10;
+id 'Код' = ABSTRACT STRING[15] (Document) IN id CHARWIDTH 5;
+number 'Номер' = ABSTRACT STRING[15](Document) IN id CHARWIDTH 10;
 date 'Дата' = ABSTRACT DATE (Document) IN id;
-name 'Наименование' = ABSTRACT VARISTRING[150](Document) IN id CHARWIDTH 20;
+name 'Наименование' = ABSTRACT ISTRING[150](Document) IN id CHARWIDTH 20;
 dateSigningCompany 'Дата подписания компанией' = ABSTRACT DATE (Document);
 dateSending 'Дата отправки' = ABSTRACT DATE (Document);
 dateSigningCustomer 'Дата подписания клиентом' = ABSTRACT DATE (Document);
 dateReceiving 'Дата получения' = ABSTRACT DATE (Document);
 dateClosing 'Дата закрытия' = ABSTRACT DATE (Document);
-note 'Примечание' = ABSTRACT VARISTRING[250](Document);
+note 'Примечание' = ABSTRACT ISTRING[250](Document);
 file 'Файл' = ABSTRACT FILE (Document);
 sum 'Сумма' = ABSTRACT NUMERIC[16,5](Document);
 paid 'Оплачено' = ABSTRACT NUMERIC[16,5](Document);
 balance 'Остаток' (Document d) = sum(d) (-) paid(d);
 dateLastPaid 'Дата последней оплаты' = ABSTRACT DATE (Document);
-description 'Описание' = ABSTRACT VARISTRING[250] (Document) CHARWIDTH 25;
-fileName 'Имя файла' = ABSTRACT VARISTRING[250](Document);
+description 'Описание' = ABSTRACT ISTRING[250] (Document) CHARWIDTH 25;
+fileName 'Имя файла' = ABSTRACT ISTRING[250](Document);
 text 'Текст' = ABSTRACT TEXT (Document);
 
 customer = ABSTRACT Customer (Document);
@@ -59,7 +59,7 @@ WHEN LOCAL SET (Document d IS Document) AND NOT date(d) DO {
 CLASS SendingWay 'Способ отправки документа';
 TABLE sendingWay(SendingWay);
 
-name 'Наименование' = DATA VARSTRING[50](SendingWay) CHARWIDTH 15;
+name 'Наименование' = DATA STRING[50](SendingWay) CHARWIDTH 15;
 mail 'Почтой' = DATA BOOLEAN (SendingWay);
 
 FORM contractSendingWay 'Способ отправки документа'
@@ -101,7 +101,7 @@ DESIGN dialogDocuments {
 CLASS ABSTRACT Type 'Тип документа';
 TABLE type(Type);
 
-name 'Наименование' = ABSTRACT VARISTRING[100](Type) CHARWIDTH 15;
+name 'Наименование' = ABSTRACT ISTRING[100](Type) CHARWIDTH 15;
 
 docType = ABSTRACT DocType(Type);
 nameDocType 'Вид документа' (Type t) = name(docType(t));

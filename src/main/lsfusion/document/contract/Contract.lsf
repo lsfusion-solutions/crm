@@ -7,12 +7,12 @@ NAMESPACE Contract;
 CLASS Contract 'Договор' : Document;
 TABLE contract (Contract);
 
-id 'Код' = DATA VARSTRING[15] (Contract) CHARWIDTH 5 IN id;
+id 'Код' = DATA STRING[15] (Contract) CHARWIDTH 5 IN id;
 contract (id) = GROUP AGGR Contract c BY id (c);
 
-name 'Наименование' = DATA VARISTRING[150](Contract) CHARWIDTH 20;
+name 'Наименование' = DATA ISTRING[150](Contract) CHARWIDTH 20;
 series 'Серия' = DATA BPSTRING[2](Contract);
-number 'Номер' = DATA VARSTRING[15](Contract) IN id;
+number 'Номер' = DATA STRING[15](Contract) IN id;
 
 legalEntity = DATA LegalEntity(Contract) NONULL;
 idLegalEntity 'Код организации' (Contract c) = id(legalEntity(c));
@@ -27,12 +27,12 @@ nameCompany 'Компания' (Contract c) = name(company(c)) IN id;
 authorisedPersonLegalEntity = DATA Contact.Contact(Contract);
 idAuthorisedPersonLegalEntity 'Код уп. лица организации' (Contract c) = id(authorisedPersonLegalEntity(c));
 nameAuthorisedPersonLegalEntity 'Уп. лицо организации' (Contract c) = name(authorisedPersonLegalEntity(c));
-authorisedDocumentLegalEntity 'На основании' = DATA VARISTRING[1000](Contract) CHARWIDTH 20;
+authorisedDocumentLegalEntity 'На основании' = DATA ISTRING[1000](Contract) CHARWIDTH 20;
 
 authorisedPersonCompany  (Contract c) = DATA Contact.Contact(Contract);
 idAuthorisedPersonCompany 'Код уп. лица компании' (Contract c) = id(authorisedPersonCompany(c));
 nameAuthorisedPersonCompany 'Уп. лицо компании' (Contract c) = name(authorisedPersonCompany(c));
-authorisedDocumentCompany 'На основании' = DATA VARISTRING[1000](Contract) CHARWIDTH 20;
+authorisedDocumentCompany 'На основании' = DATA ISTRING[1000](Contract) CHARWIDTH 20;
 
 WHEN LOCAL CHANGED (legalEntity(Contract c)) DO {
     authorisedPersonLegalEntity (c) <- authorisedPerson(legalEntity(c));
@@ -75,8 +75,8 @@ WHEN LOCAL (SETCHANGED (sumCurrency(Contract c)) OR CHANGED (currency(c))) AND i
 CLASS ContractType 'Тип договора' : Type;
 TABLE contractType(ContractType);
 
-name 'Наименование' = DATA VARISTRING[50](ContractType) CHARWIDTH 15;
-postfix 'Постфикс' = DATA VARISTRING[5](ContractType);
+name 'Наименование' = DATA ISTRING[50](ContractType) CHARWIDTH 15;
+postfix 'Постфикс' = DATA ISTRING[5](ContractType);
 
 name(ContractType c) += name(c);
 
@@ -116,7 +116,7 @@ WHEN SETCHANGED(numerator(Contract o)) AND
 CLASS ContractGroup 'Группа договоров';
 TABLE contractGroup(ContractGroup);
 
-name 'Наименование' = DATA VARISTRING[50](ContractGroup) CHARWIDTH 15;
+name 'Наименование' = DATA ISTRING[50](ContractGroup) CHARWIDTH 15;
 
 FORM contractGroup 'Группа договоров'
     OBJECTS o = ContractGroup PANEL
@@ -145,9 +145,9 @@ dateSigningCustomer 'Дата подписания клиентом' = DATA DATE
 dateReceiving 'Дата получения' = DATA DATE (Contract);
 dateTo 'Дата окончания' = DATA DATE (Contract);
 dateClosing 'Дата закрытия' = DATA DATE (Contract);
-note 'Примечание' = DATA VARISTRING[100](Contract) CHARWIDTH 20;
+note 'Примечание' = DATA ISTRING[100](Contract) CHARWIDTH 20;
 text 'Текст' = DATA TEXT (Contract);
-textString 'Текст' (Contract c) = VARISTRING[500](text(c)) CHARWIDTH 20;
+textString 'Текст' (Contract c) = ISTRING[500](text(c)) CHARWIDTH 20;
 terms 'Условия' = DATA TEXT (Contract) CHARWIDTH 20;
 
 contract = ABSTRACT Contract (Document);
@@ -177,7 +177,7 @@ inCurrency(Contract c) += inCurrency(c);
 currency(Contract c) += currency(c);
 description(Contract c) += CONCAT ' ', 'Дог.', '№' + number(c), 'от ' + toDateDDMMYY(date(c));
 sendingWay(Contract c) += sendingWay(c);
-fileName(Contract c) += VARISTRING[250] (CONCAT '_', nameLegalEntity(c), 'Договор', number(c), 'от_' + toDateDDMMYY(date(c)));
+fileName(Contract c) += ISTRING[250] (CONCAT '_', nameLegalEntity(c), 'Договор', number(c), 'от_' + toDateDDMMYY(date(c)));
 
 EXTEND CLASS DocType {
     contract 'Договор'

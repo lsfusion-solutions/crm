@@ -7,12 +7,12 @@ NAMESPACE Agreement;
 CLASS Agreement 'Соглашение' : Document;
 TABLE agreement (Agreement);
 
-id 'Код' = DATA VARSTRING[15] (Agreement) INDEXED CHARWIDTH 5 IN id;
+id 'Код' = DATA STRING[15] (Agreement) INDEXED CHARWIDTH 5 IN id;
 agreement (id) = GROUP AGGR Agreement c BY id (c);
 
-name 'Наименование' = DATA VARISTRING[150](Agreement) CHARWIDTH 20;
-series 'Серия' = DATA VARSTRING[15](Agreement) IN id;
-number 'Номер' = DATA VARSTRING[15](Agreement) IN id;
+name 'Наименование' = DATA ISTRING[150](Agreement) CHARWIDTH 20;
+series 'Серия' = DATA STRING[15](Agreement) IN id;
+number 'Номер' = DATA STRING[15](Agreement) IN id;
 
 @defineNumeratedDefault(Agreement, 'Соглашения', 'СГ');
 
@@ -29,12 +29,12 @@ nameCompany 'Компания' (Agreement a) = name(company(a));
 authorisedPersonLegalEntity = DATA Contact.Contact(Agreement);
 idAuthorisedPersonLegalEntity 'Код уп. лица организации' (Agreement c) = id(authorisedPersonLegalEntity(c));
 nameAuthorisedPersonLegalEntity 'Уп. лицо организации' (Agreement c) = name(authorisedPersonLegalEntity(c));
-authorisedDocumentLegalEntity 'На основании' = DATA VARISTRING[1000](Agreement) CHARWIDTH 20;
+authorisedDocumentLegalEntity 'На основании' = DATA ISTRING[1000](Agreement) CHARWIDTH 20;
 
 authorisedPersonCompany  (Agreement c) = DATA Contact.Contact(Agreement);
 idAuthorisedPersonCompany 'Код уп. лица компании' (Agreement c) = id(authorisedPersonCompany(c));
 nameAuthorisedPersonCompany 'Уп. лицо компании' (Agreement c) = name(authorisedPersonCompany(c));
-authorisedDocumentCompany 'На основании' = DATA VARISTRING[1000](Agreement) CHARWIDTH 20;
+authorisedDocumentCompany 'На основании' = DATA ISTRING[1000](Agreement) CHARWIDTH 20;
 
 WHEN LOCAL (CHANGED (legalEntity(Agreement c)) OR CHANGED (contract(c))) AND NOT CHANGED (authorisedPersonLegalEntity(c)) DO {
     authorisedPersonLegalEntity (c) <- OVERRIDE authorisedPersonLegalEntity(contract(c)), authorisedPerson(legalEntity(c));
@@ -62,7 +62,7 @@ date 'Дата' = DATA DATE (Agreement) IN id;
 CLASS AgreementType 'Тип соглашения' : Type;
 TABLE agreementType(AgreementType);
 
-name 'Наименование' = DATA VARISTRING[50](AgreementType) CHARWIDTH 15;
+name 'Наименование' = DATA ISTRING[50](AgreementType) CHARWIDTH 15;
 
 name(AgreementType c) += name(c);
 
@@ -94,9 +94,9 @@ dateClosing 'Дата закрытия' = DATA DATE (Agreement);
 
 active (Agreement c) = NOT dateClosing(c) <= currentDate();
 
-note 'Примечание' = DATA VARISTRING[100](Agreement) CHARWIDTH 20;
+note 'Примечание' = DATA ISTRING[100](Agreement) CHARWIDTH 20;
 text 'Текст' = DATA TEXT (Agreement);
-textString 'Текст' (Agreement c) = VARISTRING[500](text(c)) CHARWIDTH 20;
+textString 'Текст' (Agreement c) = ISTRING[500](text(c)) CHARWIDTH 20;
 terms 'Условия' = DATA TEXT (Agreement) CHARWIDTH 20;
 
 sendingWay = DATA SendingWay(Agreement);
@@ -121,7 +121,7 @@ contract(Agreement a) += contract(a);
 sum(Agreement c) += sum(c);
 description(Agreement c) += CONCAT ' ', 'Согл.', '№' + number(c), 'от ' + toDateDDMMYY(date(c)), 'по дог.', '№' + number(contract(c)), 'от ' + toDateDDMMYY(date(contract(c)));
 sendingWay(Agreement c) += sendingWay(c);
-fileName(Agreement c) += VARISTRING[250] (CONCAT '_', nameLegalEntity(c), 'Соглашение', number(c), 'от_' + toDateDDMMYY(date(c)));
+fileName(Agreement c) += ISTRING[250] (CONCAT '_', nameLegalEntity(c), 'Соглашение', number(c), 'от_' + toDateDDMMYY(date(c)));
 
 EXTEND CLASS DocType {
     agreement 'Соглашение'
@@ -277,5 +277,5 @@ DESIGN contract {
 }
 
 WHEN SET (Agreement a IS Agreement) AND NOT number(a) DO {  
-    number(a) <- VARISTRING[15] (INTEGER ([GROUP MAX number(Agreement ag) BY contract(ag)](contract(a))) (+) 1); 
+    number(a) <- ISTRING[15] (INTEGER ([GROUP MAX number(Agreement ag) BY contract(ag)](contract(a))) (+) 1); 
 }

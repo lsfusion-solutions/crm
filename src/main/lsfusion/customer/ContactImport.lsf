@@ -6,28 +6,28 @@ NAMESPACE Contact;
 
 importContacts (FILE f) {
     
-    LOCAL idContact = VARSTRING[15](INTEGER);
-    LOCAL idCustomer = VARSTRING[15](INTEGER);
-    LOCAL idLegalEntity = VARSTRING[15](INTEGER);
-    LOCAL name1 = VARSTRING[100](INTEGER);
-    LOCAL name2 = VARSTRING[100](INTEGER);
-    LOCAL name3 = VARSTRING[100](INTEGER);
-    LOCAL position = VARSTRING[100](INTEGER);
-    LOCAL email = VARSTRING[100](INTEGER);
-    LOCAL phone1 = VARSTRING[100](INTEGER);
-    LOCAL phone2 = VARSTRING[30](INTEGER);
-    LOCAL phone3 = VARSTRING[30](INTEGER);
-    LOCAL phone4 = VARSTRING[30](INTEGER);
-    LOCAL phone5 = VARSTRING[30](INTEGER);
-    LOCAL phone6 = VARSTRING[30](INTEGER);
-    LOCAL skype = VARSTRING[50](INTEGER);
-    LOCAL note = VARSTRING[100](INTEGER);
-    LOCAL authorised = VARISTRING[1000](INTEGER);
+    LOCAL idContact = STRING[15](INTEGER);
+    LOCAL idCustomer = STRING[15](INTEGER);
+    LOCAL idLegalEntity = STRING[15](INTEGER);
+    LOCAL name1 = STRING[100](INTEGER);
+    LOCAL name2 = STRING[100](INTEGER);
+    LOCAL name3 = STRING[100](INTEGER);
+    LOCAL position = STRING[100](INTEGER);
+    LOCAL email = STRING[100](INTEGER);
+    LOCAL phone1 = STRING[100](INTEGER);
+    LOCAL phone2 = STRING[30](INTEGER);
+    LOCAL phone3 = STRING[30](INTEGER);
+    LOCAL phone4 = STRING[30](INTEGER);
+    LOCAL phone5 = STRING[30](INTEGER);
+    LOCAL phone6 = STRING[30](INTEGER);
+    LOCAL skype = STRING[50](INTEGER);
+    LOCAL note = STRING[100](INTEGER);
+    LOCAL authorised = ISTRING[1000](INTEGER);
     
     IMPORT XLS NOHEADER FROM f TO idContact = B, idCustomer, idLegalEntity, name1, name2, name3, position, email, skype, 
                                   note, authorised, phone1, phone2, phone3, phone4, phone5, phone6;
 
-    FOR INTEGER i = [GROUP MIN INTEGER ii IF ii > 1 BY trim(idContact(ii))](VARSTRING[15] id) AND id AND NOT contact(id) AND customer(trim(idCustomer(i))) DO NEW c = Contact {
+    FOR INTEGER i = [GROUP MIN INTEGER ii IF ii > 1 BY trim(idContact(ii))](STRING[15] id) AND id AND NOT contact(id) AND customer(trim(idCustomer(i))) DO NEW c = Contact {
         id(c) <- id;
     }
     
@@ -47,7 +47,7 @@ importContacts (FILE f) {
         name(t) <- trim(phone6(1));
     }
     
-    FOR [GROUP SUM 1 BY trim(position(INTEGER i))](VARSTRING[100] pos) AND pos != '' AND NOT (GROUP MAX Position p IF name(p) == pos) DO NEW p = Position {
+    FOR [GROUP SUM 1 BY trim(position(INTEGER i))](STRING[100] pos) AND pos != '' AND NOT (GROUP MAX Position p IF name(p) == pos) DO NEW p = Position {
         name(p) <- pos;
     }
     

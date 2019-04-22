@@ -1,6 +1,6 @@
 MODULE Import;
 
-documentPath 'Путь к папке с документами' = DATA VARSTRING[250]();
+documentPath 'Путь к папке с документами' = DATA STRING[250]();
 
 EXTEND FORM migrationData PROPERTIES() documentPath;
 

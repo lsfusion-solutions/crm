@@ -22,10 +22,10 @@ background = ABSTRACT CASE COLOR (TemplateEntry);
 backgroundValue (TemplateEntry te) = CASE WHEN required(te) THEN RGB (255, 235, 235)
                                                    WHEN NOT required(te) THEN background(te);
 
-valueString 'Значение' (TemplateEntry te) = VARISTRING[1000] (value(te)) CHARWIDTH 20;
+valueString 'Значение' (TemplateEntry te) = ISTRING[1000] (value(te)) CHARWIDTH 20;
 
 changeTextTemplateEntry (TemplateEntry te) {
-    INPUT t = VARISTRING[1000] DO {
+    INPUT t = ISTRING[1000] DO {
         value(te) <- t;
     }
 }
@@ -81,8 +81,8 @@ upperFirstChar (TEXT t) = upper(left(t, 1)) + right(t, length(t)-1);
 
 toCharRus (NUMERIC[18,2] n) = replace(replace(TEXT (round2(n)), ',', ' '), '.', ',');
 numSpelled = FORMULA TEXT 'num_spelled($1,$2,string_to_array($3,\',\'),$4,string_to_array($5,\',\'),$6)';
-numSpelledRouble (NUMERIC[14,2] number, VARSTRING[10] decFormat) = upperFirstChar(numSpelled(number, 'M', 'рубль,рубля,рублей', 'F', 'копейка,копейки,копеек', decFormat));
-numSpelledCurrency (NUMERIC[14,2] number, VARSTRING[10] decFormat, Currency c) = upperFirstChar(numSpelled(number, 'M', nameWord(c), 'F', nameCoinsWord(c), decFormat));
+numSpelledRouble (NUMERIC[14,2] number, STRING[10] decFormat) = upperFirstChar(numSpelled(number, 'M', 'рубль,рубля,рублей', 'F', 'копейка,копейки,копеек', decFormat));
+numSpelledCurrency (NUMERIC[14,2] number, STRING[10] decFormat, Currency c) = upperFirstChar(numSpelled(number, 'M', nameWord(c), 'F', nameCoinsWord(c), decFormat));
 
 // Копирование шаблона
 

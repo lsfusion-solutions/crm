@@ -4,7 +4,7 @@ REQUIRE PaymentAct;
 
 NAMESPACE Payment;
 
-payment (VARSTRING[15] idLegalEntity, DATE d, NUMERIC[16,5] sum) = GROUP MAX Payment p BY idLegalEntity(p), date(p), sum(p);
+payment (STRING[15] idLegalEntity, DATE d, NUMERIC[16,5] sum) = GROUP MAX Payment p BY idLegalEntity(p), date(p), sum(p);
 
 lines = DATA LOCAL BOOLEAN ();
 
@@ -13,20 +13,20 @@ upperNameType (Contract c) = upper(nameType(c)) MATERIALIZED;
 INDEX legalEntity(Contract c), upperNameType(c), date(c), c;
 
 importPayments 'Импорт платежей' (FILE f) {
-    LOCAL idPayment = VARSTRING[15](INTEGER);
-    LOCAL idCompany = VARSTRING[15](INTEGER);
-    LOCAL idLegalEntity = VARSTRING[15](INTEGER);
-    LOCAL idContract = VARSTRING[15](INTEGER);
-    LOCAL type = VARSTRING[50](INTEGER);
-    LOCAL idAgreement = VARSTRING[15](INTEGER);
-    LOCAL idAct = VARSTRING[15](INTEGER);
-    LOCAL number = VARSTRING[15](INTEGER);
+    LOCAL idPayment = STRING[15](INTEGER);
+    LOCAL idCompany = STRING[15](INTEGER);
+    LOCAL idLegalEntity = STRING[15](INTEGER);
+    LOCAL idContract = STRING[15](INTEGER);
+    LOCAL type = STRING[50](INTEGER);
+    LOCAL idAgreement = STRING[15](INTEGER);
+    LOCAL idAct = STRING[15](INTEGER);
+    LOCAL number = STRING[15](INTEGER);
     LOCAL date = DATE (INTEGER);
     LOCAL sum = NUMERIC[16,5] (INTEGER);
-    LOCAL currency = VARSTRING[100](INTEGER);
-    LOCAL note = VARSTRING[100](INTEGER);
+    LOCAL currency = STRING[100](INTEGER);
+    LOCAL note = STRING[100](INTEGER);
     LOCAL contract = Contract(INTEGER);
-    LOCAL message = VARSTRING[2000] ();
+    LOCAL message = STRING[2000] ();
     LOCAL count = INTEGER ();
     
     IMPORT XLS NOHEADER FROM f TO idPayment = B, idCompany, idLegalEntity, idContract, idAgreement, idAct, type, number, date, sum, currency, note;
@@ -60,7 +60,7 @@ importPayments 'Импорт платежей' (FILE f) {
         MESSAGE CONCAT ' ', 'Неимпортированные платежи, для которых не найдена компания: ', count(), message();
     }  
     
-    FOR [GROUP SUM 1 IF INTEGER i > 1 BY trim(type(i))](VARSTRING[50] type) AND type != '' 
+    FOR [GROUP SUM 1 IF INTEGER i > 1 BY trim(type(i))](STRING[50] type) AND type != '' 
         AND NOT (GROUP MAX PaymentType t IF upper(name(t)) == upper(type)) DO NEW t = PaymentType {
         
         name(t) <- type; 
@@ -68,7 +68,7 @@ importPayments 'Импорт платежей' (FILE f) {
         
     IF NOT lines() THEN {
         
-//        FOR [GROUP SUM 1 IF INTEGER i > 0 AND contract(i) BY trim(idLegalEntity(i)), date(i), sum(i)](VARSTRING[15] id, DATE date, NUMERIC[16,5] sum) 
+//        FOR [GROUP SUM 1 IF INTEGER i > 0 AND contract(i) BY trim(idLegalEntity(i)), date(i), sum(i)](STRING[15] id, DATE date, NUMERIC[16,5] sum) 
 //            AND id != '' AND NOT payment(id, date, sum) DO NEW p = Payment {
 //            
 //            legalEntity(p) <- legalEntity(id);

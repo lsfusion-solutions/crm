@@ -82,13 +82,13 @@ NAVIGATOR {
 
 importPaymentsDbf 'Импорт платежей (dbf)' (DATE df, DATE dt) {
     
-    LOCAL idLegalEntity = VARSTRING[15](INTEGER);
+    LOCAL idLegalEntity = STRING[15](INTEGER);
     LOCAL date = DATE (INTEGER);
     LOCAL text = TEXT (INTEGER);
     LOCAL sum = NUMERIC[16,5](INTEGER);
-    LOCAL type = VARSTRING[15](INTEGER);
-    LOCAL idCompany = VARSTRING[15](INTEGER);
-    LOCAL message = VARSTRING[2000] ();
+    LOCAL type = STRING[15](INTEGER);
+    LOCAL idCompany = STRING[15](INTEGER);
+    LOCAL message = STRING[2000] ();
     LOCAL count = INTEGER ();
     
     message() <- '';
@@ -114,11 +114,11 @@ importPaymentsDbf 'Импорт платежей (dbf)' (DATE df, DATE dt) {
             MESSAGE CONCAT ' ', 'Платежи, для которых не найдена организация: ', count(), message();
         }
         
-        FOR [GROUP SUM 1 IF sum(INTEGER i) < 0 AND expense(i) BY type(i)](VARSTRING[15] type) AND type != '' AND NOT (GROUP MAX ExpenseType t IF name(t) == type) DO NEW t = ExpenseType {
+        FOR [GROUP SUM 1 IF sum(INTEGER i) < 0 AND expense(i) BY type(i)](STRING[15] type) AND type != '' AND NOT (GROUP MAX ExpenseType t IF name(t) == type) DO NEW t = ExpenseType {
             name(t) <- type;
         }
                 
-        FOR [GROUP SUM 1 IF sum(INTEGER i) > 0 AND payment(i) BY type(i)](VARSTRING[15] type) AND type != '' AND NOT (GROUP MAX PaymentType t IF name(t) == type) DO NEW t = PaymentType {
+        FOR [GROUP SUM 1 IF sum(INTEGER i) > 0 AND payment(i) BY type(i)](STRING[15] type) AND type != '' AND NOT (GROUP MAX PaymentType t IF name(t) == type) DO NEW t = PaymentType {
             name(t) <- type;
         }
         
@@ -165,12 +165,12 @@ receipt 'Приход' (DATE d) = GROUP SUM sum(Payment p) BY date(p);
 shipment 'Расход' (DATE d) = GROUP SUM sum(Expense e) BY date(e);
 
     
-idLegalEntity = DATA LOCAL VARSTRING[15](INTEGER);
+idLegalEntity = DATA LOCAL STRING[15](INTEGER);
 date 'Дата' = DATA LOCAL DATE (INTEGER);
-text 'Текст' = DATA LOCAL VARISTRING[1000] (INTEGER) CHARWIDTH 20;
+text 'Текст' = DATA LOCAL ISTRING[1000] (INTEGER) CHARWIDTH 20;
 sum 'Сумма' = DATA LOCAL NUMERIC[16,5](INTEGER);
-type 'Тип' = DATA LOCAL VARSTRING[15](INTEGER);
-idCompany = DATA LOCAL VARSTRING[15](INTEGER);
+type 'Тип' = DATA LOCAL STRING[15](INTEGER);
+idCompany = DATA LOCAL STRING[15](INTEGER);
 legalEntity = DATA LOCAL LegalEntity(INTEGER);
 company = DATA LOCAL LegalEntity(INTEGER);
     

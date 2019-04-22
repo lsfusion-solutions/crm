@@ -27,12 +27,12 @@ TABLE taskTemplate(TaskTemplate);
 
 in 'Вкл.' = DATA BOOLEAN (Type, TaskTemplate);
 
-name 'Наименование' = DATA VARISTRING[100] (TaskTemplate) CHARWIDTH 20;
+name 'Наименование' = DATA ISTRING[100] (TaskTemplate) CHARWIDTH 20;
 
 tracker = DATA Tracker(TaskTemplate);
 nameTracker 'Трекер' (TaskTemplate t) = name(tracker(t));
 
-subject 'Тема' = DATA VARISTRING[100](TaskTemplate) CHARWIDTH 20;
+subject 'Тема' = DATA ISTRING[100](TaskTemplate) CHARWIDTH 20;
 
 author = DATA Employee(TaskTemplate);
 nameAuthor 'Автор' (TaskTemplate t) = name(author(t));

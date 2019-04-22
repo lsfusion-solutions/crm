@@ -7,10 +7,10 @@ NAMESPACE Employee;
 importEmployeeExpense 'Импорт расходов по сотрудникам' () {
     
     NEWSESSION {
-        LOCAL number = VARSTRING[15] (INTEGER);
+        LOCAL number = STRING[15] (INTEGER);
         LOCAL year = INTEGER (INTEGER);
         LOCAL month = INTEGER (INTEGER);
-        LOCAL type = VARSTRING[100](INTEGER);
+        LOCAL type = STRING[100](INTEGER);
         LOCAL sum = NUMERIC[18,4](INTEGER);
         LOCAL expense = Expense(INTEGER);
         
@@ -23,7 +23,7 @@ importEmployeeExpense 'Импорт расходов по сотрудникам
             month(INTEGER i) <- INTEGER(getWord(yearMonth(i), ' ', 1));
             year(INTEGER i) <- INTEGER(getWord(yearMonth(i), ' ', 2));
           
-            FOR [GROUP MIN INTEGER i IF employeeNumber(number(i)) BY type(i)](VARSTRING[15] name) 
+            FOR [GROUP MIN INTEGER i IF employeeNumber(number(i)) BY type(i)](STRING[15] name) 
                 AND NOT [GROUP MAX ExpenseType t BY name(t)](name) DO NEW t = ExpenseType {
                 
                 name(t) <- name;

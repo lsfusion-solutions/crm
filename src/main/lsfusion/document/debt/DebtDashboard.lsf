@@ -28,17 +28,17 @@ DESIGN contract {
 }
 
 created = DATA LOCAL BOOLEAN (Act);
-text 'Значение' = DATA LOCAL TEXT (VARISTRING[100]);
-in (VARISTRING[100] key) = GROUP SUM 1 IF required(TemplateEntry te) AND [GROUP SUM 1 IF created(Act a) BY actTemplate(contract(a))](template(te)) BY key(te);
+text 'Значение' = DATA LOCAL TEXT (ISTRING[100]);
+in (ISTRING[100] key) = GROUP SUM 1 IF required(TemplateEntry te) AND [GROUP SUM 1 IF created(Act a) BY actTemplate(contract(a))](template(te)) BY key(te);
 
 createActFiles 'Сформировать' (DATE dd, DATE df, DATE dt) {
-    IF NOT (GROUP SUM 1 IF in(VARISTRING[100] key) AND NOT text(key)) THEN {
+    IF NOT (GROUP SUM 1 IF in(ISTRING[100] key) AND NOT text(key)) THEN {
         FOR created(Act a) DO {
             date(a) <- dd;
             fromDate(a) <- df;
             toDate(a) <- dt;
             createActTemplate(a, actTemplate(contract(a)));
-            FOR in(VARISTRING[100] key) AND text(key) DO {
+            FOR in(ISTRING[100] key) AND text(key) DO {
                 value(TemplateEntry d) <- text(key) WHERE key(d) = key AND template(d) == actTemplate(contract(a));
             }
             resultTemplate() <- NULL;
@@ -59,7 +59,7 @@ createActFiles 'Сформировать' (DATE dd, DATE df, DATE dt) {
 FORM requiredTemplateEntries 'Обязательные поля'
     OBJECTS dates = (d = DATE, df = DATE, dt = DATE) PANEL 
     PROPERTIES dd 'Дата акта' = VALUE (d), ddf 'Дата с' = VALUE (df), ddt 'Дата по' = VALUE (dt)
-    OBJECTS t = VARISTRING[100]
+    OBJECTS t = ISTRING[100]
     PROPERTIES (t) 'Параметр' = VALUE READONLY, text
     FILTERS in(t)
     PROPERTIES createActFiles(d, df, dt)
@@ -105,7 +105,7 @@ createActs 'Создать акты' () {
             agreement(a) <- ag;
             date(a) <- currentDate();
             sum(a) <- GROUP SUM sum(Debt d) IF in(d) AND act(d) == a;
-            number(a) <- VARISTRING[15] ([GROUP MAX INTEGER(number(Act ac)) BY contract(ac), year(ac)](contract(a), year(a)) (+) 1); 
+            number(a) <- ISTRING[15] ([GROUP MAX INTEGER(number(Act ac)) BY contract(ac), year(ac)](contract(a), year(a)) (+) 1); 
             type(a) <- actType(type(c));
             IF copy() THEN {
                 name(a) <- OVERRIDE name(ag), name(c);
@@ -119,7 +119,7 @@ createActs 'Создать акты' () {
             contract(a) <- c;
             date(a) <- currentDate();
             sum(a) <- GROUP SUM sum(Debt d) IF in(d) AND act(d) == a;
-            number(a) <- VARISTRING[15] ([GROUP MAX INTEGER(number(Act ac)) BY contract(ac), year(ac)](contract(a), year(a)) (+) 1); 
+            number(a) <- ISTRING[15] ([GROUP MAX INTEGER(number(Act ac)) BY contract(ac), year(ac)](contract(a), year(a)) (+) 1); 
             type(a) <- actType(type(c));
             IF copy() THEN {
                 name(a) <- name(c);
@@ -137,9 +137,9 @@ createActs 'Создать акты' () {
 }
 
 createActZip 'Выгрузить акты в zip' () {
-    zipping(VARSTRING[100] f) <- NULL;
+    zipping(STRING[100] f) <- NULL;
     FOR [GROUP SUM 1 IF in(Debt d) BY act(d)](Act a) DO {
-        zipping(VARSTRING[100] f) <- file(a) WHERE f == fileName(a) + '.doc';
+        zipping(STRING[100] f) <- file(a) WHERE f == fileName(a) + '.doc';
     }
     makeZipFile();
     open(zipped(),'archive');

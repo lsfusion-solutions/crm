@@ -7,10 +7,10 @@ NAMESPACE Project;
 CLASS Project 'Проект';
 TABLE project (Project);
 
-id 'Код' = DATA VARSTRING[15] (Project) INDEXED CHARWIDTH 5 IN id;
+id 'Код' = DATA STRING[15] (Project) INDEXED CHARWIDTH 5 IN id;
 
-name 'Наименование' = DATA VARISTRING[100] (Project) CHARWIDTH 15 IN id;
-identifier 'Идентификатор' = DATA VARISTRING[100] (Project) CHARWIDTH 15 IN id;
+name 'Наименование' = DATA ISTRING[100] (Project) CHARWIDTH 15 IN id;
+identifier 'Идентификатор' = DATA ISTRING[100] (Project) CHARWIDTH 15 IN id;
 
 customer = DATA Customer(Project);
 nameCustomer 'Клиент' (Project p) = name(customer(p));

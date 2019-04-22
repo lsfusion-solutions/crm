@@ -5,15 +5,15 @@ REQUIRE CustomerAttachment, Import;
 NAMESPACE Customer;
 
 importAttachments 'Импорт документов клиентов' (FILE f) {
-    LOCAL idAttachment = VARSTRING[15](INTEGER);
-    LOCAL idCustomer = VARSTRING[15](INTEGER);
-    LOCAL number = VARSTRING[15](INTEGER);
+    LOCAL idAttachment = STRING[15](INTEGER);
+    LOCAL idCustomer = STRING[15](INTEGER);
+    LOCAL number = STRING[15](INTEGER);
     LOCAL date = DATE (INTEGER);
-    LOCAL type = VARSTRING[100](INTEGER);
-    LOCAL note = VARSTRING[250](INTEGER);
-    LOCAL idEmployee = VARSTRING[15](INTEGER);
+    LOCAL type = STRING[100](INTEGER);
+    LOCAL note = STRING[250](INTEGER);
+    LOCAL idEmployee = STRING[15](INTEGER);
     LOCAL dateCreated = DATE (INTEGER);
-    LOCAL message = VARSTRING[2000] ();
+    LOCAL message = STRING[2000] ();
     LOCAL count = INTEGER ();
 
     message() <- '';
@@ -31,11 +31,11 @@ importAttachments 'Импорт документов клиентов' (FILE f) 
         MESSAGE CONCAT ' ', 'Неимпортированные документы, для которых не найден клиент: ', count(), message();
     }
 
-    FOR [GROUP SUM 1 IF INTEGER i > 1 AND customer(idCustomer(i)) BY idAttachment(i)](VARSTRING[15] id) AND id != '' AND NOT attachment(id) DO NEW c = Attachment {
+    FOR [GROUP SUM 1 IF INTEGER i > 1 AND customer(idCustomer(i)) BY idAttachment(i)](STRING[15] id) AND id != '' AND NOT attachment(id) DO NEW c = Attachment {
         id(c) <- id;
     }
 
-    FOR [GROUP SUM 1 IF INTEGER i > 1 BY trim(type(i))](VARSTRING[50] type) AND type != '' 
+    FOR [GROUP SUM 1 IF INTEGER i > 1 BY trim(type(i))](STRING[50] type) AND type != '' 
         AND NOT (GROUP MAX AttachmentType t IF upper(name(t)) == upper(type)) DO NEW t = AttachmentType {
 
         name(t) <- type; 
@@ -82,8 +82,8 @@ EXTEND FORM migrationData PROPERTIES() exportAttachments;
 importAttachmentDocumentsXls 'Импорт документов клиентов' () {
 
     NEWSESSION {
-        LOCAL id = VARSTRING[15](INTEGER);
-        LOCAL path = VARSTRING[250](INTEGER);
+        LOCAL id = STRING[15](INTEGER);
+        LOCAL path = STRING[250](INTEGER);
         LOCAL file = FILE();
 
         INPUT f = FILE DO {

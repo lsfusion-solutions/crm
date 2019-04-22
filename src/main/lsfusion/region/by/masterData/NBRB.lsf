@@ -14,11 +14,11 @@ importNBRBExchangeRateDateTo 'Дата по' = DATA DATE () IN nbrb;
 
 importNBRBExchangeRateDaysCount 'Кол-во дней' = DATA INTEGER() IN nbrb;
 
-cur_Abbreviation = DATA LOCAL VARSTRING[255] (INTEGER);
+cur_Abbreviation = DATA LOCAL STRING[255] (INTEGER);
 cur_ID = DATA LOCAL INTEGER (INTEGER);
 cur_Scale = DATA LOCAL INTEGER (INTEGER);
 cur_OfficialRate = DATA LOCAL NUMERIC[20,13](INTEGER);
-dateTime = DATA LOCAL VARSTRING[255] (INTEGER );
+dateTime = DATA LOCAL STRING[255] (INTEGER );
 
 importNBRBExchangeRate 'Импортировать курсы НБРБ за период'(DATE dateFrom, DATE dateTo)  { 
     LOCAL result = FILE();
@@ -31,10 +31,10 @@ importNBRBExchangeRate 'Импортировать курсы НБРБ за пе
         }
         FOR cur_Abbreviation(INTEGER i) = shortName(c) DO{
             LOCAL result2 = FILE();
-            LOCAL aaa = VARSTRING[255]();
+            LOCAL aaa = STRING[255]();
             EXTERNAL HTTP GET 'http://www.nbrb.by/API/ExRates/Rates/Dynamics/' + cur_ID(i)
-                                                  + '?startDate=' + [FORMULA VARSTRING[20] 'to_char(($1),\'MM/DD/YYYY\')'](dateFrom) 
-                                                  + '&endDate=' +  [FORMULA VARSTRING[20] 'to_char(($1),\'MM/DD/YYYY\')'](dateTo) TO result2;
+                                                  + '?startDate=' + [FORMULA STRING[20] 'to_char(($1),\'MM/DD/YYYY\')'](dateFrom) 
+                                                  + '&endDate=' +  [FORMULA STRING[20] 'to_char(($1),\'MM/DD/YYYY\')'](dateTo) TO result2;
             cur_OfficialRate(INTEGER j) <- NULL;
             IMPORT JSON FROM result2() TO cur_OfficialRate = Cur_OfficialRate, dateTime = Date;
             FOR cur_OfficialRate(INTEGER j) AND DATE date1 = DATE(getWord(dateTime(j), 'T', 1)) DO {

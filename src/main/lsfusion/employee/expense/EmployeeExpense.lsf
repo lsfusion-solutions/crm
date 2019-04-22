@@ -19,7 +19,7 @@ sum 'Сумма' = DATA NUMERIC[18,4](Expense);
 CLASS ExpenseType 'Тип расхода';
 TABLE expenseType (ExpenseType);
 
-name 'Наименование' = DATA VARISTRING[100] (ExpenseType) CHARWIDTH 15;
+name 'Наименование' = DATA ISTRING[100] (ExpenseType) CHARWIDTH 15;
 percent 'Процент потерь, %' = DATA NUMERIC[5,2](ExpenseType);
 
 FORM expenseType 'Тип расхода'

@@ -8,12 +8,12 @@ CLASS External 'Внешняя система';
 TABLE external (External);
 
 
-id 'Код' = DATA VARSTRING[15] (External) INDEXED CHARWIDTH 5 IN id;
+id 'Код' = DATA STRING[15] (External) INDEXED CHARWIDTH 5 IN id;
 external (id) = GROUP AGGR External p BY id (p);
 
-name 'Наименование' = DATA VARISTRING[100] (External) CHARWIDTH 20;
-url 'Url' = DATA VARSTRING[100] (External) CHARWIDTH 30;
-path 'Строка подключения' = DATA VARISTRING[250] (External) CHARWIDTH 100;
+name 'Наименование' = DATA ISTRING[100] (External) CHARWIDTH 20;
+url 'Url' = DATA STRING[100] (External) CHARWIDTH 30;
+path 'Строка подключения' = DATA ISTRING[250] (External) CHARWIDTH 100;
 
 FORM external 'Внешняя система'
     OBJECTS o = External PANEL

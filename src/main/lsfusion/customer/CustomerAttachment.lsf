@@ -7,12 +7,12 @@ NAMESPACE Customer;
 CLASS Attachment 'Документ клиента';
 TABLE attachment (Attachment);
 
-id 'Код' = DATA VARSTRING[15] (Attachment) CHARWIDTH 5 IN id;
+id 'Код' = DATA STRING[15] (Attachment) CHARWIDTH 5 IN id;
 attachment (id) = GROUP AGGR Attachment c BY id (c);
 
-number 'Номер' = DATA VARISTRING[100] (Attachment) CHARWIDTH 15;
+number 'Номер' = DATA ISTRING[100] (Attachment) CHARWIDTH 15;
 date 'Дата' = DATA DATE (Attachment);
-note 'Примечание' = DATA VARISTRING[250] (Attachment) CHARWIDTH 20;
+note 'Примечание' = DATA ISTRING[250] (Attachment) CHARWIDTH 20;
 
 createdUser = DATA Employee(Attachment);
 idCreatedUser 'Код Создан пользователем' (Attachment a) = id(createdUser(a));
@@ -29,7 +29,7 @@ nameCustomer 'Клиент' (Attachment a) = name(customer(a));
 CLASS AttachmentType 'Тип предложения';
 TABLE attachmentType (AttachmentType);
 
-name 'Наименование' = DATA VARISTRING[100] (AttachmentType) CHARWIDTH 20;
+name 'Наименование' = DATA ISTRING[100] (AttachmentType) CHARWIDTH 20;
 
 FORM attachmentType 'Тип предложения'
     OBJECTS o = AttachmentType PANEL

@@ -7,7 +7,7 @@ NAMESPACE Project;
 CLASS Tracker 'Трекер';
 TABLE tracker (Tracker);
 
-name 'Наименование' = DATA VARISTRING[100] (Tracker) CHARWIDTH 15 IN id;
+name 'Наименование' = DATA ISTRING[100] (Tracker) CHARWIDTH 15 IN id;
 tracker = GROUP AGGR Tracker p BY name (p);
 
 FORM tracker 'Трекер'
@@ -33,7 +33,7 @@ FORM dialogTrackers 'Трекеры'
 CLASS IssueStatus 'Статус задачи';
 TABLE issueStatus (IssueStatus);
 
-name 'Наименование' = DATA VARISTRING[100] (IssueStatus) CHARWIDTH 15 IN id;
+name 'Наименование' = DATA ISTRING[100] (IssueStatus) CHARWIDTH 15 IN id;
 issueStatus = GROUP AGGR IssueStatus p BY name (p);
 isClosed 'Закрыта' = DATA BOOLEAN (IssueStatus);
 order 'Порядок' = DATA INTEGER (IssueStatus);
@@ -63,12 +63,12 @@ FORM dialogIssueStatuses 'Статусы задачи'
 CLASS Issue 'Задача';
 TABLE issue (Issue);
 
-id 'Код' = DATA VARSTRING[15] (Issue) INDEXED CHARWIDTH 5 IN id;
+id 'Код' = DATA STRING[15] (Issue) INDEXED CHARWIDTH 5 IN id;
 number 'Номер' (Issue s) = INTEGER (id(s)) CHARWIDTH 5;
 
-name 'Тема' = DATA VARISTRING[500] (Issue) CHARWIDTH 30;
+name 'Тема' = DATA ISTRING[500] (Issue) CHARWIDTH 30;
 description 'Описание' = DATA TEXT (Issue);
-descriptionString 'Описание' (Issue i) = VARISTRING[1000](description(i)) CHARWIDTH 30;
+descriptionString 'Описание' (Issue i) = ISTRING[1000](description(i)) CHARWIDTH 30;
 dateTo 'Дата завершения' = DATA DATE (Issue);
 dateTimeCreated 'Дата/время создания' = DATA DATETIME (Issue);
 dateTimeUpdated 'Дата/время обновления' = DATA DATETIME (Issue);

@@ -20,7 +20,7 @@ nameCustomer 'Клиент' (Expense e) = name(customer(legalEntity(e)));
 CLASS ExpenseType 'Вид оплаты';
 TABLE expenseType (ExpenseType);
 
-name 'Наименование' = DATA VARISTRING[100] (ExpenseType) CHARWIDTH 8;
+name 'Наименование' = DATA ISTRING[100] (ExpenseType) CHARWIDTH 8;
 skipExpense 'Не учитывать в расходах' = DATA BOOLEAN (ExpenseType);
 
 FORM expenseType 'Вид оплаты'
@@ -51,7 +51,7 @@ sidCurrency 'Валюта' (Expense e) = sid(currency(e));
 sumCurrency 'Сумма в валюте' (Expense e) = round2(sum(e) * OVERRIDE (rateOn(defaultTypeExchange(), currency(e), date(e))), 1);
 
 note 'Примечание' = DATA TEXT (Expense);
-noteString 'Примечание' (Expense e) = VARISTRING[1000](note(e)) CHARWIDTH 20;
+noteString 'Примечание' (Expense e) = ISTRING[1000](note(e)) CHARWIDTH 20;
 
 account = DATA Account(Expense);
 numberAccount 'Р/с' (Expense p) = number(account(p)) CHARWIDTH 10;
@@ -72,12 +72,12 @@ expenseAccountLedger = AGGR ExpenseAccountLedger WHERE accountTo(Expense expense
 
 date(ExpenseAccountLedger a) += date(expense(a)); 
 sum(ExpenseAccountLedger a) += sum(expense(a)); 
-note(ExpenseAccountLedger a) += VARISTRING[250] (note(expense(a)));
+note(ExpenseAccountLedger a) += ISTRING[250] (note(expense(a)));
 account(ExpenseAccountLedger a) += accountTo(expense(a)); 
 
 date(Expense p) += date(p);
 sum(Expense p) += -sum(p);
-note(Expense p) += VARISTRING[250] (note(p));
+note(Expense p) += ISTRING[250] (note(p));
 account(Expense p) += account(p);
 
 FORM expense 'Расход'

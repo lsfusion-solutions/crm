@@ -7,7 +7,7 @@ NAMESPACE Payment;
 CLASS Payment 'Платёж' : AccountLedger;
 TABLE payment (Payment);
 
-id 'Код' = DATA VARSTRING[15] (Payment) INDEXED CHARWIDTH 5 IN id;
+id 'Код' = DATA STRING[15] (Payment) INDEXED CHARWIDTH 5 IN id;
 payment (id) = GROUP AGGR Payment c BY id (c);
 
 legalEntity 'Организация' = DATA LegalEntity(Payment) NONULL;
@@ -22,17 +22,17 @@ nameCompany 'Компания' (Payment p) = name(company(p)) IN id;
 
 CONSTRAINT company(Payment p) AND NOT isCompany(company(p)) CHECKED BY company[Payment] MESSAGE 'Компания платежа не является компанией';
 
-number 'Номер документа оплаты' = DATA VARSTRING[15](Payment) IN id;
+number 'Номер документа оплаты' = DATA STRING[15](Payment) IN id;
 date 'Дата' = DATA DATE (Payment) IN id;
 year 'Год' (Payment p) = extractYear(date(p));
 monthNumber 'Номер месяца' (Payment p) = extractMonthNumber(date(p));
 sum 'Сумма' = DATA NUMERIC[16,5](Payment);
-note 'Примечание' = DATA VARISTRING[100](Payment);
+note 'Примечание' = DATA ISTRING[100](Payment);
 
 CLASS PaymentType 'Вид платежа';
 TABLE paymentType (PaymentType);
 
-name 'Наименование' = DATA VARISTRING[100] (PaymentType) CHARWIDTH 8;
+name 'Наименование' = DATA ISTRING[100] (PaymentType) CHARWIDTH 8;
 
 FORM paymentType 'Вид платежа'
     OBJECTS o = PaymentType PANEL

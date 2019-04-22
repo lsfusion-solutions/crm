@@ -5,7 +5,7 @@ REQUIRE ContractSubject, Employee;
 CLASS Equipment 'Оборудование';
 TABLE equipment (Equipment);
 
-note 'Примечание' = DATA VARISTRING[250] (Equipment) CHARWIDTH 15;
+note 'Примечание' = DATA ISTRING[250] (Equipment) CHARWIDTH 15;
 comment 'Комментарий' = DATA TEXT (Equipment);
 
 customer = DATA Customer(Equipment);
@@ -48,7 +48,7 @@ TABLE equipmentSerial (EquipmentSerial);
 
 equipment = DATA Equipment(EquipmentSerial) NONULL DELETE;
 
-number 'Серийный номер' = DATA VARISTRING[250] (EquipmentSerial) CHARWIDTH 15;
+number 'Серийный номер' = DATA ISTRING[250] (EquipmentSerial) CHARWIDTH 15;
 equipmentSerial = GROUP AGGR EquipmentSerial s BY number(s), subjectType(equipment(s));
 
 FORM equipmentSerial 'Серийный номер'
@@ -110,10 +110,10 @@ FORM dialogEquipments 'Оборудование'
 
 importEquipments () {
     NEWSESSION {
-        LOCAL idCustomer = VARISTRING[15](INTEGER);
-        LOCAL idContract = VARISTRING[15](INTEGER);
-        LOCAL idEmployee = VARISTRING[15](INTEGER);
-        LOCAL subject = VARISTRING[15](INTEGER);
+        LOCAL idCustomer = ISTRING[15](INTEGER);
+        LOCAL idContract = ISTRING[15](INTEGER);
+        LOCAL idEmployee = ISTRING[15](INTEGER);
+        LOCAL subject = ISTRING[15](INTEGER);
         LOCAL quantity = INTEGER (INTEGER);
         LOCAL date = DATE (INTEGER);
         LOCAL note = TEXT (INTEGER);
@@ -122,7 +122,7 @@ importEquipments () {
         INPUT f = FILE DO {
             IMPORT XLS FROM f TO idCustomer, idContract, idEmployee, subject, quantity, date, note, serials;
             
-            FOR [GROUP SUM 1 IF INTEGER i > 0 BY trim(subject(i))](VARISTRING[15] str) AND NOT [GROUP MAX SubjectType t BY name(t)](str) DO NEW t = SubjectType {
+            FOR [GROUP SUM 1 IF INTEGER i > 0 BY trim(subject(i))](ISTRING[15] str) AND NOT [GROUP MAX SubjectType t BY name(t)](str) DO NEW t = SubjectType {
                 name(t) <- str;
             }
             
@@ -133,16 +133,16 @@ importEquipments () {
                 subjectType(e) <- GROUP MAX SubjectType t IF name(t) == trim(subject(i));
                 dataQuantitySerial(e) <- quantity(i);
                 createdDate(e) <- date(i);
-                note(e) <- VARISTRING[250] (trim(note(i)));
+                note(e) <- ISTRING[250] (trim(note(i)));
                 comment(e) <- serials(i);
                 
                 serials(i) <- replace(serials(i), '\n', '');
                 
                 FOR serials(i) != '' AND iterate(INTEGER j, 1, wordCount(serials(i), ';')) 
-                    AND VARISTRING[250](getWord(serials(i), ';', j)) != '' DO NEW s = EquipmentSerial {
+                    AND ISTRING[250](getWord(serials(i), ';', j)) != '' DO NEW s = EquipmentSerial {
                     
                     equipment(s) <- e;
-                    number(s) <- VARISTRING[250] (getWord(serials(i), ';', j));
+                    number(s) <- ISTRING[250] (getWord(serials(i), ';', j));
                 }
             }
         }

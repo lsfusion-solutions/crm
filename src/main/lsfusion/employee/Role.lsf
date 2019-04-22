@@ -7,7 +7,7 @@ NAMESPACE Role;
 CLASS Role 'Роль';
 TABLE role(Role);
 
-name 'Наименование' = DATA VARISTRING[100](Role);
+name 'Наименование' = DATA ISTRING[100](Role);
 
 FORM role 'Роль'
     OBJECTS r = Role PANEL 

@@ -4,9 +4,9 @@ REQUIRE LegalEntityImport, LegalEntityBy;
 
 overLegalEntityImport(FILE f) + {
     
-    LOCAL idLegalEntity = VARSTRING[15](INTEGER);
-    LOCAL unp = VARSTRING[9](INTEGER);
-    LOCAL okpo = VARSTRING[20](INTEGER);
+    LOCAL idLegalEntity = STRING[15](INTEGER);
+    LOCAL unp = STRING[9](INTEGER);
+    LOCAL okpo = STRING[20](INTEGER);
 
     IMPORT XLS NOHEADER FROM f AS FILE TO idLegalEntity = L, unp = AI, okpo = AJ;
 

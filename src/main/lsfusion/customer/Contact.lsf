@@ -7,7 +7,7 @@ NAMESPACE Contact;
 CLASS Contact 'Контакт' : Authentication.CustomUser;
 TABLE contact (Contact);
 
-id 'Код' = DATA VARSTRING[15] (Contact) INDEXED CHARWIDTH 5 IN id;
+id 'Код' = DATA STRING[15] (Contact) INDEXED CHARWIDTH 5 IN id;
 contact (id) = GROUP AGGR Contact c BY id (c);
 
 customer = DATA Customer(Contact);
@@ -28,12 +28,12 @@ CONSTRAINT legalEntity(Contact c) AND customer(c) AND NOT customer(c) = customer
 
 merge (Customer from, Customer to) + { customer(Contact c) <- to WHERE customer(c) = from; }
 
-middleName 'Отчество' = DATA VARSTRING[100](Contact) CHARWIDTH 15;
-initials 'Инициалы (И.О.)' (Contact c) = VARSTRING[5](CONCAT '', left(firstName(c), 1) + '.', left(middleName(c), 1) + '.') CHARWIDTH 5;
+middleName 'Отчество' = DATA STRING[100](Contact) CHARWIDTH 15;
+initials 'Инициалы (И.О.)' (Contact c) = STRING[5](CONCAT '', left(firstName(c), 1) + '.', left(middleName(c), 1) + '.') CHARWIDTH 5;
 
-shortName 'ФИО (сокр.)' = DATA VARSTRING[100](Contact) CHARWIDTH 20;
-fullName 'ФИО (полное)' = DATA VARSTRING[150](Contact) CHARWIDTH 30;
-fullNameRp 'ФИО (полное)(р.п.)' (Contact c) = DATA VARSTRING[100] (Contact) CHARWIDTH 30;
+shortName 'ФИО (сокр.)' = DATA STRING[100](Contact) CHARWIDTH 20;
+fullName 'ФИО (полное)' = DATA STRING[150](Contact) CHARWIDTH 30;
+fullNameRp 'ФИО (полное)(р.п.)' (Contact c) = DATA STRING[100] (Contact) CHARWIDTH 30;
 
 WHEN LOCAL CHANGED (lastName(Contact c)) OR CHANGED (firstName(c)) OR CHANGED (middleName(c)) AND NOT CHANGED (fullName(c)) DO {
     shortName (c) <- CONCAT ' ', lastName(c), initials(c);
@@ -44,8 +44,8 @@ WHEN LOCAL CHANGED (lastName(Contact c)) OR CHANGED (firstName(c)) OR CHANGED (m
 CLASS Position 'Должность';
 TABLE position (Position);
 
-name 'Наименование' = DATA VARISTRING[100] (Position) CHARWIDTH 15;
-nameRp 'Наименование (род.падеж)' = DATA VARISTRING[100] (Position) CHARWIDTH 15;
+name 'Наименование' = DATA ISTRING[100] (Position) CHARWIDTH 15;
+nameRp 'Наименование (род.падеж)' = DATA ISTRING[100] (Position) CHARWIDTH 15;
 inactive 'Неактивный' = DATA BOOLEAN (Position);
 
 in 'Отм.' = DATA LOCAL BOOLEAN (Position);
@@ -98,18 +98,18 @@ nameRpPosition 'Должность (р.п.)' (Contact c) = nameRp(position(c));
 
 merge(Position from, Position to) + { position(Contact c) <- to WHERE position(c) == from; }
 
-skype 'Skype' = DATA VARSTRING[50](Contact) CHARWIDTH 15;
-note 'Примечание' = DATA VARISTRING[100](Contact) CHARWIDTH 20;
+skype 'Skype' = DATA STRING[50](Contact) CHARWIDTH 15;
+note 'Примечание' = DATA ISTRING[100](Contact) CHARWIDTH 20;
 
 CLASS Phone 'Телефон';
 TABLE phone(Phone);
 
-number 'Номер телефона' = DATA VARSTRING[20](Phone);
+number 'Номер телефона' = DATA STRING[20](Phone);
 
 CLASS PhoneType 'Тип телефона';
 TABLE phoneType (PhoneType);
 
-name 'Наименование' = DATA VARSTRING[50](PhoneType);
+name 'Наименование' = DATA STRING[50](PhoneType);
 
 type = DATA PhoneType(Phone);
 nameType 'Тип телефона' (Phone p) = name(type(p));
@@ -134,7 +134,7 @@ contact (Phone p) = DATA Contact(Phone) NONULL DELETE;
 number(Contact c, PhoneType t) = GROUP MAX number(Phone p) BY contact(p), type(p);
 addPhones 'Доп. телефоны' (Contact c) = GROUP CONCAT number(Phone p), ', ' BY contact(p) CHARWIDTH 15;
 
-authorisedDocument 'На основании' = DATA VARISTRING[1000](Contact) CHARWIDTH 15;
+authorisedDocument 'На основании' = DATA ISTRING[1000](Contact) CHARWIDTH 15;
 
 FORM contact 'Контакт'
     OBJECTS o = Contact PANEL
@@ -226,7 +226,7 @@ NAVIGATOR {
 
 authorisedPerson = DATA Contact(LegalEntity);
 nameAuthorisedPerson 'Уполномоченное лицо' (LegalEntity l) = name(authorisedPerson(l));
-authorisedDocument 'На основании' = DATA VARISTRING[1000](LegalEntity) CHARWIDTH 20;
+authorisedDocument 'На основании' = DATA ISTRING[1000](LegalEntity) CHARWIDTH 20;
 
 CONSTRAINT authorisedPerson(LegalEntity l) AND NOT legalEntity(authorisedPerson(l)) == l CHECKED BY authorisedPerson[LegalEntity] 
     MESSAGE 'Организация уполномоченного лица не соответствует организации';

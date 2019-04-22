@@ -8,12 +8,12 @@ NAMESPACE Act;
 CLASS Act 'Акт выполненных работ' : Document;
 TABLE act (Act);
 
-id 'Код' = DATA VARSTRING[15] (Act) INDEXED CHARWIDTH 5;
+id 'Код' = DATA STRING[15] (Act) INDEXED CHARWIDTH 5;
 act (id) = GROUP AGGR Act c BY id (c);
 
-name 'Наименование' = DATA VARISTRING[150](Act) CHARWIDTH 20;
-series 'Серия' = DATA VARSTRING[15](Act) IN id;
-number 'Номер' = DATA VARSTRING[15](Act) IN id;
+name 'Наименование' = DATA ISTRING[150](Act) CHARWIDTH 20;
+series 'Серия' = DATA STRING[15](Act) IN id;
+number 'Номер' = DATA STRING[15](Act) IN id;
 
 @defineNumeratedDefault(Act, 'Акты', 'АК');
 
@@ -30,12 +30,12 @@ nameCompany 'Компания' (Act a) = name(company(a));
 authorisedPersonLegalEntity = DATA Contact.Contact(Act);
 idAuthorisedPersonLegalEntity 'Код уп. лица организации' (Act c) = id(authorisedPersonLegalEntity(c));
 nameAuthorisedPersonLegalEntity 'Уп. лицо организации' (Act c) = name(authorisedPersonLegalEntity(c));
-authorisedDocumentLegalEntity 'На основании' = DATA VARISTRING[1000](Act) CHARWIDTH 20;
+authorisedDocumentLegalEntity 'На основании' = DATA ISTRING[1000](Act) CHARWIDTH 20;
 
 authorisedPersonCompany  (Act c) = DATA Contact.Contact(Act);
 idAuthorisedPersonCompany 'Код уп. лица компании' (Act c) = id(authorisedPersonCompany(c));
 nameAuthorisedPersonCompany 'Уп. лицо компании' (Act c) = name(authorisedPersonCompany(c));
-authorisedDocumentCompany 'На основании' = DATA VARISTRING[1000](Act) CHARWIDTH 20;
+authorisedDocumentCompany 'На основании' = DATA ISTRING[1000](Act) CHARWIDTH 20;
 
 WHEN LOCAL (CHANGED (legalEntity(Act c)) OR CHANGED (contract(c))) AND NOT CHANGED (authorisedPersonLegalEntity(c)) DO {
     authorisedPersonLegalEntity (c) <- OVERRIDE authorisedPersonLegalEntity(contract(c)), authorisedPerson(legalEntity(c));
@@ -73,7 +73,7 @@ toDate 'Дата по' = DATA DATE (Act);
 CLASS ActType 'Тип акта выполненных работ' : Type;
 TABLE actType(ActType);
 
-name 'Наименование' = DATA VARISTRING[50](ActType) CHARWIDTH 15;
+name 'Наименование' = DATA ISTRING[50](ActType) CHARWIDTH 15;
 
 name(ActType c) += name(c);
 
@@ -111,9 +111,9 @@ dateClosing 'Дата закрытия' = DATA DATE (Act);
 
 active (Act c) = NOT dateClosing(c) <= currentDate();
 
-note 'Примечание' = DATA VARISTRING[100](Act) CHARWIDTH 20;
+note 'Примечание' = DATA ISTRING[100](Act) CHARWIDTH 20;
 text 'Текст' = DATA TEXT (Act);
-textString 'Текст' (Act c) = VARISTRING[500](text(c)) CHARWIDTH 20;
+textString 'Текст' (Act c) = ISTRING[500](text(c)) CHARWIDTH 20;
 
 sendingWay = DATA SendingWay(Act);
 nameSendingWay 'Способ отправки документа' (Act c) = name(sendingWay(c));
@@ -139,7 +139,7 @@ inCurrency(Act a) += inCurrency(contract(a));
 currency(Act a) += currency(contract(a));
 description(Act c) += CONCAT ' ', 'Акт', '№' + number(c), 'от ' + toDateDDMMYY(date(c)), 'по дог.', '№' + number(contract(c)), 'от ' + toDateDDMMYY(date(contract(c)));
 sendingWay(Act c) += sendingWay(c);
-fileName(Act c) += VARISTRING[250] (CONCAT '_', nameLegalEntity(c), 'Акт', number(c), 'от_' + toDateDDMMYY(date(c)));
+fileName(Act c) += ISTRING[250] (CONCAT '_', nameLegalEntity(c), 'Акт', number(c), 'от_' + toDateDDMMYY(date(c)));
 
 EXTEND CLASS DocType {
     act 'Акт выполненных работ'
@@ -298,5 +298,5 @@ DESIGN contract {
 }
 
 WHEN SET (Act a IS Act) AND NOT number(a) DO {  
-    number(a) <- VARISTRING[15] (INTEGER ([GROUP MAX number(Act ac) BY contract(ac), year(ac)](contract(a), year(a))) (+) 1); 
+    number(a) <- ISTRING[15] (INTEGER ([GROUP MAX number(Act ac) BY contract(ac), year(ac)](contract(a), year(a))) (+) 1); 
 }
