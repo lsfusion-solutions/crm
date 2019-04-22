@@ -17,6 +17,7 @@ FORM dialogEmployees 'Сотрудники'
     OBJECTS e = Employee
     PROPERTIES in(e), name(e) READONLY 
     FILTERGROUP active FILTER 'Активные' active(e)
+    ORDER name(e)
 ;
 
 FORM workingHours 'Рабочее время'

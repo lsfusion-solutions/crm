@@ -73,6 +73,7 @@ employee(Absence a) <- currentUser() WHEN SET(a IS Absence);
 date(Absence a) <- currentDate() WHEN SET(a IS Absence);
 dateFrom(Absence a) <- currentDate() WHEN SET(a IS Absence);
 dateTo(Absence a) <- currentDate() WHEN SET(a IS Absence);
+hours(Absence a) <- workingHours(currentDate(), currentUser()) WHEN SET (a IS Absence);
 
 FORM absence 'Отсутствие сотрудников'
     OBJECTS o = Absence PANEL
@@ -110,6 +111,10 @@ DESIGN absence {
             MOVE PROPERTY (note(o));
         }
     }
+}
+
+WHEN LOCAL FORMS absence CHANGED (dateFrom(Absence a)) OR CHANGED (dateTo(a)) DO {
+    hours(a) <- GROUP SUM workingHours(DATE d, currentUser()) IF d >= dateFrom(a) AND d <= dateTo(a);
 }
 
 FORM absences 'Отсутствие сотрудников'
