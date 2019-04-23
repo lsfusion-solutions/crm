@@ -15,8 +15,9 @@ nameSubjectTypeHours 'Тип предмета договора, обознача
 EXTEND FORM options PROPERTIES nameSubjectTypeHours();
 DESIGN options { commons { MOVE PROPERTY (nameSubjectTypeHours()); } }
 
-quantityHours 'Кол-во часов' (Customer c, Month m, INTEGER y) = GROUP SUM quantity(ContractSubject s) 
-    IF type(s) == subjectTypeHours() AND calcHours(type(contract(s))) BY customer(contract(s)), extractMonth(date(s)), extractYear(date(s));
+quantityHours 'Кол-во часов' (Customer c, Month m, INTEGER y) = GROUP LAST quantity(ContractSubject s) 
+     ORDER date(s), s IF date(s) <= lastDayOfMonth(toDateFormat('01' + lpad(TEXT (number(m)), 2, '0') + y, 'DDMMYYYY')) 
+     AND type(s) == subjectTypeHours() AND calcHours(type(contract(s))) BY customer(contract(s));
 
 hours 'Трудозатраты' (Customer c, Month m, INTEGER y) = GROUP SUM hours(TimeEntry t) BY customer(t), month(t), year(t);
 hoursWithoutDocs 'Трудозатраты без привязки к документам' (Customer c, Month m, INTEGER y) = 
