@@ -9,12 +9,12 @@ idAgreement 'Код соглашения' (Payment p) = id(agreement(p));
 numberAgreement 'Номер соглашения' (Payment p) = number(agreement(p));
 nameAgreement 'Наименование соглашения' (Payment p) = name(agreement(p));
 
-paidPayment 'Оплачено' (Agreement a) = GROUP SUM sum(Payment p) BY agreement(p);
+paidPayment 'Оплачено' (Agreement a) = GROUP SUM sum(Payment p) BY agreement(p) MATERIALIZED;
 
 paidContract 'Оплачено' (Agreement a) = PARTITION UNGROUP paid
                                                       LIMIT sum(a) (-) paidPayment(a)
                                                       ORDER date(a),a 
-                                                      BY contract(a); 
+                                                      BY contract(a) MATERIALIZED; 
                                                       
 paid 'Оплачено' (Agreement a) = paidContract(a) (+) paidPayment(a);
 
