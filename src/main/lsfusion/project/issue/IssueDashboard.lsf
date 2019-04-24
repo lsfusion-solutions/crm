@@ -49,3 +49,43 @@ NAVIGATOR {
         NEW issueDashboard;
     }
 }
+
+note 'Подписан на уведомления' = DATA BOOLEAN (Project, IssueStatus, Employee);
+
+WHEN CHANGED (status(Issue i)) AND (note(project(i), status(i), Employee e) OR note(project(i), PREV (status(i)), e)) DO {
+    EMAIL 
+        SUBJECT CONCAT ' ', 'Изменение статуса задачи', number(i)
+        TO email(e)
+        BODY CONCAT ' ', 'Статус задачи', number(i), 'по проекту ' + name(project(i)), 'изменен', 'с ' + PREV (nameStatus(i)), 'на ' + nameStatus(i);
+}
+
+FORM projectNotifications 'Уведомления по проектам'
+    OBJECTS p = Project
+    PROPERTIES (p) READONLY id, name, identifier, nameCustomer, inactive, nameExternal
+    FILTERGROUP active FILTER 'Активные' NOT inactive(p) DEFAULT 
+    
+    OBJECTS e = Employee PANEL
+    FILTERS e == currentUser()
+    
+    OBJECTS s = IssueStatus
+    PROPERTIES note(p, s, e) DRAW s
+    PROPERTIES (s) READONLY name, order, isClosed 
+    ORDER order(s)
+;
+
+DESIGN projectNotifications {
+    OBJECTS { 
+        NEW main FIRST {
+            fill = 1;
+            type = SPLITH;
+            MOVE BOX (p) { fill = 3; }
+            MOVE BOX (s) { fill = 1; }
+        }
+    }
+}
+
+NAVIGATOR {
+    project {
+        NEW projectNotifications;
+    }
+}
