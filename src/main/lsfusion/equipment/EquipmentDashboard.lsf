@@ -47,6 +47,13 @@ FORM equipmentDashboard 'Оборудование'
                              createdTimeEquipment, nameSubjectTypeEquipment, nameContractEquipment, nameLegalEntityContractEquipment, number
     FILTERS customer(equipment(es)) == filterCustomer() OR NOT filterCustomer()
     ORDER createdDateEquipment(es), createdTimeEquipment(es)
+    
+    OBJECTS l = SerialNumberLog
+    PROPERTIES (l) READONLY date, time, hostnameComputer, loginUser, nameContact, numberSerial
+    FILTERS equipment(l) == e
+    FILTERGROUP serial FILTER 'По серийному номеру' equipmentSerial(l) == n
+    ORDER date(l), time(l)
+
 ;
 
 DESIGN equipmentDashboard {
@@ -67,7 +74,11 @@ DESIGN equipmentDashboard {
                 type = SPLITH;
                 fill = 1;
                 MOVE BOX (e) { fill = 2; }
-                MOVE BOX (n) { fill = 1; }
+                NEW serials { 
+                    fill = 1;
+                    MOVE BOX (n);
+                    MOVE BOX (l) { caption = 'Лог запросов на получение лицензионного ключа'; }
+                }
             }
             MOVE BOX (es) { caption = 'Серийные номера по клиенту'; }
         }

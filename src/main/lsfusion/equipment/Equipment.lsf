@@ -49,7 +49,7 @@ TABLE equipmentSerial (EquipmentSerial);
 equipment = DATA Equipment(EquipmentSerial) NONULL DELETE;
 
 number 'Серийный номер' = DATA ISTRING[250] (EquipmentSerial) CHARWIDTH 15;
-equipmentSerial = GROUP AGGR EquipmentSerial s BY number(s), subjectType(equipment(s));
+equipmentSerial = GROUP AGGR EquipmentSerial s BY number(s);
 
 FORM equipmentSerial 'Серийный номер'
     OBJECTS o = EquipmentSerial PANEL
