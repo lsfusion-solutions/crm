@@ -9,22 +9,17 @@ receipt 'Доход' (Customer c, DATE df, DATE dt) = GROUP SUM sum(Payment p) I
 receipt 'Доход' (Customer c, ContractType g, DATE df, DATE dt) = GROUP SUM sum(Payment p) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(legalEntity(p)) BY customer(p), type(contract(p));
 receiptOther 'Доход (без типа)' (Customer c, DATE df, DATE dt) = GROUP SUM sum(Payment p) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(legalEntity(p)) AND NOT type(contract(p)) BY customer(p);
 receipt 'Доход' (Customer c, Month m, INTEGER y, DATE df, DATE dt) = GROUP SUM sum(Payment p) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(legalEntity(p)) BY customer(p), extractMonth(date(p)), extractYear(date(p));
-receiptCurrency 'Доход в валюте' (Customer c, DATE df, DATE dt) = round2(receipt(c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
-receiptCurrency 'Доход в валюте' (Customer c, Month m, INTEGER y, DATE df, DATE dt) = round2(receipt(c, m, y, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
-receiptCurrency 'Доход в валюте' (Customer c, ContractType g, DATE df, DATE dt) = round2(receipt(c, g, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
-receiptCurrencyOther 'Доход в валюте (без типа)' (Customer c, DATE df, DATE dt) = round2(receiptOther(c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
-shipmentCurrency 'Расход в валюте' (Project p, DATE df, DATE dt) = round2(costSum(p, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
-shipmentCurrency 'Расход в валюте' (Project p) = round2(costSum(p) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
-shipmentCurrency 'Расход в валюте' (Customer c, DATE df, DATE dt) = round2(costSum(c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
-shipmentCurrency 'Расход в валюте' (Customer c, Month m, INTEGER y, DATE df, DATE dt) = round2(costSum(c, m, y, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
+
+receiptCurrency 'Доход в валюте' (LegalEntity c, DATE df, DATE dt) = GROUP SUM round2(sum(Payment p) * rateOn(defaultTypeExchange(), defaultCurrency(), date(p))) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(legalEntity(p)) BY legalEntity(p);
+receiptCurrency 'Доход в валюте' (Customer c, DATE df, DATE dt) = GROUP SUM round2(sum(Payment p) * rateOn(defaultTypeExchange(), defaultCurrency(), date(p))) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(legalEntity(p)) BY customer(p);
+receiptCurrency 'Доход в валюте' (Customer c, ContractType g, DATE df, DATE dt) = GROUP SUM round2(sum(Payment p) * rateOn(defaultTypeExchange(), defaultCurrency(), date(p))) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(legalEntity(p)) BY customer(p), type(contract(p));
+receiptCurrencyOther 'Доход в валюте (без типа)' (Customer c, DATE df, DATE dt) = GROUP SUM round2(sum(Payment p) * rateOn(defaultTypeExchange(), defaultCurrency(), date(p))) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(legalEntity(p)) AND NOT type(contract(p)) BY customer(p);
+receiptCurrency 'Доход в валюте' (Customer c, Month m, INTEGER y, DATE df, DATE dt) = GROUP SUM round2(sum(Payment p) * rateOn(defaultTypeExchange(), defaultCurrency(), date(p))) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(legalEntity(p)) BY customer(p), extractMonth(date(p)), extractYear(date(p));
+
 diff 'Прибыль в валюте' (Customer c, DATE df, DATE dt) = receiptCurrency(c, df, dt) (-) shipmentCurrency(c, df, dt);
 diffPercent 'Прибыль, %' (Customer c, DATE df, DATE dt) = round2(diff(c, df, dt) / receiptCurrency(c, df, dt) * 100);
 diff 'Прибыль в валюте' (Customer c, Month m, INTEGER y, DATE df, DATE dt) = receiptCurrency(c, m, y, df, dt) (-) shipmentCurrency(c, m, y, df, dt);
 diffPercent 'Прибыль, %' (Customer c, Month m, INTEGER y, DATE df, DATE dt) = round2(diff(c, m, y, df, dt) / receiptCurrency(c, m, y, df, dt) * 100);
-shipmentCurrency 'Расход в валюте' (Employee e, Customer c, DATE df, DATE dt) = round2(costSum(e, c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
-shipmentCurrency 'Расход в валюте' (Project p, Customer c, DATE df, DATE dt) = round2(costSum(p, c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
-shipmentCurrency 'Расход в валюте' (Project p, Employee e, Customer c, DATE df, DATE dt) = round2(costSum(p, e, c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
-shipmentCurrency 'Расход в валюте' (Project p, Employee e, DATE df, DATE dt) = round2(costSum(p, e, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate()));
 
 paid 'Оплачено' (Contract c, DATE df, DATE dt) = GROUP SUM sum(Payment p) IF date(p) >= df AND date(p) <= dt BY contract(p);
 paidCurrency 'Оплачено'  (Contract c, DATE df, DATE dt) = paid(c, df, dt) * rateOn(defaultTypeExchange(), defaultCurrency(), currentDate());
@@ -56,7 +51,7 @@ FORM profit 'Прибыль по клиентам'
     PROPERTIES (c, df, dt) READONLY receiptCurrency BACKGROUND backgroundReceipt(), shipmentCurrency BACKGROUND backgroundShipment(), diff, diffPercent,
                                     shipmentCurrencyProjects, diffProjects, diffPercentProjects
     PROPERTIES READONLY BACKGROUND backgroundGroup() receiptCurrency(c, g, df, dt) COLUMNS (g) HEADER name(g), 'Прочее' = receiptCurrencyOther(c, df, dt)
-    FILTERS costSum(c, df, dt) OR receipt(c, df, dt)
+    FILTERS shipment(c, df, dt) OR receipt(c, df, dt)
     FILTERGROUP active FILTER 'Активные' NOT inactive(c) DEFAULT 
     ORDER name(c)
     
@@ -70,7 +65,7 @@ FORM profit 'Прибыль по клиентам'
     
     OBJECTS e = Employee
     PROPERTIES READONLY name(e)
-    PROPERTIES (e, c, df, dt) READONLY hours, costSum, shipmentCurrency
+    PROPERTIES (e, c, df, dt) READONLY hours, shipment, shipmentCurrency
     FILTERS hours(e, c, df, dt)
     
     OBJECTS t = TimeEntry
@@ -79,12 +74,12 @@ FORM profit 'Прибыль по клиентам'
     
     OBJECTS pp = Project
     PROPERTIES READONLY name(pp)
-    PROPERTIES (pp, c, df, dt) READONLY hours, costSum, shipmentCurrency
+    PROPERTIES (pp, c, df, dt) READONLY hours, shipment, shipmentCurrency
     FILTERS hours(pp, c, df, dt)
     
     OBJECTS ee = Employee
     PROPERTIES READONLY name(ee)
-    PROPERTIES (pp, ee, c, df, dt) READONLY hours, costSum, shipmentCurrency
+    PROPERTIES (pp, ee, c, df, dt) READONLY hours, shipment, shipmentCurrency
     FILTERS hours(pp, ee, c, df, dt)
     
     OBJECTS tt = TimeEntry
@@ -94,7 +89,7 @@ FORM profit 'Прибыль по клиентам'
     OBJECTS my = (m = Month, y = INTEGER)
     PROPERTIES READONLY number(m), 'Месяц' = staticCaption(m), year 'Год' = VALUE (y)
     PROPERTIES (c, m, y, df, dt) READONLY receiptCurrency, shipmentCurrency, diff, diffPercent
-    FILTERS costSum(c, m, y, df, dt) OR receipt(c, m, y, df, dt)
+    FILTERS shipment(c, m, y, df, dt) OR receipt(c, m, y, df, dt)
     ORDER year, number(m)
     
     OBJECTS pc = (pro = Project, con = Contract)
@@ -108,7 +103,7 @@ FORM profit 'Прибыль по клиентам'
     
     OBJECTS epr = Employee
     PROPERTIES READONLY name(epr)
-    PROPERTIES (pr, epr, df, dt) READONLY hours, costSum, shipmentCurrency
+    PROPERTIES (pr, epr, df, dt) READONLY hours, shipment, shipmentCurrency
     FILTERS shipmentCurrency(pr, epr, df, dt)
     ORDER name(epr)
     
