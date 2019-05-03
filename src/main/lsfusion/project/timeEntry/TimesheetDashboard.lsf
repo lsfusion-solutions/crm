@@ -72,12 +72,14 @@ FORM timesheetDashboard 'Табель рабочего времени'
     FILTERGROUP active FILTER 'Активные' active(ee) DEFAULT 
     
     OBJECTS dates = (df = DATE, dt = DATE) PANEL
-    PROPERTIES 'Дата с' = VALUE (df), 'Дата по' = VALUE (dt), nameFilterCustomer() DRAW dates
+    OBJECTS em = Employee PANEL 
+    PROPERTIES 'Дата с' = VALUE (df), 'Дата по' = VALUE (dt), name(em) DRAW dates READONLY 
+    FILTERS em == currentUser()
     
-    OBJECTS ec = Employee
-    PROPERTIES READONLY name(ec), hoursFilter(ec, df, dt)
-    ORDER hoursFilter(ec, df, dt) DESC 
-    FILTERS hoursFilter(ec, df, dt)
+    OBJECTS c = Customer
+    PROPERTIES READONLY name(c), hours(em, c, df, dt)
+    ORDER hours(em, c, df, dt) DESC 
+    FILTERS hours(em, c, df, dt)
     
     EVENTS ON INIT {
         SEEK timesheetDashboard.m = extractMonth(currentDate());
@@ -144,7 +146,7 @@ DESIGN timesheetDashboard {
                 caption = 'Итоги по клиентам';
                 fill = 1;
                 MOVE BOX (dates) { caption = 'Фильтры'; }
-                MOVE BOX (ec);
+                MOVE BOX (c);
             }
         }
     }
