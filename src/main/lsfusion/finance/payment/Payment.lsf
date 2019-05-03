@@ -57,7 +57,7 @@ nameCurrency 'Валюта платежа' (Payment p) = name(currency(p));
 shortNameCurrency 'Валюта (сокр.)' (Payment p) = shortName(currency(p));
 sidCurrency 'Валюта (сокр.)' (Payment p) = sid(currency(p));
 
-sumCurrency 'Сумма в валюте' (Payment p) = round2(sum(p) * OVERRIDE rateOn(defaultTypeExchange(), currency(p), date(p)), 1);
+sumCurrency 'Сумма в валюте' (Payment p) = round2(sum(p) * OVERRIDE rateOn(defaultTypeExchange(), currency(p), date(p)), 1) MATERIALIZED;
 
 sumPayment 'Сумма платежей' (Customer c) = GROUP SUM sum(Payment p) BY customer(p) MATERIALIZED;
 

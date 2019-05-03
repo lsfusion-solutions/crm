@@ -4,11 +4,15 @@ REQUIRE EmployeeExpense, Currency, TimeEntry, WorkingHours;
 
 NAMESPACE Project;
 
-cost 'Расход за час' (Employee e, INTEGER y, Month m) = round2([GROUP SUM (sum(Expense t) * 100 / (100 (-) percent(type(t)))) BY employee(t), year(t), month(t)](e, y, m)/monthHours(y, m));   
+cost 'Расход за час' (Employee e, INTEGER y, Month m) = round2([GROUP SUM (sum(Expense t) * 100 / (100 (-) percent(type(t)))) BY employee(t), year(t), month(t)](e, y, m)/monthHours(y, m)) MATERIALIZED;
+toDate (INTEGER year, INTEGER month, INTEGER day) = FORMULA DATE 'make_date($1, $2, $3)';
+costCurrency 'Расход за час в валюте' (Employee e, INTEGER y, Month m) = cost(e, y, m) * rateOn(defaultTypeExchange(), defaultCurrency(), toDate(y, number(m), 1)) MATERIALIZED;
+   
 cost 'Расход за час' (TimeEntry t) = cost(employee(t), year(t), month(t));
+costCurrency 'Расход за час' (TimeEntry t) = costCurrency(employee(t), year(t), month(t));
 
-shipment 'Расход' (TimeEntry t) = hours(t) * cost(t);
-shipmentCurrency 'Расход в валюте' (TimeEntry t) = round2(shipment(t) * rateOn(defaultTypeExchange(), defaultCurrency(), date(t)));
+shipment 'Расход' (TimeEntry t) = round2(hours(t) * cost(t));
+shipmentCurrency 'Расход в валюте' (TimeEntry t) = round2(hours(t) * costCurrency(t));
 
 EXTEND FORM timeEntries
     PROPERTIES(o) READONLY shipment
