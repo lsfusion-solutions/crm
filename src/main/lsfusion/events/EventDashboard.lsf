@@ -14,9 +14,6 @@ dateToEvent 'по' = DATA LOCAL DATE ();
 dateFromNext 'с' = DATA LOCAL DATE ();
 dateToNext 'по' = DATA LOCAL DATE ();
 
-phoneContact 'Телефон контактного лица' (Event e) = OVERRIDE phone(contact(e)), (GROUP LAST number(Phone p) ORDER DESC p IF contact(p) == contact(e)) CHARWIDTH 15;
-namePositionContact 'Должность контактного лица' (Event e) = name(position(contact(e)));
-
 showCustomerDashboard 'Работа с клиентом' (Event d) { show(customer(d)); }
 
 FORM eventDashboard 'Обработка событий'

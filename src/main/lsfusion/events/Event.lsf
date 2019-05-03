@@ -40,6 +40,8 @@ nameEmployee 'Сотрудник' (Event e) = name(employee(e));
 contact = DATA Contact.Contact(Event);
 idContact 'Код контактного лица' (Event e) = id(contact(e));
 nameContact 'Контактное лицо' (Event e) = name(contact(e)) IN id;
+phoneContact 'Телефон контактного лица' (Event e) = OVERRIDE phone(contact(e)), (GROUP LAST number(Phone p) ORDER DESC p IF contact(p) == contact(e)) CHARWIDTH 15;
+namePositionContact 'Должность контактного лица' (Event e) = name(position(contact(e)));
 
 CONSTRAINT customer(Event e) AND contact(e) AND NOT customer(contact(e)) == customer(e) CHECKED BY contact[Event] MESSAGE 'Клиент контакта не совпадает с клиентом';
 CONSTRAINT legalEntity(Event e) AND contact(e) AND NOT legalEntity(contact(e)) == legalEntity(e) CHECKED BY contact[Event] MESSAGE 'Организация контакта не совпадает с организацией';

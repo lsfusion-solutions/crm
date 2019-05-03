@@ -237,6 +237,12 @@ FORM debtDashboard 'Контроль задолженности'
     FILTERS customer(db) == c, date(db) <= dd, type(contract(db)) == t
     FILTERGROUP notPaid FILTER 'Неоплаченные' sum(db) (-) paid(db, dd) > 0 DEFAULT 
     ORDER date(db)
+    
+    OBJECTS ev = Event
+    PROPERTIES (ev) READONLY name, nameType, nameEmployee, nameContact, phoneContact, date, time, dateNext, descriptionString, additionString
+    ORDER date(ev), time(ev)
+    FILTERS customer(ev) == c
+    FILTERGROUP debt FILTER 'По задолженности' debt(ev) == db
 ;
 
 DESIGN debtDashboard {
@@ -270,7 +276,11 @@ DESIGN debtDashboard {
                     type = SPLITH;
                     fill = 1;
                     MOVE BOX (ct) { fill = 1; }
-                    MOVE BOX (db) { fill = 2; }
+                    NEW right { 
+                        fill = 2;
+                        MOVE BOX (db);
+                        MOVE BOX (ev);
+                    }
                 }
             }
         }
