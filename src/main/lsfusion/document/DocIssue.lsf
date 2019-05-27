@@ -13,6 +13,10 @@ WHEN LOCAL CHANGED (document(Issue i)) AND NOT CHANGED (customer(i)) DO {
     customer(i) <- customer(document(i));
 }
 
+WHEN DROPPED (Document d IS Document) DO {
+    DELETE Issue i WHERE PREV (document(i)) == d;
+}
+
 EXTEND FORM issues PROPERTIES numberDocument(o);
 EXTEND FORM issue PROPERTIES numberDocument(o);
 
