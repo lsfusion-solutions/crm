@@ -59,7 +59,7 @@ paidAgreement 'Оплачено по соглашениям' (Debt d) = GROUP SU
 paidNotDebt (Contract c) = paid(c) (-) [GROUP SUM paidAgreement(Debt d) BY contract(d)](c);
 
 paidContract 'Оплачено по контракту без соглашений' (Debt d) = PARTITION UNGROUP paidNotDebt
-                                                      LIMIT sum(d) (-) paidAgreement(d)
+                                                      LIMIT (sum(d) (-) paidAgreement(d)) IF NOT agreement(d)
                                                       ORDER date(d),d 
                                                       BY contract(d) MATERIALIZED; 
                                                       
@@ -70,7 +70,7 @@ paidAgreement 'Оплачено' (Debt d, DATE dt) = GROUP SUM sum(Payment p) IF
 paidNotDebt (Contract c, DATE dt) = paid(c, dt) (-) [GROUP SUM paidAgreement(Debt d, dt) BY contract(d)](c);
 
 paidContract 'Оплачено' (Debt d, DATE dt) = PARTITION UNGROUP paidNotDebt
-                                                      LIMIT sum(d) (-) paidAgreement(d, dt)
+                                                      LIMIT (sum(d) (-) paidAgreement(d, dt)) IF NOT agreement(d)
                                                       ORDER date(d),d 
                                                       BY contract(d), dt; 
                                                       
