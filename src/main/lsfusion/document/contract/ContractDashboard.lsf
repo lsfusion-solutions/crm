@@ -28,7 +28,7 @@ FORM contractDashboard 'Работа с договорами'
     OBJECTS o = Contract LAST 
     PROPERTIES(o) READONLY id, nameCustomer, nameLegalEntity, nameCompany, number, date, name, tags,
                            shortNameCurrency, 
-                           sumCurrency BACKGROUND RGB(232,232,255) IF inCurrency(o), paidCurrency BACKGROUND RGB(232,232,255) IF inCurrency(o), 
+                           sumCurrency BACKGROUND backgroundCurrency(o), paidCurrency BACKGROUND backgroundCurrency(o), 
                            sum, paid, dateLastPaid,
                            sumMonth, 
                            nameType, nameGroup, nameSendingWay, 
@@ -45,7 +45,8 @@ FORM contractDashboard 'Работа с договорами'
         FILTER 'Активные' NOT dateClosing(o) <= currentDate() DEFAULT
     
     OBJECTS ag = Agreement LAST 
-    PROPERTIES (ag) READONLY id, number, date, name, nameType, sum, sumCurrency, paid, balance, nameSendingWay, dateSending, dateReceiving, dateClosing, note, textString
+    PROPERTIES (ag) READONLY id, number, date, name, nameType, sum, paid, sumCurrency BACKGROUND backgroundCurrency(ag), 
+                             paidCurrency BACKGROUND backgroundCurrency(ag), balance, nameSendingWay, dateSending, dateReceiving, dateClosing, note, textString
     PROPERTIES (ag) openFile DRAW ag TOOLBAR SHOWIF TRUE IF file(o)
     PROPERTIES (ag) NEWSESSION edit
     ORDER date(ag)
@@ -53,7 +54,8 @@ FORM contractDashboard 'Работа с договорами'
     FILTERGROUP activeAg FILTER 'Активные' active(ag) DEFAULT 
     
     OBJECTS ac = Act LAST 
-    PROPERTIES (ac) READONLY id, numberAgreement, number, date, fromDate, toDate, name, nameType, sum, paid, balance, nameSendingWay, dateSending, dateReceiving, dateClosing, note, textString
+    PROPERTIES (ac) READONLY id, numberAgreement, number, date, fromDate, toDate, name, nameType, sum, paid, sumCurrency BACKGROUND backgroundCurrency(ac), 
+                             paidCurrency BACKGROUND backgroundCurrency(ac), balance, nameSendingWay, dateSending, dateReceiving, dateClosing, note, textString
     PROPERTIES (ac) openFile DRAW ac TOOLBAR SHOWIF TRUE IF file(o)
     PROPERTIES (ac) NEWSESSION edit
     ORDER date(ac)

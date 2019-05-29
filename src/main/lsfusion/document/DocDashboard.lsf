@@ -106,7 +106,7 @@ FORM docDashboard 'Обработка документов'
     PROPERTIES (d) in, sign SHOWIF notSign(d), send SHOWIF notSend(d), receive SHOWIF notReceive(d), open SHOWIF TRUE IF file(d), edit, close SHOWIF NOT dateClosing(d)
     PROPERTIES (d) READONLY nameDocType, id, number, date, name, nameCustomer, nameType, numberContract, dateContract, nameLegalEntity, 
                             nameCompany, shortNameCurrency, 
-                            sumCurrency BACKGROUND RGB(232,232,255) IF inCurrency(d), paidCurrency BACKGROUND RGB(232,232,255) IF inCurrency(d),
+                            sumCurrency BACKGROUND backgroundCurrency(d), paidCurrency BACKGROUND backgroundCurrency(d),
                             sum, paid, dateLastPaid, balance
     PROPERTIES (d) READONLYIF isReadonly() dateSigningCompany, dateSending, nameSendingWay, dateSigningCustomer, dateReceiving, dateClosing
     ORDER date(d)

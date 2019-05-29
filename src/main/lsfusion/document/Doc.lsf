@@ -86,6 +86,8 @@ inCurrency 'В валюте' = ABSTRACT BOOLEAN (Document);
 currency = ABSTRACT Currency(Document);
 shortNameCurrency 'Валюта (сокр.)' (Document d) = shortName(currency(d));
 
+backgroundCurrency (Document d) = RGB(232,232,255) IF inCurrency(d);
+
 FORM dialogDocuments 'Документы'
     OBJECTS d = Document
     PROPERTIES (d) READONLY date, nameDocType, number, name, nameCompany, nameCustomer, nameLegalEntity

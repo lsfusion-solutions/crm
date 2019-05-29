@@ -68,6 +68,7 @@ FORM dashboardCustomer 'Работа с клиентами'
     
     OBJECTS cr = Contract
     PROPERTIES (cr) READONLY id, nameLegalEntity, nameCompany, number, date, name, sum, paid, nameType, nameSendingWay, dateSigningCompany, dateSending, dateSigningCustomer, dateReceiving, dateTo, dateClosing, note, textString
+    PROPERTIES (cr) BACKGROUND backgroundCurrency(cr) sumCurrency, paidCurrency
     PROPERTIES (cr) NEWSESSION EDIT 
     FILTERS customer(legalEntity(cr)) == c OR customer(company(cr)) == c
     ORDER date(cr) DESC
