@@ -37,11 +37,6 @@
                 </dependency>
                 <dependency>
                     <groupId>lsfusion.platform</groupId>
-                    <artifactId>report-api</artifactId>
-                    <version>${platform.assemble.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>lsfusion.platform</groupId>
                     <artifactId>server</artifactId>
                     <version>${platform.assemble.version}</version>
                 </dependency>
