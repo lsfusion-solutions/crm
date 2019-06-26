@@ -68,7 +68,10 @@ paidContract 'Оплачено по контракту без соглашени
                                                       
 paid 'Оплачено' (Debt d) = paidAgreement(d) (+) paidContract(d);
 
-paidAgreement 'Оплачено' (Debt d, DATE dt) = GROUP SUM sum(Payment p) IF agreement(p) == agreement(d) AND date(p) <= dt;
+paidAgreement 'Оплачено' (Debt d, DATE dt) = PARTITION UNGROUP paidPayment
+                                                                   LIMIT sum(d)
+                                                                   ORDER date(d),d 
+                                                                   BY agreement(d), dt;
 
 paidNotDebt (Contract c, DATE dt) = paid(c, dt) (-) [GROUP SUM paidAgreement(Debt d, dt) BY contract(d)](c);
 
