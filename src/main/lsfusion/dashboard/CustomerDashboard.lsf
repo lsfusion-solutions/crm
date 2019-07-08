@@ -60,11 +60,11 @@ FORM dashboardCustomer 'Работа с клиентами'
     
     OBJECTS ct = Contact.Contact
     PROPERTIES (ct) in
-    PROPERTIES (ct) READONLY id, name, middleName, nameLegalEntity, namePosition, email, phone, addPhones, skype, note
+    PROPERTIES (ct) READONLY id, firstName, middleName, lastName, nameLegalEntity, namePosition, email, phone, addPhones, skype, note
     PROPERTIES DRAW ct TOOLBAR sendEmailToContacts(c), addContact(c)
     PROPERTIES (ct) NEWSESSION EDIT, DELETE 
     FILTERS customer(ct) == c
-    ORDER name(ct)
+    ORDER lastName(ct)
     
     OBJECTS cr = Contract
     PROPERTIES (cr) READONLY id, nameLegalEntity, nameCompany, number, date, name, sum, paid, nameType, nameSendingWay, dateSigningCompany, dateSending, dateSigningCustomer, dateReceiving, dateTo, dateClosing, note, textString
