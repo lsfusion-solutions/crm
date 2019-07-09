@@ -40,7 +40,8 @@ addIssue 'Добавить' (Customer c) {
 
 in 'Отм.' = DATA LOCAL BOOLEAN (Contact.Contact);
 
-sendEmailToContacts 'Написать письмо' (Customer c) {
+sendEmailToContacts 'Написать письмо' (Contact.Contact c) {
+    in(c) <- TRUE IF NOT (GROUP SUM 1 IF in(Contact.Contact cc));
     open(LINK('mailto:' + (GROUP CONCAT email(Contact.Contact cc) IF in(cc), ',')));
     in(Contact.Contact cc) <- NULL;
 }
@@ -61,7 +62,7 @@ FORM dashboardCustomer 'Работа с клиентами'
     OBJECTS ct = Contact.Contact
     PROPERTIES (ct) in
     PROPERTIES (ct) READONLY id, firstName, middleName, lastName, nameLegalEntity, namePosition, email, phone, addPhones, skype, note
-    PROPERTIES DRAW ct TOOLBAR sendEmailToContacts(c), addContact(c)
+    PROPERTIES DRAW ct TOOLBAR sendEmailToContacts(ct), addContact(c)
     PROPERTIES (ct) NEWSESSION EDIT, DELETE 
     FILTERS customer(ct) == c
     ORDER lastName(ct)
