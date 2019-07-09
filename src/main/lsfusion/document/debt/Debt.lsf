@@ -44,6 +44,8 @@ numberAct 'Номер акта' (Debt d) = number(act(d));
 dateAct 'Дата акта' (Debt d) = date(act(d));
 
 CONSTRAINT act(Debt d) AND NOT contract(d) == contract(act(d)) CHECKED BY act[Debt] MESSAGE 'Договор акта не соответствует договору';
+CONSTRAINT [GROUP SUM 1 BY act(Debt d)](Act a) == 1 AND NOT sum(a) == [GROUP SUM sum(Debt d) BY act(d)](a) 
+    MESSAGE 'При одной задолженности для акта сумма задолженности должна совпадать с суммой акта';
 
 FORM debt 'Задолженность'
     OBJECTS o = Debt PANEL
