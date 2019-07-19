@@ -81,6 +81,7 @@ FORM positions 'Должности'
 FORM dialogPositions 'Должности'
     OBJECTS o = Position
     PROPERTIES(o) READONLY name, inactive
+    PROPERTIES(o) NEWSESSION EDIT
     FILTERGROUP active FILTER 'Активные' NOT inactive(o) DEFAULT
     
     LIST Position OBJECT o
