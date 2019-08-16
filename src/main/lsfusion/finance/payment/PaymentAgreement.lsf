@@ -12,7 +12,9 @@ nameAgreement 'Наименование соглашения' (Payment p) = name
 paidPayment 'Оплачено' (Agreement a) = GROUP SUM sum(Payment p) BY agreement(p) MATERIALIZED;
 paidPayment 'Оплачено' (Agreement a, DATE d) = GROUP SUM sum(Payment p) IF date(p) <= d BY agreement(p);
 
-paidContract 'Оплачено' (Agreement a) = PARTITION UNGROUP paid
+paidNotPaymentAgreement (Contract c) = paid(c) (-) [GROUP SUM paidPayment(Agreement a) BY contract(a)](c);
+
+paidContract 'Оплачено' (Agreement a) = PARTITION UNGROUP paidNotPaymentAgreement
                                                       LIMIT sum(a) (-) paidPayment(a)
                                                       ORDER date(a),a 
                                                       BY contract(a) MATERIALIZED; 

@@ -10,12 +10,16 @@ numberAct 'Номер акта' (Payment a) = number(act(a)) IN id;
 
 paidPayment 'Оплачено' (Act c) = GROUP SUM sum(Payment p) BY act(p) MATERIALIZED;
 
-paidAgreement 'Оплачено' (Act a) = PARTITION UNGROUP paid
+paidNotPaymentAct (Agreement a) = paid(a) (-) [GROUP SUM paidPayment(Act act) BY agreement(act)](a);
+
+paidAgreement 'Оплачено' (Act a) = PARTITION UNGROUP paidNotPaymentAct
                                                       LIMIT sum(a) (-) paidPayment(a)
                                                       ORDER date(a),a 
                                                       BY agreement(a) MATERIALIZED; 
 
-paidContract 'Оплачено' (Act a) = PARTITION UNGROUP paid
+paidNotPaymentAgreementAct (Contract c) = paid(c) (-) [GROUP SUM paidPayment(Act act) (+) paidAgreement(act) BY contract(act)](c);
+
+paidContract 'Оплачено' (Act a) = PARTITION UNGROUP paidNotPaymentAgreementAct
                                                         LIMIT sum(a) (-) paidPayment(a) (-) paidAgreement(a)
                                                         ORDER date(a),a 
                                                         BY contract(a) MATERIALIZED; 
