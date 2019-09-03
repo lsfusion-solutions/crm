@@ -41,7 +41,9 @@ addIssue 'Добавить' (Customer c) {
 in 'Отм.' = DATA LOCAL BOOLEAN (Contact.Contact);
 
 sendEmailToContacts 'Написать письмо' (Contact.Contact c) {
-    in(c) <- TRUE IF NOT (GROUP SUM 1 IF in(Contact.Contact cc));
+    IF NOT (GROUP SUM 1 IF in(Contact.Contact cc)) THEN {
+        in(c) <- TRUE;
+    }
     open(LINK('mailto:' + (GROUP CONCAT email(Contact.Contact cc) IF in(cc), ',')));
     in(Contact.Contact cc) <- NULL;
 }
