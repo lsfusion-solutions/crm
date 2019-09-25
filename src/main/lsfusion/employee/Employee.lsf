@@ -124,7 +124,7 @@ FORM dialogEmployees 'Сотрудники'
 ;
 
 NAVIGATOR {
-    NEW FOLDER employeeFolder 'Персонал' BEFORE masterData WINDOW toolbar {
+    NEW FOLDER employeeFolder 'Персонал' BEFORE masterData WINDOW toolbar IMAGE '/images/employee.png' {
         NEW employees;
     }
 }
