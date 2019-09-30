@@ -33,7 +33,7 @@ street 'Улица' = DATA ISTRING[50] (Address) CHARWIDTH 20;
 houseNumber 'Дом' = DATA ISTRING[20] (Address) CHARWIDTH 6;
 officeNumber 'Офис' = DATA ISTRING[20] (Address) CHARWIDTH 6;
 extra 'Дополнительно' = DATA ISTRING[200](Address) CHARWIDTH 20;
-name 'Адрес' (Address a) = CONCAT ', ', region(a), district(a), locality(a), street(a), 'дом ' + houseNumber(a), 'офис ' + officeNumber(a), extra(a);
+name 'Адрес' (Address a) = CONCAT ', ', region(a) + ' область', district(a) + ' район', locality(a), street(a), 'дом ' + houseNumber(a), 'офис ' + officeNumber(a), extra(a);
 
 FORM addresses 'Адреса'
     OBJECTS a = Address
