@@ -5,7 +5,7 @@ REQUIRE Customer, LegalEntity;
 NAMESPACE Doc;
 
 NAVIGATOR {
-    NEW FOLDER contractFolder 'Документы' BEFORE masterData WINDOW toolbar IMAGE '/images/document.png' { }
+    NEW FOLDER contractFolder 'Документы' BEFORE masterData WINDOW toolbar IMAGE 'document.png' { }
 }
 
 CLASS ABSTRACT Document 'Документ';

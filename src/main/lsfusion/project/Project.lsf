@@ -47,7 +47,7 @@ FORM dialogProjects 'Проекты'
 ;
 
 NAVIGATOR {
-    NEW FOLDER project 'Проекты' BEFORE masterData WINDOW toolbar IMAGE '/images/project.png' {
+    NEW FOLDER project 'Проекты' BEFORE masterData WINDOW toolbar IMAGE 'project.png' {
         NEW projects;
     }
 }
