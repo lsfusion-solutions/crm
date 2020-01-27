@@ -31,7 +31,7 @@ importIssue 'Импорт задач' (External e) {
         LOCAL status_id = INTEGER (INTEGER);
             
         LOCAL file = FILE ();
-        EXTERNAL SQL path(e) EXEC 'SELECT issues.id, subject, description, due_date, issues.created_on, issues.updated_on, start_date, done_ratio, estimated_hours, project_id, authors.login AS author_login, assigned_to.login AS assigned_to_login, trackers.name AS tracker_name, issues.status_id AS status_id FROM issues LEFT JOIN users authors ON issues.author_id = authors.id LEFT JOIN users assigned_to ON issues.assigned_to_id = assigned_to.id LEFT JOIN trackers ON issues.tracker_id = trackers.id' TO file;
+        EXTERNAL SQL path(e) EXEC 'SELECT issues.id, subject, issues.description, due_date, issues.created_on, issues.updated_on, start_date, done_ratio, estimated_hours, project_id, authors.login AS author_login, assigned_to.login AS assigned_to_login, trackers.name AS tracker_name, issues.status_id AS status_id FROM issues LEFT JOIN users authors ON issues.author_id = authors.id LEFT JOIN users assigned_to ON issues.assigned_to_id = assigned_to.id LEFT JOIN trackers ON issues.tracker_id = trackers.id' TO file;
 
         IMPORT TABLE FROM file() TO id, subject, description, due_date, created_on, updated_on, start_date, done_ratio, estimated_hours, 
                                                       project_id, author_login, assigned_to_login, tracker_name, status_id;
