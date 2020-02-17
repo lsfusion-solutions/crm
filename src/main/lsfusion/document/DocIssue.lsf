@@ -68,7 +68,7 @@ NAVIGATOR {
     }
 }
 
-WHEN SET (Document d IS Document) AND in(type(d), TaskTemplate t) DO {
+WHEN SET (Document d IS Document AND in(type(d), TaskTemplate t)) DO {
     NEW i = Issue {
         tracker(i) <- tracker(t);
         name(i) <- subject(t);
