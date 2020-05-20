@@ -23,20 +23,20 @@ FORM actTotalDashboard 'Итоги по актам'
     
     OBJECTS m = Month
     PROPERTIES number(m) SHOWIF NULL 
-    ORDER number(m)
+    ORDERS number(m)
     
     OBJECTS (l = LegalEntity, t = ContractType)
     PROPERTIES READONLY 'Организация' = name(l), 'Тип договора' = name(t), sum(y, l, t) BACKGROUND RGB (255, 255, 222), 
                          sum(m, y, l, t) COLUMNS (m) HEADER staticCaption(m)
     FILTERS sum(y, l, t), t == filterContractType() OR NOT filterContractType()
-    ORDER name(l)
+    ORDERS name(l)
     
     OBJECTS a = Act
     PROPERTIES (a) READONLY id, numberContract, numberAgreement, number, date, fromDate, toDate, name, nameCompany,
                             nameType, sum, nameSendingWay, dateSending, dateReceiving, dateClosing, note, textString
     PROPERTIES (a) NEWSESSION NEW, EDIT, DELETE 
     FILTERS legalEntity(a) == l, type(contract(a)) == t, extractYear(date(a)) == y
-    ORDER date(a)
+    ORDERS date(a)
     
     EVENTS ON INIT {
         SEEK actTotalDashboard.y = currentYear();

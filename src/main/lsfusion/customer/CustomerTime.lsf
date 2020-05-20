@@ -30,12 +30,12 @@ FORM customerTimeDashboard 'Выставление счетов'
     OBJECTS c = Customer
     PROPERTIES READONLY name(c), quantityHours(c, m, y), hours(c, m, y), hoursWithoutDocs(c, m, y)
     FILTERS quantityHours(c, m, y) OR hours(c, m, y)
-    ORDER name(c)
+    ORDERS name(c)
     
     OBJECTS t = TimeEntry
     PROPERTIES (t) READONLY id, hours, commentsString, date, nameActivity, nameProject, nameEmployee, numberIssue, nameIssue
     FILTERS customer(t) == c, month(t) == m, year(t) == y
-    ORDER date(t) DESC
+    ORDERS date(t) DESC
           
     OBJECTS st = IssueStatus
     PROPERTIES (st) READONLY name
@@ -48,7 +48,7 @@ FORM customerTimeDashboard 'Выставление счетов'
                             estimatedHours, hours, nameProject, nameAuthor, nameAssignedTo, nameTracker, numberAgreement, nameAgreement, numberContract, nameContract
     PROPERTIES DRAW is TOOLBAR changeStatus(is), setAgreement(c), setContract(c), open(is)
     FILTERS customer(is) == c, status(is) == st
-    ORDER number(is) DESC
+    ORDERS number(is) DESC
     
     OBJECTS df = DATE PANEL, dt = DATE PANEL 
     PROPERTIES dFrom 'Дата с' = VALUE (df), dTo 'Дата по' =  VALUE (dt), nameFilterProject(c) PANEL, printCustomerReport(c, df, dt), withoutAgreements()

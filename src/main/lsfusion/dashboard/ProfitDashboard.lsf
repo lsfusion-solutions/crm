@@ -52,12 +52,12 @@ FORM profit 'Прибыль по клиентам'
     PROPERTIES READONLY BACKGROUND backgroundGroup() receiptCurrency(c, g, df, dt) COLUMNS (g) HEADER name(g), 'Прочее' = receiptCurrencyOther(c, df, dt)
     FILTERS shipment(c, df, dt) OR receipt(c, df, dt)
     FILTERGROUP active FILTER 'Активные' NOT inactive(c) DEFAULT 
-    ORDER name(c)
+    ORDERS name(c)
     
     OBJECTS p = Payment
     PROPERTIES (p) READONLY id, nameLegalEntity, nameCustomer, numberContract, nameTypeContract, numberAct, number, date, 
                                                        year, monthNumber, nameType, sum, shortNameCurrency, sumCurrency, note
-    ORDER date(p)
+    ORDERS date(p)
     FILTERS customer(p) == c
     FILTERGROUP paymentInterval
         FILTER 'За интервал' date(p) >= df AND date(p) <= dt DEFAULT
@@ -89,12 +89,12 @@ FORM profit 'Прибыль по клиентам'
     PROPERTIES READONLY number(m), 'Месяц' = staticCaption(m), year 'Год' = VALUE (y)
     PROPERTIES (c, m, y, df, dt) READONLY receiptCurrency, shipmentCurrency, diff, diffPercent
     FILTERS shipment(c, m, y, df, dt) OR receipt(c, m, y, df, dt)
-    ORDER year, number(m)
+    ORDERS year, number(m)
     
     OBJECTS pc = (pro = Project, con = Contract)
     PROPERTIES READONLY 'Проект' = name(pro), 'Договор' = description(con), 'Номер договора' = number(con), 'Наименование договора' = name(con), shipmentCurrency(pro, con)
     FILTERS shipmentCurrency(pro, con), customer(con) == c
-    ORDER name(pro)
+    ORDERS name(pro)
     
     OBJECTS pr = Project
     PROPERTIES READONLY name(pr), shipmentCurrency(pr, df, dt)
@@ -104,18 +104,18 @@ FORM profit 'Прибыль по клиентам'
     PROPERTIES READONLY name(epr)
     PROPERTIES (pr, epr, df, dt) READONLY hours, shipment, shipmentCurrency
     FILTERS shipmentCurrency(pr, epr, df, dt)
-    ORDER name(epr)
+    ORDERS name(epr)
     
     OBJECTS tpr = TimeEntry
     PROPERTIES (tpr) READONLY id, hours, commentsString, date, nameActivity, numberIssue, nameIssue
     FILTERS employee(tpr) == epr, date(tpr) >= df AND date(tpr) <= dt, project(tpr) == pr
-    ORDER date(tpr)
+    ORDERS date(tpr)
     
     OBJECTS ct = Contract
     PROPERTIES (ct) READONLY description, number, name, nameCustomer
     PROPERTIES READONLY shipmentCurrency(pr, ct)
     FILTERS shipmentCurrency(pr, ct) > 0.0
-    ORDER shipmentCurrency(pr, ct) DESC 
+    ORDERS shipmentCurrency(pr, ct) DESC 
 ;
 
 DESIGN profit {

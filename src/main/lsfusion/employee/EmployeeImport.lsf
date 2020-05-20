@@ -118,7 +118,7 @@ FORM exportEmployees 'Экспорт сотрудников'
     OBJECTS e = Employee
     PROPERTIES (e) id, idLegalEntity, login, lastName, firstName, middleName, namePosition, email, skype, note, phone
     PROPERTIES number(e, t) COLUMNS (t) HEADER name(t)
-    ORDER lastName(e)  
+    ORDERS lastName(e)  
 ;
 
 exportEmployees 'Экспорт сотрудников' () {

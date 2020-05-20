@@ -43,7 +43,7 @@ FORM patterns 'Заготовки'
     PROPERTIES(p) READONLYIF isReadonly() order, note, text
     PROPERTIES(p) SHOWIF isReadonly() NEWSESSION NEW, EDIT, DELETE
     PROPERTIES(p) SHOWIF isEditable() new = NEW, delete = DELETE
-    ORDER order(p)
+    ORDERS order(p)
 ;
 
 @extendFormEditable(patterns);
@@ -51,7 +51,7 @@ FORM patterns 'Заготовки'
 FORM dialogPatterns 'Заготовки'
     OBJECTS p = Pattern
     PROPERTIES(p) READONLY order, note, text
-    ORDER order(p)
+    ORDERS order(p)
     
     LIST Pattern OBJECT p
 ;

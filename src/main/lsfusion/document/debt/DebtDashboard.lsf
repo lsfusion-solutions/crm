@@ -208,7 +208,7 @@ FORM debtDashboard 'Контроль задолженности'
                                                          shortNameCurrency, sumCurrency, sum, paid, note
     PROPERTIES BACKGROUND backgroundDebt(d) numberAct(d) AFTER numberAgreement(d)
     PROPERTIES (d) TOOLBAR editContract, showCustomerDashboard SHOWIF customer(d)
-    ORDER date(d)
+    ORDERS date(d)
     FILTERS  contractType(d) == filterDebtContractType() OR NOT filterDebtContractType(),
              (date(d) >= filterDateFrom() OR NOT filterDateFrom()) AND (date(d) <= filterDateTo() OR NOT filterDateTo())
     FILTERGROUP paid FILTER 'Не оплачено' NOT paid(d) >= sum(d) DEFAULT 
@@ -227,7 +227,7 @@ FORM debtDashboard 'Контроль задолженности'
     OBJECTS ct = (c = Customer, t = ContractType)
     PROPERTIES READONLY name(c), name(t), sumDebt(c, t, dd), sumDebtNoProblem(c, t, dd), dateFirstDebt(c, t, dd)
     FILTERS sumDebt(c, t, dd), t == filterCustomerContractType() OR NOT filterCustomerContractType()
-    ORDER name(c), name(t)
+    ORDERS name(c), name(t)
     
     OBJECTS db = Debt
     PROPERTIES (db) READONLY BACKGROUND backgroundDebt(db) date, numberContract, nameContract, nameLegalEntity, nameCompany, numberAgreement, nameAgreement,
@@ -236,11 +236,11 @@ FORM debtDashboard 'Контроль задолженности'
     PROPERTIES (db) TOOLBAR showCustomerDashboard SHOWIF customer(db)
     FILTERS customer(db) == c, date(db) <= dd, type(contract(db)) == t
     FILTERGROUP notPaid FILTER 'Неоплаченные' sum(db) (-) paid(db, dd) > 0 DEFAULT 
-    ORDER date(db)
+    ORDERS date(db)
     
     OBJECTS ev = Event
     PROPERTIES (ev) READONLY name, nameType, nameEmployee, nameContact, phoneContact, date, time, dateNext, descriptionString, additionString
-    ORDER date(ev), time(ev)
+    ORDERS date(ev), time(ev)
     FILTERS customer(ev) == c
     FILTERGROUP debt FILTER 'По задолженности' debt(ev) == db
 ;

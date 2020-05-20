@@ -93,7 +93,7 @@ EXTEND FORM agreement
     PROPERTIES (d) date, sumCurrency SHOWIF inCurrency(contract(o)), sum, paid, note, problem
     PROPERTIES addDebt(o) DRAW d TOOLBAR 
     PROPERTIES (d) DELETE 
-    ORDER date(d)
+    ORDERS date(d)
     FILTERS agreement(d) == o
 ;
 

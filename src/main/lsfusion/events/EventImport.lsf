@@ -61,7 +61,7 @@ FORM exportEvents 'Экспорт событий'
     OBJECTS p = Event
     PROPERTIES (p) id, name, nameType, idCustomer, idLegalEntity, idEmployee, idContact, date, time, dateNext, 
                    description, addition, idContract, idAgreement, idAct
-    ORDER date(p)
+    ORDERS date(p)
 ;
 
 exportEvents 'Экспорт событий' () {

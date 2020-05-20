@@ -121,7 +121,7 @@ FORM absences 'Отсутствие сотрудников'
     OBJECTS o = Absence LAST 
     PROPERTIES(o) READONLY id, nameEmployee, nameReason, dateFrom, dateTo, hours, workingHours, date, note
     PROPERTIES(o) NEWSESSION NEW, EDIT SHOWIF isEditable(o), DELETE SHOWIF isEditable(o)
-    ORDER date(o)
+    ORDERS date(o)
 
     OBJECTS d = DATE
     PROPERTIES READONLY VALUE(d), extractDOWName(d), hours(o, d)
@@ -139,7 +139,7 @@ DESIGN absences {
 FORM dialogAbsences 'Отсутствие сотрудников'
     OBJECTS o = Absence LAST 
     PROPERTIES(o) READONLY id, nameEmployee, nameReason, dateFrom, dateTo, hours, workingHours, date, note
-    ORDER date(o)
+    ORDERS date(o)
     
     LIST Absence OBJECT o
 ;

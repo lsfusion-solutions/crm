@@ -37,7 +37,7 @@ FORM timesheetDashboard 'Табель рабочего времени'
     PROPERTIES (t) READONLY id, hours, commentsString, date, nameActivity, nameProject, nameCustomer, numberIssue, nameIssue, descriptionAbsense
     PROPERTIES DRAW t TOOLBAR changeAbsense(t), addTimeEntry(d)
     PROPERTIES (t) SHOWIF NOT disableEditing(t) NEWSESSION EDIT, DELETE 
-    ORDER date(t)
+    ORDERS date(t)
     FILTERS employee(t) == e
     FILTERGROUP tday FILTER 'За день' date(t) == d DEFAULT 
                      FILTER 'За месяц' extractMonth(date(t)) == m AND extractYear(date(t)) == y
@@ -46,7 +46,7 @@ FORM timesheetDashboard 'Табель рабочего времени'
     OBJECTS a = Absence
     PROPERTIES (a) READONLY id, nameEmployee, nameReason, dateFrom, dateTo, hours, workedHours, workingHours, date, note
     PROPERTIES (a) NEWSESSION NEW, EDIT SHOWIF isEditable(a), DELETE SHOWIF isEditable(a)
-    ORDER dateFrom(a)
+    ORDERS dateFrom(a)
     FILTERS employee(a) == e
     FILTERGROUP aday FILTER 'За день' dateFrom(a) == d DEFAULT
                      FILTER 'За месяц' extractMonth(dateFrom(a)) == m AND extractYear(dateFrom(a)) == y
@@ -63,7 +63,7 @@ FORM timesheetDashboard 'Табель рабочего времени'
     OBJECTS ee = Employee
     PROPERTIES READONLY name(ee), absenceHours(ee, yy, mm), absenceHours(ee, dd) COLUMNS (dd) HEADER extractDay(dd)
     PROPERTIES extractDay(dd) SHOWIF NULL 
-    ORDER extractDay(dd), name(ee)
+    ORDERS extractDay(dd), name(ee)
     
     FILTERS iterate(dd, toDateFormat('01' + lpad(TEXT (number(mm)), 2, '0') + yy, 'DDMMYYYY'),
                                     lastDayOfMonth(toDateFormat('01' + lpad(TEXT (number(mm)), 2, '0') + yy, 'DDMMYYYY')))
@@ -78,7 +78,7 @@ FORM timesheetDashboard 'Табель рабочего времени'
     
     OBJECTS c = Customer
     PROPERTIES READONLY name(c), hours(em, c, df, dt)
-    ORDER hours(em, c, df, dt) DESC 
+    ORDERS hours(em, c, df, dt) DESC 
     FILTERS hours(em, c, df, dt)
     
     EVENTS ON INIT {

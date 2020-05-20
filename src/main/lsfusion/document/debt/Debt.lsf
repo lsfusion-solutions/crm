@@ -168,7 +168,7 @@ EXTEND FORM contract
     PROPERTIES (o) sumMonth, paymentDay, currencyDay SHOWIF inCurrency(o), prevMonthCurrency SHOWIF inCurrency(o), createDebts SHOWIF (sumMonth(o) AND paymentDay(o)), createFullDebt
     OBJECTS d = Debt
     PROPERTIES (d) date, sumCurrency SHOWIF inCurrency(o), sum, dateCurrency SHOWIF inCurrency(o), note, problem, NEW, DELETE
-    ORDER date(d)
+    ORDERS date(d)
     FILTERS contract(d) == o
 ;
 
@@ -216,17 +216,17 @@ FORM debtsPlan 'План платежей'
     OBJECTS t = ContractType
     OBJECTS m = Month
     PROPERTIES READONLY number(m), 'Месяц' = staticCaption(m), sumDebt(m, y), sumDebt(m, y, t) COLUMNS (t) HEADER name(t), paid(m, y)
-    ORDER number(m)
+    ORDERS number(m)
     FILTERS sumDebt(y, t)
     
     OBJECTS d = Debt
     PROPERTIES (d) READONLY date, numberContract, nameContract, nameContractType, nameCustomer, nameLegalEntity, shortNameCurrency, sumCurrency, sum, dateCurrency, note
-    ORDER date(d)
+    ORDERS date(d)
     FILTERS extractMonth(date(d)) == m, extractYear(date(d)) == y
     
     OBJECTS p = Payment
     PROPERTIES (p) READONLY id, nameLegalEntity, nameCustomer, nameCompany, number, date, monthNumber, nameType, sum, shortNameCurrency, sumCurrency, note
-    ORDER date(p)
+    ORDERS date(p)
     FILTERS extractYear(date(p)) == y, extractMonth(date(p)) == m
     
     EVENTS ON INIT {

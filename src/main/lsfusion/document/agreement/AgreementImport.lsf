@@ -87,7 +87,7 @@ FORM exportAgreements 'Экспорт соглашений'
     PROPERTIES (c) id, idContract, idAuthorisedPersonCompany, authorisedDocumentCompany, idAuthorisedPersonLegalEntity, 
                    authorisedDocumentLegalEntity, number, date, name, nameType, sum, nameSendingWay, dateSending, dateReceiving, 
                    dateClosing, note, text, terms
-    ORDER date(c)
+    ORDERS date(c)
 ;
 
 exportAgreements 'Экспорт соглашений' () {

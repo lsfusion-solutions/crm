@@ -31,7 +31,7 @@ FORM projects 'Проекты'
     OBJECTS o = Project
     PROPERTIES(o) READONLYIF isReadonly() id, name, identifier, nameCustomer, inactive
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
-    ORDER name(o)
+    ORDERS name(o)
     FILTERGROUP active FILTER 'Активные' NOT inactive(o) DEFAULT 
 ;
 
@@ -40,7 +40,7 @@ FORM projects 'Проекты'
 FORM dialogProjects 'Проекты'
     OBJECTS o = Project
     PROPERTIES(o) READONLY id, name, identifier, nameCustomer, inactive
-    ORDER name(o)
+    ORDERS name(o)
     FILTERGROUP active FILTER 'Активные' NOT inactive(o) DEFAULT 
     
     LIST Project OBJECT o

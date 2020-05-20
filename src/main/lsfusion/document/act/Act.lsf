@@ -248,7 +248,7 @@ FORM acts 'Акты выполненных работ'
     PROPERTIES(o) READONLYIF isReadonly() id, numberContract, numberAgreement, number, date, fromDate, toDate, name, 
                              nameType, sum, nameSendingWay, dateSending, dateReceiving, dateClosing, note, textString
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
-    ORDER date(o)
+    ORDERS date(o)
 ;
 
 @extendFormEditable(acts);
@@ -256,7 +256,7 @@ FORM acts 'Акты выполненных работ'
 FORM dialogActs 'Акты выполненных работ'
     OBJECTS o = Act LAST 
     PROPERTIES(o) READONLY id, numberContract, numberAgreement, number, date, fromDate, toDate, name, nameType, sum, nameSendingWay, dateSending, dateReceiving, dateClosing, note, textString
-    ORDER date(o)
+    ORDERS date(o)
 
     FILTERGROUP active
         FILTER 'Активные' NOT dateClosing(o) <= currentDate() DEFAULT
@@ -284,7 +284,7 @@ EXTEND FORM contract
     PROPERTIES (ac) READONLY id, numberContract, numberAgreement, number, date, fromDate, toDate, name, nameType, sum, nameSendingWay, dateSending, dateReceiving, dateClosing, note, textString
     PROPERTIES DRAW ac TOOLBAR addAct(o)
     PROPERTIES(ac) NESTEDSESSION EDIT, DELETE
-    ORDER date(ac)
+    ORDERS date(ac)
     FILTERS contract(ac) == o
     FILTERGROUP activeAc FILTER 'Активные' active(ac) DEFAULT 
 ;

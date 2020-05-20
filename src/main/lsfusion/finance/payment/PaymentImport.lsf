@@ -124,7 +124,7 @@ importPayments 'Импорт платежей' () {
 FORM exportPayments 'Экспорт платежей'
     OBJECTS p = Payment
     PROPERTIES (p) id, idCompany, idLegalEntity, idContract, idAgreement, idAct, nameType, number, date, sum, sidCurrency, note
-    ORDER date(p)
+    ORDERS date(p)
 ;
 
 exportPayments 'Экспорт платежей' () {

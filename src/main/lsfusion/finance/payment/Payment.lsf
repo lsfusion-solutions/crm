@@ -151,16 +151,16 @@ FORM payments 'Платежи'
     OBJECTS o = Payment LAST 
     PROPERTIES(o) READONLY id, nameLegalEntity,nameCustomer, nameCompany, number, date, 
                            year, monthNumber, nameType, sum, shortNameCurrency, sumCurrency, note, numberAccount, numberAccountFrom
-    ORDER date(o), nameLegalEntity(o), nameCompany(o)
+    ORDERS date(o), nameLegalEntity(o), nameCompany(o)
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
-    ORDER date(o)
+    ORDERS date(o)
 ;
 
 FORM dialogPayments 'Платежи'
     OBJECTS o = Payment LAST 
     PROPERTIES(o) READONLY id, nameLegalEntity, nameCustomer, nameCompany, number, date, 
                            year, monthNumber, nameType, sum, shortNameCurrency, sumCurrency, note, numberAccount, numberAccountFrom
-    ORDER date(o), nameLegalEntity(o), nameCompany(o)
+    ORDERS date(o), nameLegalEntity(o), nameCompany(o)
     
     LIST Payment OBJECT o
 ;

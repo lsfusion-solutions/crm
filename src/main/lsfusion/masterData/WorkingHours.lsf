@@ -17,7 +17,7 @@ FORM dialogEmployees 'Сотрудники'
     OBJECTS e = Employee
     PROPERTIES in(e), name(e) READONLY 
     FILTERGROUP active FILTER 'Активные' active(e)
-    ORDER name(e)
+    ORDERS name(e)
 ;
 
 FORM workingHours 'Рабочее время'
@@ -27,20 +27,20 @@ FORM workingHours 'Рабочее время'
     
     OBJECTS e = Employee 
     PROPERTIES READONLY name(e) SHOWIF NULL 
-    ORDER name(e)
+    ORDERS name(e)
     FILTERS in(e)
     
     OBJECTS d = DATE 
     PROPERTIES dd = VALUE(d) READONLY, workingHours(d), workingHours(d, e) COLUMNS (e) HEADER name(e) BACKGROUND RGB (255, 255, 222) IF overWorkingHours(d, e)
     PROPERTIES (d) READONLY extractDOWName, extractMonthName, 'Номер месяца' = extractMonthNumber
-    ORDER dd
+    ORDERS dd
     FILTERS iterate(d, df, dt)
     
     OBJECTS mm = Month
     OBJECTS yy = INTEGER 
     PROPERTIES 'Год' = VALUE (yy), monthHours(yy, mm) COLUMNS (mm) HEADER staticCaption(mm)
     PROPERTIES number(mm) SHOWIF NULL 
-    ORDER number(mm)   
+    ORDERS number(mm)   
     FILTERS monthHours(yy, mm)
 ;
 

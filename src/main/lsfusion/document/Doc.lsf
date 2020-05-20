@@ -91,7 +91,7 @@ backgroundCurrency (Document d) = RGB(232,232,255) IF inCurrency(d);
 FORM dialogDocuments 'Документы'
     OBJECTS d = Document
     PROPERTIES (d) READONLY date, nameDocType, number, name, nameCompany, nameCustomer, nameLegalEntity
-    ORDER date(d)
+    ORDERS date(d)
     
     LIST Document OBJECT d
 ;

@@ -92,13 +92,13 @@ FORM expenses 'Расходы'
     OBJECTS o = Expense
     PROPERTIES(o) READONLY nameCompany, nameLegalEntity, nameCustomer, date, datePayment, nameType, sum, shortNameCurrency, sumCurrency, numberAccount, numberAccountTo, noteString
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
-    ORDER date(o), datePayment(o)
+    ORDERS date(o), datePayment(o)
 ;
 
 FORM dialogExpenses 'Расходы'
     OBJECTS o = Expense
     PROPERTIES(o) READONLY nameCompany, nameLegalEntity, nameCustomer, date, datePayment, nameType, sum, shortNameCurrency, sumCurrency, numberAccount, numberAccountTo, noteString
-    ORDER date(o), datePayment(o)
+    ORDERS date(o), datePayment(o)
     
     LIST Expense OBJECT o
 ;

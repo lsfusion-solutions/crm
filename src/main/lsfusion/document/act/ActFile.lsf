@@ -11,7 +11,7 @@ EXTEND FORM act
     OBJECTS f = DocumentFile
     PROPERTIES(f) READONLY date, time, nameUser, loginUser, nameFileType
     PROPERTIES(f) GRID note, open, DELETE 
-    ORDER date(f), time(f)
+    ORDERS date(f), time(f)
     FILTERS document(f) == o
     
     PROPERTIES (o) loadFile, openFile SHOWIF TRUE IF file(o)

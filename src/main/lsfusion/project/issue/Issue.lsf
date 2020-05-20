@@ -48,14 +48,14 @@ FORM issueStatus 'Статус задачи'
 FORM issueStatuses 'Статусы задачи'
     OBJECTS o = IssueStatus
     PROPERTIES(o) READONLY order, name, isClosed
-    ORDER order(o)
+    ORDERS order(o)
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
 ;
 
 FORM dialogIssueStatuses 'Статусы задачи'
     OBJECTS o = IssueStatus
     PROPERTIES(o) READONLY order SHOWIF NULL, name, isClosed
-    ORDER order(o)
+    ORDERS order(o)
     
     LIST IssueStatus OBJECT o
 ;
@@ -170,7 +170,7 @@ FORM issues 'Задачи'
     OBJECTS o = Issue LAST 
     PROPERTIES(o) READONLY number, name, descriptionString, dateTo, dateTimeCreated, dateTimeUpdated, dateFrom, doneRatio, estimatedHours, nameProject, 
                            nameCustomer, nameAuthor, nameAssignedTo, nameTracker, nameStatus
-    ORDER dateTimeCreated(o), number(o)
+    ORDERS dateTimeCreated(o), number(o)
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
 ;
 
@@ -178,7 +178,7 @@ FORM dialogIssues 'Задачи'
     OBJECTS o = Issue LAST 
     PROPERTIES(o) READONLY number, name, descriptionString, dateTo, dateTimeCreated, dateTimeUpdated, dateFrom, doneRatio, estimatedHours, nameProject, 
                            nameAuthor, nameAssignedTo, nameTracker, nameStatus 
-    ORDER number(o)
+    ORDERS number(o)
     LIST Issue OBJECT o
 ;
 NAVIGATOR {

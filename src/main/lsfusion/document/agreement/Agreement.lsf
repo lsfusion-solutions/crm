@@ -230,13 +230,13 @@ FORM agreements 'Соглашения'
     OBJECTS o = Agreement LAST 
     PROPERTIES(o) READONLY id, nameCompany, nameLegalEntity, numberContract, number, date, name, nameType, sum, nameSendingWay, dateSending, dateReceiving, dateClosing, note, textString
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
-    ORDER date(o)
+    ORDERS date(o)
 ;
 
 FORM dialogAgreements 'Соглашения'
     OBJECTS o = Agreement LAST 
     PROPERTIES(o) READONLY id, numberContract, number, date, name, nameType, sum, nameSendingWay, dateSending, dateReceiving, dateClosing, note, textString
-    ORDER date(o)
+    ORDERS date(o)
 
     FILTERGROUP active
         FILTER 'Активные' NOT dateClosing(o) <= currentDate() DEFAULT
@@ -263,7 +263,7 @@ EXTEND FORM contract
     PROPERTIES (ag) READONLY id, numberContract, number, date, name, nameType, sum, nameSendingWay, dateSending, dateReceiving, dateClosing, note, textString
     PROPERTIES DRAW ag TOOLBAR addAgreement(o)
     PROPERTIES(ag) NESTEDSESSION EDIT, DELETE
-    ORDER date(ag)
+    ORDERS date(ag)
     FILTERS contract(ag) == o
     FILTERGROUP activeAg FILTER 'Активные' active(ag) DEFAULT 
 ;

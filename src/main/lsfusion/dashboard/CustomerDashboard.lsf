@@ -59,7 +59,7 @@ FORM dashboardCustomer 'Работа с клиентами'
     PROPERTIES addLegalEntity(c) DRAW le TOOLBAR
     PROPERTIES (le) NEWSESSION EDIT, DELETE 
     FILTERS customer(le) == c
-    ORDER name(le)
+    ORDERS name(le)
     
     OBJECTS ct = Contact.Contact
     PROPERTIES (ct) in
@@ -67,14 +67,14 @@ FORM dashboardCustomer 'Работа с клиентами'
     PROPERTIES DRAW ct TOOLBAR sendEmailToContacts(ct), addContact(c)
     PROPERTIES (ct) NEWSESSION EDIT, DELETE 
     FILTERS customer(ct) == c
-    ORDER lastName(ct)
+    ORDERS lastName(ct)
     
     OBJECTS cr = Contract
     PROPERTIES (cr) READONLY id, nameLegalEntity, nameCompany, number, date, name, sum, paid, nameType, nameSendingWay, dateSigningCompany, dateSending, dateSigningCustomer, dateReceiving, dateTo, dateClosing, note, textString
     PROPERTIES (cr) BACKGROUND backgroundCurrency(cr) sumCurrency, paidCurrency
     PROPERTIES (cr) NEWSESSION EDIT 
     FILTERS customer(legalEntity(cr)) == c OR customer(company(cr)) == c
-    ORDER date(cr) DESC
+    ORDERS date(cr) DESC
     
     FILTERGROUP activeContract
         FILTER 'Активные' NOT dateClosing(cr) <= currentDate() DEFAULT
@@ -83,18 +83,18 @@ FORM dashboardCustomer 'Работа с клиентами'
     PROPERTIES (ag) READONLY id, number, date, name, nameType, sum, nameSendingWay, dateSending, dateReceiving, dateClosing, note, textString
     PROPERTIES (ag) NEWSESSION EDIT 
     FILTERS contract(ag) == cr
-    ORDER date(ag) DESC
+    ORDERS date(ag) DESC
     
     OBJECTS ac = Act
     PROPERTIES (ac) READONLY id, numberAgreement, number, date, fromDate, toDate, name, paid, nameType, sum, nameSendingWay, dateSending, dateReceiving, dateClosing, note, textString
     PROPERTIES (ac) NEWSESSION EDIT 
     FILTERS contract(ac) == cr
-    ORDER date(ac) DESC
+    ORDERS date(ac) DESC
 
     OBJECTS ppm = Payment
     PROPERTIES (ppm) READONLY id, numberAct, number, date, year, monthNumber, nameType, sum, nameCurrency, shortNameCurrency, sumCurrency, note 
     FILTERS contract(ppm) == cr
-    ORDER date(ppm) DESC
+    ORDERS date(ppm) DESC
     
     PROPERTIES nameFilterLegalEntity(c)
     
@@ -102,20 +102,20 @@ FORM dashboardCustomer 'Работа с клиентами'
     PROPERTIES (pm) READONLY id, nameLegalEntity, numberContract, nameContract, nameTypeContract, numberAgreement, nameAgreement, 
                              numberAct, number, date, year, monthNumber, sum, nameCurrency, shortNameCurrency, sumCurrency, note 
     FILTERS customer(legalEntity(pm)) == c, legalEntity(pm) == filterLegalEntity(c) OR NOT filterLegalEntity(c)
-    ORDER date(pm) DESC
+    ORDERS date(pm) DESC
     
     OBJECTS ev = Event
     PROPERTIES (ev) READONLY id, name, nameType, nameLegalEntity, nameEmployee, nameContact, date, time, dateNext, descriptionString, description PANEL, addition PANEL 
     PROPERTIES addEvent(c) DRAW ev TOOLBAR 
     PROPERTIES (ev) NEWSESSION EDIT, DELETE 
     FILTERS customer(ev) == c
-    ORDER date(ev) DESC
+    ORDERS date(ev) DESC
     
     OBJECTS pr = Project
     PROPERTIES (pr) READONLY id, name, identifier
     FILTERS customer(pr) == c
     FILTERGROUP active FILTER 'Активные' active(pr) DEFAULT 
-    ORDER name(pr) DESC
+    ORDERS name(pr) DESC
     
     OBJECTS st = IssueStatus
     PROPERTIES (st) READONLY name
@@ -128,12 +128,12 @@ FORM dashboardCustomer 'Работа с клиентами'
                             estimatedHours, hours, nameProject, nameAuthor, nameAssignedTo, nameTracker, numberAgreement, nameAgreement, numberContract, nameContract
     PROPERTIES DRAW is TOOLBAR changeStatus(is), open(is)
     FILTERS customer(is) == c, status(is) == st, NOT inactive(project(is))
-    ORDER number(is) DESC
+    ORDERS number(is) DESC
     
     OBJECTS te = TimeEntry
     PROPERTIES (te) READONLY id, hours, commentsString, date, nameActivity, nameProject, nameEmployee, numberIssue, nameIssue
     FILTERS customer(te) == c
-    ORDER date(te) DESC
+    ORDERS date(te) DESC
     
     OBJECTS ss = Issue
     PROPERTIES(ss) in
@@ -144,13 +144,13 @@ FORM dashboardCustomer 'Работа с клиентами'
     FILTERS customer(ss) == c OR customer(project(ss)) == c
     FILTERGROUP open FILTER 'Открытые' NOT isClosed(status(ss)) DEFAULT 
     FILTERGROUP inner FILTER 'Внутренние' NOT external(ss) DEFAULT 
-    ORDER number(ss) DESC
+    ORDERS number(ss) DESC
     
     OBJECTS at = Attachment
     PROPERTIES (at) READONLY id, nameCustomer, number, date, nameType, note, nameCreatedUser, createdDate
     PROPERTIES DRAW at TOOLBAR openFile(at), addAttachment(c)
     PROPERTIES(at) NEWSESSION EDIT, DELETE
-    ORDER date(at) DESC 
+    ORDERS date(at) DESC 
     FILTERS customer(at) == c 
     
     OBJECTS d = Debt
@@ -160,7 +160,7 @@ FORM dashboardCustomer 'Работа с клиентами'
     OBJECTS e = Employee
     PROPERTIES READONLY name(e), roles(c, e)
     FILTERS in(c, e)
-    ORDER name(e)
+    ORDERS name(e)
 ;
 
 DESIGN dashboardCustomer {

@@ -142,7 +142,7 @@ FORM timeEntries 'Отметки времени'
     OBJECTS o = TimeEntry LAST 
     PROPERTIES(o) READONLYIF isReadonly() id, hours, commentsString, date, nameActivity, nameProject, nameCustomer, nameEmployee, numberIssue, nameIssue
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
-    ORDER date(o), id(o)
+    ORDERS date(o), id(o)
 ;
 
 @extendFormEditable(timeEntries);
@@ -150,7 +150,7 @@ FORM timeEntries 'Отметки времени'
 FORM dialogTimeEntries 'Отметки времени'
     OBJECTS o = TimeEntry LAST 
     PROPERTIES(o) READONLY id, hours, commentsString, date, nameActivity, nameProject, nameCustomer, nameEmployee, numberIssue, nameIssue
-    ORDER date(o), id(o)
+    ORDERS date(o), id(o)
     
     LIST TimeEntry OBJECT o
 ;

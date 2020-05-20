@@ -77,7 +77,7 @@ FORM expenses 'Расходы по сотруднику'
     OBJECTS o = Expense LAST 
     PROPERTIES(o) READONLY nameEmployee, year, nameMonth, numberMonth, nameType, sum
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
-    ORDER year(o), numberMonth(o), nameEmployee(o), nameType(o), sum(o)
+    ORDERS year(o), numberMonth(o), nameEmployee(o), nameType(o), sum(o)
     
     OBJECTS t = ExpenseType PANEL
     PROPERTIES name(t) SELECTOR
@@ -89,7 +89,7 @@ FORM expenses 'Расходы по сотруднику'
     OBJECTS e = Employee
     PROPERTIES name(e) READONLY, sum(e, y, m, t) COLUMNS (m) HEADER (staticCaption(m)) ON CHANGE changeSumExpense(e, y, m, t)
     PROPERTIES number(m) SHOWIF NULL 
-    ORDER name(e), number(m)
+    ORDERS name(e), number(m)
     
     FILTERGROUP active FILTER 'Активные' NOT inactive(e) DEFAULT
     
@@ -126,7 +126,7 @@ DESIGN expenses {
 FORM dialogExpenses 'Расходы по сотруднику'
     OBJECTS o = Expense LAST 
     PROPERTIES(o) READONLY nameEmployee, year, nameMonth, numberMonth, nameType, sum
-    ORDER year(o), numberMonth(o), nameEmployee(o), nameType(o), sum(o)
+    ORDERS year(o), numberMonth(o), nameEmployee(o), nameType(o), sum(o)
     
     LIST Expense OBJECT o
 ;
