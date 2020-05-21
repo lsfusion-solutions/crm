@@ -45,5 +45,5 @@ EXTEND FORM customer
     PROPERTIES name(e) READONLY, roles(o, e) ON CHANGE { SHOW dialogCustomerRoles OBJECTS c = o, e = e; }
     PROPERTIES DRAW e TOOLBAR addEmployee(o)
     FILTERS in(o, e)
-    ORDER name(e)
+    ORDERS name(e)
 ;
