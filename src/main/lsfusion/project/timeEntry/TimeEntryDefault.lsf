@@ -48,7 +48,7 @@ FORM timeEntryDefault 'Отметки времени по умолчанию'
     
     OBJECTS t = TimeEntryDefault
     PROPERTIES (t) date, percents ON CHANGE { SHOW timePercent OBJECTS t = t; }, NEW, DELETE
-    ORDER date(t)
+    ORDERS date(t)
     FILTERS employee(t) == e
 ;
 
