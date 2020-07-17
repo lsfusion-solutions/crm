@@ -109,7 +109,7 @@ FORM exportContracts 'Экспорт договоров'
     PROPERTIES (c) id, idCompany, idAuthorisedPersonCompany, authorisedDocumentCompany, idLegalEntity, idAuthorisedPersonLegalEntity, 
                    authorisedDocumentLegalEntity, number, date, name, sum, sidCurrency, nameType, nameGroup, nameSendingWay, 
                    dateSigningCompany, dateSending, dateSigningCustomer, dateReceiving, dateTo, dateClosing, note, text, terms
-    ORDER date(c)
+    ORDERS date(c)
 ;
 
 exportContracts 'Экспорт договоров' () {

@@ -27,7 +27,7 @@ FORM timePercent 'Процент времени'
     OBJECTS p = Project
     PROPERTIES READONLY id(p), 'Проект' = name(p), nameCustomer(p)
     PROPERTIES timePercent(t, p)
-    ORDER name(p)
+    ORDERS name(p)
     
     PROPERTIES sum 'Сумма, %' = GROUP SUM timePercent(t, Project pp)
     
@@ -44,11 +44,11 @@ DESIGN timePercent {
 FORM timeEntryDefault 'Отметки времени по умолчанию'
     OBJECTS e = Employee
     PROPERTIES (e) READONLY name
-    ORDER name(e)
+    ORDERS name(e)
     
     OBJECTS t = TimeEntryDefault
     PROPERTIES (t) date, percents ON CHANGE { SHOW timePercent OBJECTS t = t; }, NEW, DELETE
-    ORDER date(t)
+    ORDERS date(t)
     FILTERS employee(t) == e
 ;
 

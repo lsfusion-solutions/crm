@@ -65,7 +65,7 @@ EXTEND FORM migrationData PROPERTIES() importAttachments;
 FORM exportAttachments 'Экспорт документов клиентов'
     OBJECTS p = Attachment
     PROPERTIES (p) id, idCustomer, number, date, type, note, idCreatedUser, createdDate
-    ORDER date(p)
+    ORDERS date(p)
 ;
 
 exportAttachments 'Экспорт документов клиентов' () {

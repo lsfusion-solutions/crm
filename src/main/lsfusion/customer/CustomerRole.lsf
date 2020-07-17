@@ -23,7 +23,7 @@ FORM dialogCustomerEmployees 'Сотрудники'
     OBJECTS e = Employee
     PROPERTIES in(e)
     PROPERTIES(e) READONLY name, id, number, namePosition, nameLegalEntity
-    ORDER name(e)
+    ORDERS name(e)
     FILTERS NOT in(c, e)
     
     OBJECTS r = Role
@@ -45,5 +45,5 @@ EXTEND FORM customer
     PROPERTIES name(e) READONLY, roles(o, e) ON CHANGE { SHOW dialogCustomerRoles OBJECTS c = o, e = e; }
     PROPERTIES DRAW e TOOLBAR addEmployee(o)
     FILTERS in(o, e)
-    ORDER name(e)
+    ORDERS name(e)
 ;

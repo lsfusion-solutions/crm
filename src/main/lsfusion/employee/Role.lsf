@@ -19,12 +19,12 @@ FORM roles 'Роли'
     OBJECTS r = Role 
     PROPERTIES (r) READONLY name
     PROPERTIES (r) NEWSESSION NEW, EDIT, DELETE 
-    ORDER name(r)
+    ORDERS name(r)
 ;
 FORM dialogRoles 'Роли'
     OBJECTS r = Role 
     PROPERTIES (r) READONLY name
-    ORDER name(r)
+    ORDERS name(r)
     
     LIST Role OBJECT r
 ;

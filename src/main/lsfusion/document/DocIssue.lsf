@@ -47,13 +47,13 @@ nameAssignedTo 'Назначена' (TaskTemplate t) = name(assignedTo(t));
 FORM createIssue 'Создание задач'
     OBJECTS t = Type
     PROPERTIES (t) READONLY nameDocType, name
-    ORDER nameDocType(t), name(t)
+    ORDERS nameDocType(t), name(t)
     
     OBJECTS tt = TaskTemplate
     PROPERTIES in(t, tt)
     PROPERTIES (tt) name, nameTracker, subject, nameAuthor, nameAssignedTo, NEW, DELETE 
     FILTERGROUP in FILTER 'Отмеченные' in(t, tt)
-    ORDER name(tt)
+    ORDERS name(tt)
 ;
 
 DESIGN createIssue {

@@ -36,7 +36,7 @@ FORM customerReport 'Отчёт для клиента'
     OBJECTS i = Issue
     PROPERTIES (i) READONLY number, dateTimeCreated, estimatedHours, nameAuthor, nameAssignedTo, nameTracker, nameStatus, name
     PROPERTIES hours(i, df, dt) AFTER estimatedHours(i)
-    ORDER number(i)
+    ORDERS number(i)
     FILTERS customer(i) == c, timeEntries(i, df, dt),
             (withoutAgreements() AND NOT agreement(i)) OR NOT withoutAgreements() OR filterAgreement() OR filterContract(),
             project(i) == filterProject(c) OR NOT filterProject(c),
@@ -45,12 +45,12 @@ FORM customerReport 'Отчёт для клиента'
     
     OBJECTS t = TimeEntry
     PROPERTIES (t) READONLY nameEmployee, date, hours, nameActivity, commentsString
-    ORDER date(t)
+    ORDERS date(t)
     FILTERS issue(t) == i, date(t) >= df AND date(t) <= dt
     
     OBJECTS te = TimeEntry
     PROPERTIES (te) READONLY nameEmployee, date, hours, nameActivity, commentsString
-    ORDER date(te)
+    ORDERS date(te)
     FILTERS (customer(te) == c OR customer(project(te)) == c) AND NOT issue(te), date(te) >= df AND date(te) <= dt, 
             project(te) == filterProject(c) OR NOT filterProject(c), te IS TimeEntry AND NOT filterAgreement() AND NOT filterContract()
     

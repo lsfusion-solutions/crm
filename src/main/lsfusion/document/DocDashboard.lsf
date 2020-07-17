@@ -109,7 +109,7 @@ FORM docDashboard 'Обработка документов'
                             sumCurrency BACKGROUND backgroundCurrency(d), paidCurrency BACKGROUND backgroundCurrency(d),
                             sum, paid, dateLastPaid, balance
     PROPERTIES (d) READONLYIF isReadonly() dateSigningCompany, dateSending, nameSendingWay, dateSigningCustomer, dateReceiving, dateClosing
-    ORDER date(d)
+    ORDERS date(d)
     FILTERS docType(d) = filterDocType() OR NOT filterDocType(), company(d) == filterLegalEntity() OR NOT filterLegalEntity()
     FILTERGROUP open FILTER 'Открыт' NOT dateClosing(d) DEFAULT 
     

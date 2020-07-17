@@ -38,7 +38,7 @@ FORM profitMonthDashboard 'Прибыль по месяцам'
                         receipt(m, y, ct) COLUMNS (ct) HEADER name(ct) BACKGROUND backgroundReceipt(), receiptOther(m, y) BACKGROUND backgroundReceipt(),
                         receipt(m, y, cg) COLUMNS (cg) HEADER name(cg) BACKGROUND backgroundGroup(), receiptOtherGroups(m, y) BACKGROUND backgroundGroup(),
                         shipment(m, y, et) COLUMNS (et) HEADER name(et) BACKGROUND backgroundShipment(), shipmentOther(m, y) BACKGROUND backgroundShipment()
-    ORDER year, number(m)
+    ORDERS year, number(m)
     FILTERS y >= yf AND y <= yt, receipt(m, y) OR shipment(m, y), receipt(yf, yt, ct), shipment(yf, yt, et)
     
     OBJECTS p = Payment

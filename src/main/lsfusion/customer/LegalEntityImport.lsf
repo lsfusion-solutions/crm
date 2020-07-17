@@ -153,7 +153,7 @@ FORM exportLegalEntities 'Экспорт организаций'
                'Улица (физический)' = street(physicalAddress(l)), 'Дом (физический)' = houseNumber(physicalAddress(l)), 
                'Офис (физический)' = officeNumber(physicalAddress(l)), numberAccount(l), 'ID банка' = id(bank(account(l))), 
                numberBank(l), nameBank(l), addressBank(l), mfoBank(l)
-    ORDER nameCustomer(l), name(l)   
+    ORDERS nameCustomer(l), name(l)   
 ;
 
 exportLegalEntities 'Экспорт организаций' () {

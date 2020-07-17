@@ -24,12 +24,12 @@ balanceAccountsCurrency 'Сумма остатков в валюте' (DATE d) =
 FORM accountBalances 'Остатки по счетам'
     OBJECTS a = Account
     PROPERTIES (a) READONLY nameLegalEntity, number, nameBank, addressBank, MFOBank, note, rate, dateTo, balance, balanceCurrency
-    ORDER nameLegalEntity(a)
+    ORDERS nameLegalEntity(a)
     FILTERGROUP active FILTER 'Активные' active(a) DEFAULT 
     
     OBJECTS l = AccountLedger
     PROPERTIES (l) READONLY date, note, sum
-    ORDER date(l) DESC
+    ORDERS date(l) DESC
     FILTERS account(l) == a, balance(a)
     
     OBJECTS dates = (df = DATE, dt = DATE) PANEL 
@@ -37,12 +37,12 @@ FORM accountBalances 'Остатки по счетам'
     
     OBJECTS d = DATE 
     PROPERTIES vd 'Дата' = VALUE(d), balance(a, d), balanceCurrency(a, d)
-    ORDER vd DESC 
+    ORDERS vd DESC 
     FILTERS iterate(d, df, dt)
     
     OBJECTS dd = DATE 
     PROPERTIES dd 'Дата' = VALUE (dd), balanceAccounts(dd), balanceAccountsCurrency(dd)
-    ORDER dd DESC 
+    ORDERS dd DESC 
     FILTERS iterate(dd, df, dt)
 ;
 

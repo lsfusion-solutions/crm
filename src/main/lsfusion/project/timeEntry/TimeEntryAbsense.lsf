@@ -14,7 +14,7 @@ FORM dialogAbsense 'Отсутствия'
     OBJECTS t = TimeEntry PANEL 
     OBJECTS a = Absence LAST 
     PROPERTIES (a) READONLY id, nameEmployee, nameReason, dateFrom, dateTo, hours, workedHours, workingHours, date, note
-    ORDER date(a)
+    ORDERS date(a)
     
     FILTERS employee(t) == employee(a)
 ;

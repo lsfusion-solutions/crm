@@ -106,7 +106,7 @@ FORM employees 'Сотрудники'
     PROPERTIES(o) READONLYIF isReadonly() id, number, login, name, namePosition, nameLegalEntity, nameMainRole, addRoles, email, 
                                           phone, addPhones, skype, note, inactive, authorisedDocument
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
-    ORDER name(o)
+    ORDERS name(o)
     
     FILTERGROUP active FILTER 'Активные' NOT inactive(o) DEFAULT 
 ;
@@ -116,7 +116,7 @@ FORM employees 'Сотрудники'
 FORM dialogEmployees 'Сотрудники'
     OBJECTS o = Employee
     PROPERTIES(o) READONLY id, number, login, name, namePosition, nameLegalEntity, email, phone, addPhones, skype, note, inactive, authorisedDocument
-    ORDER name(o)
+    ORDERS name(o)
     
     FILTERGROUP active FILTER 'Активные' NOT inactive(o) DEFAULT
     

@@ -440,13 +440,13 @@ FORM compareListEVAT 'Сравнение со списком ЭСЧФ из CSV-�
     
     OBJECTS e = EVAT
     PROPERTIES(e) READONLY BACKGROUND backgroundColor(e) date, exportNumber, unpCustomer, nameCustomer, totalSumWithVAT
-    ORDER exportNumber(e)
+    ORDERS exportNumber(e)
     FILTERS date(e) >= dFrom, date(e) <= dTo AND nocancelled(e) AND exported(e)
     
     OBJECTS li = ListEVAT
     PROPERTIES(li) READONLY BACKGROUND backgroundColor(li) dates, number, unpCustomer, nameCustomer, sumWithVAT
 
-    ORDER number(li)
+    ORDERS number(li)
     FILTERS dates(li) >= dFrom, dates(li) <= dTo
 ;
 

@@ -220,7 +220,7 @@ FORM compareEVAT 'Сравнение сумм по организациям в �
     
     OBJECTS ce = CompareEVAT
     PROPERTIES(ce) READONLY  unpSupplier, unpCustomer, nameCustomer, sumAct, sumWithVAT, sumDiff  
-    ORDER unpSupplier(ce), nameCustomer(ce)
+    ORDERS unpSupplier(ce), nameCustomer(ce)
     FILTERGROUP defaultSum FILTER 'Несовпадающие суммы' NOT sumAct(ce)==sumWithVAT(ce) 'F10' DEFAULT
 ;
 

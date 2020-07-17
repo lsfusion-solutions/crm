@@ -105,7 +105,7 @@ FORM exportContacts 'Экспорт контактов'
     OBJECTS c = Contact
     PROPERTIES (c) id, idCustomer, idLegalEntity, lastName, firstName, middleName, namePosition, email, skype, note, authorisedDocument, phone
     PROPERTIES number(c, t) COLUMNS (t) HEADER name(t)
-    ORDER lastName(c)  
+    ORDERS lastName(c)  
 ;
 
 exportContacts 'Экспорт контактов' () {

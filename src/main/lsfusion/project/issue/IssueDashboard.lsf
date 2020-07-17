@@ -29,7 +29,7 @@ FORM issueDashboard 'Мои задачи'
                    FILTER 'Назначенные мне' assignedTo(o) = currentUser()
                    FILTER 'Созданные мною' author(o) = currentUser()
                    
-    ORDER number(o)
+    ORDERS number(o)
     
     OBJECTS l = IssueLog
     PROPERTIES (l) READONLY dateTime, nameUser, changes, note
@@ -70,7 +70,7 @@ FORM projectNotifications 'Уведомления по проектам'
     OBJECTS s = IssueStatus
     PROPERTIES note(p, s, e) DRAW s
     PROPERTIES (s) READONLY name, order, isClosed 
-    ORDER order(s)
+    ORDERS order(s)
 ;
 
 DESIGN projectNotifications {

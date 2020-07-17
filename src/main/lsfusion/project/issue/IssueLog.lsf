@@ -22,7 +22,7 @@ EXTEND FORM issue
     PROPERTIES note(o)
     OBJECTS l = IssueLog
     PROPERTIES (l) READONLY dateTime, nameUser, changes, note
-    ORDER dateTime(l)
+    ORDERS dateTime(l)
     FILTERS issue(l) == o
 ;
 

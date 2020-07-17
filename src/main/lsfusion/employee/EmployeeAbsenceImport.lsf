@@ -47,7 +47,7 @@ importEmployeeAbsences 'Импорт отсутствия сотрудников
 FORM exportEmployeeAbsences 'Экспорт отсутствия сотрудников'
     OBJECTS c = Absence
     PROPERTIES (c) id, idEmployee, reason, dateFrom, dateTo, hours, date, note
-    ORDER dateFrom(c)
+    ORDERS dateFrom(c)
 ;
 
 exportEmployeeAbsences 'Экспорт отсутствия сотрудников' () {

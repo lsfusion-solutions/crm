@@ -19,7 +19,7 @@ FORM dialogContacts 'Контакты'
     OBJECTS c = Contact
     PROPERTIES (c) in
     PROPERTIES (c) READONLY lastName, firstName, middleName, namePosition, email, phone, addPhones, skype, note, authorisedDocument
-    ORDER lastName(c)
+    ORDERS lastName(c)
     FILTERS customer(c) == customer(d)
     FILTERGROUP in FILTER 'Отмеченные' in(c)
 ;

@@ -42,7 +42,7 @@ FORM paymentProcessDasboard 'Обработка платежей'
                    numberAgreement BACKGROUND backgroundAgreement(p), nameAgreement BACKGROUND backgroundAgreement(p), numberAct, number, date, year READONLY, 
                    monthNumber READONLY, nameType, sum, shortNameCurrency, sumCurrency, numberAccount, numberAccountFrom BACKGROUND backgroundNumberAccountFrom(p), note 
     PROPERTIES(p) TOOLBAR split
-    ORDER date(p), nameLegalEntity(p), nameCompany(p), numberContract(p)
+    ORDERS date(p), nameLegalEntity(p), nameCompany(p), numberContract(p)
     FILTERS date(p) >= df AND date(p) <= dt 
     FILTERGROUP postedP FILTER 'Не проведен' NOT isPosted(p) DEFAULT 
                                        
@@ -50,7 +50,7 @@ FORM paymentProcessDasboard 'Обработка платежей'
     PROPERTIES DRAW e TOOLBAR showCustomerDashboard(e) SHOWIF customer(e)
     PROPERTIES (e) isPosted, nameCompany, nameLegalEntity, nameCustomer, date, datePayment, nameType, sum, shortNameCurrency, sumCurrency, 
                    numberAccount, numberAccountTo BACKGROUND backgroundNumberAccountTo(e), noteString 
-    ORDER date(e)
+    ORDERS date(e)
     FILTERS date(e) >= df AND date(e) <= dt, customer(p) == filterCustomer() OR NOT filterCustomer()
     FILTERGROUP postedE FILTER 'Не проведен' NOT isPosted(e) DEFAULT 
 ;

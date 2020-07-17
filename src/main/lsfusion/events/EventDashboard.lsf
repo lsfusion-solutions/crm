@@ -25,7 +25,7 @@ FORM eventDashboard 'Обработка событий'
     PROPERTIES(o) PANEL READONLY description, addition
     PROPERTIES DRAW o TOOLBAR showCustomerDashboard(o) SHOWIF customer(o)
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
-    ORDER date(o) DESC, time(o) DESC
+    ORDERS date(o) DESC, time(o) DESC
     FILTERS NOT date(o) < dateFromEvent() AND NOT date(o) > dateToEvent() AND NOT dateNext(o) < dateFromNext() AND NOT dateNext(o) > dateToNext()
     FILTERGROUP last FILTER 'Последние по клиенту (мои)' isLastCustomerEmployee(o) AND employee(o) = currentUser() AND dateNext(o) >= subtract(currentDate(), 360) 
                      FILTER 'Последние по клиенту' isLastCustomer(o) AND dateNext(o) >= subtract(currentDate(), 360)

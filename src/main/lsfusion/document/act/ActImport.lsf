@@ -91,7 +91,7 @@ FORM exportActs 'Экспорт актов'
     PROPERTIES (c) id, idContract, idAgreement, idAuthorisedPersonCompany, authorisedDocumentCompany, idAuthorisedPersonLegalEntity, 
                    authorisedDocumentLegalEntity, number, date, name, nameType, sum, nameSendingWay, dateSending, dateReceiving, 
                    dateClosing, fromDate, toDate, note, text
-    ORDER date(c)
+    ORDERS date(c)
 ;
 
 exportActs 'Экспорт актов' () {

@@ -32,7 +32,7 @@ FORM timeEntryDashboard 'Контроль отмеченного времени'
     OBJECTS e = Employee
     PROPERTIES READONLY name(e), totalHours(e, y, m) BACKGROUND backgroundHours(e, y, m), totalHours(e, d) COLUMNS (d) HEADER extractDay(d) BACKGROUND backgroundTotalHours(e, d)
     PROPERTIES extractDay(d) SHOWIF NULL 
-    ORDER extractDay(d), name(e)
+    ORDERS extractDay(d), name(e)
     
     FILTERGROUP e FILTER 'С отметкой' totalHours(e, y, m) DEFAULT 
                   FILTER 'Активные' active(e)
@@ -42,18 +42,18 @@ FORM timeEntryDashboard 'Контроль отмеченного времени'
     
     OBJECTS p = Project
     PROPERTIES READONLY name(p), hours(e, p, y, m)
-    ORDER hours(e, p, y, m) DESC
+    ORDERS hours(e, p, y, m) DESC
     FILTERS hours(e, p, y, m)
     
     OBJECTS t = TimeEntry
     PROPERTIES (t) READONLY id, hours, commentsString, date, nameActivity, nameProject, nameCustomer, numberIssue, nameIssue
-    ORDER date(t)
+    ORDERS date(t)
     FILTERS employee(t) == e, month(t) == m, year(t) == y
     FILTERGROUP project FILTER 'По проекту' project(t) == p DEFAULT 
     
     OBJECTS a = Absence
     PROPERTIES (a) READONLY id, nameEmployee, nameReason, dateFrom, dateTo, hours, workingHours, date, note
-    ORDER date(a)
+    ORDERS date(a)
     FILTERS employee(a) == e, dateFrom(a) <= lastDayOfMonth(d) AND dateTo(a) >= firstDayOfMonth(d)
 
     OBJECTS ad = DATE
@@ -70,17 +70,17 @@ FORM timeEntryDashboard 'Контроль отмеченного времени'
     
     OBJECTS ab = Absence
     PROPERTIES (ab) READONLY id, nameEmployee, nameReason, dateFrom, dateTo, hours, workedHours, workingHours, date, note
-    ORDER date(ab)
+    ORDERS date(ab)
     FILTERS employee(ab) == ee, extractYear(dateFrom(ab)) == yy OR extractYear(dateTo(ab)) == yy
     
     OBJECTS pp = Project
     PROPERTIES READONLY name(pp), hours(ee, pp, yy)
-    ORDER hours(ee, pp, yy)
+    ORDERS hours(ee, pp, yy)
     FILTERS hours(ee, pp, yy)
         
     OBJECTS te = TimeEntry
     PROPERTIES (te) READONLY id, hours, commentsString, date, nameActivity, nameProject, nameCustomer, numberIssue, nameIssue
-    ORDER date(te)
+    ORDERS date(te)
     FILTERS employee(te) == ee, year(te) == yy
     FILTERGROUP project1 FILTER 'По проекту' project(te) == pp DEFAULT 
     

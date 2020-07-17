@@ -61,7 +61,7 @@ importExpense 'Импорт расходов' () {
 FORM exportExpenses 'Экспорт расходов'
     OBJECTS p = Expense
     PROPERTIES (p) idCompany, idLegalEntity, date, datePayment, nameType, sum, sidCurrency, note
-    ORDER date(p)
+    ORDERS date(p)
 ;
 
 exportExpenses 'Экспорт расходов' () {

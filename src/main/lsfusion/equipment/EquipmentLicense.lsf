@@ -71,7 +71,7 @@ EXTEND FORM equipment
     PROPERTIES (l) READONLY date, time, hostnameComputer, loginUser, nameContact, numberSerial
     FILTERS equipment(l) == o
     FILTERGROUP serial FILTER 'По серийному номеру' equipmentSerial(l) == s
-    ORDER date(l), time(l)
+    ORDERS date(l), time(l)
 ;
 
 DESIGN equipment {
