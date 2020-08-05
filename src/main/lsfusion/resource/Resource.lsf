@@ -82,12 +82,12 @@ FORM resources 'Ресурсы'
     PROPERTIES(r) NEWSESSION NEW, EDIT, DELETE 
     FILTERGROUP inUse
         FILTER 'Используемые' inUse(r) DEFAULT    
-    ORDER name(r)    
+    ORDERS name(r)    
     
     OBJECTS d = Reservation
     PROPERTIES(d) READONLY dateFrom, timeFrom, dateTo, timeTo, nameUser, comments, nameCreatedUser, createdDateTime
     PROPERTIES(d) NEWSESSION NEW, EDIT, DELETE
-    ORDER dateFrom(d), timeFrom(d) 
+    ORDERS dateFrom(d), timeFrom(d) 
     FILTERS resourse(d) == r    
     FILTERGROUP actual
         FILTER 'Актуальные' dateTo(d)>=currentDate() DEFAULT
