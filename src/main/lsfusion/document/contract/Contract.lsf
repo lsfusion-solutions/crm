@@ -14,13 +14,13 @@ name 'Наименование' = DATA ISTRING[150](Contract) CHARWIDTH 20;
 series 'Серия' = DATA BPSTRING[2](Contract);
 number 'Номер' = DATA STRING[15](Contract) IN id;
 
-legalEntity = DATA LegalEntity(Contract) NONULL;
+legalEntity = DATA LegalEntity(Contract) NONULL INDEXED;
 idLegalEntity 'Код организации' (Contract c) = id(legalEntity(c));
 nameLegalEntity 'Организация' (Contract c) = name(legalEntity(c)) IN id;
 customer (Contract c) = customer(legalEntity(c)) MATERIALIZED INDEXED;
 nameCustomer 'Клиент' (Contract c) = name(customer(legalEntity(c)));
 
-company = DATA LegalEntity(Contract) NONULL;
+company = DATA LegalEntity(Contract) NONULL INDEXED;
 idCompany 'Код компании' (Contract c) = id(company(c));
 nameCompany 'Компания' (Contract c) = name(company(c)) IN id;
 

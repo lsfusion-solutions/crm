@@ -17,14 +17,14 @@ number 'Номер' = DATA STRING[15](Act) IN id;
 
 @defineNumeratedDefault(Act, 'Акты', 'АК');
 
-contract = DATA Contract(Act);
+contract = DATA Contract(Act) INDEXED;
 idContract 'Код договора' (Act a) = id(contract(a));
 numberContract 'Номер договора' (Act a) = number(contract(a)) IN id;
-customer (Act a) = customer(contract(a));
+customer (Act a) = customer(contract(a)) MATERIALIZED INDEXED;
 nameCustomer 'Клиент' (Act a) = nameCustomer(contract(a));
-legalEntity (Act a) = legalEntity(contract(a));
+legalEntity (Act a) = legalEntity(contract(a)) MATERIALIZED INDEXED;
 nameLegalEntity 'Организация' (Act a) = nameLegalEntity(contract(a));
-company (Act a) = company(contract(a));
+company (Act a) = company(contract(a)) MATERIALIZED INDEXED;
 nameCompany 'Компания' (Act a) = name(company(a));
 
 authorisedPersonLegalEntity = DATA Contact.Contact(Act);
