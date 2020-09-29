@@ -26,7 +26,8 @@ addEquipment 'Добавить' (SubjectType t) {
 } IMAGE 'add.png';
 
 quantitySerial 'Кол-во серийных номеров' (SubjectType t) = 
-    GROUP SUM 1 IF contract(equipment(EquipmentSerial s)) == filterContract(t) OR NOT filterContract(t) AND (customer(equipment(s)) == filterCustomer() OR NOT filterCustomer());
+    GROUP SUM 1 IF (contract(equipment(EquipmentSerial s)) == filterContract(t) OR (NOT filterContract(t) AND subjectType(equipment(s)) = t)) 
+               AND (customer(equipment(s)) == filterCustomer() OR NOT filterCustomer());
 
 FORM equipmentDashboard 'Оборудование'
     OBJECTS t = SubjectType PANEL 
