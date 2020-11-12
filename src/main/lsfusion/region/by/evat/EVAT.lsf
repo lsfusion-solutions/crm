@@ -12,7 +12,7 @@ EVATDocument 'Документ' = DATA Document (EVAT) INDEXED;
 CONSTRAINT EVAT e IS EVAT AND NOT EVATDocument(e)
     MESSAGE 'У ЭСЧФ должна быть задана ссылка на документ !';
 
-@defineNumbered(EVAT);
+@defineNumbered(EVAT, BPSTRING[2]);
 @defineNumeratedDefault(EVAT, 'ЭСЧФ', 'ЭС');
 
 in 'Вкл.' = DATA LOCAL BOOLEAN (EVAT);
