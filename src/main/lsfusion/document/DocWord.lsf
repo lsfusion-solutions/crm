@@ -100,6 +100,6 @@ copy 'Копировать' (Template t) {
             value(ne) <- value(e);
             overCopy(ne, e);
         }
-        SHOW template OBJECTS t = t DOCKED;
+        SHOW template OBJECTS t = n DOCKED;
     }
 }
