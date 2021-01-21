@@ -16,4 +16,4 @@ REQUIRE Scheduler, Service, SystemEvents, Backup, Eval, SQLUtils, ProcessUtils, 
         LegalEntityBy, CustomerDashboardBy, LegalEntityImportBy, ContractWordBy, AgreementWordBy, ActWordBy,
         EquipmentDashboard, EquipmentLicense,
         EmailTemplate, ActEmailTemplate, DebtEmailTemplate,
-        EVAT, ActEVAT, ServiceCatalog, OfferCalculator, ServiceCatalogImport, CountryP, CountryImport, CountryCustomer;
+        EVAT, ActEVAT, ServiceCatalog, ServiceCatalogImport, CountryP, CountryImport, CountryCustomer, CustomerServices;
