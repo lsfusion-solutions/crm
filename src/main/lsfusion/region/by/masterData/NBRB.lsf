@@ -22,7 +22,7 @@ dateTime = DATA LOCAL STRING[255] (INTEGER );
 
 importNBRBExchangeRate 'Импортировать курсы НБРБ за период'(DATE dateFrom, DATE dateTo)  { 
     LOCAL result = FILE();
-    EXTERNAL HTTP GET 'https://www.nbrb.by/API/ExRates/Currencies' PARAMS System.exportFile() TO result;
+    EXTERNAL HTTP GET 'https://www.nbrb.by/API/ExRates/Currencies' TO result;
     IMPORT JSON FROM result() TO cur_Abbreviation = Cur_Abbreviation, cur_ID = Cur_ID, cur_Scale = Cur_Scale;
     FOR Currency c IS Currency DO {
         FOR NOT typeExchange('НБРБ (' +shortName(c)+')') NEW te = TypeExchange DO {
