@@ -132,7 +132,8 @@ createActs 'Создать акты' () {
             MESSAGE 'Для договоров № ' + (GROUP CONCAT (OVERRIDE number(contract(Act a)), 'б/н') IF created(a) AND NOT actTemplate(contract(a)), ', ' ORDER date(contract(a))) + ' не выбран шаблон для актов';
         }
         
-        SHOW requiredTemplateEntries OBJECTS d = currentDate();
+        DIALOG requiredTemplateEntries OBJECTS d = currentDate() DO
+            in(Debt d) <- NULL;
     }
 }
 
