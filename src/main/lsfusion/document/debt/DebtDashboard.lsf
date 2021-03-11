@@ -19,7 +19,7 @@ changeActTemplate (Contract c) {
     }
 }
 
-EXTEND FORM contract PROPERTIES nameActTemplate(o) ON CHANGE changeActTemplate(o);
+EXTEND FORM contract PROPERTIES nameActTemplate(o) ON CHANGE changeActTemplate(o);  
 
 DESIGN contract {
     add {
