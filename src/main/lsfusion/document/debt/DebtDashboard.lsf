@@ -19,7 +19,7 @@ changeActTemplate (Contract c) {
     }
 }
 
-EXTEND FORM contract PROPERTIES nameActTemplate(o) ON CHANGE changeActTemplate(o);
+EXTEND FORM contract PROPERTIES nameActTemplate(o) ON CHANGE changeActTemplate(o);  
 
 DESIGN contract {
     add {
@@ -87,6 +87,24 @@ DESIGN requiredTemplateEntries {
     }
 }
 
+actType = DATA ActType (Agreement);
+nameActType 'Тип акта' (Agreement a) = name(actType(a));
+
+EXTEND FORM agreement 
+    PROPERTIES(o) nameActType
+;
+
+DESIGN agreement {
+    row3 {
+        NEW add2 {
+            type = CONTAINERH;
+            caption = 'Необязательные параметры'; 
+            MOVE PROPERTY(nameActType(o)) {charWidth = 30;} 
+        }
+    }
+}
+
+
 in 'Отм.' = DATA LOCAL BOOLEAN (Debt);
 
 createActs 'Создать акты' () {
@@ -106,7 +124,8 @@ createActs 'Создать акты' () {
             date(a) <- currentDate();
             sum(a) <- GROUP SUM sum(Debt d) IF in(d) AND act(d) == a;
             number(a) <- ISTRING[15] ([GROUP MAX INTEGER(number(Act ac)) BY contract(ac), year(ac)](contract(a), year(a)) (+) 1); 
-            type(a) <- actType(type(c));
+            type(a) <- IF actType(ag) THEN actType(ag) ELSE actType(type(c));
+//          type(a) <- actType(type(c));
             IF copy() THEN {
                 name(a) <- OVERRIDE name(ag), name(c);
                 text(a) <- OVERRIDE text(ag), text(c);
