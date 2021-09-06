@@ -13,6 +13,8 @@ typeContract (Payment p) = type(contract(p));
 nameTypeContract 'Тип договора' (Payment p) = nameType(contract(p));
 nameGroupContract 'Группа договора' (Payment p) = nameGroup(contract(p));
 
+descriptionContract 'Договор' (Payment p) = description(contract(p));
+
 CONSTRAINT contract(Payment p) AND legalEntity(p) AND NOT legalEntity(p) = legalEntity(contract(p)) CHECKED BY contract[Payment] MESSAGE 'Организация платежа должна совпадать с организацией договора';
 CONSTRAINT contract(Payment p) AND company(p) AND NOT company(p) = company(contract(p)) CHECKED BY contract[Payment] MESSAGE 'Компания платежа должна совпадать с компанией договора';
 

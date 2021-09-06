@@ -98,6 +98,8 @@ FORM contractTypes 'Типы договора'
 type = DATA ContractType(Contract);
 nameType 'Тип договора' (Contract c) = name(type(c)) CHARWIDTH 15;
 
+description (Contract c) = CONCAT ' / ', number(c), date(c), name(c), nameType(c); 
+
 numerator '{numerator.id.numerator}' = DATA Numerator (Contract);
 nameNumerator '{numerator.numerator}' (Contract o) = name(numerator(o)) IN numbered CHARWIDTH 7;
 

@@ -9,6 +9,8 @@ idAgreement 'Код соглашения' (Payment p) = id(agreement(p));
 numberAgreement 'Номер соглашения' (Payment p) = number(agreement(p));
 nameAgreement 'Наименование соглашения' (Payment p) = name(agreement(p));
 
+descriptionAgreement 'Соглашение' (Payment p) = description(agreement(p));
+
 paidPayment 'Оплачено' (Agreement a) = GROUP SUM sum(Payment p) BY agreement(p) MATERIALIZED;
 paidPayment 'Оплачено' (Agreement a, DATE d) = GROUP SUM sum(Payment p) IF date(p) <= d BY agreement(p);
 

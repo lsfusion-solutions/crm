@@ -38,8 +38,10 @@ FORM paymentProcessDasboard 'Обработка платежей'
     
     OBJECTS p = Payment
     PROPERTIES DRAW p TOOLBAR showCustomerDashboard(p) SHOWIF customer(p)
-    PROPERTIES (p) isPosted, id, nameLegalEntity, nameCustomer, nameCompany, numberContract, dateContract, nameContract, nameTypeContract READONLY, 
-                   numberAgreement BACKGROUND backgroundAgreement(p), nameAgreement BACKGROUND backgroundAgreement(p), numberAct, number, date, year READONLY, 
+    PROPERTIES (p) isPosted, id, nameLegalEntity, nameCustomer, nameCompany, 
+                   descriptionContract, numberContract, dateContract, nameContract, nameTypeContract READONLY
+    PROPERTIES (p) BACKGROUND backgroundAgreement(p) descriptionAgreement, numberAgreement, nameAgreement
+    PROPERTIES (p) numberAct, number, date, year READONLY, 
                    monthNumber READONLY, nameType, sum, shortNameCurrency, sumCurrency, numberAccount, numberAccountFrom BACKGROUND backgroundNumberAccountFrom(p), note 
     PROPERTIES(p) TOOLBAR split
     ORDERS date(p), nameLegalEntity(p), nameCompany(p), numberContract(p)

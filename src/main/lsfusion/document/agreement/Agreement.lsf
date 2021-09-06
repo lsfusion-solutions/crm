@@ -84,6 +84,8 @@ FORM agreementTypes 'Типы соглашения'
 type = DATA AgreementType(Agreement);
 nameType 'Тип соглашения' (Agreement c) = name(type(c)) CHARWIDTH 15;
 
+description (Agreement a) = CONCAT ' / ', number(a), date(a), name(a), nameType(a); 
+
 sum 'Стоимость' = DATA NUMERIC[16,5](Agreement);
 
 dateSigningCompany 'Дата подписания компанией' = DATA DATE (Agreement);
