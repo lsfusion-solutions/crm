@@ -21,10 +21,14 @@ nameFilterCustomer 'Клиент' () = name(filterCustomer());
 hoursFilter 'Трудозатраты' (Employee e, DATE df, DATE dt) = OVERRIDE hours(e, filterCustomer(), df, dt) IF filterCustomer(), hours(e, df, dt) IF NOT filterCustomer();
 
 FORM timesheetDashboard 'Табель рабочего времени'
+
+    OBJECTS my = DATE PANEL
+    PROPERTIES yearMonth = VALUE(my) CUSTOM RENDER 'customInputMonth' 
     
     OBJECTS m = Month PANEL, y = INTEGER PANEL, e = Employee PANEL
-    PROPERTIES month 'Месяц' = staticCaption(m) SELECTOR, year 'Год' = VALUE (y), name(e) SELECTOR READONLYIF NOT allowEditOtherTimesheets(mainRole(currentUser()))
-    FILTERS e == currentUser() OR allowEditOtherTimesheets(mainRole(currentUser()))
+    PROPERTIES name(e) SELECTOR READONLYIF NOT allowEditOtherTimesheets(mainRole(currentUser()))
+    FILTERS y = extractYear(my), m = extractMonth(my),
+            e == currentUser() OR allowEditOtherTimesheets(mainRole(currentUser()))
     
     OBJECTS d = DATE 
     PROPERTIES READONLY VALUE (d), extractDOWName(d), workingHours(d), totalHours(e, d)
@@ -101,8 +105,7 @@ DESIGN timesheetDashboard {
                 NEW header FIRST {
                     caption = 'Фильтры';
                     type = CONTAINERH;
-                    MOVE PROPERTY (month) { charWidth = 15; }
-                    MOVE PROPERTY (year) { charWidth = 5; }
+                    MOVE PROPERTY (yearMonth) { charWidth = 20; }
                     MOVE PROPERTY (name(e)) { charWidth = 25; }
                 }
                 NEW bottom {
