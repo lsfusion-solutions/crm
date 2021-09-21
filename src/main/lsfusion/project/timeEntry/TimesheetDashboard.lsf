@@ -23,7 +23,7 @@ hoursFilter 'Трудозатраты' (Employee e, DATE df, DATE dt) = OVERRIDE
 FORM timesheetDashboard 'Табель рабочего времени'
 
     OBJECTS my = DATE PANEL
-    PROPERTIES yearMonth = VALUE(my) CUSTOM RENDER 'customInputMonth' 
+    PROPERTIES yearMonth = VALUE(my) CUSTOM 'customInputMonth'
     
     OBJECTS m = Month PANEL, y = INTEGER PANEL, e = Employee PANEL
     PROPERTIES name(e) SELECTOR READONLYIF NOT allowEditOtherTimesheets(mainRole(currentUser()))
