@@ -26,8 +26,8 @@ changeAddressTypes (Address a) {
 }
 
 postcode 'Индекс' = DATA ISTRING[10] (Address) CHARWIDTH 6;
-region 'Область' = DATA ISTRING[20] (Address) CHARWIDTH 15;
-district 'Район' = DATA ISTRING[20] (Address) CHARWIDTH 15;
+region 'Область' = DATA ISTRING[100] (Address) CHARWIDTH 15;
+district 'Район' = DATA ISTRING[100] (Address) CHARWIDTH 15;
 locality 'Нас. пункт' = DATA ISTRING[200] (Address) CHARWIDTH 20 IN id;
 street 'Улица' = DATA ISTRING[50] (Address) CHARWIDTH 20;
 houseNumber 'Дом' = DATA ISTRING[20] (Address) CHARWIDTH 6;
