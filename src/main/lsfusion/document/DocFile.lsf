@@ -32,7 +32,7 @@ TABLE documentFileType (DocumentFileType);
 name 'Наименование' = DATA ISTRING[100] (DocumentFileType) CHARWIDTH 15;
 
 in 'Вкл.' = DATA BOOLEAN (DocumentFileType, DocType);
-docTypes 'Типы документов' (DocumentFileType t) = GROUP CONCAT name(DocType d) IF in(t, d), ', ' CHARWIDTH 20;
+docTypes 'Типы документов' (DocumentFileType t) = GROUP CONCAT name(DocType d) IF in(t, d), ', ' ORDER d CHARWIDTH 20;
 
 FORM inDocTypes 'Типы документов'
     OBJECTS d = DocumentFileType PANEL 

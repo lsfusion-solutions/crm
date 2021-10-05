@@ -10,8 +10,8 @@ TABLE tag(Tag);
 name 'Наименование' = DATA ISTRING[100](Tag);
 in 'Вкл.' = DATA BOOLEAN (Tag, Customer);
 
-customers 'Клиенты' (Tag t) = GROUP CONCAT name(Customer c) IF in(t, c), ', ' CHARWIDTH 50;
-tags 'Тэги' (Customer c) = GROUP CONCAT name(Tag t) IF in(t, c), ', ' CHARWIDTH 20;
+customers 'Клиенты' (Tag t) = GROUP CONCAT name(Customer c) IF in(t, c), ', ' ORDER c CHARWIDTH 50;
+tags 'Тэги' (Customer c) = GROUP CONCAT name(Tag t) IF in(t, c), ', ' ORDER t CHARWIDTH 20;
 tags 'Тэги' (LegalEntity le) = tags(customer(le));
 
 FORM selectTagCustomer 'Клиенты'

@@ -14,7 +14,7 @@ downloadFile 'Открыть файл лицензии' (Equipment a)  { open(fi
 generateLicense = FORMULA TEXT 'generateLicense($1,$2)';
 
 generateLicense 'Сгенерировать лицензию' (Equipment e) {
-    stringToFile((GROUP CONCAT generateLicense(equipmentID(subjectType(e)), number(EquipmentSerial s)) IF equipment(s) == e, '\r\r\n'), 'UTF-8', '');
+    stringToFile((GROUP CONCAT generateLicense(equipmentID(subjectType(e)), number(EquipmentSerial s)) IF equipment(s) == e, '\r\r\n' ORDER s), 'UTF-8', '');
     file(e) <- resultFile();
 }
 

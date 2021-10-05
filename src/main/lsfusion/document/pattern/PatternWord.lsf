@@ -59,7 +59,7 @@ DESIGN patterns {
 
 select 'Отм.' = DATA LOCAL BOOLEAN (TemplateEntry, Pattern);
 
-text (TemplateEntry te) =  GROUP CONCAT text(Pattern pt) IF select(te, pt), (IF type(te) = Type.list THEN (OVERRIDE rowSeparator(te),'\r') ELSE '');
+text (TemplateEntry te) =  GROUP CONCAT text(Pattern pt) IF select(te, pt), (IF type(te) = Type.list THEN (OVERRIDE rowSeparator(te),'\r') ELSE '') ORDER pt;
 
 resetSelected 'Сбросить отмеченные' (TemplateEntry te) {
     select(te, Pattern p) <- NULL;

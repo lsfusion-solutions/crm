@@ -17,7 +17,7 @@ inactive 'Неактивный' = DATA BOOLEAN (Employee);
 active 'Активный' (Employee e) = NOT inactive(e);
 
 //in 'Вкл.' = DATA BOOLEAN (Employee, UserRole);
-addRoles 'Дополнительные роли' (Employee e) = GROUP CONCAT name(UserRole r) IF in(e, r), ', ' CHARWIDTH 15;
+addRoles 'Дополнительные роли' (Employee e) = GROUP CONCAT name(UserRole r) IF in(e, r), ', ' ORDER r CHARWIDTH 15;
 
 FORM dialogEmployeeRoles 'Роли'
     OBJECTS e = Employee PANEL 

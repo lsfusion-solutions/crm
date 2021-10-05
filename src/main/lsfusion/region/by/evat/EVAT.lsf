@@ -390,14 +390,14 @@ sumWithVAT 'Сумма с НДС' = DATA NUMERIC[16,2] (ListEVAT);
 datev 'Дата выставления' = DATA DATE (ListEVAT);
 dates 'Дата совершения' = DATA DATE (ListEVAT);
 
-EVATExportedNumber = GROUP LAST EVAT e IF nocancelled(e) AND exported(e) BY exportNumber(e), date(e);
+EVATExportedNumber = GROUP LAST EVAT e IF nocancelled(e) AND exported(e) ORDER e BY exportNumber(e), date(e);
 EVATExported (ListEVAT li) = EVATExportedNumber(number(li), dates(li));
 
 backgroundColor (ListEVAT li) = CASE
     WHEN EVATExported(li) AND NOT sumWithVAT(li) == totalSumWithVAT(EVATExported(li)) THEN RGB(255, 255, 128)
     WHEN li IS ListEVAT AND NOT EVATExported(li) THEN RGB(255, 70, 64);
 
-listEVATNumber = GROUP LAST ListEVAT li BY number(li), dates(li); 
+listEVATNumber = GROUP LAST ListEVAT li ORDER li BY number(li), dates(li);
 listEVAT (EVAT e) = listEVATNumber(exportNumber(e), date(e));
 
 backgroundColor (EVAT e) = CASE

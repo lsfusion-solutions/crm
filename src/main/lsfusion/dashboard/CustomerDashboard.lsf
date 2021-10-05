@@ -44,7 +44,7 @@ sendEmailToContacts 'Написать письмо' (Contact.Contact c) {
     IF NOT (GROUP SUM 1 IF in(Contact.Contact cc)) THEN {
         in(c) <- TRUE;
     }
-    open(LINK('mailto:' + (GROUP CONCAT email(Contact.Contact cc) IF in(cc), ',')));
+    open(LINK('mailto:' + (GROUP CONCAT email(Contact.Contact cc) IF in(cc), ',' ORDER cc)));
     in(Contact.Contact cc) <- NULL;
 }
 
