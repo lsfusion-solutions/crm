@@ -1,6 +1,6 @@
 MODULE ActEVAT;
 
-REQUIRE Act, EVAT;
+REQUIRE Act, EVAT, Utils;
 
 NAMESPACE Act;
 
@@ -29,6 +29,9 @@ DESIGN legalEntity {
         MOVE PROPERTY (isEVAT(o));
     }
 }
+
+// месяц услуги: месяц года 
+monthService '' (Act a) = OVERRIDE lower(extractMonthName(fromDate(a))) + toChar(extractYear(fromDate(a)),'9999') + ' года','?';
 
 generateEVAT 'Сформировать ЭСЧФ' ()  {
     
@@ -64,6 +67,7 @@ generateEVAT 'Сформировать ЭСЧФ' ()  {
                 name(d) <- shablonEVATName(a);
                 /// замена полей в шаблоне значениями
                 name(d) <- replace(name(d), 'Act.text', text(a)) ;
+                name(d) <- replace(name(d), 'Act.month', monthService(a));
                 name(d) <- replace(name(d), 'Act.fromDate', OVERRIDE toChar(fromDate(a),'DD.MM.YYYY'),'?') ;
                 name(d) <- replace(name(d), 'Act.toDate', OVERRIDE toChar(toDate(a),'DD.MM.YYYY'),'?') ;
                 ///
