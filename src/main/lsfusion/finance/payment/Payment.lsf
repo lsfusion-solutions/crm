@@ -27,7 +27,7 @@ date 'Дата' = DATA DATE (Payment) IN id;
 year 'Год' (Payment p) = extractYear(date(p));
 monthNumber 'Номер месяца' (Payment p) = extractMonthNumber(date(p));
 sum 'Сумма' = DATA NUMERIC[16,5](Payment);
-note 'Примечание' = DATA ISTRING[100](Payment);
+note 'Примечание' = DATA ISTRING[250](Payment);
 
 CLASS PaymentType 'Вид платежа';
 TABLE paymentType (PaymentType);
