@@ -60,12 +60,15 @@ numberIssue 'Номер задачи' (TimeEntry t) = number(issue(t));
 
 merge (Customer from, Customer to) + { customer(TimeEntry e) <- to WHERE customer(e) = from; }
 
+WHEN LOCAL SETCHANGED(issue(TimeEntry t)) DO {
+    project(t) <- project(issue(t));
+}
+
 WHEN LOCAL SETCHANGED (customer(project(TimeEntry t))) DO {
     customer(t) <- customer(project(t));
 }
 
-WHEN LOCAL SETCHANGED (issue(TimeEntry t)) DO {
-    project(t) <- project(issue(t));
+WHEN LOCAL SETCHANGED(issue(TimeEntry t)) AND (customer(project(issue(t))) = customer(issue(t)) OR NOT project(issue(t))) DO {
     customer(t) <- customer(issue(t));
 }
 
