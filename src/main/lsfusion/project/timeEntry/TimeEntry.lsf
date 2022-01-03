@@ -64,7 +64,7 @@ WHEN LOCAL SETCHANGED(issue(TimeEntry t)) DO {
     project(t) <- project(issue(t));
 }
 
-WHEN LOCAL SETCHANGED (customer(project(TimeEntry t))) DO {
+WHEN LOCAL CHANGED(customer(project(TimeEntry t))) DO {
     customer(t) <- customer(project(t));
 }
 
