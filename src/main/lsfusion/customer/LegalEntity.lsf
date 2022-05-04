@@ -80,7 +80,7 @@ TABLE account (Account);
 number 'Номер расчетного счета'  = DATA STRING[50] (Account) IN id CHARWIDTH 28 NOFLEX;
 account (number) = GROUP MAX Account account BY number(account);
 
-note 'Примечание'  = DATA ISTRING[50] (Account);
+note 'Примечание'  = DATA ISTRING[100] (Account);
 rate 'Процентная ставка' = DATA NUMERIC[6,2](Account);
 dateTo 'Дата по' = DATA DATE (Account);
 active 'Активный' (Account a) = dateTo(a) >= currentDate() OR NOT dateTo(a);
