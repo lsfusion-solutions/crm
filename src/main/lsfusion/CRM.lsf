@@ -1,6 +1,6 @@
 MODULE CRM;
 
-REQUIRE Scheduler, Service, SystemEvents, Backup, Eval, SQLUtils, ProcessUtils, Chat, NBRB, Input,
+REQUIRE Scheduler, Service, SystemEvents, Backup, Eval, SQLUtils, ProcessUtils, Chat, NBRB,
         LegalEntity, LegalEntityImport, 
         Employee, EmployeeImport, Contact, ContactImport,
         Contract, ContractImport, Agreement, AgreementImport, Act, ActImport, ContractSubject, DocContact,
