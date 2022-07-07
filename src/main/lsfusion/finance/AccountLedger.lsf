@@ -26,11 +26,12 @@ FORM accountBalances 'Остатки по счетам'
     PROPERTIES (a) READONLY nameLegalEntity, number, nameBank, addressBank, MFOBank, note, rate, dateTo, balance, balanceCurrency
     ORDERS nameLegalEntity(a)
     FILTERGROUP active FILTER 'Активные' active(a) DEFAULT 
+    FILTERGROUP balance FILTER 'С остатком' balance(a) DEFAULT
     
     OBJECTS l = AccountLedger
     PROPERTIES (l) READONLY date, note, sum
     ORDERS date(l) DESC
-    FILTERS account(l) == a, balance(a)
+    FILTERS account(l) == a
     
     OBJECTS dates = (df = DATE, dt = DATE) PANEL 
     PROPERTIES 'Дата с' = VALUE (df), 'Дата по' = VALUE (dt)
