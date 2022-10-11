@@ -84,6 +84,7 @@ note(PaymentAccountLedger a) += note(payment(a));
 account(PaymentAccountLedger a) += accountFrom(payment(a)); 
 
 date(Payment p) += date(p);
+legalEntity(Payment p) += legalEntity(p);
 sum(Payment p) += sum(p);
 note(Payment p) += note(p);
 account(Payment p) += account(p);
