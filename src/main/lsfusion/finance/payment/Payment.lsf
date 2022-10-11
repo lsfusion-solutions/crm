@@ -78,6 +78,7 @@ CLASS PaymentAccountLedger : AccountLedger;
 paymentAccountLedger = AGGR PaymentAccountLedger WHERE accountFrom(Payment payment);
 
 date(PaymentAccountLedger a) += date(payment(a)); 
+legalEntity(PaymentAccountLedger a) += legalEntity(payment(a)); 
 sum(PaymentAccountLedger a) += -sum(payment(a)); 
 note(PaymentAccountLedger a) += note(payment(a)); 
 account(PaymentAccountLedger a) += accountFrom(payment(a)); 

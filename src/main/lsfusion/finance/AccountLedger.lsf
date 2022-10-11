@@ -9,6 +9,11 @@ TABLE accountLedger(AccountLedger);
 
 account = ABSTRACT Account(AccountLedger) MATERIALIZED INDEXED;
 date 'Дата' = ABSTRACT DATE (AccountLedger) MATERIALIZED;
+
+legalEntity = ABSTRACT LegalEntity(AccountLedger) MATERIALIZED INDEXED;
+idLegalEntity 'Код организации' (AccountLedger l) = id(legalEntity(l));
+nameLegalEntity 'Организация' (AccountLedger l) = name(legalEntity(l));
+
 note 'Примечание' = ABSTRACT ISTRING[250](AccountLedger) MATERIALIZED;
 sum 'Сумма' = ABSTRACT NUMERIC[16,5](AccountLedger) MATERIALIZED;
 
@@ -29,7 +34,7 @@ FORM accountBalances 'Остатки по счетам'
     FILTERGROUP balance FILTER 'С остатком' balance(a) DEFAULT
     
     OBJECTS l = AccountLedger
-    PROPERTIES (l) READONLY date, note, sum
+    PROPERTIES (l) READONLY date, nameLegalEntity, note, sum
     ORDERS date(l) DESC
     FILTERS account(l) == a
     

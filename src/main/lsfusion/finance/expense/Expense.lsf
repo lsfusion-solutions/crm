@@ -71,6 +71,7 @@ CLASS ExpenseAccountLedger : AccountLedger;
 expenseAccountLedger = AGGR ExpenseAccountLedger WHERE accountTo(Expense expense);
 
 date(ExpenseAccountLedger a) += date(expense(a)); 
+legalEntity(ExpenseAccountLedger a) += legalEntity(expense(a)); 
 sum(ExpenseAccountLedger a) += sum(expense(a)); 
 note(ExpenseAccountLedger a) += ISTRING[250] (note(expense(a)));
 account(ExpenseAccountLedger a) += accountTo(expense(a)); 
