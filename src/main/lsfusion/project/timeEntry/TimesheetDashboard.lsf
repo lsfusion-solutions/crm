@@ -105,8 +105,8 @@ DESIGN timesheetDashboard {
                 NEW header FIRST {
                     caption = 'Фильтры';
                     type = CONTAINERH;
-                    MOVE PROPERTY (yearMonth) { charWidth = 20; }
-                    MOVE PROPERTY (name(e)) { charWidth = 25; }
+                    MOVE PROPERTY (yearMonth) { charWidth = 20; alignment = STRETCH; }
+                    MOVE PROPERTY (name(e)) { charWidth = 25; alignment = STRETCH; }
                 }
                 NEW bottom {
                     type = SPLITH;
