@@ -200,9 +200,12 @@ sendEmail 'Отправить email' () {
     in(Debt d) <- NULL;
 }
 
-sumDebt 'Сумма задолженностей' (Customer c, ContractType t, DATE d) = GROUP SUM sum(Debt dd) (-) paid(dd, d) IF date(dd) <= d BY customer(dd), type(contract(dd));
-sumDebtNoProblem 'Сумма непроблемных задолженностей' (Customer c, ContractType t, DATE d) = GROUP SUM sum(Debt dd) (-) paid(dd, d) IF date(dd) <= d AND NOT problem(dd) BY customer(dd), type(contract(dd));
-sumDebt 'Сумма неоплаченной задолженности' (Customer c, DATE d) = GROUP SUM sum(Debt dd) (-) paid(dd, d) IF date(dd) <= d BY customer(dd);
+sumDebt 'Сумма задолженностей' (Customer c, ContractType t, DATE d) = 
+    GROUP SUM sum(Debt dd) (-) paid(dd, d) IF date(dd) <= d AND NOT inactive(dd) BY customer(dd), type(contract(dd));
+sumDebtNoProblem 'Сумма непроблемных задолженностей' (Customer c, ContractType t, DATE d) = 
+    GROUP SUM sum(Debt dd) (-) paid(dd, d) IF date(dd) <= d AND NOT problem(dd) AND NOT inactive(dd) BY customer(dd), type(contract(dd));
+sumDebt 'Сумма неоплаченной задолженности' (Customer c, DATE d) = 
+    GROUP SUM sum(Debt dd) (-) paid(dd, d) IF date(dd) <= d AND NOT inactive(dd) BY customer(dd);
 dateFirstDebt 'Дата ранней неоплаченной задолженности' (Customer c, ContractType t, DATE d) = 
     GROUP LAST date(Debt dd) ORDER DESC date(dd), dd IF date(dd) <= d AND (sum(dd) (-) paid(dd, d) > 0) BY customer(dd), type(contract(dd));
 dateFirstDebt 'Дата ранней неоплаченной задолженности' (Customer c, DATE d) = 
