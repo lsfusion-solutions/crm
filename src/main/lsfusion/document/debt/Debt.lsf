@@ -9,6 +9,7 @@ TABLE debt (Debt);
 
 date 'Дата' = DATA DATE(Debt);
 sum 'Сумма' = DATA NUMERIC[16,5](Debt);
+inactive 'Неактивная задолженность' = DATA BOOLEAN (Debt);
 
 contract = DATA Contract(Debt) NONULL DELETE;
 numberContract 'Номер договора' (Debt d) = number(contract(d));
