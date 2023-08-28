@@ -258,7 +258,8 @@ FORM debtDashboard 'Контроль задолженности'
     PROPERTIES BACKGROUND backgroundDebt(db) paid(db, dd) AFTER sum(db)
     PROPERTIES (db) TOOLBAR showCustomerDashboard SHOWIF customer(db)
     FILTERS customer(db) == c, date(db) <= dd, type(contract(db)) == t
-    FILTERGROUP notPaid FILTER 'Неоплаченные' sum(db) (-) paid(db, dd) > 0 DEFAULT 
+//    FILTERGROUP notPaid FILTER 'Неоплаченные' sum(db) (-) paid(db, dd) > 0 DEFAULT
+    FILTERGROUP notPaid FILTER 'Неоплаченные' sum(db) (-) paid(db, dd) != 0 DEFAULT // не оплаченные или переплаченные
     ORDERS date(db)
     
     OBJECTS ev = Event
