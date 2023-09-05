@@ -272,7 +272,7 @@ FORM debtDashboard 'Контроль задолженности'
 DESIGN debtDashboard {
     OBJECTS {
         NEW mainTab FIRST {
-            type = TABBED;
+            tabbed = TRUE;
             fill = 1;
             NEW debts {
                 caption = 'Задолженности';

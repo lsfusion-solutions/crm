@@ -140,7 +140,7 @@ FORM EVAT 'Электронная счёт-фактура'
 ;
 
 DESIGN EVAT {    NEW top {
-        type = TABBED;
+        tabbed = TRUE;
         fill = 1;
         NEW general {
             caption = 'Общие';
@@ -246,7 +246,7 @@ DESIGN EVATs {
             }
         }
         NEW pane AFTER BOX(e){
-            type = TABBED;
+            tabbed = TRUE;
             fill = 0.2;
             MOVE BOX(d);
         }

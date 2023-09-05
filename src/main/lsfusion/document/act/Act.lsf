@@ -230,7 +230,7 @@ DESIGN act {
             }
         }
         NEW tab {
-            type = TABBED;
+            tabbed = TRUE;
             fill = 1;
             NEW text {
                 caption = 'Текст';

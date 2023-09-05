@@ -95,7 +95,7 @@ DESIGN contractDashboard {
             type = SPLITV;
             fill = 1;
             NEW tab AFTER BOX (o) {
-                type = TABBED;
+                tabbed = TRUE;
                 fill = 1;
                 NEW content {
                     caption = 'Содержание';

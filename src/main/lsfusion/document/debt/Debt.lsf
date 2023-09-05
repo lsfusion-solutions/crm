@@ -238,7 +238,7 @@ FORM debtsPlan 'План платежей'
 DESIGN debtsPlan {
     OBJECTS {
         NEW tab AFTER BOX (m) {
-            type = TABBED;
+            tabbed = TRUE;
             fill = 1;
             MOVE BOX (d);
             MOVE BOX (p) { caption = 'Платежи'; }

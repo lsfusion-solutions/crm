@@ -102,7 +102,7 @@ DESIGN expenses {
     OBJECTS {
         REMOVE BOX (m);
         NEW tabPane {
-            type = TABBED;
+            tabbed = TRUE;
             fill = 1;
             NEW expenses {
                 caption = 'Расходы';

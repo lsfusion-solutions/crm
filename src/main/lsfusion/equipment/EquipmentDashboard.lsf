@@ -68,7 +68,7 @@ DESIGN equipmentDashboard {
             MOVE PROPERTY (quantitySerial(t));
         }
         NEW tab {
-            type = TABBED;
+            tabbed = TRUE;
             fill = 1;
             NEW equip {
                 caption = 'Оборудование';

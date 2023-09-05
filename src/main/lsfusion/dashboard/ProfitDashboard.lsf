@@ -121,18 +121,18 @@ FORM profit 'Прибыль по клиентам'
 DESIGN profit {
     OBJECTS {
         NEW mainTab AFTER BOX (period) {
-            type = TABBED;
+            tabbed = TRUE;
             fill = 1;
             NEW customers {
                 caption = 'Клиенты';
                 fill = 1;
                 MOVE BOX (c);
                 NEW tab {
-                    type = TABBED;
+                    tabbed = TRUE;
                     fill = 1;
                     MOVE BOX (p) { caption = 'Платежи'; }
                     NEW hours {
-                        type = TABBED;
+                        tabbed = TRUE;
                         fill = 1;
                         caption = 'Трудозатраты';
                         NEW employee {
@@ -164,7 +164,7 @@ DESIGN profit {
                 fill = 1;
                 MOVE BOX (pr);
                 NEW projTabs {
-                    type = TABBED;
+                    tabbed = TRUE;
                     fill = 1;
                     NEW projectEntry {
                         type = CONTAINERH;

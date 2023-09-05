@@ -98,7 +98,7 @@ FORM timesheetDashboard 'Табель рабочего времени'
 DESIGN timesheetDashboard {
     OBJECTS {
         NEW mainTab {
-            type = TABBED;
+            tabbed = TRUE;
             fill = 1;
             NEW hours {
                 caption = 'Табель рабочего времени';

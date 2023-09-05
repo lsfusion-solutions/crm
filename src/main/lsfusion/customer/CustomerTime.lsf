@@ -89,7 +89,7 @@ DESIGN customerTimeDashboard {
             fill = 1;
             MOVE BOX (c) { fill = 1; }
             NEW tab {
-                type = TABBED;
+                tabbed = TRUE;
                 fill = 3;
                 NEW timeEntries {
                     caption = 'Отмеченное время';

@@ -146,7 +146,7 @@ DESIGN docDashboard {
             MOVE PROPERTY (printDocumentReport(df, dt));
         }
         NEW tab AFTER BOX (d) {
-            type = TABBED;
+            tabbed = TRUE;
             fill = 1;
             MOVE BOX (e) { caption = 'События'; }
             MOVE BOX (i) { caption = 'Задачи'; }

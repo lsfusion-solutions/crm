@@ -171,7 +171,7 @@ DESIGN dashboardCustomer {
             MOVE PROPERTY (name(c)) FIRST;
         }
         NEW tabPane AFTER BOX (c) {
-            type = TABBED;
+            tabbed = TRUE;
             fill = 1;
             MOVE BOX (le) { caption = 'Организации'; }
             MOVE BOX (ct) { caption = 'Контакты'; }
@@ -181,7 +181,7 @@ DESIGN dashboardCustomer {
                 MOVE BOX (cr) { caption = 'Договоры'; }
                 NEW contractDetails {
                     fill = 1;
-                    type = TABBED;
+                    tabbed = TRUE;
                     NEW additionalContractDocuments {
                         caption = 'Документы';
                         type = SPLITH;
@@ -222,7 +222,7 @@ DESIGN dashboardCustomer {
                 caption = 'Проекты';
                 fill = 1;
                 NEW projectsTab {
-                    type = TABBED;
+                    tabbed = TRUE;
                     fill = 1;
                     MOVE BOX (pr) { caption = 'Проекты'; }
                     NEW issues {
@@ -309,7 +309,7 @@ DESIGN customer {
             }
         }
         NEW tab {
-            type = TABBED;
+            tabbed = TRUE;
             fill = 1;
             MOVE BOX (le) { caption = 'Организации'; }
             MOVE BOX (a) { caption = 'Адреса'; }

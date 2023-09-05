@@ -59,7 +59,7 @@ DESIGN accountBalances {
             fill = 1;
             MOVE BOX (a);
             NEW tab AFTER BOX (a) {
-                type = TABBED;
+                tabbed = TRUE;
                 fill = 1;
                 MOVE BOX (l);
                 NEW balances {

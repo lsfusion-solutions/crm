@@ -47,7 +47,7 @@ FORM workingHours 'Рабочее время'
 DESIGN workingHours {
     OBJECTS {
         NEW tab {
-            type = TABBED;
+            tabbed = TRUE;
             fill = 1;
             NEW days {
                 caption = 'Дни';

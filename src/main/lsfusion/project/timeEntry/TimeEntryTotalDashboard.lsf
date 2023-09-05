@@ -105,7 +105,7 @@ FORM timeEntryDashboard 'Контроль отмеченного времени'
 DESIGN timeEntryDashboard {
     OBJECTS {
         NEW headerTab FIRST {
-            type = TABBED;
+            tabbed = TRUE;
             fill = 1;
             NEW month {
                 caption = 'За месяц';
@@ -116,7 +116,7 @@ DESIGN timeEntryDashboard {
                 }
                 MOVE BOX (e); 
                 NEW tab AFTER BOX (e) {
-                    type = TABBED;
+                    tabbed = TRUE;
                     fill = 1;
                     NEW entry {
                         caption = 'Отметки времени';
@@ -141,7 +141,7 @@ DESIGN timeEntryDashboard {
                 }
                 MOVE BOX (ee);
                 NEW tab1 AFTER BOX (ee) {
-                    type = TABBED;
+                    tabbed = TRUE;
                     fill = 1;
                     NEW entry1 {
                         caption = 'Отметки времени';

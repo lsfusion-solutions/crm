@@ -227,7 +227,7 @@ reviseSum 'Сверка' (DATE df, DATE dt) {
 DESIGN reviseSum {
     OBJECTS {
         NEW tab AFTER BOX (d) {
-            type = TABBED;
+            tabbed = TRUE;
             fill = 1;
             NEW payment {
                 caption = 'Приходы';

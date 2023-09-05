@@ -188,7 +188,7 @@ DESIGN legalEntity {
         }
         NEW tab {
             fill = 1;
-            type = TABBED;
+            tabbed = TRUE;
             MOVE BOX (a);
             MOVE BOX (d);
         }

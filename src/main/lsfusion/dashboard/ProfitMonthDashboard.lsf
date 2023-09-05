@@ -72,13 +72,13 @@ FORM profitMonthDashboard 'Прибыль по месяцам'
 DESIGN profitMonthDashboard {
     OBJECTS {
         NEW tab AFTER BOX (my) {
-            type = TABBED;
+            tabbed = TRUE;
             fill = 1;
             MOVE BOX (p);
             MOVE BOX (e);
             NEW total {
                 caption = 'Итого';
-                type = TABBED;
+                tabbed = TRUE;
                 fill = 1;
                 MOVE BOX (ctt) { caption = 'Доход по видам договоров'; }
                 MOVE BOX (cgt) { caption = 'Доход по группам договоров'; }

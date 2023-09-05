@@ -21,7 +21,7 @@ FORM documentTemplates 'Шаблоны'
 DESIGN documentTemplates {
     OBJECTS {
         NEW tab {
-            type = TABBED;
+            tabbed = TRUE;
             fill = 1;
             NEW contract {
                 caption = 'Типы договора';
