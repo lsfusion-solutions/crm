@@ -51,7 +51,7 @@ EXTEND FORM migrationData PROPERTIES nameExternal(), importExternal();
 DESIGN migrationData {
     NEW importProjectExternal FIRST {
         caption = 'Импорт проектов';
-        type = CONTAINERH;
+        horizontal = TRUE;
         MOVE PROPERTY (nameExternal());
         MOVE PROPERTY (importExternal());
     }

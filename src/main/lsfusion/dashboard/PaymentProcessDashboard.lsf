@@ -231,14 +231,14 @@ DESIGN reviseSum {
             fill = 1;
             NEW payment {
                 caption = 'Приходы';
-                type = CONTAINERH;
+                horizontal = TRUE;
                 fill = 1;
                 MOVE BOX (p);
                 MOVE BOX (i) { caption = 'Из файла'; }
             }
             NEW expense {
                 caption = 'Расходы';
-                type = CONTAINERH;
+                horizontal = TRUE;
                 fill = 1;
                 MOVE BOX (e);
                 MOVE BOX (ie) { caption = 'Из файла'; }
@@ -252,7 +252,7 @@ EXTEND FORM paymentProcessDasboard PROPERTIES (df, dt) DRAW dates importPayments
 DESIGN paymentProcessDasboard {
     OBJECTS {
         NEW top FIRST {
-            type = CONTAINERH;
+            horizontal = TRUE;
             caption = 'Фильтры';
             MOVE PROPERTY (nameFilterCustomer());
             MOVE PROPERTY (dfrom);

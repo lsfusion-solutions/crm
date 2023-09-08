@@ -126,7 +126,7 @@ DESIGN issue {
             caption = 'Основные параметры';
             alignment = STRETCH;
             NEW top {
-                type = CONTAINERH;
+                horizontal = TRUE;
                 alignment = STRETCH;
                 MOVE PROPERTY (id(o));
                 MOVE PROPERTY (nameTracker(o));
@@ -136,7 +136,7 @@ DESIGN issue {
             MOVE PROPERTY (name(o));
         }
         NEW params {
-            type = CONTAINERH;
+            horizontal = TRUE;
             alignment = STRETCH;
             NEW status {
                 fill = 1;

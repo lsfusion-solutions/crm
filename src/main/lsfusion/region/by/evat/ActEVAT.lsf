@@ -117,7 +117,7 @@ DESIGN ActEVATs {
 
         MOVE BOX(date) BEFORE BOX(e) { 
             caption = '';
-            type = CONTAINERH;
+            horizontal = TRUE;
             PROPERTY(value){caption = 'Дата начала отображения актов';} 
         }
         NEW acts BEFORE BOX(e){
@@ -131,7 +131,7 @@ DESIGN ActEVATs {
         NEW filters BEFORE BOX(e) {
             MOVE BOX(dates) {
                 GROUP(,dates) {
-                    type = CONTAINERH;
+                    horizontal = TRUE;
                     PROPERTY(dFrom) {
                         caption = 'Дата с';
                     }

@@ -13,7 +13,7 @@ DESIGN legalEntity {
     OBJECTS {
         NEW debt BEFORE tab {
             caption = 'Дополнительно';
-            type = CONTAINERH;
+            horizontal = TRUE;
             MOVE PROPERTY (nameActContact(o));
             MOVE PROPERTY (nameEmailTemplate(o));
         }

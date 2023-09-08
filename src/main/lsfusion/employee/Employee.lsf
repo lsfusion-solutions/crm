@@ -41,7 +41,7 @@ FORM employee 'Сотрудник'
 DESIGN employee {
     OBJECTS {
         NEW main {
-            type = CONTAINERH;
+            horizontal = TRUE;
             alignment = STRETCH;
             NEW position {
                 caption = 'Основные параметры';
@@ -64,7 +64,7 @@ DESIGN employee {
             }
         }
         NEW names {
-            type = CONTAINERH;
+            horizontal = TRUE;
             caption = 'Имя';
             alignment = STRETCH;
             NEW name {
@@ -92,7 +92,7 @@ DESIGN employee {
             alignment = STRETCH;
             NEW note {
                 alignment = STRETCH;
-                type = CONTAINERH;
+                horizontal = TRUE;
                 MOVE PROPERTY (inactive(o));
                 MOVE PROPERTY (note(o));
             }

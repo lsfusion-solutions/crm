@@ -79,13 +79,13 @@ DESIGN attachment {
     BOX (o) {
         NEW main {
             caption = 'Основные параметры';
-            type = CONTAINERH;
+            horizontal = TRUE;
             MOVE PROPERTY(id(o));
             MOVE PROPERTY(number(o));
             MOVE PROPERTY(date(o));
         }
         NEW add {
-            type = CONTAINERH;
+            horizontal = TRUE;
             caption = 'Дополнительная информация';
             MOVE PROPERTY(nameType(o));
             MOVE PROPERTY(note(o)) { charWidth = 100; }
@@ -96,14 +96,14 @@ DESIGN attachment {
             MOVE PROPERTY(nameCustomer(o));
         }
         NEW created {
-            type = CONTAINERH;
+            horizontal = TRUE;
             caption = 'Создан';
             MOVE PROPERTY(nameCreatedUser(o));
             MOVE PROPERTY(createdDate(o));
         }
         NEW file {
             caption = 'Файл документа';
-            type = CONTAINERH;
+            horizontal = TRUE;
             MOVE PROPERTY (loadFile(o));
             MOVE PROPERTY (openFile(o));
             MOVE PROPERTY (deleteFile(o));

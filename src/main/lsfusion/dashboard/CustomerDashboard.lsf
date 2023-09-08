@@ -166,7 +166,7 @@ FORM dashboardCustomer 'Работа с клиентами'
 DESIGN dashboardCustomer {
     OBJECTS {
         TOOLBARRIGHT (c) {
-            type = CONTAINERH;
+            horizontal = TRUE;
             alignment = STRETCH;
             MOVE PROPERTY (name(c)) FIRST;
         }
@@ -204,7 +204,7 @@ DESIGN dashboardCustomer {
                 fill = 1;
                 MOVE BOX (ev);
                 NEW add {
-                    type = CONTAINERH;
+                    horizontal = TRUE;
                     fill = 1;
                     NEW description {
                         fill = 1;
@@ -280,13 +280,13 @@ EXTEND FORM customer
 DESIGN customer {
     OBJECTS {
         NEW main FIRST {
-            type = CONTAINERH;
+            horizontal = TRUE;
             caption = 'Основные параметры';
             MOVE PROPERTY (id(o));
             MOVE PROPERTY (name(o)) { charWidth = 50; }
         }
         NEW contacts AFTER main {
-            type = CONTAINERH;
+            horizontal = TRUE;
             caption = 'Контакты';
             MOVE PROPERTY (phone(o));
             MOVE PROPERTY (email(o)) { charWidth = 30; }
@@ -303,7 +303,7 @@ DESIGN customer {
                 MOVE PROPERTY (note(o));
             }
             NEW secondAdd {
-                type = CONTAINERH;
+                horizontal = TRUE;
                 MOVE PROPERTY (inactive(o));
                 MOVE PROPERTY (forbidTimeEntries(o));
             }

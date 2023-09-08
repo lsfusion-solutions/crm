@@ -52,15 +52,15 @@ EXTEND FORM eventDashboard PROPERTIES printEventsXls();
 DESIGN eventDashboard {
     OBJECTS {
         NEW dates FIRST {
-            type = CONTAINERH;
+            horizontal = TRUE;
             NEW dates1 {
-                type = CONTAINERH;
+                horizontal = TRUE;
                 caption = 'Даты события';
                 MOVE PROPERTY (dateFromEvent());
                 MOVE PROPERTY (dateToEvent());
             }
             NEW dates2 {
-                type = CONTAINERH;
+                horizontal = TRUE;
                 caption = 'Даты следующих переговоров';
                 MOVE PROPERTY (dateFromNext());
                 MOVE PROPERTY (dateToNext());
@@ -72,7 +72,7 @@ DESIGN eventDashboard {
         }
         type = CONTAINERV;
         NEW bottom AFTER BOX (o){
-            type = CONTAINERH;
+            horizontal = TRUE;
             fill = 1;
             NEW description {
                 fill = 1;

@@ -67,11 +67,11 @@ FORM requiredTemplateEntries 'Обязательные поля'
 
 DESIGN requiredTemplateEntries {
     NEW head FIRST {
-        type = CONTAINERH;
+        horizontal = TRUE;
         MOVE BOX (dates);
         NEW period AFTER BOX (dates) {
             caption = 'Период оказания услуг';
-            type = CONTAINERH;
+            horizontal = TRUE;
             MOVE PROPERTY (ddf);
             MOVE PROPERTY (ddt);
         }
@@ -97,7 +97,7 @@ EXTEND FORM agreement
 DESIGN agreement {
     row3 {
         NEW add2 {
-            type = CONTAINERH;
+            horizontal = TRUE;
             caption = 'Необязательные параметры'; 
             MOVE PROPERTY(nameActType(o)) {charWidth = 30;} 
         }
@@ -279,7 +279,7 @@ DESIGN debtDashboard {
                 fill = 1;
                 NEW filter FIRST {
                     caption = 'Фильтры';
-                    type = CONTAINERH;
+                    horizontal = TRUE;
                     MOVE PROPERTY (filterDateFrom());
                     MOVE PROPERTY (filterDateTo());
                     MOVE PROPERTY (nameDebtFilterContractType());
@@ -292,7 +292,7 @@ DESIGN debtDashboard {
                 fill = 1;
                 MOVE BOX (dd) {
                     caption = 'Параметры';
-                    type = CONTAINERH;
+                    horizontal = TRUE;
                     MOVE PROPERTY (nameFilterCustomerContractType());
                     alignment = START;
                 }

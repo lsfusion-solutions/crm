@@ -157,7 +157,7 @@ DESIGN legalEntity {
     OBJECTS {
         NEW main FIRST {
             alignment = STRETCH;
-            type = CONTAINERH;
+            horizontal = TRUE;
             caption = 'Основные параметры';
             MOVE PROPERTY (id(o));
             MOVE PROPERTY (name(o));
@@ -169,20 +169,20 @@ DESIGN legalEntity {
             NEW client {
                 alignment = STRETCH;
                 caption = 'Клиент';
-                type = CONTAINERH;
+                horizontal = TRUE;
                 MOVE PROPERTY (nameCustomer(o)) {charWidth = 30; }
             }
             NEW bank {
                 alignment = STRETCH;
                 caption = 'Реквизиты';
-                type = CONTAINERH;
+                horizontal = TRUE;
                 MOVE PROPERTY (numberAccount(o));
                 MOVE PROPERTY (nameBank(o)) { charWidth = 30; }
             }
             NEW documents {
                 alignment = STRETCH;
                 caption = 'Документы';
-                type = CONTAINERH;
+                horizontal = TRUE;
                 MOVE PROPERTY(fullName(o));
             }
         }

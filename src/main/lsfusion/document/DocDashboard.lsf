@@ -138,7 +138,7 @@ DESIGN docDashboard {
     OBJECTS {
         NEW filter FIRST {
             caption = 'Фильтры';
-            type = CONTAINERH;
+            horizontal = TRUE;
             MOVE PROPERTY (nameFilterDocClass());
             MOVE PROPERTY (nameFilterLegalEntity());
             MOVE PROPERTY (dfrom);

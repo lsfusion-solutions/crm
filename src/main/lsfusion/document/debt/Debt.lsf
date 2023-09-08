@@ -180,7 +180,7 @@ DESIGN contract {
             NEW sums {
                 type = CONTAINERV;
                 NEW firstRow {
-                    type = CONTAINERH;
+                    horizontal = TRUE;
                     caption = 'Стоимость';
                     MOVE PROPERTY (sum(o));
                     MOVE PROPERTY (shortNameCurrency(o));
@@ -190,7 +190,7 @@ DESIGN contract {
                 }
                 NEW secondRow {
                     caption = 'Задолженность';
-                    type = CONTAINERH;
+                    horizontal = TRUE;
                     MOVE PROPERTY (sumMonth(o));
                     MOVE PROPERTY (paymentDay(o));
                     MOVE PROPERTY (currencyDay(o));

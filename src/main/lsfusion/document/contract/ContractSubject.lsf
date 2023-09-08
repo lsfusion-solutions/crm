@@ -111,7 +111,7 @@ DESIGN agreement {
     details {
         NEW subjects {
             caption = 'Предметы договора';
-            type = CONTAINERH;
+            horizontal = TRUE;
             MOVE BOX (s) { fill = 4; }
             NEW note {
                 fill = 1;

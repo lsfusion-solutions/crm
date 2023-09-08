@@ -112,7 +112,7 @@ DESIGN expenses {
                 caption = 'Подбор';
                 type = CONTAINERV;
                 NEW head {
-                    type = CONTAINERH;
+                    horizontal = TRUE;
                     caption = 'Фильтры';
                     MOVE PROPERTY (name(t)) { caption = 'Тип расхода'; }
                     MOVE PROPERTY (year) { charWidth = 10; }

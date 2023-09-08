@@ -143,7 +143,7 @@ FORM agreement 'Соглашение'
 DESIGN agreement {
     OBJECTS {
         NEW row1 {
-            type = CONTAINERH;
+            horizontal = TRUE;
             alignment = STRETCH;
             NEW main {
                 caption = 'Основные параметры';
@@ -151,7 +151,7 @@ DESIGN agreement {
                 MOVE PROPERTY (name(o));
                 MOVE PROPERTY (nameNumerator(o));
                 NEW number {
-                    type = CONTAINERH;
+                    horizontal = TRUE;
                     MOVE PROPERTY (series(o));
                     MOVE PROPERTY (number(o));
                 }
@@ -164,7 +164,7 @@ DESIGN agreement {
                 MOVE PROPERTY(numberContract(o));
                 MOVE PROPERTY(nameCompany(o));
                 NEW autC {
-                    type = CONTAINERH;
+                    horizontal = TRUE;
                     fill = 1;
                     MOVE PROPERTY (nameAuthorisedPersonCompany(o));
                     MOVE PROPERTY (authorisedDocumentCompany(o));
@@ -172,7 +172,7 @@ DESIGN agreement {
                 MOVE PROPERTY(nameCustomer(o));
                 MOVE PROPERTY(nameLegalEntity(o));
                 NEW autL {
-                    type = CONTAINERH;
+                    horizontal = TRUE;
                     fill = 1;
                     MOVE PROPERTY (nameAuthorisedPersonLegalEntity(o));
                     MOVE PROPERTY (authorisedDocumentLegalEntity(o));
@@ -180,7 +180,7 @@ DESIGN agreement {
             }
         }
         NEW processing {
-            type = CONTAINERH;
+            horizontal = TRUE;
             caption = 'Обработка';
             MOVE PROPERTY(nameSendingWay(o));
             MOVE PROPERTY(dateSending(o));
@@ -188,14 +188,14 @@ DESIGN agreement {
             MOVE PROPERTY(dateClosing(o));
         }
         NEW row3 {
-            type = CONTAINERH;
+            horizontal = TRUE;
             NEW payment {
                 caption = 'Задолженность';
-                type = CONTAINERH;
+                horizontal = TRUE;
                 MOVE PROPERTY(sum(o));
             }
             NEW add {
-                type = CONTAINERH;
+                horizontal = TRUE;
                 caption = 'Дополнительная информация';
                 MOVE PROPERTY(note(o));
             }
@@ -206,7 +206,7 @@ DESIGN agreement {
             NEW text {
                 caption = 'Содержание';
                 fill = 1;
-                type = CONTAINERH;
+                horizontal = TRUE;
                 NEW texts {
                     caption = 'Текст';
                     fill = 1;

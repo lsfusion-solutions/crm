@@ -14,7 +14,7 @@ DESIGN dialogReportManager {
     OBJECTS {
         NEW manager AFTER BOX (dates) {
             caption = 'Менеджер';
-            type = CONTAINERH;
+            horizontal = TRUE;
             MOVE PROPERTY (name(r)) { caption = 'Роль'; }
             MOVE PROPERTY (name(e)) { caption = 'Сотрудник'; }
         }

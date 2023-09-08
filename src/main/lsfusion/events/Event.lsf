@@ -81,7 +81,7 @@ DESIGN event {
     OBJECTS {
         NEW data FIRST {
             caption = 'Основные параметры';
-            type = CONTAINERH;
+            horizontal = TRUE;
             MOVE PROPERTY (id(o));
             MOVE PROPERTY (date(o));
             MOVE PROPERTY (time(o));
@@ -98,7 +98,7 @@ DESIGN event {
         }
         NEW docs {
             caption = 'Документы';
-            type = CONTAINERH;
+            horizontal = TRUE;
         }
         NEW employee {
             caption = 'Сотрудник';
@@ -106,7 +106,7 @@ DESIGN event {
             MOVE PROPERTY (nameEmployee(o));
         }
         NEW bottom {
-            type = CONTAINERH;
+            horizontal = TRUE;
             fill = 1;
             NEW description {
                 fill = 1;

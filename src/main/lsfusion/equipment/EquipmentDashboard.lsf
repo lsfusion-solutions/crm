@@ -61,7 +61,7 @@ DESIGN equipmentDashboard {
     OBJECTS {
         NEW head FIRST {
             caption = 'Параметры';
-            type = CONTAINERH;
+            horizontal = TRUE;
             MOVE PROPERTY (name(t)) { caption = 'Тип предмета договора'; }
             MOVE PROPERTY (nameFilterCustomer()) { caption = 'Клиент'; }
             MOVE PROPERTY (nameFilterContract(t)) { caption = 'Договор'; }

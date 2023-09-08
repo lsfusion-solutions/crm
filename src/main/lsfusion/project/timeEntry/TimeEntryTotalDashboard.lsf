@@ -110,7 +110,7 @@ DESIGN timeEntryDashboard {
             NEW month {
                 caption = 'За месяц';
                 NEW filterMonth {
-                    type = CONTAINERH;
+                    horizontal = TRUE;
                     MOVE PROPERTY (yearMonth) { charWidth = 20; }
                     MOVE PROPERTY (monthHours(y, m));
                 }
@@ -120,14 +120,14 @@ DESIGN timeEntryDashboard {
                     fill = 1;
                     NEW entry {
                         caption = 'Отметки времени';
-                        type = CONTAINERH;
+                        horizontal = TRUE;
                         fill = 1;
                         MOVE BOX (p) { fill = 1; }
                         MOVE BOX (t) { fill = 5; }
                     }
                     NEW absence {
                         caption = 'Отсутствие';
-                        type = CONTAINERH;
+                        horizontal = TRUE;
                         fill = 1;
                         MOVE BOX (a) { fill = 5; }
                         MOVE BOX (ad) { fill = 1; }
@@ -145,13 +145,13 @@ DESIGN timeEntryDashboard {
                     fill = 1;
                     NEW entry1 {
                         caption = 'Отметки времени';
-                        type = CONTAINERH;
+                        horizontal = TRUE;
                         fill = 1;
                         MOVE BOX (pp) { fill = 1; }
                         MOVE BOX (te) { fill = 5; }
                     }
                     NEW absence1 {
-                        type = CONTAINERH;
+                        horizontal = TRUE;
                         fill = 1;
                         caption = 'Отсутствие';
                         MOVE BOX (ab) { fill = 5; }

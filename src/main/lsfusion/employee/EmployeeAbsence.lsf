@@ -87,12 +87,12 @@ DESIGN absence {
         NEW data FIRST {
             NEW firstData {
                 caption = 'Основные параметры';
-                type = CONTAINERH;
+                horizontal = TRUE;
                 MOVE PROPERTY (id(o));
                 MOVE PROPERTY (date(o));
             }
             NEW secondData {
-                type = CONTAINERH;
+                horizontal = TRUE;
                 caption = 'Время отсутствия';
                 MOVE PROPERTY (dateFrom(o));
                 MOVE PROPERTY (dateTo(o));

@@ -103,7 +103,7 @@ DESIGN agreement {
             caption = 'Задолженность';
             NEW sum {
                 caption = 'Стоимость';
-                type = CONTAINERH;
+                horizontal = TRUE;
                 MOVE PROPERTY (sum(o));
                 MOVE PROPERTY (shortNameCurrency(o));
                 MOVE PROPERTY (sumCurrency(o));

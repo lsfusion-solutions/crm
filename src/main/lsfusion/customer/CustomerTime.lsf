@@ -80,7 +80,7 @@ DESIGN customerTimeDashboard {
     OBJECTS {
         NEW head FIRST {
             caption = 'Фильтры';
-            type = CONTAINERH;
+            horizontal = TRUE;
             MOVE PROPERTY (year);
             MOVE PROPERTY (month);
         }
@@ -95,7 +95,7 @@ DESIGN customerTimeDashboard {
                     caption = 'Отмеченное время';
                     NEW report {
                         caption = 'Отчет по клиенту';
-                        type = CONTAINERH;
+                        horizontal = TRUE;
                         MOVE PROPERTY (dFrom);
                         MOVE PROPERTY (dTo);
                         MOVE PROPERTY (nameFilterProject(c));
@@ -108,10 +108,10 @@ DESIGN customerTimeDashboard {
                     caption = 'Задачи';
                     fill = 1;
                     NEW docReport {
-                        type = CONTAINERH;
+                        horizontal = TRUE;
                         NEW reportAgreement {
                             caption = 'Отчет по соглашению';
-                            type = CONTAINERH;
+                            horizontal = TRUE;
                             MOVE PROPERTY (description(a)) { 
                                 caption = 'Соглашение'; 
                                 charWidth = 50;
@@ -120,7 +120,7 @@ DESIGN customerTimeDashboard {
                         }
                         NEW reporContract {
                             caption = 'Отчет по договору';
-                            type = CONTAINERH;
+                            horizontal = TRUE;
                             MOVE PROPERTY (description(con)) { 
                                 caption = 'Договор'; 
                                 charWidth = 50;

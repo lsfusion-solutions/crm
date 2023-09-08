@@ -235,7 +235,7 @@ DESIGN EVATs {
         NEW filters BEFORE BOX(e) {
             MOVE BOX(dates) {
                 GROUP(,dates) {
-                    type = CONTAINERH;
+                    horizontal = TRUE;
                     PROPERTY(dFrom) {
                         caption = 'Дата с';
                     }

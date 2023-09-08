@@ -115,7 +115,7 @@ FORM payment 'Платёж'
 DESIGN payment {
     OBJECTS {
         NEW main FIRST {
-            type = CONTAINERH;
+            horizontal = TRUE;
             caption = 'Основные параметры';
             MOVE PROPERTY (id(o));
             MOVE PROPERTY (date(o));
@@ -123,17 +123,17 @@ DESIGN payment {
             MOVE PROPERTY (nameType(o));
         }
         NEW contacts AFTER main {
-            type = CONTAINERH;
+            horizontal = TRUE;
             caption = 'Контакты';
             MOVE PROPERTY (nameLegalEntity(o));
             MOVE PROPERTY (nameCompany(o));
         }
         NEW docs AFTER contacts {
-            type = CONTAINERH;
+            horizontal = TRUE;
             caption = 'Документы';
         }
         NEW sum AFTER docs {
-            type = CONTAINERH;
+            horizontal = TRUE;
             caption = 'Сумма';
             MOVE PROPERTY (sum(o));
             MOVE PROPERTY (shortNameCurrency(o));

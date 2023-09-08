@@ -104,7 +104,7 @@ DESIGN timesheetDashboard {
                 caption = 'Табель рабочего времени';
                 NEW header FIRST {
                     caption = 'Фильтры';
-                    type = CONTAINERH;
+                    horizontal = TRUE;
                     MOVE PROPERTY (yearMonth) { charWidth = 20; alignment = STRETCH; }
                     MOVE PROPERTY (name(e)) { charWidth = 25; alignment = STRETCH; }
                 }
@@ -136,7 +136,7 @@ DESIGN timesheetDashboard {
                 fill = 1;
                 NEW header1 FIRST {
                     caption = 'Фильтры';
-                    type = CONTAINERH;
+                    horizontal = TRUE;
                     MOVE PROPERTY (month1) { charWidth = 15; }
                     MOVE PROPERTY (year1) { charWidth = 5; }
                 }

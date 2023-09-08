@@ -24,7 +24,7 @@ DESIGN agreement {
             caption = 'Файл';
             NEW file {
                 caption = 'Текущий файл документа';
-                type = CONTAINERH;
+                horizontal = TRUE;
                 MOVE PROPERTY (loadFile(o));
                 MOVE PROPERTY (openFile(o));
             }

@@ -65,9 +65,9 @@ EXTEND FORM typeExchangeCurrencyDate
 
 DESIGN typeExchangeCurrencyDate {
     importExchangeRates {
-        MOVE GROUP(nbrb) {type = CONTAINERH;}
+        MOVE GROUP(nbrb) {horizontal = TRUE;}
         NEW lastDaysContainer {
-            type = CONTAINERH;
+            horizontal = TRUE;
             MOVE PROPERTY(importNBRBExchangeRateDaysCount());
             MOVE PROPERTY(importNBRBExchangeRateLastDays());
         }

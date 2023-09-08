@@ -137,13 +137,13 @@ DESIGN profit {
                         caption = 'Трудозатраты';
                         NEW employee {
                             caption = 'По сотрудникам';
-                            type = CONTAINERH;
+                            horizontal = TRUE;
                             MOVE BOX (e) { fill = 1; }
                             MOVE BOX (t) { fill = 5; }
                         }
                         NEW project {
                             caption = 'По проектам';
-                            type = CONTAINERH;
+                            horizontal = TRUE;
                             MOVE BOX (pp) { fill = 1; }
                             MOVE BOX (ee) { fill = 1; }
                             MOVE BOX (tt) { fill = 4; }
@@ -167,7 +167,7 @@ DESIGN profit {
                     tabbed = TRUE;
                     fill = 1;
                     NEW projectEntry {
-                        type = CONTAINERH;
+                        horizontal = TRUE;
                         fill = 1;
                         caption = 'Трудозатраты';
                         MOVE BOX (epr);

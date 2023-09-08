@@ -141,7 +141,7 @@ EXTEND FORM migrationData PROPERTIES() exportPayments, importPayments, importPay
 DESIGN migrationData {
     GROUP () {
         NEW payments AFTER PROPERTY (exportPayments()) {
-            type = CONTAINERH;
+            horizontal = TRUE;
             MOVE PROPERTY (importPayments());
             MOVE PROPERTY (importPaymentContracts());
         }

@@ -86,7 +86,7 @@ DESIGN contractDashboard {
     OBJECTS {
         NEW filter FIRST {
             caption = 'Фильтры';
-            type = CONTAINERH;
+            horizontal = TRUE;
             MOVE PROPERTY (nameFilterContractType());
             MOVE PROPERTY (nameFilterCustomer());
         }
@@ -109,7 +109,7 @@ DESIGN contractDashboard {
                             caption = ''; 
                         }
                         NEW file {
-                            type = CONTAINERH;
+                            horizontal = TRUE;
                             caption = 'Файл документа';
                             MOVE PROPERTY (loadFileApply(o));
                             MOVE PROPERTY (openFile(o));

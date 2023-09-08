@@ -58,7 +58,7 @@ FORM createIssue 'Создание задач'
 
 DESIGN createIssue {
     OBJECTS {
-     type = CONTAINERH;
+     horizontal = TRUE;
     }
 }
 
