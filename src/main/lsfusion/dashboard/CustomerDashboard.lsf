@@ -295,7 +295,7 @@ DESIGN customer {
             caption = 'Дополнительные параметры';
             NEW firstAdd {
                 type = COLUMNS;
-                columns = 3;
+                lines = 3;
                 MOVE PROPERTY (nameGroup(o));
                 MOVE PROPERTY (nameStatus(o));
                 MOVE PROPERTY (dateFrom(o));

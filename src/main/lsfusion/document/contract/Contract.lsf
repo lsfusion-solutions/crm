@@ -243,7 +243,7 @@ DESIGN contract {
                 NEW processing {
                     caption = 'Обработка';
                     type = COLUMNS;
-                    columns = 3;
+                    lines = 3;
                     childrenAlignment = END;
                     MOVE PROPERTY (nameSendingWay(o));
                     MOVE PROPERTY (dateSigningCompany(o));
