@@ -20,7 +20,7 @@ EXTEND FORM agreement
 DESIGN agreement {
     details {
         NEW files {
-            type = CONTAINERV;
+            horizontal = FALSE;
             caption = 'Файл';
             NEW file {
                 caption = 'Текущий файл документа';

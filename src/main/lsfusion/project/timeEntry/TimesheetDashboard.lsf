@@ -124,7 +124,7 @@ DESIGN timesheetDashboard {
                         fill = 1;
                     }
                     NEW right {
-                        type = CONTAINERV;
+                        horizontal = FALSE;
                         MOVE BOX (t) { fill = 2; }
                         MOVE BOX (a) { fill = 1; }
                         fill = 3;

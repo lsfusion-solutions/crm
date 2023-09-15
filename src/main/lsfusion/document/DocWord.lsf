@@ -46,7 +46,7 @@ FORM editTemplate 'Шаблон'
 DESIGN editTemplate {
     BOX {
         size = (1200, 768);
-        type = CONTAINERV;
+        horizontal = FALSE;
         MOVE BOX(t) {
             horizontal = TRUE;
             NEW row1 {

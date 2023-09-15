@@ -20,7 +20,7 @@ EXTEND FORM act
 DESIGN act {
     tab {
         NEW files {
-            type = CONTAINERV;
+            horizontal = FALSE;
             caption = 'Файл';
             NEW file {
                 caption = 'Текущий файл документа';
