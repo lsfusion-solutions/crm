@@ -177,7 +177,7 @@ DESIGN dashboardCustomer {
             MOVE BOX (ct) { caption = 'Контакты'; }
             NEW contracts {
                 caption = 'Договоры';
-                type = SPLITV;
+                horizontal = FALSE;
                 MOVE BOX (cr) { caption = 'Договоры'; }
                 NEW contractDetails {
                     fill = 1;

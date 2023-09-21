@@ -55,7 +55,7 @@ FORM accountBalances 'Остатки по счетам'
 DESIGN accountBalances {
     OBJECTS {
         NEW pane {
-            type = SPLITV;
+            horizontal = FALSE;
             fill = 1;
             MOVE BOX (a);
             NEW tab AFTER BOX (a) {
