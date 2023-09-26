@@ -77,7 +77,7 @@ EXTEND FORM equipment
 DESIGN equipment {
     OBJECTS {
         NEW tables AFTER BOX (o) {
-            type = SPLITH;
+            horizontal = TRUE;
             fill = 1;
             MOVE BOX (s) { fill = 1; }
             MOVE BOX (l) { fill = 3; caption = 'Лог запросов на получение лицензионного ключа'; }

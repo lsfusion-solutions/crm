@@ -15,7 +15,7 @@ DESIGN template {
     OBJECTS {
         MOVE BOX (t);
         NEW patterns AFTER BOX (t) {
-            type = SPLITH;
+            horizontal = TRUE;
             fill = 1;
             MOVE BOX (te) {
                 PROPERTY (value(te)) { valueWidth = 50; }
@@ -49,7 +49,7 @@ EXTEND FORM patterns
 DESIGN patterns {
     OBJECTS {
         NEW templates {
-            type = SPLITH;
+            horizontal = TRUE;
             fill = 1;
             MOVE BOX (t) { fill = 1; }
             MOVE BOX (te) { fill = 4; }

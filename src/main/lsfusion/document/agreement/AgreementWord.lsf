@@ -22,7 +22,7 @@ DESIGN documentTemplates {
     tab {
         NEW agreement {
             caption = 'Типы соглашения';
-            type = SPLITH;
+            horizontal = TRUE;
             MOVE BOX (ag) {
                 fill = 1;
             }

@@ -29,7 +29,7 @@ EXTEND FORM issue
 DESIGN issue {
     OBJECTS {
         NEW bottom AFTER params {
-            type = SPLITH;
+            horizontal = TRUE;
             fill = 1;
             NEW texts {
                 fill = 1;

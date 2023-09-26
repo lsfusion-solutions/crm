@@ -184,7 +184,7 @@ DESIGN dashboardCustomer {
                     tabbed = TRUE;
                     NEW additionalContractDocuments {
                         caption = 'Документы';
-                        type = SPLITH;
+                        horizontal = TRUE;
                         MOVE BOX (ag) { caption = 'Соглашения'; }
                         MOVE BOX (ac) { caption = 'Акты'; }
                     }
@@ -227,7 +227,7 @@ DESIGN dashboardCustomer {
                     MOVE BOX (pr) { caption = 'Проекты'; }
                     NEW issues {
                         caption = 'Задачи';
-                        type = SPLITH;
+                        horizontal = TRUE;
                         MOVE BOX (st) {
                             fill = 1;
                         }  

@@ -72,7 +72,7 @@ DESIGN equipmentDashboard {
             fill = 1;
             NEW equip {
                 caption = 'Оборудование';
-                type = SPLITH;
+                horizontal = TRUE;
                 fill = 1;
                 MOVE BOX (e) { fill = 2; }
                 NEW serials { 

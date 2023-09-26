@@ -85,7 +85,7 @@ DESIGN customerTimeDashboard {
             MOVE PROPERTY (month);
         }
         NEW main AFTER head {
-            type = SPLITH;
+            horizontal = TRUE;
             fill = 1;
             MOVE BOX (c) { fill = 1; }
             NEW tab {
@@ -129,7 +129,7 @@ DESIGN customerTimeDashboard {
                         }
                     }
                     NEW issuesBox {
-                        type = SPLITH;
+                        horizontal = TRUE;
                         fill = 1;
                         MOVE BOX (st) {
                             fill = 1;

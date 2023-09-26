@@ -144,7 +144,7 @@ EXTEND FORM contract
 DESIGN contract {
     details {
         NEW subjects {
-            type = SPLITH;
+            horizontal = TRUE;
             fill = 1;
             caption = 'Предметы договора';
             NEW summary {
@@ -156,7 +156,7 @@ DESIGN contract {
                 tabbed = TRUE;
                 fill = 4;
                 NEW contractSubjects {
-                    type = SPLITH;
+                    horizontal = TRUE;
                     caption = 'По договору';
                     MOVE BOX (s) { fill = 4; }
                     NEW note {
@@ -169,7 +169,7 @@ DESIGN contract {
                     }
                 }
                 NEW agreementSubjects {
-                    type = SPLITH;
+                    horizontal = TRUE;
                     caption = 'По соглашениям';
                     MOVE BOX (as) { fill = 4; }
                     NEW noteA {

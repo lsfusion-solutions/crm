@@ -77,7 +77,7 @@ DESIGN projectNotifications {
     OBJECTS { 
         NEW main FIRST {
             fill = 1;
-            type = SPLITH;
+            horizontal = TRUE;
             MOVE BOX (p) { fill = 3; }
             MOVE BOX (s) { fill = 1; }
         }

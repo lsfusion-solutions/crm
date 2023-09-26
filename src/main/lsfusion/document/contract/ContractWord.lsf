@@ -25,7 +25,7 @@ DESIGN documentTemplates {
             fill = 1;
             NEW contract {
                 caption = 'Типы договора';
-                type = SPLITH;
+                horizontal = TRUE;
                 MOVE BOX (ct) {
                     fill = 1;
                 }

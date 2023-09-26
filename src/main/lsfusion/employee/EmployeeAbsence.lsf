@@ -130,7 +130,7 @@ FORM absences 'Отсутствие сотрудников'
 
 DESIGN absences {
     OBJECTS {
-        type = SPLITH;
+        horizontal = TRUE;
         BOX (o) { fill = 4; }
         BOX (d) { fill = 1; }
     }

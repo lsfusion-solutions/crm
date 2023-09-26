@@ -297,7 +297,7 @@ DESIGN debtDashboard {
                     alignment = START;
                 }
                 NEW bottom {
-                    type = SPLITH;
+                    horizontal = TRUE;
                     fill = 1;
                     MOVE BOX (ct) { fill = 1; }
                     NEW right { 

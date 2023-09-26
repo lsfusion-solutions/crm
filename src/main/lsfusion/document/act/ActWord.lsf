@@ -22,7 +22,7 @@ DESIGN documentTemplates {
     tab {
         NEW act {
             caption = 'Типы акта';
-            type = SPLITH;
+            horizontal = TRUE;
             MOVE BOX (ac) {
                 fill = 1;
             }

@@ -100,7 +100,7 @@ DESIGN contractDashboard {
                 NEW content {
                     caption = 'Содержание';
                     fill = 1;
-                    type = SPLITH;
+                    horizontal = TRUE;
                     NEW text {
                         caption = 'Текст';
                         fill = 1;

@@ -109,7 +109,7 @@ DESIGN timesheetDashboard {
                     MOVE PROPERTY (name(e)) { charWidth = 25; alignment = STRETCH; }
                 }
                 NEW bottom {
-                    type = SPLITH;
+                    horizontal = TRUE;
                     fill = 1;
                     NEW left {
                         MOVE BOX (d) { 
