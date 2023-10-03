@@ -294,7 +294,6 @@ DESIGN customer {
         NEW add AFTER contacts {
             caption = 'Дополнительные параметры';
             NEW firstAdd {
-                type = COLUMNS;
                 lines = 3;
                 MOVE PROPERTY (nameGroup(o));
                 MOVE PROPERTY (nameStatus(o));
