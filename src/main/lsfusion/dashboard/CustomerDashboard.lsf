@@ -177,7 +177,6 @@ DESIGN dashboardCustomer {
             MOVE BOX (ct) { caption = 'Контакты'; }
             NEW contracts {
                 caption = 'Договоры';
-                horizontal = FALSE;
                 MOVE BOX (cr) { caption = 'Договоры'; }
                 NEW contractDetails {
                     fill = 1;

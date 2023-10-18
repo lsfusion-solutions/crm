@@ -20,7 +20,6 @@ EXTEND FORM agreement
 DESIGN agreement {
     details {
         NEW files {
-            horizontal = FALSE;
             caption = 'Файл';
             NEW file {
                 caption = 'Текущий файл документа';

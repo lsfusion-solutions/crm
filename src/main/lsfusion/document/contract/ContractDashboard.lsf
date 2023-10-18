@@ -92,7 +92,6 @@ DESIGN contractDashboard {
         }
         NEW contract AFTER filter {
             MOVE BOX (o);
-            horizontal = FALSE;
             fill = 1;
             NEW tab AFTER BOX (o) {
                 tabbed = TRUE;

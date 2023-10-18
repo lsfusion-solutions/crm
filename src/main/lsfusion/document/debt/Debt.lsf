@@ -178,7 +178,6 @@ DESIGN contract {
         NEW debt {
             caption = 'Задолженность';
             NEW sums {
-                horizontal = FALSE;
                 NEW firstRow {
                     horizontal = TRUE;
                     caption = 'Стоимость';

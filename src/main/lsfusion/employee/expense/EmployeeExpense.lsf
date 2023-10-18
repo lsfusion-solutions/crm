@@ -110,7 +110,6 @@ DESIGN expenses {
             }
             NEW sumBox {
                 caption = 'Подбор';
-                horizontal = FALSE;
                 NEW head {
                     horizontal = TRUE;
                     caption = 'Фильтры';
