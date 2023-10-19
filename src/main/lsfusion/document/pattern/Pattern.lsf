@@ -23,7 +23,6 @@ FORM pattern 'Заготовка'
 DESIGN pattern {
     BOX (o) {
         fill = 1;
-        horizontal = FALSE;
         NEW note {
             height = 100;
             alignment = STRETCH;

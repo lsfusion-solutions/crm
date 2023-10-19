@@ -38,7 +38,6 @@ FORM issueDashboard 'Мои задачи'
 
 DESIGN issueDashboard {
     OBJECTS {
-        horizontal = FALSE;
         BOX (o) { fill = 3; }
         BOX (l) { fill = 1; }
     }

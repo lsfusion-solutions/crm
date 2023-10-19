@@ -74,7 +74,6 @@ FORM subjects 'Предметы договора'
 
 DESIGN subjects {
     OBJECTS {
-        horizontal = FALSE;
         MOVE BOX (o) { fill = 4; }
         NEW note {
             fill = 1;

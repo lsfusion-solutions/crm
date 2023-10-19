@@ -124,7 +124,6 @@ DESIGN event {
 
 DESIGN event {
     GROUP (,o) {
-        horizontal = FALSE;
         fill = 1;
         PROPERTY (description(o)) { valueHeight = 100; }
         PROPERTY (addition(o)) { valueHeight = 100; }

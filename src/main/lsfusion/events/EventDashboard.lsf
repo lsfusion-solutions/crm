@@ -70,7 +70,6 @@ DESIGN eventDashboard {
         BOX (o) {
             fill = 5;
         }
-        horizontal = FALSE;
         NEW bottom AFTER BOX (o){
             horizontal = TRUE;
             fill = 1;
