@@ -4,17 +4,17 @@ REQUIRE Dashboard, PaymentAct, TimeEntryExpense, CustomerTag, ContractProject;
 
 NAMESPACE Dashboard;
 
-receipt 'Доход' (LegalEntity c, DATE df, DATE dt) = GROUP SUM sum(Payment p) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(legalEntity(p)) BY legalEntity(p);
-receipt 'Доход' (Customer c, DATE df, DATE dt) = GROUP SUM sum(Payment p) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(legalEntity(p)) BY customer(p);
-receipt 'Доход' (Customer c, ContractType g, DATE df, DATE dt) = GROUP SUM sum(Payment p) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(legalEntity(p)) BY customer(p), type(contract(p));
-receiptOther 'Доход (без типа)' (Customer c, DATE df, DATE dt) = GROUP SUM sum(Payment p) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(legalEntity(p)) AND NOT type(contract(p)) BY customer(p);
-receipt 'Доход' (Customer c, Month m, INTEGER y, DATE df, DATE dt) = GROUP SUM sum(Payment p) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(legalEntity(p)) BY customer(p), extractMonth(date(p)), extractYear(date(p));
+receipt 'Доход' (LegalEntity c, DATE df, DATE dt) = GROUP SUM sum(Payment p) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(p) BY legalEntity(p);
+receipt 'Доход' (Customer c, DATE df, DATE dt) = GROUP SUM sum(Payment p) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(p) BY customer(p);
+receipt 'Доход' (Customer c, ContractType g, DATE df, DATE dt) = GROUP SUM sum(Payment p) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(p) BY customer(p), type(contract(p));
+receiptOther 'Доход (без типа)' (Customer c, DATE df, DATE dt) = GROUP SUM sum(Payment p) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(p) AND NOT type(contract(p)) BY customer(p);
+receipt 'Доход' (Customer c, Month m, INTEGER y, DATE df, DATE dt) = GROUP SUM sum(Payment p) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(p) BY customer(p), extractMonth(date(p)), extractYear(date(p));
 
-receiptCurrency 'Доход в валюте' (LegalEntity c, DATE df, DATE dt) = GROUP SUM sumCurrency(Payment p) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(legalEntity(p)) BY legalEntity(p);
-receiptCurrency 'Доход в валюте' (Customer c, DATE df, DATE dt) = GROUP SUM sumCurrency(Payment p) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(legalEntity(p)) BY customer(p);
-receiptCurrency 'Доход в валюте' (Customer c, ContractType g, DATE df, DATE dt) = GROUP SUM sumCurrency(Payment p) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(legalEntity(p)) BY customer(p), type(contract(p));
-receiptCurrencyOther 'Доход в валюте (без типа)' (Customer c, DATE df, DATE dt) = GROUP SUM sumCurrency(Payment p) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(legalEntity(p)) AND NOT type(contract(p)) BY customer(p);
-receiptCurrency 'Доход в валюте' (Customer c, Month m, INTEGER y, DATE df, DATE dt) = GROUP SUM sumCurrency(Payment p) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(legalEntity(p)) BY customer(p), extractMonth(date(p)), extractYear(date(p));
+receiptCurrency 'Доход в валюте' (LegalEntity c, DATE df, DATE dt) = GROUP SUM sumCurrency(Payment p) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(p) BY legalEntity(p);
+receiptCurrency 'Доход в валюте' (Customer c, DATE df, DATE dt) = GROUP SUM sumCurrency(Payment p) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(p) BY customer(p);
+receiptCurrency 'Доход в валюте' (Customer c, ContractType g, DATE df, DATE dt) = GROUP SUM sumCurrency(Payment p) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(p) BY customer(p), type(contract(p));
+receiptCurrencyOther 'Доход в валюте (без типа)' (Customer c, DATE df, DATE dt) = GROUP SUM sumCurrency(Payment p) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(p) AND NOT type(contract(p)) BY customer(p);
+receiptCurrency 'Доход в валюте' (Customer c, Month m, INTEGER y, DATE df, DATE dt) = GROUP SUM sumCurrency(Payment p) IF date(p) >= df AND date(p) <= dt AND NOT skipReceipt(p) BY customer(p), extractMonth(date(p)), extractYear(date(p));
 
 diff 'Прибыль в валюте' (Customer c, DATE df, DATE dt) = receiptCurrency(c, df, dt) (-) shipmentCurrency(c, df, dt);
 diffPercent 'Прибыль, %' (Customer c, DATE df, DATE dt) = round2(diff(c, df, dt) / receiptCurrency(c, df, dt) * 100);

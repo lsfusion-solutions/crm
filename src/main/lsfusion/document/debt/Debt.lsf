@@ -206,7 +206,7 @@ sumDebt 'Сумма задолженности' (Month m, INTEGER y, ContractTyp
 sumDebt 'Сумма задолженности' (Month m, INTEGER y) = GROUP SUM sum(Debt d) BY extractMonth(date(d)), extractYear(date(d));
 sumDebt 'Сумма задолженности' (INTEGER y, ContractType t) = GROUP SUM sum(Debt d) BY extractYear(date(d)), type(contract(d));
 
-paid 'Оплачено' (Month m, INTEGER y) = GROUP SUM sum(Payment p) IF NOT skipReceipt(legalEntity(p)) BY extractMonth(date(p)), extractYear(date(p));
+paid 'Оплачено' (Month m, INTEGER y) = GROUP SUM sum(Payment p) IF NOT skipReceipt(p) BY extractMonth(date(p)), extractYear(date(p));
 
 FORM debtsPlan 'План платежей'
     
