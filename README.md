@@ -33,7 +33,7 @@
 
 # Инсталляция
 
-* Устанавливаем lsFusion на сервер, как описано в следующей инструкции : https://documentation.lsfusion.org/pages/viewpage.action?pageId=57738078.
+* Устанавливаем lsFusion на сервер, как описано в следующей инструкции : https://docs.lsfusion.org/ru/Execution_auto/.
 * В папке /var/lib/lsfusion запускаем git pull.
 * В файле /etc/lsfusion2-server/lsfusion.conf добавляем в значение параметра CLASSPATH следующий путь - /var/lib/lsfusion/crm/src/main/resources (перед ним двоеточие).
 * Перезапускаем сервер lsFusion (как в первой инструкции).
