@@ -41,7 +41,7 @@ importIssue 'Импорт задач' (External e) {
             external(s) <- e;
         }
         
-        FOR Issue s = issue(STRING[15](id(INTEGER i)), e) AND id(i) DO {
+        FOR Issue s = issue(STRING[15](id(INTEGER i)), e) AND id(i) INLINE DO {
             
             project(s) <- project(STRING[15](project_id(i)), e);
             name(s) <- subject(i);

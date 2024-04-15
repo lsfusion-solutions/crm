@@ -33,7 +33,7 @@ importTimeEntry 'Импорт отметок времени' (External e) {
             external(s) <- e;
         }
         
-        FOR TimeEntry s = timeEntry(STRING[15](id(INTEGER i)), e) AND id(i) AND NOT daysBetweenDates(currentDate(), spent_on(i)) > daysImportTimeEntry() DO {
+        FOR TimeEntry s = timeEntry(STRING[15](id(INTEGER i)), e) AND id(i) AND NOT daysBetweenDates(currentDate(), spent_on(i)) > daysImportTimeEntry() INLINE DO {
         
             hours(s) <- hours(i);
             comments(s) <- comments(i);
