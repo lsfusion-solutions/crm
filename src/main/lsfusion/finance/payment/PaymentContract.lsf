@@ -18,12 +18,14 @@ descriptionContract 'Договор' (Payment p) = description(contract(p));
 CONSTRAINT contract(Payment p) AND legalEntity(p) AND NOT legalEntity(p) = legalEntity(contract(p)) CHECKED BY contract[Payment] MESSAGE 'Организация платежа должна совпадать с организацией договора';
 CONSTRAINT contract(Payment p) AND company(p) AND NOT company(p) = company(contract(p)) CHECKED BY contract[Payment] MESSAGE 'Компания платежа должна совпадать с компанией договора';
 
-paid 'Оплачено' (Contract c) = GROUP SUM sum(Payment p) BY contract(p);
+sumContract 'Сумма в валюте договора' (Payment p) = round2(sum(p) * OVERRIDE rateOn(defaultTypeExchange(currency(contract(p))), currency(p), date(p)), 1) MATERIALIZED;
+
+paid 'Оплачено' (Contract c) = GROUP SUM sumContract(Payment p) BY contract(p);
 paidCurrency 'Оплачено в валюте' (Contract c) = GROUP SUM sumCurrency(Payment p) BY contract(p);
 dateLastPaid 'Дата последней оплаты' (Contract c) = GROUP LAST date(Payment p) ORDER date(p), p BY contract(p);
-paid 'Оплачено' (Contract c, DATE dt) = GROUP SUM sum(Payment p) IF date(p) <= dt BY contract(p);
+paid 'Оплачено' (Contract c, DATE dt) = GROUP SUM sumContract(Payment p) IF date(p) <= dt BY contract(p);
 
-paid(Contract c) += paid(c);
+paid(Contract c) += NUMERIC[16,5](paid(c));
 paidCurrency(Contract c) += NUMERIC[16,5](paidCurrency(c));
 dateLastPaid(Contract c) += dateLastPaid(c);
 

@@ -104,6 +104,8 @@ rateOn 'Курс обмена' (TypeExchange typeExchange, Currency currency, DA
 curRate 'Текущий курс обмена' (TypeExchange typeExchange, Currency currency) =
     rateOn(typeExchange, currency, currentDate());
 
+defaultTypeExchange = GROUP MAX TypeExchange t BY currency(t) MATERIALIZED;
+
 defaultTypeExchange = DATA TypeExchange();
 nameDefaultTypeExchange 'Тип обмена по умолчанию' () = name(defaultTypeExchange());
 

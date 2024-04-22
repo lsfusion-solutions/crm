@@ -11,8 +11,8 @@ nameAgreement 'Наименование соглашения' (Payment p) = name
 
 descriptionAgreement 'Соглашение' (Payment p) = description(agreement(p));
 
-paidPayment 'Оплачено' (Agreement a) = GROUP SUM sum(Payment p) BY agreement(p) MATERIALIZED;
-paidPayment 'Оплачено' (Agreement a, DATE d) = GROUP SUM sum(Payment p) IF date(p) <= d BY agreement(p);
+paidPayment 'Оплачено' (Agreement a) = GROUP SUM sumContract(Payment p) BY agreement(p) MATERIALIZED;
+paidPayment 'Оплачено' (Agreement a, DATE d) = GROUP SUM sumContract(Payment p) IF date(p) <= d BY agreement(p);
 
 paidNotPaymentAgreement (Contract c) = paid(c) (-) [GROUP SUM paidPayment(Agreement a) BY contract(a)](c);
 
@@ -23,7 +23,7 @@ paidContract 'Оплачено' (Agreement a) = PARTITION UNGROUP paidNotPayment
                                                       
 paid 'Оплачено' (Agreement a) = paidContract(a) (+) paidPayment(a);
 
-paid(Agreement c) += paid(c);             
+paid(Agreement c) += NUMERIC[16,5](paid(c));             
 
 CONSTRAINT contract(agreement(Payment p)) != contract(p) CHECKED BY agreement[Payment] MESSAGE 'Договор соглашения должен совпадать с договором платежа';
 
