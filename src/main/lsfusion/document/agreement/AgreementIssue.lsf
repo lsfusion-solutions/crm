@@ -32,7 +32,7 @@ FORM dialogAgreementsIssue 'Соглашения'
 
 setAgreement 'Привязать соглашение' (Customer c) {
     NEWSESSION NESTED LOCAL {
-        DIALOG dialogAgreementsIssue OBJECTS c = c, a INPUT NULL DO {
+        DIALOG dialogAgreementsIssue OBJECTS c = c, a INPUT NULL NOMANAGESESSION DO {
             FOR in(Issue i) DO {
                 agreement(i) <- a;
             }
