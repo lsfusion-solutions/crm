@@ -215,7 +215,7 @@ FORM debtsPlan 'План платежей'
     
     OBJECTS t = ContractType
     OBJECTS m = Month
-    PROPERTIES READONLY number(m), 'Месяц' = staticCaption(m), sumDebt(m, y), sumDebt(m, y, t) COLUMNS (t) HEADER name(t), paid(m, y)
+    PROPERTIES READONLY number(m), 'Месяц' = name(m), sumDebt(m, y), sumDebt(m, y, t) COLUMNS (t) HEADER name(t), paid(m, y)
     ORDERS number(m)
     FILTERS sumDebt(y, t)
     

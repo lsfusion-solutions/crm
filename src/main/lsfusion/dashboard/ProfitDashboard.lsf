@@ -86,7 +86,7 @@ FORM profit 'Прибыль по клиентам'
     FILTERS employee(tt) == ee, date(tt) >= df AND date(tt) <= dt, customer(tt) == c, project(tt) == pp
     
     OBJECTS my = (m = Month, y = INTEGER)
-    PROPERTIES READONLY number(m), 'Месяц' = staticCaption(m), year 'Год' = VALUE (y)
+    PROPERTIES READONLY number(m), 'Месяц' = name(m), year 'Год' = VALUE (y)
     PROPERTIES (c, m, y, df, dt) READONLY receiptCurrency, shipmentCurrency, diff, diffPercent
     FILTERS shipment(c, m, y, df, dt) OR receipt(c, m, y, df, dt)
     ORDERS year, number(m)

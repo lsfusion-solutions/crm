@@ -25,7 +25,7 @@ hoursWithoutDocs 'Трудозатраты без привязки к докум
 
 FORM customerTimeDashboard 'Выставление счетов'
     OBJECTS y = INTEGER PANEL, m = Month PANEL 
-    PROPERTIES year 'Год' = VALUE (y), month 'Месяц' = staticCaption(m) SELECTOR 
+    PROPERTIES year 'Год' = VALUE (y), month 'Месяц' = name(m) SELECTOR 
     
     OBJECTS c = Customer
     PROPERTIES READONLY name(c), quantityHours(c, m, y), hours(c, m, y), hoursWithoutDocs(c, m, y)

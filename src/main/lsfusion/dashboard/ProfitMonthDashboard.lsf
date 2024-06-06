@@ -33,7 +33,7 @@ FORM profitMonthDashboard 'Прибыль по месяцам'
     OBJECTS cg = ContractGroup
     OBJECTS et = ExpenseType
     OBJECTS my = (m = Month, y = INTEGER)
-    PROPERTIES READONLY number(m), 'Месяц' = staticCaption(m), year 'Год' = VALUE (y), receipt(m, y) BACKGROUND backgroundReceipt(), 
+    PROPERTIES READONLY number(m), 'Месяц' = name(m), year 'Год' = VALUE (y), receipt(m, y) BACKGROUND backgroundReceipt(), 
                         shipment(m, y) BACKGROUND backgroundShipment(), profit(m, y),
                         receipt(m, y, ct) COLUMNS (ct) HEADER name(ct) BACKGROUND backgroundReceipt(), receiptOther(m, y) BACKGROUND backgroundReceipt(),
                         receipt(m, y, cg) COLUMNS (cg) HEADER name(cg) BACKGROUND backgroundGroup(), receiptOtherGroups(m, y) BACKGROUND backgroundGroup(),

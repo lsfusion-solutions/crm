@@ -87,7 +87,7 @@ FORM expenses 'Расходы по сотруднику'
         
     OBJECTS m = Month
     OBJECTS e = Employee
-    PROPERTIES name(e) READONLY, sum(e, y, m, t) COLUMNS (m) HEADER (staticCaption(m)) ON CHANGE changeSumExpense(e, y, m, t)
+    PROPERTIES name(e) READONLY, sum(e, y, m, t) COLUMNS (m) HEADER (name(m)) ON CHANGE changeSumExpense(e, y, m, t)
     PROPERTIES number(m) SHOWIF NULL 
     ORDERS name(e), number(m)
     

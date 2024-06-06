@@ -61,7 +61,7 @@ FORM timesheetDashboard 'Табель рабочего времени'
     FILTERS absenseHours(e, r, y)
     
     OBJECTS mm = Month PANEL, yy = INTEGER PANEL
-    PROPERTIES month1 'Месяц' = staticCaption(mm) SELECTOR, year1 'Год' = VALUE (yy)
+    PROPERTIES month1 'Месяц' = name(mm) SELECTOR, year1 'Год' = VALUE (yy)
     
     OBJECTS dd = DATE 
     OBJECTS ee = Employee
