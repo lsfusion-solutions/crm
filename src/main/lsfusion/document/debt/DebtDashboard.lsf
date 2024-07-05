@@ -207,9 +207,9 @@ sumDebtNoProblem 'Сумма непроблемных задолженносте
 sumDebt 'Сумма неоплаченной задолженности' (Customer c, DATE d) = 
     GROUP SUM sum(Debt dd) (-) paid(dd, d) IF date(dd) <= d AND NOT inactive(dd) BY customer(dd);
 dateFirstDebt 'Дата ранней неоплаченной задолженности' (Customer c, ContractType t, DATE d) = 
-    GROUP LAST date(Debt dd) ORDER DESC date(dd), dd IF date(dd) <= d AND (sum(dd) (-) paid(dd, d) > 0) BY customer(dd), type(contract(dd));
+    GROUP LAST date(Debt dd) ORDER DESC date(dd), dd IF date(dd) <= d AND (sum(dd) (-) paid(dd, d) > 0) AND NOT inactive(dd) BY customer(dd), type(contract(dd));
 dateFirstDebt 'Дата ранней неоплаченной задолженности' (Customer c, DATE d) = 
-    GROUP LAST date(Debt dd) ORDER DESC date(dd), dd IF date(dd) <= d AND (sum(dd) (-) paid(dd, d) > 0) BY customer(dd);
+    GROUP LAST date(Debt dd) ORDER DESC date(dd), dd IF date(dd) <= d AND (sum(dd) (-) paid(dd, d) > 0) AND NOT inactive(dd) BY customer(dd);
 
 showCustomerDashboard 'Работа с клиентом' (Debt d) { show(customer(d)); }
 
