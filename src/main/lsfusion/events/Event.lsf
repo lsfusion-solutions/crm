@@ -142,7 +142,7 @@ FORM events 'События'
     OBJECTS o = Event LAST 
     PROPERTIES(o) READONLY id, name, nameType, nameCustomer, nameLegalEntity, nameEmployee, nameContact, date, time, dateNext, descriptionString, additionString
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
-    ORDERS date(o) DESC, time(o) DESC
+    ORDERS date(o), time(o)
 ;
 
 FORM dialogEvents 'События'
