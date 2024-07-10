@@ -109,7 +109,7 @@ FORM dashboardCustomer 'Работа с клиентами'
     PROPERTIES addEvent(c) DRAW ev TOOLBAR 
     PROPERTIES (ev) NEWSESSION EDIT, DELETE 
     FILTERS customer(ev) == c
-    ORDERS date(ev) DESC
+    ORDERS date(ev) DESC, time(ev) DESC 
     
     OBJECTS pr = Project
     PROPERTIES (pr) READONLY id, name, identifier
