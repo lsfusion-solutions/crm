@@ -107,7 +107,7 @@ DESIGN agreement {
 
 in 'Отм.' = DATA LOCAL BOOLEAN (Debt);
 
-additional ABSTRACT LIST (Act);
+additional ABSTRACT LIST (Act); 
 
 createActs 'Создать акты' () {
 
@@ -132,7 +132,7 @@ createActs 'Создать акты' () {
                 name(a) <- OVERRIDE name(ag), name(c);
                 text(a) <- OVERRIDE text(ag), text(c);
             }
-            additional(a);
+            additional(a); 
             created(a) <- TRUE;
         }
         //без соглашения
@@ -147,7 +147,7 @@ createActs 'Создать акты' () {
                 name(a) <- name(c);
                 text(a) <- text(c);
             }
-            additional(a);
+            additional(a); 
             created(a) <- TRUE;
         }
         
