@@ -16,6 +16,15 @@ nameMonth 'Месяц' (Expense e) = staticCaption(month(e));
 numberMonth 'Номер месяца' (Expense e) = number(month(e));
 sum 'Сумма' = DATA NUMERIC[18,4](Expense);
 
+currency 'Валюта' = DATA Currency (Expense);
+nameCurrency 'Валюта' (Expense e) = name(currency(e));
+currency(Expense e) <- defaultCurrency() WHEN SET(e IS Expense);
+
+dateRate (Expense e) = sumMonth([FORMULA DATE 'make_date($1,$2,$3)'](year(e), numberMonth(e), 1), 1); 
+
+rate 'Курс' (Expense e) = rateOn(defaultTypeExchange(), currency(e), dateRate(e));
+sumCurrency 'Сумма в валюте' (Expense e) = round2(sum(e) * OVERRIDE rate(e), 1);
+
 CLASS ExpenseType 'Тип расхода';
 TABLE expenseType (ExpenseType);
 
@@ -75,7 +84,7 @@ changeSumExpense (Employee e, INTEGER y, Month m, ExpenseType t) {
 
 FORM expenses 'Расходы по сотруднику'
     OBJECTS o = Expense LAST 
-    PROPERTIES(o) READONLY nameEmployee, year, nameMonth, numberMonth, nameType, sum
+    PROPERTIES(o) READONLY nameEmployee, year, nameMonth, numberMonth, nameType, sum, nameCurrency, rate, sumCurrency
     PROPERTIES(o) NEWSESSION NEW, EDIT, DELETE
     ORDERS year(o), numberMonth(o), nameEmployee(o), nameType(o), sum(o)
     
