@@ -69,7 +69,7 @@ legalEntityStatusSupplier 'Статус поставщика' = DATA ISTRING[30]
 //Получатель
 customer 'Получатель' = DATA LegalEntity(EVAT);
 nameCustomer 'Получатель' (EVAT e) = OVERRIDE fullName(customer(e)), name(customer(e));
-branchCodeCustomer 'Код филиала получателя' = DATA INTEGER (EVAT);
+//branchCodeCustomer 'Код филиала получателя' = DATA INTEGER (EVAT);
 addressCustomer 'Адрес получателя' (EVAT e) = OVERRIDE nameLegalAddress(customer(e)), ' ';
 dependentPersonCustomer 'Взаимозависимое лицо' = DATA BOOLEAN (EVAT);
 residentsOfOffshoreCustomer 'Сделка с резидентом оффшорной зоны ' = DATA BOOLEAN (EVAT);
@@ -77,6 +77,7 @@ specialDealGoodsCustomer 'Спец. сделка' = DATA BOOLEAN (EVAT);
 bigCompanyCustomer 'Крупный плательщик (получатель)' = DATA BOOLEAN (EVAT);
 countryCodeCustomer 'Код страны получателя' = DATA ISTRING[30] (EVAT);
 unpCustomer 'УНП получателя' (EVAT e) = UNP(customer(e));
+branchCodeCustomer 'Код филиала получателя' (EVAT e) = branchCode(customer(e));
 legalEntityStatusCustomer 'Статус получателя' = DATA ISTRING[30] (EVAT);
 
 
@@ -309,6 +310,7 @@ FORM issuance
                             =IF bigCompanyCustomer(e) THEN 'true' ELSE 'false' EXTID 'bigCompany',
                             =countryCodeCustomer(e) EXTID 'countryCode',
                             =unpCustomer(e) EXTID 'unp',
+                            =branchCodeCustomer(e) EXTID 'branchCode',
                             =nameCustomer(e) EXTID 'name',
                             =addressCustomer(e) EXTID 'address'
     

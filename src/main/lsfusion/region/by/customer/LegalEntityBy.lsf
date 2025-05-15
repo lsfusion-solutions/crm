@@ -17,3 +17,15 @@ DESIGN legalEntity {
         MOVE PROPERTY (OKPO(o));
     }
 }
+
+branchCode 'Код филиала' = DATA STRING[4] (LegalEntity) CHARWIDTH 5;
+
+EXTEND FORM legalEntity PROPERTIES(o) branchCode;
+EXTEND FORM legalEntities PROPERTIES(o) READONLY branchCode;
+EXTEND FORM dialogLegalEntities PROPERTIES(o) READONLY branchCode;
+
+DESIGN legalEntity {
+    bank{
+        MOVE PROPERTY (branchCode(o)) AFTER PROPERTY (OKPO(o));
+    }
+}

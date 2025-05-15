@@ -24,8 +24,6 @@ EXTEND FORM legalEntities PROPERTIES(o) READONLY isEVAT;
 
 DESIGN legalEntity {
     bank{
-        MOVE PROPERTY (UNP(o));
-        MOVE PROPERTY (OKPO(o));
         MOVE PROPERTY (isEVAT(o));
     }
 }
