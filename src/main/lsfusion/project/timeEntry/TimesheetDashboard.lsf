@@ -31,7 +31,7 @@ FORM timesheetDashboard 'Табель рабочего времени'
             e == currentUser() OR allowEditOtherTimesheets(mainRole(currentUser()))
     
     OBJECTS d = DATE 
-    PROPERTIES READONLY VALUE (d), extractDOWName(d), workingHours(d), 
+    PROPERTIES READONLY VALUE (d), extractDOWName(d), workingHours(d) FOOTER monthHours(y, m), 
                         totalHours(e, d) BACKGROUND RGB(255,192,192) IF (OVERRIDE totalHours(e, d), 0) < workingHours(d) FOOTER totalHours(e, y, m)
 //    FILTERS workingHours(d) OR totalHours(e, d)
     FILTERS iterate(d, toDateFormat('01' + lpad(TEXT (number(m)), 2, '0') + y, 'DDMMYYYY'),
