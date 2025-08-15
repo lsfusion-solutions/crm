@@ -64,7 +64,7 @@ workingHours 'Рабочих часов за интервал' (Absence a) = GRO
 hours 'Часы' (Absence a, DATE d) = PARTITION UNGROUP hours
                                                              LIMIT STRICT workingHours(d) IF d >= dateFrom(a) AND d <= dateTo(a)
                                                              ORDER d
-                                                             BY a; 
+                                                             BY a MATERIALIZED; 
                                                       
 
 absenceHours 'Часы' (Employee e, DATE d) = GROUP SUM hours(Absence a, d) BY employee(a) CHARWIDTH 2;
