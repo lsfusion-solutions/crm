@@ -44,8 +44,8 @@ WHEN LOCAL CHANGED (lastName(Contact c)) OR CHANGED (firstName(c)) OR CHANGED (m
 CLASS Position 'Должность';
 TABLE position (Position);
 
-name 'Наименование' = DATA ISTRING[100] (Position) CHARWIDTH 15;
-nameRp 'Наименование (род.падеж)' = DATA ISTRING[100] (Position) CHARWIDTH 15;
+name 'Наименование' = DATA ISTRING[250] (Position) CHARWIDTH 30;
+nameRp 'Наименование (род.падеж)' = DATA ISTRING[250] (Position) CHARWIDTH 30;
 inactive 'Неактивный' = DATA BOOLEAN (Position);
 
 in 'Отм.' = DATA LOCAL BOOLEAN (Position);
