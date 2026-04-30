@@ -49,8 +49,8 @@ issue = GROUP AGGR Issue p BY id (p), external(p);
 CONSTRAINT (external(project(Issue i)) AND NOT external(project(i)) == external(i))
     OR (project(i) AND NOT external(project(i)) AND external(i)) CHECKED BY project[Issue] MESSAGE 'Внешняя система задачи не совпадает с внешней системой проекта';
 
-EXTEND FORM issues PROPERTIES nameExternal(o);
-EXTEND FORM dialogIssues PROPERTIES nameExternal(o);
+EXTEND FORM issues PROPERTIES READONLY nameExternal(o);
+EXTEND FORM dialogIssues PROPERTIES READONLY nameExternal(o);
 
 external = DATA External(TimeEntry);
 idExternal 'Код внешней системы' (TimeEntry p) = id(external(p));
@@ -58,5 +58,5 @@ nameExternal 'Внешняя система' (TimeEntry p) = name(external(p));
 
 timeEntry = GROUP AGGR TimeEntry p BY id (p), external(p);
 
-EXTEND FORM timeEntries PROPERTIES nameExternal(o);
-EXTEND FORM dialogTimeEntries PROPERTIES nameExternal(o);
+EXTEND FORM timeEntries PROPERTIES READONLY nameExternal(o);
+EXTEND FORM dialogTimeEntries PROPERTIES READONLY nameExternal(o);
