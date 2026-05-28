@@ -6,8 +6,9 @@ NAMESPACE LegalEntity;
 
 UNP 'УНП' = DATA STRING[9] (LegalEntity) CHARWIDTH 9 NOFLEX;
 OKPO 'ОКПО' = DATA STRING[20] (LegalEntity) CHARWIDTH 15;
+noEvatUnp 'Не включать УНП в ЭСЧФ' = DATA BOOLEAN (LegalEntity);
 
-EXTEND FORM legalEntity PROPERTIES(o) UNP, OKPO;
+EXTEND FORM legalEntity PROPERTIES(o) UNP, OKPO, noEvatUnp;
 EXTEND FORM legalEntities PROPERTIES(o) READONLY UNP, OKPO;
 EXTEND FORM dialogLegalEntities PROPERTIES(o) READONLY UNP, OKPO;
 
@@ -15,6 +16,7 @@ DESIGN legalEntity {
     bank{
         MOVE PROPERTY (UNP(o));
         MOVE PROPERTY (OKPO(o));
+        MOVE PROPERTY (noEvatUnp(o));
     }
 }
 

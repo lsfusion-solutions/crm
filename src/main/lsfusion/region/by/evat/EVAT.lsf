@@ -76,7 +76,8 @@ residentsOfOffshoreCustomer 'Сделка с резидентом оффшорн
 specialDealGoodsCustomer 'Спец. сделка' = DATA BOOLEAN (EVAT);
 bigCompanyCustomer 'Крупный плательщик (получатель)' = DATA BOOLEAN (EVAT);
 countryCodeCustomer 'Код страны получателя' = DATA ISTRING[30] (EVAT);
-unpCustomer 'УНП получателя' (EVAT e) = UNP(customer(e));
+unpCustomer 'УНП получателя' (EVAT e) = IF NOT noEvatUnp(customer(e)) THEN UNP(customer(e)) ELSE ' '; 
+noEvatUnpFlag 'Не включать УНП в ЭСЧФ (значение передается пустым)' (EVAT e) = noEvatUnp(customer(e)); // только для формы редактирования
 branchCodeCustomer 'Код филиала получателя' (EVAT e) = branchCode(customer(e));
 legalEntityStatusCustomer 'Статус получателя' = DATA ISTRING[30] (EVAT);
 
@@ -132,7 +133,7 @@ FORM EVAT 'Электронная счёт-фактура'
                   nameCustomer, unpCustomer, countryCodeCustomer, addressCustomer, 
                   branchCodeSupplier, branchCodeCustomer,
                   codeDocType, blankCodeDoc, dateDoc, seriesDoc, 
-                  totalSum, totalExciseSum, totalVATSum, totalSumWithVAT
+                  totalSum, totalExciseSum, totalVATSum, totalSumWithVAT, noEvatUnpFlag
     
     OBJECTS d = EVATDetail
     PROPERTIES(d) READONLY name, code, quantity, price, sum, exciseSum, vatRate, vatRateType, vatSum, sumWithVAT, captionDescriptionType
@@ -171,6 +172,7 @@ DESIGN EVAT {    NEW top {
             caption = 'Получатель';
             fill = 1;
             MOVE PROPERTY(nameCustomer(e));
+            MOVE PROPERTY(noEvatUnpFlag(e));
             MOVE PROPERTY(unpCustomer(e));
             MOVE PROPERTY(countryCodeCustomer(e));
             MOVE PROPERTY(addressCustomer(e));  
